@@ -1,0 +1,23 @@
+<template name="geneList">
+  <h1>Gene List ({{ geneCount }})</h1>
+    <form class="new-gene">
+      <input type="text" name="text" placeholder="Type to add new gene" />
+    </form>
+  <table class='gene-table'>
+    <tr>
+      <th>Remove</th>
+      <th>Toggle</th>
+      <th>ID</th>
+      <th>Chromosome</th>
+      <th>Source</th>
+      <th>Type</th>
+      <th>Start</th>
+      <th>Stop</th>
+      <th>Strand</th>
+      <th>Number of transcripts</th>
+    </tr>
+    {{#each genes}}
+      {{> gene}}
+    {{/each}}
+    </table>
+</template>

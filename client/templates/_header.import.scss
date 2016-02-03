@@ -1,0 +1,429 @@
+//@import "{wolves:bourbon}/bourbon";
+//@import "{wolves:neat}/neat";
+
+header.navigation {
+  $navigation-padding: modular-scale(1);
+  $navigation-color: transparentize(white, 0.2);
+  $navigation-color-hover: white;
+  $navigation-height: modular-scale(2);//60px;
+  $navigation-search-background: lighten($color-primary, 5);
+  $navigation-search-border: 1px solid darken($color-primary, 5);
+  $navigation-active-link-color: transparentize(white, 0.5);
+  $navigation-submenu-padding: modular-scale(1);
+  $navigation-submenu-width: modular-scale(4.5);
+
+  background-color: $color-primary;
+  border-bottom: 1px solid darken($color-primary, 10);
+  min-height: $navigation-height;
+  width: 100%;
+  z-index: 999;
+
+  .navigation-wrapper {
+    @include clearfix;
+    @include outer-container;
+    position: relative;
+    z-index: 9999;
+  }
+
+  .logo {
+    float: left;
+    max-height: $navigation-height;
+    padding-left: $navigation-padding;
+    padding-right: modular-scale(2);
+
+    img {
+      max-height: $navigation-height;
+      padding: 0.8em 0;
+    }
+  }
+
+  
+// Mobile view
+
+  .navigation-menu-button {
+    color: $navigation-color;
+    display: block;
+    float: right;
+    line-height: $navigation-height;
+    margin: 0;
+    padding-right: modular-scale(1);//1em;
+    text-decoration: none;
+    text-transform: uppercase;
+
+    @include media ($horizontal-bar-mode) {
+      display: none;  
+    }
+
+    &:focus,
+    &:hover {
+      color: $navigation-color-hover;
+    }
+  }
+
+  
+// Nav menu
+
+  nav {
+    float: none;
+    min-height: $navigation-height;
+    z-index: 9999999;
+
+    @include media ($horizontal-bar-mode) {
+      float: left;
+    }
+  }
+
+  ul.navigation-menu {
+    clear: both;
+    display: none;
+    margin: 0 auto;
+    overflow: visible;
+    padding: 0;
+    width: 100%;
+    z-index: 9999;
+
+    &.show {
+      display: block;
+    }
+
+    @include media ($horizontal-bar-mode) {
+      display: inline;
+      margin: 0;
+      padding: 0;
+    }
+  }
+
+  
+// The nav items
+
+  ul li.nav-link {
+    background: $color-primary;
+    display: block;
+    line-height: $navigation-height;
+    overflow: hidden;
+    padding-right: modular-scale(1);
+    text-align: right;
+    width: 100%;
+    z-index: 9999;
+
+    @include media ($horizontal-bar-mode) {
+      background: transparent;
+      display: inline;
+      line-height: $navigation-height;
+      text-decoration: none;
+      width: auto;
+    }
+
+    a {
+      color: $navigation-color;
+      display: inline-block;
+      text-decoration: none;
+
+      @include media ($horizontal-bar-mode) {
+        padding-right: modular-scale(1);
+      }
+
+      &:focus,
+      &:hover {
+        color: $navigation-color-hover;
+      }
+    }
+  }
+
+  .active-nav-item a {
+    border-bottom: 1px solid $navigation-active-link-color;
+    padding-bottom: 3px;
+  }
+
+  
+// Sub menus
+
+  li.more.nav-link {
+    padding-right: 0;
+
+    @include media($horizontal-bar-mode) {
+      padding-right: $navigation-submenu-padding;
+    }
+
+    > ul > li:first-child a  {
+      padding-top: modular-scale(1);
+    }
+
+    a {
+      margin-right: $navigation-submenu-padding;
+    }
+
+    > a {
+      padding-right: 0.6em;
+    }
+
+    > a:after {
+      @include position(absolute, auto -0.4em auto auto);
+      content: '\25BE';
+      color: $navigation-color;
+    }
+  }
+
+  li.more {
+    overflow: visible;
+    padding-right: 0;
+
+    a {
+      padding-right: 0.8em;
+    }
+
+    > a {
+      padding-right: 1.6em;
+      position: relative;
+
+      @include media($horizontal-bar-mode) {
+        margin-right: $navigation-submenu-padding;
+      }
+
+      &:after {
+        content: '›';
+        font-size: 1.2em;
+        position: absolute;
+        right: $navigation-submenu-padding / 2;
+      }
+    }
+
+    &:focus > .submenu,
+    &:hover > .submenu {
+      display: block;
+    }
+
+    @include media($horizontal-bar-mode) {
+      padding-right: 0.8em;
+      position: relative;
+    }
+  }
+
+  ul.submenu {
+    display: none;
+    padding-left: 0;
+
+    @include media($horizontal-bar-mode) {
+      left: -$navigation-submenu-padding;
+      position: absolute;
+      top: 1.5em;
+    }
+
+    .submenu {
+      @include media($horizontal-bar-mode) {
+        left: $navigation-submenu-width - 0.2em;
+        top: 0;
+      }
+    }
+
+    li {
+      display: block;
+      padding-right: 0;
+
+      @include media($horizontal-bar-mode) {
+        line-height: $navigation-height / 1.3;
+
+        &:first-child > a {
+          border-top-left-radius: $base-border-radius;
+          border-top-right-radius: $base-border-radius;
+        }
+
+        &:last-child > a {
+          border-bottom-left-radius: $base-border-radius;
+          border-bottom-right-radius: $base-border-radius;
+          padding-bottom: 0.7em;
+        }
+      }
+
+      a {
+        background-color: darken($color-primary, 3%);
+        display: inline-block;
+        text-align: right;
+        width: 100%;
+
+        @include media($horizontal-bar-mode) {
+          background-color: $color-primary;
+          padding-left: $navigation-submenu-padding;
+          text-align: left;
+          width: $navigation-submenu-width;
+        }
+      }
+    }
+  }
+
+  
+// Elements on the far right
+
+  .navigation-tools {
+    clear: both;
+    display: block;
+    height: $navigation-height;
+
+    @include media($horizontal-bar-mode) {
+      background: transparent;
+      clear: none;
+      float: right;
+    }
+  }
+
+// Login Button
+//*
+  #login-buttons {
+    $dropdown-height:40px;
+    $dropdown-padding: 1em;
+    float: left;
+    padding: 0em 0.85em 0.7em 0.6em;
+    line-height: $navigation-height;
+    
+    a.login-link-text {
+      color: $navigation-color;
+      display: inline-block;
+      text-decoration: none;
+
+      @include media ($horizontal-bar-mode) {
+        padding-right: 1em;
+      }
+
+      &:focus,
+      &:hover {
+        color: $navigation-color-hover;
+      }
+    }
+    .accounts-dialog {
+      @include transition (all 0.2s ease-in-out);
+      background: $color-primary;
+      border-radius: $base-border-radius;
+      border: $color-primary;
+      box-shadow: 0 2px 2px transparentize(black, 0.8);
+      color: $color-text-light;
+      cursor: pointer;
+      //display: block;
+      margin: 0;
+      overflow: show;
+      padding: 0;
+      position: absolute;
+      right: 0;
+      top: 4em;
+      width: 12em;
+      z-index: 99999;
+      &:before {
+        @include position(relative, 0 1em 0 0);
+        color: $color-primary;
+        content: "\25b2";
+        font-size: 1.4em;
+        pointer-events: none;
+        text-shadow: 0 -2px 2px transparentize(black, 0.7);
+        top: -1.6em;
+        left: 6em;
+      }
+    }
+    .login-dropdown-list {
+      background: $color-primary;
+      border-bottom-right-radius: $base-border-radius;
+      border-top-right-radius: $base-border-radius;
+      //border-top: $dropdown-border;
+      //border-right: $dropdown-border;
+      //border-bottom: $dropdown-border;
+      cursor: pointer;
+      //float: center;
+      font-size: 0.7em;
+      line-height: $base-line-height;
+      margin: 0;
+      padding: 0 ($dropdown-padding * 2.5) 0 ($dropdown-padding / 2);
+      position: relative;
+
+      @include media($large-screen) {
+        font-size: 1em;
+        padding: 0 ($dropdown-padding * 2.5) 0 ($dropdown-padding / 2);
+      }
+    }
+    .login-button,
+    .additional-link-container {
+      font-size: 0.7em;
+      line-height: $base-line-height;
+      margin: 0;
+      padding: 0 ($dropdown-padding * 2) 0 ($dropdown-padding / 2);
+      position: relative;
+      @include media($large-screen) {
+        font-size: 1em;
+        padding: 0 ($dropdown-padding * 2) 0 ($dropdown-padding / 2);
+      }
+      a {
+
+      }
+    }
+    #login-username-label-and-input, 
+    #login-password-label-and-input,
+    #login-password-again-label-and-input,
+    #login-old-password-label-and-input,
+    .error-message {
+      font-size: 0.7em;
+      line-height: $base-line-height;
+      margin: 0;
+      padding: 0 ($dropdown-padding * 2) 0 ($dropdown-padding / 2);
+      position: relative;
+
+      @include media($large-screen) {
+        font-size: 1em;
+        padding: 0 ($dropdown-padding * 2) 0 ($dropdown-padding / 2);
+      }
+    }
+  }
+// Search bar
+
+  .search-bar {
+    float: left;
+    padding: 0.6em 0.85em 0.7em 0.6em;
+    width: 60%;
+
+    form {
+      position: relative;
+
+      input[type=search] {
+        @include box-sizing(border-box);
+        background: $navigation-search-background;
+        border-radius: $base-border-radius * 2;
+        border: $navigation-search-border;
+        color: $navigation-color;
+        font-size: 0.9em;
+        font-style: italic;
+        margin: 0;
+        padding: 0.5em 0.8em;
+        width: 100%;
+
+        @include media($horizontal-bar-mode) {
+          width: 100%;
+        }
+      }
+
+      button[type=submit] {
+        background: $navigation-search-background;
+        border: none;
+        bottom: 0.3em;
+        left: auto;
+        outline: none;
+        padding: 0 9px;
+        position: absolute;
+        right: 0.3em;
+        top: 0.3em;
+
+        img {
+          height: 12px;
+          opacity: 0.7;
+          padding: 1px;
+        }
+      }
+    }
+
+    @include media($horizontal-bar-mode) {
+      display: inline-block;
+      position: relative;
+      width: 16em;
+
+      input {
+        @include box-sizing(border-box);
+        display: block;
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+@import "{wolves:bourbon}/bourbon";
+@import "{wolves:neat}/neat";
+
+//import utils
+@import "util/_variables.import.scss";
+
+//import globals
+@import "globals/_switch.import.scss";
+//@import "globals/_loginbuttons.imports.scss";
+
+//import template stuffs
+@import "../templates/_header.import.scss";
+@import "../templates/genelist/_genelist.import.scss";
+

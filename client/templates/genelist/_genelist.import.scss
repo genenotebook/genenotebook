@@ -1,0 +1,8 @@
+tr {
+	&.gene {
+		background: lighten($color-secondary,10%);
+	}
+	&.transcript {
+		background: lighten($color-tertiary,10%);
+	}
+}

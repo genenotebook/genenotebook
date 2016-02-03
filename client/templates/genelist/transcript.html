@@ -1,0 +1,46 @@
+<template name="transcript">
+  <tr class="{{expand}} transcript">
+    <td>
+      <button class="delete">&times; mRNA</button>
+    </td>
+    <td>
+      <label class="label-switch">
+      	<input type="checkbox" class="toggle-expand"/>
+      	<div class="checkbox"></div>
+      </label>
+    </td>
+    <td>
+      <strong>{{ID}} </strong>
+    </td>
+    <td>
+      {{seqid}}
+    </td>
+    <td>
+      {{source}}
+    </td>
+    <td>
+      {{type}}
+    </td>
+    <td>
+      {{start}}
+    </td>
+    <td>
+      {{end}}
+    </td>
+    <td>
+      {{strand}}
+    </td>
+    <td>
+      <!--
+      {{transcriptNumber}}
+      -->
+    </td>
+    <!--
+    {{#if expand}}
+      {{#each transcripts}}
+        {{> transcript}}
+      {{/each}}
+    {{/if}}
+    -->
+   </tr>
+</template>
