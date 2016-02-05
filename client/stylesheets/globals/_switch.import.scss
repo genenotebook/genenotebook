@@ -1,6 +1,6 @@
 //LABEL
-.label-switch {  
-  $action-color: $color-ancillary;// !default;
+.label-switch {
+  //$action-color: $color-ancillary;// !default;
   $base-background-color: white !default;
   $switch-width: 32px;
   $switch-padding: 2px;
@@ -63,7 +63,12 @@
 
     &:checked {
       + .checkbox {
-        background: $action-color;
+        &.info {
+          background: $color-ancillary;
+        }
+        &.expand {
+          background: $color-secondary;
+        }
 
         &:before {
           @include transform(scale(0));

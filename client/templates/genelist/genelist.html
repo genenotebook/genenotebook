@@ -3,6 +3,12 @@
     <form class="new-gene">
       <input type="text" name="text" placeholder="Type to add new gene" />
     </form>
+  <ul class='genelist'>
+    {{#each genes}}
+      {{> feature}}
+    {{/each}}
+  </ul>
+  <!--
   <table class='gene-table'>
     <tr>
       <th>Remove</th>
@@ -20,4 +26,5 @@
       {{> gene}}
     {{/each}}
     </table>
+  -->
 </template>

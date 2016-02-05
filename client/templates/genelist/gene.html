@@ -1,4 +1,23 @@
 <template name="gene">
+  <li>
+    <ul class="gene">
+      <li class="{{expand}} gene">
+      <button class="delete">&times; {{type}}</button>
+      <label class="label-switch">
+        <input type="checkbox" class="toggle-expand"/>
+        <div class="checkbox"></div>
+      </label>
+      <strong>{{ID}}</strong>
+      {{seqid}} {{source}} {{start}} {{end}} {{strand}} {{transcriptNumber}}
+      </li>
+      {{#if expand}}
+        {{#each transcripts}}
+          {{> transcript}}
+        {{/each}}
+      {{/if}}
+    </ul>
+  </li>
+  <!--
   <tr class="{{expand}} gene">
     <td>
       <button class="delete">&times; gene</button>
@@ -36,8 +55,9 @@
     </td>
    </tr>
    {{#if expand}}
-      {{#each transcripts ID}}
+      {{#each transcripts}}
         {{> transcript}}
       {{/each}}
     {{/if}}
+  -->
 </template>

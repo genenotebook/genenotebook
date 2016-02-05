@@ -1,4 +1,4 @@
-Template.gene.helpers({
+Template.feature.helpers({
   isOwner: function () {
     return this.owner === Meteor.userId();
   },
@@ -8,57 +8,50 @@ Template.gene.helpers({
   featuretype: function(){
     return this.source;
   },
-  transcriptNumber: function(){
+  subfeatureNumber: function(){
     return this.children.length;
   },
-  transcripts: function(){
+  subfeatures: function(){
     console.log(this.children);
     return Genes.find({ 'ID':{$in: this.children} });
   },
   expand: function(){
-    var geneId = this._id;
+    var Id = this._id;
     var expanded = Session.get('expand');
-    //console.log(expanded);
     if (typeof expanded === 'undefined'){
       return
     }
     for (var i = 0; i < expanded.length; i++){
-      if (expanded[i].equals(geneId)){
+      if (expanded[i].equals(Id)){
         return 'expanded';
       }
-
     }
-    //console.log([geneId,expandedGene,expandedGene===geneId])
-    //if ( expandedGene.equals(geneId) ){
-    //  console.log('expand');
-    //  return 'expanded';
-    //}
   }
 });
 
-Template.gene.events({
+Template.feature.events({
     "click .toggle-expand": function () {
-      var geneId = this._id;
+      //the following prevents 'event bubbling', this was causing mRNA features to be not expandable
+      //http://www.quirksmode.org/js/events_order.html
+      if (!e) var e = window.event;
+      e.cancelBubble = true;
+      if (e.stopPropagation) e.stopPropagation();
+
+      var Id = this._id;
       var _expanded = Session.get('expand');
       var expanded = _expanded ? _expanded.splice(0) : [];
       var wasExpanded = false;
       for (var i = expanded.length -1; i >= 0; i--){
-        if (expanded[i].equals(geneId)){
+        if (expanded[i].equals(Id)){
           expanded.splice(i,1);
           wasExpanded = true;
         }
       }
       if (!wasExpanded){
-        expanded.push(geneId);
+        expanded.push(Id);
       }
-     // var expandedCopy = expanded.splice(0);
+      console.log(expanded);
       Session.set('expand',expanded);
-      // Set the checked property to the opposite of its current value
-      
-      //Meteor.call("setChecked",this._id, ! this.checked);
-      /*Genes.update(this._id, {
-        $set: {checked: ! this.checked}
-      });*/
     },
     "click .delete": function () {
       Meteor.call("deleteTask",this._id);

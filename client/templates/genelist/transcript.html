@@ -1,4 +1,14 @@
 <template name="transcript">
+	<li class="{{expand}} gene">
+      <button class="delete">&times; {{type}}</button>
+      <label class="label-switch">
+        <input type="checkbox" class="toggle-expand"/>
+        <div class="checkbox"></div>
+      </label>
+      <strong>{{ID}}</strong>
+      {{seqid}} {{source}} {{start}} {{end}} {{strand}} {{transcriptNumber}}
+      </li>
+  <!-- 
   <tr class="{{expand}} transcript">
     <td>
       <button class="delete">&times; mRNA</button>
@@ -31,16 +41,13 @@
       {{strand}}
     </td>
     <td>
-      <!--
       {{transcriptNumber}}
-      -->
     </td>
-    <!--
     {{#if expand}}
       {{#each transcripts}}
         {{> transcript}}
       {{/each}}
     {{/if}}
-    -->
    </tr>
+   -->
 </template>

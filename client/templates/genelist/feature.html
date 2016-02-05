@@ -1,0 +1,26 @@
+<template name="feature">
+  <li>
+    <ul class="{{type}}">
+      <li class="{{expand}}">
+      <button class="delete">{{type}}</button>
+      <label class="label-switch">
+        <input type="checkbox" class="toggle-expand"/>
+        <div class="checkbox expand"></div>
+      </label>
+      <label class="label-switch">
+        <input type="checkbox" class="toggle-info"/>
+        <div class="checkbox info"></div>
+      </label>
+      <strong>{{ID}}</strong>
+      {{seqid}} {{source}} {{start}} {{end}} {{strand}} {{subfeatureNumber}} {{expand}}
+      </li>
+      {{#if expand}}
+      	{{#if children.length}}
+	        {{#each subfeatures}}
+	          {{> feature}}
+	        {{/each}}
+        {{/if}}
+      {{/if}}
+    </ul>
+  </li>
+</template>

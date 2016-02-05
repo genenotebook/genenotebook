@@ -1,3 +1,4 @@
+/*
 Meteor.publish("genes", function () {
 	return Genes.find({},{
 		sort: {
@@ -6,6 +7,11 @@ Meteor.publish("genes", function () {
 			'ID':1
 		}
 	});
+});
+*/
+
+Meteor.publish('genes',function(){
+	return Genes.find();
 });
 
 

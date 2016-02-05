@@ -33,7 +33,7 @@ def init(infile,mongo):
 	print 'parsing gff'
 	gff = gt.parser(infile)
 	counter = 0
-	print 'firing to mongodb'
+	print 'uploading to mongodb'
 	for obj in gff.getitems():
 		counter += 1
 		obj_dict = ast.literal_eval(obj.__str__())
@@ -83,14 +83,15 @@ def get(mongo,number):
 		#	print obj['ID']
 
 def get_client():
+	print 'finding mongodb'
 	command = 'meteor mongo -U'
 	p = Popen(command.split(),stdout=PIPE,stderr=PIPE)
 	stdout,stderr = p.communicate()
 	return stdout
 
 def main(infile):
-	print 'mongo init'
 	client = get_client()
+	print client
 	client = MongoClient(client)
 	db = client.meteor
 	collection = db.genes
