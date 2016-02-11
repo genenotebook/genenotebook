@@ -1,21 +1,15 @@
 Meteor.subscribe("genes");
 
-Template.geneList.helpers({
+Template.genelist.helpers({
   genes: function () {
     return Genes.find({'type':'gene'});
-  },
-  hideCompleted: function () {
-    return Session.get("hideCompleted");
-  },
-  incompleteCount: function () {
-    return Genes.find({checked: {$ne: true}}).count();
   },
   geneCount: function () {
     return Genes.find({'type':'gene'}).count();
   }
 });
 
-Template.geneList.events({
+Template.genelist.events({
   "submit .new-gene": function (event) {
     // Prevent default browser form submit
     event.preventDefault();

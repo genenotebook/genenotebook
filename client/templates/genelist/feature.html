@@ -11,8 +11,8 @@
         <input type="checkbox" class="toggle-info"/>
         <div class="checkbox info"></div>
       </label>
-      <strong>{{ID}}</strong>
-      {{seqid}} {{source}} {{start}} {{end}} {{strand}} {{subfeatureNumber}} {{expand}}
+      <strong><a href="/gene/{{ID}}">{{ID}}</a></strong>
+      {{seqid}} {{source}} {{start}} {{end}} {{strand}} {{subfeatureNumber}}
       </li>
       {{#if expand}}
       	{{#if children.length}}
