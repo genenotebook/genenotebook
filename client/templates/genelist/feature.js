@@ -1,4 +1,13 @@
 Template.feature.helpers({
+  isGene: function() {
+    return this.type === 'gene';
+  },
+  isTranscript: function(){
+    return this.type === 'mRNA';
+  },
+  isCds: function(){
+    return this.type === 'CDS';
+  },
   isOwner: function () {
     return this.owner === Meteor.userId();
   },
@@ -8,23 +17,30 @@ Template.feature.helpers({
   featuretype: function(){
     return this.source;
   },
+  orthologs: function(){
+    return this.attributes['putative orthologs'];
+  },
   subfeatureNumber: function(){
     return this.children.length;
   },
+  subfeatureArray: function(){
+    var array = [];
+    Genes.find({ 'ID':{$in: this.children} }).forEach(function(sub){array.push(sub.start + '...' + sub.end)})
+    console.log(array);
+    return array;
+  },
   subfeatures: function(){
-    console.log(this.children);
+    //console.log(this.children);
     return Genes.find({ 'ID':{$in: this.children} });
   },
   expand: function(){
-    var Id = this._id;
+    var Id = this._id._str;
     var expanded = Session.get('expand');
     if (typeof expanded === 'undefined'){
       return
     }
-    for (var i = 0; i < expanded.length; i++){
-      if (expanded[i].equals(Id)){
-        return 'expanded';
-      }
+    if (expanded.indexOf(Id) >= 0){
+      return 'expanded';
     }
   }
 });
@@ -37,9 +53,18 @@ Template.feature.events({
       e.cancelBubble = true;
       if (e.stopPropagation) e.stopPropagation();
 
-      var Id = this._id;
+      var Id = this._id._str;
+      //console.log(Id);
       var _expanded = Session.get('expand');
       var expanded = _expanded ? _expanded.splice(0) : [];
+      var wasExpanded = expanded.indexOf(Id);
+      //console.log(wasExpanded);
+      if (wasExpanded < 0) {
+        expanded.push(Id);
+      } else {
+        expanded.splice(wasExpanded,1);
+      }
+      /*
       var wasExpanded = false;
       for (var i = expanded.length -1; i >= 0; i--){
         if (expanded[i].equals(Id)){
@@ -50,7 +75,8 @@ Template.feature.events({
       if (!wasExpanded){
         expanded.push(Id);
       }
-      console.log(expanded);
+      */
+      //console.log(expanded);
       Session.set('expand',expanded);
     },
     "click .delete": function () {

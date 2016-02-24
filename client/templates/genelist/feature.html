@@ -2,17 +2,41 @@
   <li>
     <ul class="{{type}}">
       <li class="{{expand}}">
-      <button class="delete">{{type}}</button>
-      <label class="label-switch">
-        <input type="checkbox" class="toggle-expand"/>
-        <div class="checkbox expand"></div>
-      </label>
-      <label class="label-switch">
-        <input type="checkbox" class="toggle-info"/>
-        <div class="checkbox info"></div>
-      </label>
-      <strong><a href="/gene/{{ID}}">{{ID}}</a></strong>
-      {{seqid}} {{source}} {{start}} {{end}} {{strand}} {{subfeatureNumber}}
+        <div class='featureswitch'>
+          <label class="label-switch">
+            <input type="checkbox" class="toggle-expand"/>
+            <div class="checkbox expand"></div>
+          </label>
+          <label class="label-switch">
+            <input type="checkbox" class="toggle-info"/>
+            <div class="checkbox info"></div>
+          </label>
+        </div>
+        <p>
+          <button class="type">{{type}}</button>
+          <strong>
+            <a href="/gene/{{ID}}">{{ID}}</a>
+          </strong>
+        </p>
+        <p>
+        Scaffold: {{seqid}}
+        </p> 
+        {{#if isGene}}
+          <p>
+          Coordinates: {{start}} {{end}} {{strand}}
+          </p>
+          {{#if orthologs}}
+            <p>Orthologs: 
+            {{#each orthologs}}
+            <a href="/gene/{{this}}">{{this}}</a>
+            {{/each}}
+            </p>
+          {{/if}}
+        {{/if}}
+        {{#if isTranscript}}
+          {{> genemodel this}}
+          <p class="seq">{{ seq }}</p>
+        {{/if}}
       </li>
       {{#if expand}}
       	{{#if children.length}}
@@ -21,6 +45,6 @@
 	        {{/each}}
         {{/if}}
       {{/if}}
-    </ul>
+  </ul>
   </li>
 </template>

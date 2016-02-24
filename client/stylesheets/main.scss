@@ -6,9 +6,10 @@
 
 //import globals
 @import "globals/_switch.import.scss";
-//@import "globals/_loginbuttons.imports.scss";
+@import "globals/_global.import.scss";
 
 //import template stuffs
 @import "../templates/_header.import.scss";
 @import "../templates/genelist/_genelist.import.scss";
+@import "../templates/genelist/_genemodel.import.scss";
 

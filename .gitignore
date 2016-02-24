@@ -1,2 +1,4 @@
 .meteor/local
 .meteor/meteorite
+data/PanWU01x14_asm01.scf.fasta
+data/PanWU01x14_asm01_ann10.gene_length_fixed.short_cds_fixed.gff3

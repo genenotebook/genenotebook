@@ -1,9 +1,15 @@
 <template name="genelist">
-  <div class="namelist">
-    {{> filter}}
+  <div class="genelist">
+    <!--{{> filter}}-->
     <ul class='genelist'>
-      {{> pages}}
-      {{> pagesNav}}
+      {{#each genes}}
+      	{{>feature}}
+      {{/each}}
     </ul>
+    {{#if moreResults}}
+	    <div id="showMoreGenes" style="margin-left: 25px;">
+	        <span class="loading">Loading...</span>
+	    </div>
+	{{/if}}
   </div>
 </template>

@@ -10,8 +10,32 @@ Meteor.publish("genes", function () {
 });
 */
 
-Meteor.publish('genes',function(){
-	return Genes.find();
+/*
+Meteor.publish('genes',function(limit){
+	var limit = 20;
+	return Genes.find({'type':'gene'},{limit:limit});
+});
+*/
+
+Meteor.publishComposite('genes',function(limit){
+	var limit = limit || 20;
+	return {
+		find: function(){
+			return Genes.find({'type':'gene'},{limit:limit});
+		},
+		children: [
+		{
+			find:function(gene){
+				return Genes.find({'ID':{$in: gene.children}});
+			},
+			children: [
+			{
+				find: function(transcript){
+					return Genes.find({'ID':{$in: transcript.children}});
+				}
+			}]
+		}]
+	};
 });
 
 

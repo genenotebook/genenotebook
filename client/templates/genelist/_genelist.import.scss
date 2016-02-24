@@ -2,6 +2,7 @@
 	@include margin(0 5em 0 5em)
 	list-style-type: none;
 	ul {
+		background:white;
 		&.genelist {
 			list-style-type: none;
 			padding: 0px;
@@ -10,8 +11,7 @@
 		&.gene {
 			border-radius: $base-border-radius;
 			box-sizing:border-box;
-			//border:1px solid $color-primary;
-			//border-bottom:0px;
+
 			padding: 0.5em;
 			box-shadow: 2px 3px 17px -2px rgba(0,0,0,0.66);
 			@include margin(0.5em 0em 0.5em 0em);
@@ -19,5 +19,18 @@
 				list-style-type: none;
 			}
 		}
+		.featureswitch {
+			float: right;
+		}
 	}
+}
+
+p.seq {
+	@include margin(0em 2em 0em 0em);
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+	overflow: wrap;
+	white-space:wrap;
+	font-family: Menlo,sans-serif;
+	font-size: 0.8em;
 }
