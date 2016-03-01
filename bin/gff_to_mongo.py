@@ -40,12 +40,12 @@ def init(gff_file,fasta_file,mongo):
 def wrapper(mongo):
 	def upload(feature):
 		feature_dict = ast.literal_eval(feature.__str__())
-		feature_id = mongo.insert_one(feature_dict).inserted_id
+		result = mongo.insert_one(feature_dict)
 		mongo.create_index('ID')
 		mongo.create_index('type')
 		mongo.create_index('children')
 		mongo.create_index('parents')
-		return feature_id
+		return result.inserted_id
 	return upload
 
 def get_client():

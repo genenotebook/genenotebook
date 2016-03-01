@@ -4,18 +4,18 @@
       <li class="{{expand}}">
         <div class='featureswitch'>
           <label class="label-switch">
-            <input type="checkbox" class="toggle-expand"/>
+            <input type="checkbox" class="toggle-expand" {{expand_check}}/>
             <div class="checkbox expand"></div>
           </label>
           <label class="label-switch">
-            <input type="checkbox" class="toggle-info"/>
+            <input type="checkbox" class="toggle-info" {{info_check}}/>
             <div class="checkbox info"></div>
           </label>
         </div>
         <p>
           <button class="type">{{type}}</button>
           <strong>
-            <a href="/gene/{{ID}}">{{ID}}</a>
+            <a href="/gene/{{ID}}">{{ID}}  {{name}}</a>
           </strong>
         </p>
         <p>

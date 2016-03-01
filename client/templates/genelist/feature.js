@@ -12,7 +12,13 @@ Template.feature.helpers({
     return this.owner === Meteor.userId();
   },
   name: function() {
-    return this.attributes.Name;
+    var name = this.attributes.Name;
+    if (typeof name !== 'undefined'){
+      return name
+    } else {
+      return ''
+    }
+    //return this.attributes.Name;
   },
   featuretype: function(){
     return this.source;
@@ -41,6 +47,26 @@ Template.feature.helpers({
     }
     if (expanded.indexOf(Id) >= 0){
       return 'expanded';
+    }
+  },
+  expand_check: function(){
+    var Id = this._id._str;
+    var checked = Session.get('expand');
+    if (typeof checked === 'undefined'){
+      return
+    }
+    if (checked.indexOf(Id) >= 0){
+      return 'checked';
+    }
+  },
+  info_check: function(){
+    var Id = this._id._str;
+    var checked = Session.get('info');
+    if (typeof checked === 'undefined'){
+      return
+    }
+    if (checked.indexOf(Id) >= 0){
+      return 'checked';
     }
   }
 });

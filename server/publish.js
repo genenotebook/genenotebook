@@ -17,11 +17,31 @@ Meteor.publish('genes',function(limit){
 });
 */
 
+Meteor.publishComposite('singleGene',function(ID){
+	return {
+		find: function(){
+			return Genes.find({'type':'gene','ID':ID});
+		},
+		children: [
+		{
+			find:function(gene){
+				return Genes.find({'ID':{$in: gene.children}});
+			},
+			children: [
+			{
+				find: function(transcript){
+					return Genes.find({'ID':{$in: transcript.children}});
+				}
+			}]
+		}]
+	};
+});
+
 Meteor.publishComposite('genes',function(limit){
 	var limit = limit || 20;
 	return {
 		find: function(){
-			return Genes.find({'type':'gene'},{limit:limit});
+			return Genes.find({'type':'gene'},{limit:limit,sort:{'ID':1}});
 		},
 		children: [
 		{
