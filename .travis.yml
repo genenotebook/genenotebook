@@ -1,5 +1,6 @@
 language: node_js
 node_js:
+  - "5.1"
   - "0.12"
 before_install:
   - "curl https://install.meteor.com | /bin/sh"
@@ -11,4 +12,4 @@ services:
 #env:
 #  - LAIKA_OPTIONS="-t 5000"
 script:
-  - "spacejam test-packages ./"
+  - "spacejam test-packages"
