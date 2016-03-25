@@ -1,0 +1,15 @@
+.genemodel {
+	.axis line,
+	.axis path {
+		fill: none;
+		stroke: #000;
+		shape-rendering: crispEdges;
+	}
+	svg {
+		//padding: 1em;
+		@include margin(0em 2em 0em 0em);
+		.tick.major {
+			font-size: 0.7em;
+		}
+	}
+}
