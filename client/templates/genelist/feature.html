@@ -2,7 +2,7 @@
   <li>
     <ul class="{{type}}">
       <li class="{{expand}}">
-        <div class='featureswitch'>
+        <div class="featureswitch">
           <label class="label-switch">
             <input type="checkbox" class="toggle-expand" {{expand_check}}/>
             <div class="checkbox expand"></div>
@@ -35,6 +35,10 @@
         {{/if}}
         {{#if isTranscript}}
           {{> genemodel this}}
+          <hr>
+          {{> interproscan this}}
+          <p class="seq">{{ pep }}</p>
+          <hr>
           <p class="seq">{{ seq }}</p>
         {{/if}}
       </li>

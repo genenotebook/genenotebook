@@ -1,7 +1,5 @@
 .meteor/local
 .meteor/meteorite
-data/PanWU01x14_asm01.scf.fasta
-data/PanWU01x14_asm01_ann10.gene_length_fixed.short_cds_fixed.gff3
-data/PanWU01x14_asm01_ann10.PEP.iprscan.gff3
-data/TorRG33x02_asm01.scf.fasta
-data/TorRG33x02_asm01_ann10.gene_length_fixed.short_cds_fixed.gff3
+*sublime*
+data/PanWU01x14*
+data/TorRG33x02*

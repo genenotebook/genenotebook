@@ -18,8 +18,25 @@ Template.feature.helpers({
     } else {
       return ''
     }
-    //return this.attributes.Name;
   },
+  /*
+  interproscan: function(){
+    var array = [];
+    //console.log(this.interproscan)
+    for (var key in this.interproscan){
+      //console.log(key)
+      if (this.interproscan.hasOwnProperty(key)){
+        //console.log(this.interproscan[key])
+        var str = this.interproscan[key]['name'];
+        str += '...' + this.interproscan[key]['start'];
+        str += '...' + this.interproscan[key]['end'];
+        console.log(str);
+        array.push(str);
+      }
+    }
+    return array;
+  },
+  */
   featuretype: function(){
     return this.source;
   },

@@ -1,22 +1,3 @@
-/*
-Meteor.publish("genes", function () {
-	return Genes.find({},{
-		sort: {
-			'start':1,
-			'end':1,
-			'ID':1
-		}
-	});
-});
-*/
-
-/*
-Meteor.publish('genes',function(limit){
-	var limit = 20;
-	return Genes.find({'type':'gene'},{limit:limit});
-});
-*/
-
 Meteor.publishComposite('singleGene',function(ID){
 	return {
 		find: function(){
@@ -58,32 +39,35 @@ Meteor.publishComposite('genes',function(limit){
 	};
 });
 
-
-/*
-return Genes.find({
-  $or: [
-  { private: {$ne: true} },
-  { owner: this.userId }
-  ]
-});
-});
-*/
-/*
-Meteor.publishComposite('genes',{
-	find: function(){
-		return Genes.find({'type':'gene'});
-	},
-	children: [
-	{
-		find: function(gene){
-			return Genes.find({'ID':{$in: gene.children}});
+Meteor.publishComposite('browser',function(track,seqid,start,end){
+	//if (scaffold === undefined){
+	//	scaffold = Genes.findOne({'track':track}).seqid;
+	//}
+	console.log(track,seqid,start,end);
+	//var track = track || 'PanWU01x14_asm01_ann01'
+	//var seqid = seqid || 'PanWU01x14_asm01_scf00001'
+	//var start = start || 10000;
+	//var end = end || 100000;
+	return {
+		find: function(){
+			return Genes.find({'type':'gene','start':{$gte:start},'end':{$lte:end},'seqid':seqid,'track':track});
 		},
 		children: [
 		{
-			find: function(transcript){
-				return Genes.find({'ID':{$in: transcript.children}});
-			}
+			find:function(gene){
+				return Genes.find({'ID':{$in: gene.children}});
+			},
+			children: [
+			{
+				find: function(transcript){
+					return Genes.find({'ID':{$in: transcript.children}});
+				}
+			}]
 		}]
-	}]
+	};
 });
-*/
+
+Meteor.publish('tracks',function(){
+	//console.log(Tracks.findOne());
+	return Tracks.find();
+});
