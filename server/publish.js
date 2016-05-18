@@ -18,11 +18,19 @@ Meteor.publishComposite('singleGene',function(ID){
 	};
 });
 
-Meteor.publishComposite('genes',function(limit){
-	var limit = limit || 20;
+Meteor.publishComposite('genes',function(limit,search){
+	var limit = limit || 40;
+	console.log('search: '+search);
+	console.log('limit: '+limit);
 	return {
 		find: function(){
-			return Genes.find({'type':'gene'},{limit:limit,sort:{'ID':1}});
+			if (search){
+				var results = Genes.find({'type':'gene',$or:[{'ID':search},{'attributes.Name':search}]},{limit:limit,sort:{'ID':1}}).fetch();
+				console.log(results);
+				return Genes.find({'type':'gene',$or:[{'ID':search},{'attributes.Name':search}]},{limit:limit,sort:{'ID':1}});				
+			} else {
+				return Genes.find({'type':'gene'},{limit:limit,sort:{'ID':1}});
+			}
 		},
 		children: [
 		{
@@ -43,7 +51,7 @@ Meteor.publishComposite('browser',function(track,seqid,start,end){
 	//if (scaffold === undefined){
 	//	scaffold = Genes.findOne({'track':track}).seqid;
 	//}
-	console.log(track,seqid,start,end);
+	//console.log(track,seqid,start,end);
 	//var track = track || 'PanWU01x14_asm01_ann01'
 	//var seqid = seqid || 'PanWU01x14_asm01_scf00001'
 	//var start = start || 10000;
@@ -67,7 +75,10 @@ Meteor.publishComposite('browser',function(track,seqid,start,end){
 	};
 });
 
+Meteor.publish('interpro',function(){
+	//return Interpro.find();
+})
+
 Meteor.publish('tracks',function(){
-	//console.log(Tracks.findOne());
 	return Tracks.find();
 });

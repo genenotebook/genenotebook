@@ -24,17 +24,21 @@ $color-full: #333;
 $color-text-light: transparentize(white, 0.3);
 $color-text-dark: transparentize(black, 0.3);
 
+/*
 //Scales
 $modular-scale-ratio: $golden;
 $modular-scale-base: 1.2em;
 
+*/
 //Stuff
 $large-screen: em(860) !default;
-$horizontal-bar-mode: $large-screen;
+//$horizontal-bar-mode: $large-screen;
 $base-border-radius: 2px !default;
 $base-line-height: 1.5em !default;
 $base-background-color: white !default;
 
+/*
 //Scales
 $modular-scale-ratio: $golden;
 $modular-scale-base: 1.2em;
+*/

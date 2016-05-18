@@ -1,15 +1,25 @@
 <template name="genelist">
-  <div class="genelist">
-    <!--{{> filter}}-->
-    <ul class='genelist'>
-      {{#each genes}}
-      	{{>feature}}
-      {{/each}}
-    </ul>
-    {{#if moreResults}}
-	    <div id="showMoreGenes" style="margin-left: 25px;">
-	        <span class="loading">Loading...</span>
-	    </div>
-	{{/if}}
-  </div>
+	<div class="genelist">
+		<!--{{> filter}}-->
+		<ul class="genelist list-group">
+			{{#each genes}}
+				<!--{{>feature}}-->
+				<li class="list-group-item">
+					<a href="/gene/{{ID}}">{{ID}}</a> <span class="badge">{{children.length}}</span>
+					{{#if attributes.Name}}
+						{{attributes.Name}}
+					{{else}}
+						Unknown
+					{{/if}}
+					<a href="/gene/{{attributes.[putative orthologs]}}">{{attributes.[putative orthologs]}}</a>
+				</li>
+			{{/each}}
+		</ul>
+    {{moreResults}}
+		{{#if moreResults}}
+			<div id="showMoreGenes" style="margin-left: 25px;">
+					<span class="loading">Loading...</span>
+			</div>
+    {{/if}}
+	</div>
 </template>

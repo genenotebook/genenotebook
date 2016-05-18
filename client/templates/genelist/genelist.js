@@ -1,13 +1,19 @@
-var ITEMS_INCREMENT = 20;
+var ITEMS_INCREMENT = 40;
 Session.setDefault('itemsLimit', ITEMS_INCREMENT);
 Deps.autorun(function(){
-  Meteor.subscribe('genes',Session.get('itemsLimit'));
+  //console.log(Session.get('search'))
+  Meteor.subscribe('genes',Session.get('itemsLimit'),Session.get('search'));
 })
-
 
 Template.genelist.helpers({
   genes: function () {
-    return Genes.find({'type':'gene'});
+    var search = Session.get('search');
+    if (search){
+      return Genes.find({
+        'type':'gene',$or:[{'ID':search},{'attributes.Name':search}]},{sort:{'ID':1}});
+    } else {
+      return Genes.find({'type':'gene'},{sort:{'ID':1}});
+    }
   },
   geneCount: function () {
     return Genes.find({'type':'gene'}).count();
@@ -26,11 +32,12 @@ Template.genelist.events({
 // whenever #showMoreResults becomes visible, retrieve more results
 function showMoreVisible() {
     var threshold, target = $('#showMoreGenes');
+    
     if (!target.length) return;
- 
+    
     threshold = $(window).scrollTop() + $(window).height() - target.height();
 
-    if (target.offset().top < threshold) {
+    if (target.offset().top <= threshold) {
         if (!target.data("visible")) {
             // console.log("target became visible (inside viewable area)");
             target.data("visible", true);

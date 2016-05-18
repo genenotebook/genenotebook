@@ -1,0 +1,18 @@
+[2016-04-21 10:59:52,553][INFO ][node                     ] [Rl'nnd] version[2.3.1], pid[37449], build[bd98092/2016-04-04T12:25:05Z]
+[2016-04-21 10:59:52,554][INFO ][node                     ] [Rl'nnd] initializing ...
+[2016-04-21 10:59:53,170][INFO ][plugins                  ] [Rl'nnd] modules [lang-groovy, reindex, lang-expression], plugins [], sites []
+[2016-04-21 10:59:53,201][INFO ][env                      ] [Rl'nnd] using [1] data paths, mounts [[/ (/dev/disk1)]], net usable_space [150.5gb], net total_space [464.7gb], spins? [unknown], types [hfs]
+[2016-04-21 10:59:53,201][INFO ][env                      ] [Rl'nnd] heap size [990.7mb], compressed ordinary object pointers [true]
+[2016-04-21 10:59:53,202][WARN ][env                      ] [Rl'nnd] max file descriptors [10240] for elasticsearch process likely too low, consider increasing to at least [65536]
+[2016-04-21 10:59:55,121][INFO ][node                     ] [Rl'nnd] initialized
+[2016-04-21 10:59:55,121][INFO ][node                     ] [Rl'nnd] starting ...
+[2016-04-21 10:59:55,219][INFO ][transport                ] [Rl'nnd] publish_address {127.0.0.1:9300}, bound_addresses {127.0.0.1:9300}, {[::1]:9300}, {[fe80::1]:9300}
+[2016-04-21 10:59:55,224][INFO ][discovery                ] [Rl'nnd] elasticsearch/cLA_KVtWQeiPH-W1i37XqA
+[2016-04-21 10:59:58,258][INFO ][cluster.service          ] [Rl'nnd] new_master {Rl'nnd}{cLA_KVtWQeiPH-W1i37XqA}{127.0.0.1}{127.0.0.1:9300}, reason: zen-disco-join(elected_as_master, [0] joins received)
+[2016-04-21 10:59:58,267][INFO ][http                     ] [Rl'nnd] publish_address {127.0.0.1:9200}, bound_addresses {127.0.0.1:9200}, {[::1]:9200}, {[fe80::1]:9200}
+[2016-04-21 10:59:58,268][INFO ][node                     ] [Rl'nnd] started
+[2016-04-21 10:59:58,286][INFO ][gateway                  ] [Rl'nnd] recovered [0] indices into cluster_state
+[2016-04-21 11:56:22,855][INFO ][node                     ] [Rl'nnd] stopping ...
+[2016-04-21 11:56:22,869][INFO ][node                     ] [Rl'nnd] stopped
+[2016-04-21 11:56:22,869][INFO ][node                     ] [Rl'nnd] closing ...
+[2016-04-21 11:56:22,875][INFO ][node                     ] [Rl'nnd] closed

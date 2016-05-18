@@ -9,13 +9,13 @@
 			width: 10em;
 		}
 	}
-	@include margin(0 5em 0 5em)
+	//@include margin(0 5em 0 5em)
 	background:white;
 	border-radius: $base-border-radius;
 	box-sizing:border-box;
 	padding: 0.5em;
 	box-shadow: 2px 3px 17px -2px rgba(0,0,0,0.66);
-	@include margin(0.5em 0em 0.5em 0em);
+	//@include margin(0.5em 0em 0.5em 0em);
 	.axis line,
 	.axis path {
 		fill: none;
@@ -24,7 +24,7 @@
 	}
 	svg {
 		//padding: 1em;
-		@include margin(0em 2em 0em 0em);
+		//@include margin(0em 2em 0em 0em);
 		.tick.major {
 			font-size: 0.7em;
 		}

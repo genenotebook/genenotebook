@@ -11,3 +11,15 @@ Template.header.rendered = function() {
 		});
 	});
 }
+
+Template.header.events({
+	"submit .search": function(event) {
+		event.preventDefault();
+		var search = event.target.search.value;
+		window.location = '/search='+search
+		//Session.set('search',search);
+	},
+	"click #genelist":function(){
+		Session.set('search',null);
+	}
+})

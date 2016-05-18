@@ -1,13 +1,13 @@
 Session.setDefault('seqid','PanWU01x14_asm01_scf00001');
-Session.setDefault('start',374000);
-Session.setDefault('end',380000);
+Session.setDefault('start',409500);
+Session.setDefault('end',413500);
 Session.setDefault('track','PanWU01x14_asm01_ann01')
 Deps.autorun(function(){
 	var track = Session.get('track')
 	var seqid = Session.get('seqid');
 	var start = Session.get('start');
 	var end = Session.get('end');
-	var zoom = (end - start) / 2;
+	var zoom = (end - start) / 4;
   Meteor.subscribe('browser',track,seqid,start-zoom,end+zoom);
 })
 
@@ -48,7 +48,7 @@ Template.browser.events({
 		console.log('min');
 		var curStart = Session.get('start');
 		var curEnd = Session.get('end');
-		var zoom = Math.floor((curEnd - curStart) / 2)
+		var zoom = Math.floor((curEnd - curStart) / 4)
 		var newStart = curStart - zoom > 0 ? curStart - zoom : 0;
 		var newEnd = curEnd + zoom;
 		Session.set('start',newStart);
@@ -58,7 +58,7 @@ Template.browser.events({
 		console.log('plus');
 		var curStart = Session.get('start');
 		var curEnd = Session.get('end');
-		var zoom = Math.floor((curEnd - curStart) / 4)
+		var zoom = Math.floor((curEnd - curStart) / 8)
 		var newStart = curStart + zoom > 0 ? curStart + zoom : 0;
 		var newEnd = curEnd - zoom;
 		Session.set('start',newStart);
@@ -68,7 +68,7 @@ Template.browser.events({
 		console.log('left');
 		var curStart = Session.get('start');
 		var curEnd = Session.get('end');
-		var zoom =Math.floor((curEnd - curStart) / 2)
+		var zoom =Math.floor((curEnd - curStart) / 4)
 		var newStart = curStart - zoom > 0 ? curStart - zoom : 0;
 		var newEnd = curStart - zoom > 0 ? curEnd - zoom : zoom * 2;
 		Session.set('start',newStart);
@@ -78,7 +78,7 @@ Template.browser.events({
 		console.log('right');
 		var curStart = Session.get('start');
 		var curEnd = Session.get('end');
-		var zoom = Math.floor((curEnd - curStart) / 2)
+		var zoom = Math.floor((curEnd - curStart) / 4)
 		var newStart = curStart + zoom;
 		var newEnd = curEnd + zoom;
 		Session.set('start',newStart);
@@ -89,8 +89,10 @@ Template.browser.events({
 Template.browser.onRendered(function(){
     function isOverlapping(x1,x2,y1,y2){
     	if (x1 >= y1 && x1 <= y2){
+    		console.log('this')
     		return true
-    	} else if (x2 >= x1 && x2 <= y1){
+    	} else if (y1 >= x1 && y1 <= x2){
+    		console.log('that')
     		return true
     	} else {
     		return false
@@ -109,19 +111,21 @@ Template.browser.onRendered(function(){
     			genes[i].placement = 1
     		//};
     		for (var j = 0;j < genes.length;j++){
-    			if (i === j) { 
+    			if (i >= j) { 
     				continue 
     			};
     			var gene1 = genes[i]
     			var gene2 = genes[j]
     			var overlap = isOverlapping(gene1.start,gene1.end,gene2.start,gene2.end)
+    			console.log(i,j)
+    			console.log(overlap,gene1.ID,gene2.ID)
     			if (overlap){
     				processed.push(j)
     				var placement = genes[i].placement + 1
     				genes[j].placement = placement
     				for (sub in genes[j].children){
     					subId = genes[j].children[sub]
-    					console.log(subId)
+    					//console.log(subId)
     					if (Object.keys(subsMap).indexOf(subId) > 0){
     						subsMap[subId].placement = placement
     					}
@@ -143,6 +147,7 @@ Template.browser.onRendered(function(){
     	//}
     	return subsMap
     }
+    /*
     var tip = d3.tip()
 			.attr('class', 'd3-tip')
 			.offset([140, 0])
@@ -151,6 +156,7 @@ Template.browser.onRendered(function(){
 				text += "<p><strong>pos:</strong> <span>" + d.placement + "</span></p>";
 				return text;
 			})
+	*/
 	//select container and make svg element
 	//select the div to plot in, set min max and margins
 	var vis = this.find('.browser');
@@ -163,7 +169,7 @@ Template.browser.onRendered(function(){
 		.attr('width',width + margin.left + margin.right)
 		.attr('transform','translate('+margin.left+','+margin.top+')')
 	
-	container.call(tip);
+	//container.call(tip);
 
 	Deps.autorun(function(){
 		var track = Session.get('track')
@@ -171,13 +177,13 @@ Template.browser.onRendered(function(){
 		var start = Session.get('start');
 		var end = Session.get('end');
 		var zoom = (end - start) / 2;
-		console.log(track,seqid,start,end);
+		var maxZoom = 100000;
 		var subs = Genes.find({'type':'CDS','track':track,'seqid':seqid,'end':{$gte:start - zoom},'start':{$lte:end + zoom}}).fetch();
 		var genes = Genes.find({'type':'mRNA','track':track,'seqid':seqid,'end':{$gte:start - zoom},'start':{$lte:end + zoom}}).fetch();
 		var subsMap = getSubsMap(subs);
 		setVerticalPosition(genes,subsMap);
 		var _genes = genes.map(function(x){ return [x.ID,x.placement] } )
-		console.log(_genes);
+		//console.log(_genes);
 		//setup x scale 
 		var xScale = d3.scale.linear()
 			.domain([start,end])
@@ -190,31 +196,51 @@ Template.browser.onRendered(function(){
 		//plot backbone line
 		var lines = container.select('g.track')
 			.selectAll('line')
-			.data(genes)
+			.data(function(){
+				if (zoom <= maxZoom){
+					return genes
+				} else {
+					return [];
+				}
+			})
 
 		lines.enter()
 			.append('line')
 			.style('stroke','black')
-			.attr('y1',function(d){ return (d.placement) * 5})
-			.attr('y2',function(d){ return (d.placement) * 5})
+			.attr('y1',function(d){ return (d.placement * 10) - 5})
+			.attr('y2',function(d){ return (d.placement * 10) - 5})
 		lines.transition()
 			.duration(2000)
-		lines.exit().remove()
-		lines.attr('x1',function(d){ 
-			console.log(d.placement)
+			.attr('x1',function(d){ 
+			//console.log(d.placement)
 			return xScale(d.start) 
 		})
 			.attr('x2',function(d){ return xScale(d.end) })
-
+		//plot exon rectangles
 	    var exons = container.select('g.track')
 	    	.selectAll('rect')
-	    	.data(subs)
+	    	.data(function(){
+	    		if (zoom <= maxZoom){
+	    			return subs
+	    		} else {
+	    			return genes
+	    		}
+	    	})
+	    exons.transition()
+			.duration(200)
+			.attr('x',function(d){ return xScale(d.start) })
+			.attr('y',function(d){
+				if (d.placement === undefined){
+					return 0
+				} else {
+					return (d.placement) * 10
+				}
+			})
+			.attr('width',function(d){ return xScale(d.end) - xScale(d.start) })
+
 	    exons.enter()
 			.append('rect')
-			.on('mouseover',tip.show)
-			.on('mouseout',tip.hide)
-		exons.transition()
-			.duration(2000)
+		
 		exons.exit().remove()
 		exons.attr('x',function(d){ return xScale(d.start) })
 			.attr('y',function(d){
@@ -223,8 +249,6 @@ Template.browser.onRendered(function(){
 				} else {
 					return (d.placement) * 10
 				}
-				//console.log(d.placement)
-				//return 0
 			})
 			.attr('width',function(d){ return xScale(d.end) - xScale(d.start) })
 			.attr('height',10)
