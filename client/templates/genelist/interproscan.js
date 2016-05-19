@@ -70,7 +70,6 @@ Template.interproscan.helpers({
 
 Template.interproscan.rendered = function(){
     var data = _.values(this.data.interproscan).sort(function(a,b){return a.start-b.start});
-    console.log(data);
     var filteredData = processDomains(data);
     var gapHeight = 5;
     var domainHeight = 7;
@@ -146,7 +145,8 @@ Template.interproscan.rendered = function(){
             .attr('x',0)
             .attr('y',10)
             .text(function(){
-                console.log(ipr)
+                //console.log(ipr)
+                /*
                 if (ipr !== 'Unintegrated'){
                     var url = 'http://www.ebi.ac.uk/Tools/dbfetch/dbfetch/interpro/' + ipr + '/tab'
                     Meteor.http.call("GET",url,function(error,result){
@@ -154,6 +154,7 @@ Template.interproscan.rendered = function(){
                         console.log(result.statusCode);
                     });
                 }
+                */
                 if (iprInfo !== undefined){
                     return ipr + ': ' + iprInfo.name
                 } else {
@@ -164,7 +165,6 @@ Template.interproscan.rendered = function(){
     function update(){
         width = $('#' + _id).width() - margin.left - margin.right;
         xScale.range([20,width-100])
-        
         for (var i = 0;i < containers.length;i++){
         //for (var r in rects){
             var container = containers[i]

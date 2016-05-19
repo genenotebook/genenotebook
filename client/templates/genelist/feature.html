@@ -1,58 +1,60 @@
 <template name="feature">
-  <li>
-    <ul class="{{type}} list-group">
-      <li class="{{expand}} list-group-item">
-        <div class="featureswitch">
-          <label class="label-switch">
-            <input type="checkbox" class="toggle-expand" {{expand_check}}/>
-            <div class="checkbox expand"></div>
-          </label>
-          <label class="label-switch">
-            <input type="checkbox" class="toggle-info" {{info_check}}/>
-            <div class="checkbox info"></div>
-          </label>
-        </div>
-        <p>
-          <button class="type">{{type}}</button>
-          <strong>
-            <a href="/gene/{{ID}}">{{ID}}  {{name}}</a>
-          </strong>
-        </p>
-        <p>
-        Scaffold: {{seqid}}
-        </p> 
-        {{#if isGene}}
+  <div class="feature">
+    <li>
+      <ul class="{{type}} list-group">
+        <li class="{{expand}} list-group-item">
+          <div class="featureswitch">
+              <input type="button" class="btn btn-primary toggle-expand" value="+">
+              <div class="checkbox expand"></div>
+            <!--
+            <label class="label-switch">
+              <input type="checkbox" class="toggle-info" {{info_check}}/>
+              <div class="checkbox info"></div>
+            </label>
+            -->
+          </div>
           <p>
-          Coordinates: {{start}} {{end}} {{strand}}
+            <button class="type">{{type}}</button>
+            <strong>
+              <a href="/gene/{{ID}}">{{ID}}  {{name}}</a>
+            </strong>
           </p>
-          {{#if orthologs}}
-            <p>Orthologs: 
-            {{#each orthologs}}
-            <a href="/gene/{{this}}">{{this}}</a>
-            {{/each}}
+          <p>
+          Scaffold: {{seqid}}
+          </p> 
+          {{#if isGene}}
+            <p>
+            Coordinates: {{start}} {{end}} {{strand}}
             </p>
+            {{#if orthologs}}
+              <p>Orthologs: 
+              {{#each orthologs}}
+              <a href="/gene/{{this}}">{{this}}</a>
+              {{/each}}
+              </p>
+            {{/if}}
+          {{/if}}
+          {{#if isTranscript}}
+            <hr>
+            {{> genemodel this}}
+            <hr>
+            <!--{{> interproscan this}}-->
+            <hr>
+            <p class="seq">>{{ID}}</p>
+            <p class="seq">{{ pep }}</p>
+            <hr>
+            <p class="seq">>{{ID}}</p>
+            <p class="seq">{{ seq }}</p>
+          {{/if}}
+        </li>
+        {{#if expand}}
+        	{{#if children.length}}
+  	        {{#each subfeatures}}
+  	          {{> feature}}
+  	        {{/each}}
           {{/if}}
         {{/if}}
-        {{#if isTranscript}}
-          <hr>
-          {{> genemodel this}}
-          <hr>
-          {{> interproscan this}}
-          <hr>
-          <p class="seq">>{{ID}}</p>
-          <p class="seq">{{ pep }}</p>
-          <hr>
-          <p class="seq">>{{ID}}</p>
-          <p class="seq">{{ seq }}</p>
-        {{/if}}
-      </li>
-      {{#if expand}}
-      	{{#if children.length}}
-	        {{#each subfeatures}}
-	          {{> feature}}
-	        {{/each}}
-        {{/if}}
-      {{/if}}
-  </ul>
-  </li>
+    </ul>
+    </li>
+  </div>
 </template>

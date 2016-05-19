@@ -95,7 +95,7 @@ Template.feature.events({
       if (!e) var e = window.event;
       e.cancelBubble = true;
       if (e.stopPropagation) e.stopPropagation();
-
+      console.log(e)
       var Id = this._id._str;
       //console.log(Id);
       var _expanded = Session.get('expand');
@@ -103,8 +103,10 @@ Template.feature.events({
       var wasExpanded = expanded.indexOf(Id);
       //console.log(wasExpanded);
       if (wasExpanded < 0) {
+        e.target.defaultValue = '-';
         expanded.push(Id);
       } else {
+        e.target.defaultValue = '+';
         expanded.splice(wasExpanded,1);
       }
       /*
