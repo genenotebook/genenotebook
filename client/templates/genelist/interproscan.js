@@ -70,6 +70,7 @@ Template.interproscan.helpers({
 
 Template.interproscan.rendered = function(){
     var data = _.values(this.data.interproscan).sort(function(a,b){return a.start-b.start});
+    console.log(data);
     var filteredData = processDomains(data);
     var gapHeight = 5;
     var domainHeight = 7;
@@ -145,6 +146,7 @@ Template.interproscan.rendered = function(){
             .attr('x',0)
             .attr('y',10)
             .text(function(){
+                console.log(ipr)
                 if (ipr !== 'Unintegrated'){
                     var url = 'http://www.ebi.ac.uk/Tools/dbfetch/dbfetch/interpro/' + ipr + '/tab'
                     Meteor.http.call("GET",url,function(error,result){

@@ -48,14 +48,6 @@ Meteor.publishComposite('genes',function(limit,search){
 });
 
 Meteor.publishComposite('browser',function(track,seqid,start,end){
-	//if (scaffold === undefined){
-	//	scaffold = Genes.findOne({'track':track}).seqid;
-	//}
-	//console.log(track,seqid,start,end);
-	//var track = track || 'PanWU01x14_asm01_ann01'
-	//var seqid = seqid || 'PanWU01x14_asm01_scf00001'
-	//var start = start || 10000;
-	//var end = end || 100000;
 	return {
 		find: function(){
 			return Genes.find({'type':'gene','start':{$gte:start},'end':{$lte:end},'seqid':seqid,'track':track});
@@ -74,6 +66,10 @@ Meteor.publishComposite('browser',function(track,seqid,start,end){
 		}]
 	};
 });
+
+//Meteor.publish('users',function(){
+//	return Users.find();
+//})
 
 Meteor.publish('interpro',function(){
 	//return Interpro.find();

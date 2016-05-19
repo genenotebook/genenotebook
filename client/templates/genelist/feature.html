@@ -34,11 +34,15 @@
           {{/if}}
         {{/if}}
         {{#if isTranscript}}
+          <hr>
           {{> genemodel this}}
           <hr>
           {{> interproscan this}}
+          <hr>
+          <p class="seq">>{{ID}}</p>
           <p class="seq">{{ pep }}</p>
           <hr>
+          <p class="seq">>{{ID}}</p>
           <p class="seq">{{ seq }}</p>
         {{/if}}
       </li>
