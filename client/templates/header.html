@@ -34,9 +34,11 @@
 						<button type="submit" class="btn btn-default">Submit</button>
 					</form>
 					<ul class="nav navbar-nav navbar-right">
+						{{#if isAdmin}}
 						<li>
 							<a href="/admin">Admin</a>
 						</li>
+						{{/if}}
 						<li class="navbar-text">
 							{{> loginButtons align="right"}}
 						</li>

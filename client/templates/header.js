@@ -12,6 +12,12 @@ Template.header.rendered = function() {
 	});
 }
 
+Template.header.helpers({
+  isAdmin: function(){
+    return Meteor.user()
+  }
+})
+
 Template.header.events({
 	"submit .search": function(event) {
 		event.preventDefault();

@@ -18,13 +18,13 @@
             <strong>
               <a href="/gene/{{ID}}">{{ID}}  {{name}}</a>
             </strong>
-          </p>
-          <p>
-          Scaffold: {{seqid}}
           </p> 
           {{#if isGene}}
             <p>
-            Coordinates: {{start}} {{end}} {{strand}}
+            <b>Product:</b> {{attributes.Productname}}
+            </p>
+            <p>
+            Coordinates: {{seqid}} {{start}} {{end}} {{strand}}
             </p>
             {{#if orthologs}}
               <p>Orthologs: 

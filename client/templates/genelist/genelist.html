@@ -5,13 +5,16 @@
 			{{#each genes}}
 				<!--{{>feature}}-->
 				<li class="list-group-item">
-					<a href="/gene/{{ID}}">{{ID}}</a> <span class="badge">{{children.length}}</span>
+          <p>
+					<b><a href="/gene/{{ID}}">{{ID}}</a> <span class="badge">{{children.length}}</span></b>
 					{{#if attributes.Name}}
 						{{attributes.Name}}
 					{{else}}
 						Unknown
 					{{/if}}
-					<a href="/gene/{{attributes.[putative orthologs]}}">{{attributes.[putative orthologs]}}</a>
+					(<i><a href="/gene/{{attributes.[putative orthologs]}}">{{attributes.[putative orthologs]}}</a></i>)
+          </p>
+          {{attributes.Productname}}
 				</li>
 			{{/each}}
 		</ul>
