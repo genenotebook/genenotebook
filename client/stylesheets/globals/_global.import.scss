@@ -1,5 +1,9 @@
 body {
-	background:$color-raw;
+	//background:$color-raw;
 	font-family:Rosario,Arial,sans-serif;
 	font-style:normal;
+	#loading {
+		-animation: spin .7s infinite linear;
+		-webkit-animation: spin2 .7s infinite linear;
+	}
 }

@@ -22,7 +22,10 @@ Template.header.events({
 	"submit .search": function(event) {
 		event.preventDefault();
 		var search = event.target.search.value;
-		window.location = '/search='+search
+		console.log(search);
+		if (search){
+			window.location = '/search='+search
+		}
 		//Session.set('search',search);
 	},
 	"click #genelist":function(){

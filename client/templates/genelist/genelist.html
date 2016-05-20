@@ -1,28 +1,58 @@
 <template name="genelist">
-	<div class="genelist">
-		<!--{{> filter}}-->
-		<ul class="genelist list-group">
-			{{#each genes}}
-				<!--{{>feature}}-->
-				<li class="list-group-item">
-          <p>
-					<b><a href="/gene/{{ID}}">{{ID}}</a> <span class="badge">{{children.length}}</span></b>
-					{{#if attributes.Name}}
-						{{attributes.Name}}
-					{{else}}
-						Unknown
-					{{/if}}
-					(<i><a href="/gene/{{attributes.[putative orthologs]}}">{{attributes.[putative orthologs]}}</a></i>)
-          </p>
-          {{attributes.Productname}}
-				</li>
-			{{/each}}
-		</ul>
-    {{moreResults}}
-		{{#if moreResults}}
-			<div id="showMoreGenes" style="margin-left: 25px;">
-					<span class="loading">Loading...</span>
-			</div>
-    {{/if}}
-	</div>
+  <div class="container">
+  	<div class="genelist row">
+  		<!--{{> filter}}-->
+      <div class="col-md-4">
+        <ul class="filter list-group">
+          <li class="list-group-item">Filter1</li>
+          <li class="list-group-item">Filter2</li>
+        </ul>
+      </div>
+      <div class="col-md-8">
+        <div class="row">
+          <div class="col-md-11 btn-group" role="group">
+            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-sort-by-attributes-alt"></span></button>
+            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-sort-by-attributes"></span></button>
+          </div>
+          <div class="col-md-1">
+            <button type="button" class="btn btn-default select-all-genes">
+              <input type="checkbox">
+            </button>
+          </div>
+        </div>
+    		<ul class="genelist list-group">
+    			{{#each genes}}
+    				<!--{{>feature}}-->
+    				<li class="list-group-item">
+              <div class="row">
+                <div class="col-md-11">
+                  <p>
+        					<b><a class="genelink" href="/gene/{{ID}}">{{ID}}</a> <span class="badge">{{children.length}}</span></b>
+        					(<i><a class="genelink" href="/gene/{{attributes.[putative orthologs]}}">{{attributes.[putative orthologs]}}</a></i>)
+                  </p>
+                  {{#if attributes.Name}}
+                    <b>
+                      {{attributes.Name}}: 
+                    </b>
+                  {{/if}}
+                  {{attributes.Productname}}
+                </div>
+                <div class="col-md-1 select-gene">
+                  <button type="button" class="btn btn-default">
+                    <input type="checkbox">
+                  </button>
+                </div>
+              </div>
+    				</li>
+    			{{/each}}
+    		</ul>
+    		{{#if moreResults}}
+    			<div id="showMoreGenes" style="margin-left: 25px;">
+    					<!--<span class="loading">Loading...</span>-->
+              {{>loading}}
+    			</div>
+        {{/if}}
+      </div>
+  	</div>
+  </div>
 </template>
