@@ -28,7 +28,7 @@ Template.genelist.helpers({
 Template.genelist.events({
   "click .genelink": function(){
     var Id = this._id._str;
-    //console.log(Id);
+    console.log(Id);
     var _expanded = Session.get('expand');
     var expanded = _expanded ? _expanded.splice(0) : [];
     var wasExpanded = expanded.indexOf(Id);
