@@ -8,8 +8,11 @@ Meteor.startup(function () {
             profile: {
                 first_name: 'admin',
                 last_name: 'admin',
-            }
+            },
+            roles: ['admin']
         });
         console.log(userId);
+        var r = Roles.addUsersToRoles(userId,['admin','curator','user']);
+        console.log(r);
     }
 });
