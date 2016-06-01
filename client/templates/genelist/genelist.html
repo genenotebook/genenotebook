@@ -4,8 +4,24 @@
   		<!--{{> filter}}-->
       <div class="col-md-4">
         <ul class="filter list-group">
-          <li class="list-group-item">Filter1</li>
-          <li class="list-group-item">Filter2</li>
+        <form role="form" id="genelist_filter">
+          <li class="list-group-item">
+              <label for="gene_id_filter">Gene IDs</label>
+              <textarea class="form-control" id="gene_id_filter" type="text"></textarea>
+          </li>
+          <li class="list-group-item">Filter ...<span class="badge">4</span></li>
+          <li class="list-group-item">Another filter <span class="badge">10</span></li>
+          <li class="list-group-item">
+            <button type="submit" class="btn btn-default">
+              <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Apply filters
+            </button>
+            {{#if hasFilter}}
+              <button type="button" class="btn btn-danger reset_filter">
+                <span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span> Reset filters
+              </button>
+            {{/if}}
+          </li>
+        </form>
         </ul>
       </div>
       <div class="col-md-8">

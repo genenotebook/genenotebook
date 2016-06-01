@@ -18,16 +18,21 @@ Meteor.publishComposite('singleGene',function(ID){
 	};
 });
 
-Meteor.publishComposite('genes',function(limit,search){
+Meteor.publishComposite('genes',function(limit,search,filter){
 	var limit = limit || 40;
 	console.log('search: '+search);
 	console.log('limit: '+limit);
+	console.log('filter: '+filter)
 	return {
 		find: function(){
 			if (search){
-				var results = Genes.find({'type':'gene',$or:[{'ID':search},{'attributes.Name':search}]},{limit:limit,sort:{'ID':1}}).fetch();
-				console.log(results);
+				//var results = Genes.find({'type':'gene',$or:[{'ID':search},{'attributes.Name':search}]},{limit:limit,sort:{'ID':1}}).fetch();
+				//console.log(results);
 				return Genes.find({'type':'gene',$or:[{'ID':search},{'attributes.Name':search}]},{limit:limit,sort:{'ID':1}});				
+			} else if (filter) {
+				//var results = Genes.find({'type':'gene','ID':{$in:filter.gene_ids}},{limit:limit,sort:{'ID':1}}).fetch();
+				//console.log(results);
+				return Genes.find({'type':'gene','ID':{$in:filter.gene_ids}},{limit:limit,sort:{'ID':1}});
 			} else {
 				return Genes.find({'type':'gene'},{limit:limit,sort:{'ID':1}});
 			}
@@ -67,9 +72,9 @@ Meteor.publishComposite('browser',function(track,seqid,start,end){
 	};
 });
 
-//Meteor.publish('users',function(){
-//	return Meteor.users.find();
-//})
+Meteor.publish('userList',function(){
+	return Meteor.users.find({});
+})
 
 Meteor.publish('interpro',function(){
 	//return Interpro.find();
