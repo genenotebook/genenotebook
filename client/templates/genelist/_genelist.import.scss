@@ -1,3 +1,10 @@
-.select-all-genes {
-	//float:right;
+.select-gene, .select-all {
+	.glyphicon {
+		&.checked{
+		color:black;
+		}
+		&.unchecked{
+			color:lightgrey;
+		}
+	}
 }

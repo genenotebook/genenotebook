@@ -1,0 +1,13 @@
+<template name="tracks">
+	<p></p>
+	<ul class="list-group">
+		{{#each this}}
+			<li class="list-group-item">
+				<p>Original file: {{track}}</p>
+				<p>Reference: {{assembly}}</p>
+				<p>Genes: {{gene}}</p>
+
+			</li>
+		{{/each}}
+	</ul>
+</template>

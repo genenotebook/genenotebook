@@ -8,20 +8,39 @@ __author__ = 'rensholmer'
 import ast
 import sys
 import json
-#import pymongo
 from pymongo import MongoClient
-#sys.path.insert(0,'/Volumes/myers.bioinformatics.nl/mnt/nexenta/holme003/CODE/gff_toolkit/')
 import gff_toolkit as gt
 from subprocess import Popen,PIPE
-#import multiprocessing as mp
-#from pathos.multiprocessing import ProcessingPool as Pool
+
+def model_subfeature(subfeature):
+	sub_dic = subfeature.todict()
+	for key in ('seqid','strand','file'):
+		sub_dic.pop(key,None)
+	#print sub_dic
+	sub_dic['attributes'].pop('ID')
+	sub_dic['attributes'].pop('Parent',None)
+	return sub_dic
+
+def model_gene_feature(gene):
+	gene_dic = gene.todict()
+	gene_dic['attributes'].pop('ID')
+	gene_dic['attributes'].pop('Parent',None)
+	gene_dic.pop('parents')
+	gene_dic.pop('children')
+	gene_dic['subfeatures'] = []
+	for subfeature in gene.get_children(featuretype=['mRNA','CDS']):
+		sub_dic = model_subfeature(subfeature)
+		gene_dic['subfeatures'].append(sub_dic)
+	return gene_dic
+
+
 
 def init(gff_file,fasta_file,gene_collection,track_collection):
 	print 'parsing gff'
 	assembly = fasta_file.split('/')[-1]
 	assembly = assembly.rstrip('.fasta')
 	track = gff_file.split('/')[-1]
-	track = track.rstrip('.gff3')
+	track_name = '.'.join(track.split('.')[:-1])
 	
 	gff = gt.parser(gff_file,fasta_file=fasta_file)
 	gff_md5 = get_md5(gff_file)
@@ -32,23 +51,32 @@ def init(gff_file,fasta_file,gene_collection,track_collection):
 
 	meta = {'track':track,'assembly':assembly,'md5':gff_md5}
 
-	for feature in gff:
-		feature_dic = feature.todict()
-		feature_dic['track'] = track
-		feature_dic['assembly'] = assembly
-		bulk.insert(feature_dic)
-		meta.setdefault(feature.featuretype,0)
-		meta[feature.featuretype] += 1
+	for gene in gff.getitems(featuretype='gene'):
+		gene_dic = model_gene_feature(gene)
+		gene_dic['track'] = track
+		gene_dic['assembly'] = assembly
+		bulk.insert(gene_dic)
+		meta.setdefault('gene',0)
+		meta['gene'] += 1
+	#for feature in gff.getitems(featuretype='gene'):
+	#	feature_dic = feature.todict()
+	#	feature_dic['track'] = track
+	#	feature_dic['assembly'] = assembly
+
+	#	bulk.insert(feature_dic)
+	#	meta.setdefault(feature.featuretype,0)
+	#	meta[feature.featuretype] += 1
 	
 	print 'uploading to mongodb'
 	print '...'
 	bulk.execute()
-	print 'uploaded {0} genes, {1} transcripts, {2} cds'.format(meta['gene'],meta['mRNA'],meta['CDS'])
+	#print 'uploaded {0} genes, {1} transcripts, {2} cds'.format(meta['gene'],meta['mRNA'],meta['CDS'])
+	print 'uploaded {0} genes'.format(meta['gene'])
 	print 'indexing'
 	gene_collection.create_index('ID')
 	gene_collection.create_index('type')
-	gene_collection.create_index('children')
-	gene_collection.create_index('parents')
+	#gene_collection.create_index('children')
+	#gene_collection.create_index('parents')
 	gene_collection.create_index('start')
 	gene_collection.create_index('end')
 	gene_collection.create_index('seqid')

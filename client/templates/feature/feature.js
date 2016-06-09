@@ -1,12 +1,7 @@
 Template.feature.helpers({
-  isGene: function() {
-    return this.type === 'gene';
-  },
-  isTranscript: function(){
-    return this.type === 'mRNA';
-  },
-  isCds: function(){
-    return this.type === 'CDS';
+  transcripts: function(){
+    const transcripts = this.subfeatures.filter(function(x){return x.type === 'mRNA'});
+    return transcripts
   },
   isOwner: function () {
     return this.owner === Meteor.userId();

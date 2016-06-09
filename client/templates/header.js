@@ -24,7 +24,9 @@ Template.header.events({
 		var search = event.target.search.value;
 		console.log(search);
 		if (search){
-			window.location = '/search='+search
+			Router.go('search',{'_search':search})
+			//Router.go('search',{'search':search})
+			//window.location = '/search='+search
 		}
 		//Session.set('search',search);
 	},

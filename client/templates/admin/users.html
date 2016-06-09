@@ -1,0 +1,11 @@
+<template name="users">
+	<p></p>
+	<ul class="list-group">
+		{{#each this}}
+			<li class="list-group-item">
+				<p> Username: <strong>{{username}}</strong></p>
+				<p> Roles: {{roles}} </p>
+			</li>
+		{{/each}}
+	</ul>
+</template>

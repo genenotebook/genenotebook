@@ -3,71 +3,129 @@
   	<div class="genelist row">
   		<!--{{> filter}}-->
       <div class="col-md-4">
-        <ul class="filter list-group">
         <form role="form" id="genelist_filter">
-          <li class="list-group-item">
-              <label for="gene_id_filter">Gene IDs</label>
-              <textarea class="form-control" id="gene_id_filter" type="text"></textarea>
-          </li>
-          <li class="list-group-item">Filter ...<span class="badge">4</span></li>
-          <li class="list-group-item">Another filter <span class="badge">10</span></li>
-          <li class="list-group-item">
-            <button type="submit" class="btn btn-default">
-              <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Apply filters
-            </button>
-            {{#if hasFilter}}
-              <button type="button" class="btn btn-danger reset_filter">
-                <span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span> Reset filters
-              </button>
-            {{/if}}
-          </li>
-        </form>
-        </ul>
-      </div>
+          <div class="panel panel-default">
+            <div class="panel-heading">Filter options</div>
+              <div class="panel-body">
+                <p>Select a combination of filters below</p>
+              </div>
+              <ul class="filter list-group">
+
+                <li class="list-group-item">
+                  <label for="gene_id_filter">Gene IDs</label>
+                  <textarea class="form-control" id="gene_id_filter" type="text"></textarea>
+                </li>
+
+                <li class="list-group-item">
+                  <label>Tracks</label><span class="badge">{{tracks.count}}</span>
+                  {{#each tracks}}
+                    <div class="checkbox">
+                      <label><input type="checkbox" class="track-checkbox" id="{{formatTrackName track}}">{{formatTrackName track}}</label>
+                    </div>
+                  {{/each}}
+                </li>
+
+                <li class="list-group-item">
+                <label>Has productname</label>
+                <div class="radio">
+                  <label><input type="radio" class="productname-radio" id="yes" name="optradio"> Yes </label>
+                </div>
+                <div class="radio">
+                  <label><input type="radio" class="productname-radio" id="no" name="optradio"> No </label>
+                </div>
+                <div class="radio">
+                  <label><input type="radio" class="productname-radio" id="idc" name="optradio"> I don't care </label>
+                </div>
+                </li>
+
+                <li class="list-group-item">
+                <label>Manual annotation</label>
+                <div class="radio">
+                  <label><input type="radio" class="manual-radio" id="yes" name="optradio"> Yes </label>
+                </div>
+                <div class="radio">
+                  <label><input type="radio" class="manual-radio" id="no" name="optradio"> No </label>
+                </div>
+                <div class="radio">
+                  <label><input type="radio" class="manual-radio" id="idc" name="optradio"> I don't care </label>
+                </div>
+                </li>
+
+                <li class="list-group-item">Another filter <span class="badge">...</span></li>
+                <li class="list-group-item">
+                  ...
+                </li>
+              </ul>
+              <div class="panel-footer">
+                <div class="row">
+                  <div class="col-md-6">
+                    <button type="submit" class="btn btn-default">
+                      <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Apply filters
+                    </button>
+                  </div>
+                  <div class="col-md-6">
+                    {{#if hasFilter}}
+                      <button type="button" class="btn btn-danger reset_filter">
+                        <span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span> Clear filters
+                      </button>
+                    {{/if}}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
       <div class="col-md-8">
         <div class="row">
-          <div class="col-md-11 btn-group" role="group">
+          <div class="col-md-10 btn-group" role="group">
             <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-sort-by-attributes-alt"></span></button>
             <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-sort-by-attributes"></span></button>
           </div>
-          <div class="col-md-1">
-            <button type="button" class="btn btn-default select-all-genes">
-              <input type="checkbox">
+          <div class="col-md-2 btn-group" role="group">
+            <button type="button" class="export-data btn btn-success" data-loading-text="...">
+              <span class="glyphicon glyphicon-download"></span>
+            </button>
+            <button type="button" class="btn btn-default select-all">
+              <span class="select-button glyphicon glyphicon-ok {{isChecked}}"></span>
             </button>
           </div>
         </div>
-    		<ul class="genelist list-group">
-    			{{#each genes}}
-    				<!--{{>feature}}-->
-    				<li class="list-group-item">
-              <div class="row">
-                <div class="col-md-11">
-                  <p>
-        					<b><a class="genelink" href="/gene/{{ID}}">{{ID}}</a> <span class="badge">{{children.length}}</span></b>
-        					(<i><a class="genelink" href="/gene/{{attributes.[putative orthologs]}}">{{attributes.[putative orthologs]}}</a></i>)
-                  </p>
-                  {{#if attributes.Name}}
-                    <b>
-                      {{attributes.Name}}: 
-                    </b>
-                  {{/if}}
-                  {{attributes.Productname}}
+        {{#if genes.count }}
+      		<ul class="genelist list-group">
+      			{{#each genes}}
+      				<!--{{>feature}}-->
+      				<li class="list-group-item">
+                <div class="row">
+                  <div class="col-md-11">
+                    <p>
+          					<b><a class="genelink" href="/gene/{{ID}}">{{ID}}</a> <span class="badge">{{transcripts.length}}</span></b>
+          					(<i><a class="genelink" href="/gene/{{attributes.[putative orthologs]}}">{{attributes.[putative orthologs]}}</a></i>)
+                    </p>
+                    {{#if attributes.Name}}
+                      <b>
+                        {{attributes.Name}}: 
+                      </b>
+                    {{/if}}
+                    {{attributes.Productname}}
+                  </div>
+                  <div class="col-md-1">
+                    <button type="button" class="btn btn-default select-gene">
+                      <span class="select-button glyphicon glyphicon-ok {{isChecked}}"></span>
+                    </button>
+                  </div>
                 </div>
-                <div class="col-md-1 select-gene">
-                  <button type="button" class="btn btn-default">
-                    <input type="checkbox">
-                  </button>
-                </div>
-              </div>
-    				</li>
-    			{{/each}}
-    		</ul>
-    		{{#if moreResults}}
-    			<div id="showMoreGenes" style="margin-left: 25px;">
-    					<!--<span class="loading">Loading...</span>-->
-              {{>loading}}
-    			</div>
-        {{/if}}
+      				</li>
+      			{{/each}}
+      		</ul>
+      		{{#if moreResults}}
+      			<div id="showMoreGenes">
+      					<!--<span class="loading">Loading...</span>-->
+                {{>loading}}
+      			</div>
+          {{/if}}
+        {{ else }}
+          <p> Nothing found </p>
+        {{ /if }}
       </div>
   	</div>
   </div>

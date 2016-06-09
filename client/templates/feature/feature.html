@@ -1,17 +1,41 @@
 <template name="feature">
-  <div class="feature">
+  <div class="feature panel panel-default">
+    <div class="panel-heading">
+      <b>{{ID}}</b> {{attributes.Name}}
+    </div>
+    <div class="panel-body">
+      <p>Productname: {{attributes.Productname}}</p>
+      <p>Chromosome: {{seqid}}</p>
+      <p>Coordinates: {{start}} {{end}} {{strand}}</p>
+      <p>Number of transcripts: {{transcripts.length}}</p>
+      <p>Comments: {{attributes.Comments}}</p>
+
+      <ul class="nav nav-tabs">
+        <li role="presentation" class="active"><a href="#">Sequence</a></li>
+        <li role="presentation"><a href="#">Interpro domains</a></li>
+        <li role="presentation"><a href="#">Blast hits</a></li>
+      </ul>
+      {{#each transcripts}}
+        <hr>
+        <div class="well">
+          <p class="seq">>{{ ID }}</p>
+          <p class="seq">{{ pep }}</p>
+        </div>
+        <hr>
+        <div class="well">
+          <p class="seq">>{{ ID }}</p>
+          <p class="seq">{{ seq }}</p>
+        </div>
+      {{/each}}
+    </div>
+  </div>
+  <!--
     <li>
       <ul class="{{type}} list-group">
         <li class="{{expand}} list-group-item">
           <div class="featureswitch">
             <input type="button" class="btn btn-primary toggle-expand" value="{{#unless expand}}+{{else}}-{{/unless}}">
           <div class="checkbox expand"></div>
-            <!--
-            <label class="label-switch">
-              <input type="checkbox" class="toggle-info" {{info_check}}/>
-              <div class="checkbox info"></div>
-            </label>
-            -->
           </div>
           <p>
             <button class="type">{{type}}</button>
@@ -64,5 +88,6 @@
         {{/if}}
     </ul>
     </li>
-  </div>
+    -->
+
 </template>
