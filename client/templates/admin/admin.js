@@ -18,9 +18,6 @@ Template.admin.helpers({
 		};
 		console.log(data[tab].fetch()[0])
 		return data[tab];
-	},
-	users:function(){
-		return Meteor.users.find();
 	}
 })
 

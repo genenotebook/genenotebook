@@ -8,7 +8,8 @@ __author__ = 'rensholmer'
 import ast
 import sys
 import json
-from pymongo import MongoClient
+#from pymongo import MongoClient
+import pymongo
 import gff_toolkit as gt
 from subprocess import Popen,PIPE
 
@@ -16,7 +17,6 @@ def model_subfeature(subfeature):
 	sub_dic = subfeature.todict()
 	for key in ('seqid','strand','file'):
 		sub_dic.pop(key,None)
-	#print sub_dic
 	sub_dic['attributes'].pop('ID')
 	sub_dic['attributes'].pop('Parent',None)
 	return sub_dic
@@ -32,8 +32,6 @@ def model_gene_feature(gene):
 		sub_dic = model_subfeature(subfeature)
 		gene_dic['subfeatures'].append(sub_dic)
 	return gene_dic
-
-
 
 def init(gff_file,fasta_file,gene_collection,track_collection):
 	print 'parsing gff'
@@ -77,9 +75,11 @@ def init(gff_file,fasta_file,gene_collection,track_collection):
 	gene_collection.create_index('type')
 	#gene_collection.create_index('children')
 	#gene_collection.create_index('parents')
-	gene_collection.create_index('start')
-	gene_collection.create_index('end')
-	gene_collection.create_index('seqid')
+	#gene_collection.create_index('start')
+	#gene_collection.create_index('end')
+	gene_collection.create_index([('seqid',pymongo.TEXT),('start',pymongo.ASCENDING),('end',pymongo.ASCENDING)])
+	#gene_collection.create_index('subfeatures')
+	gene_collection.create_index('subfeatures.ID')
 	print 'setting metadata'
 	track_collection.insert_one(meta)
 
@@ -102,7 +102,7 @@ def get_client():
 def main(gff_file,fasta_file=None):
 	client = get_client()
 	print client
-	client = MongoClient(client)
+	client = pymongo.MongoClient(client)
 	db = client.meteor
 	gene_collection = db.genes
 	track_collection = db.tracks

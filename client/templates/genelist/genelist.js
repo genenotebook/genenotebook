@@ -57,6 +57,7 @@ Template.genelist.helpers({
 
 Template.genelist.events({
   "click .genelink": function(){
+    /*
     var id = this._id._str;
     console.log(this);
     var _expanded = Session.get('expand');
@@ -65,6 +66,7 @@ Template.genelist.events({
     if (wasExpanded < 0) {
       expanded.push(Id);
     }
+    */
   },
   "submit #genelist_filter": function(event){
     event.preventDefault();

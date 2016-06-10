@@ -24,19 +24,19 @@ def upload_ips(gff_file,collection):
 		counter += 1
 		for obj in gff.get_children(polypeptide,featuretype='protein_match'):
 			obj_id = upload_func(obj)
-		#if counter % 100 == 0:
-		#	print counter,obj_id
+		if counter % 100 == 0:
+			print counter,obj_id,polypeptide.ID
 			#quit()
 
-def upload_wrapper(coll):
+def upload_wrapper(collection):
 	def upload(feature):
 		transcript_ID = feature.parents[0]
 		#print transcript_ID
 		feature_ID = re.sub('\.','&#46;',feature.ID)
-		key = {'ID':transcript_ID}
-		result = coll.update(key,{
+		key = {'subfeatures.ID':transcript_ID}
+		result = collection.update(key,{
 			'$set': {
-				'interproscan.'+feature_ID: {
+			'subfeatures.$.interproscan.'+feature_ID: {
 					'start' : feature.start,
 					'end' : feature.end,
 					'score' : feature.score,

@@ -1,3 +1,4 @@
+/*
 Meteor.publishComposite('singleGene',function(ID){
 	return {
 		find: function(){
@@ -17,6 +18,11 @@ Meteor.publishComposite('singleGene',function(ID){
 		}]
 	};
 });
+*/
+
+Meteor.publish('singleGene',function(ID){
+	return Genes.find({'ID':ID})
+})
 
 Meteor.publish('genes',function(limit,search,query){
 	var limit = limit || 40;
@@ -27,30 +33,7 @@ Meteor.publish('genes',function(limit,search,query){
 			query.$or.push({'attributes.Productname':{$regex:search}})
 		}
 	}
-	//var filter = { ID: { '$in': [ 'PanWU01x14_asm01_ann01_000020' ] } }
-	/*
-	var filter = { 'ID': 
-{ '$in': 
-[ 'PanWU01x14_asm01_ann01_341930',
-'PanWU01x14_asm01_ann01_290290',
-'PanWU01x14_asm01_ann01_149940',
-'PanWU01x14_asm01_ann01_238370',
-'PanWU01x14_asm01_ann01_336460',
-'PanWU01x14_asm01_ann01_311230',
-'PanWU01x14_asm01_ann01_303100',
-'PanWU01x14_asm01_ann01_286650',
-'PanWU01x14_asm01_ann01_361860',
-'PanWU01x14_asm01_ann01_112910',
-'PanWU01x14_asm01_ann01_009920',
-'PanWU01x14_asm01_ann01_109330',
-'PanWU01x14_asm01_ann01_355570',
-'PanWU01x14_asm01_ann01_351290',
-'PanWU01x14_asm01_ann01_342460',
-'PanWU01x14_asm01_ann01_128430',
-'PanWU01x14_asm01_ann01_085220',
-'PanWU01x14_asm01_ann01_365040' ] } }
-	*/
-	console.log(query)
+	//console.log(query)
 	return Genes.find(query,{limit:limit,sort:{'ID':1}})
 })
 

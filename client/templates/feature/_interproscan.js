@@ -1,3 +1,4 @@
+/*
 Meteor.subscribe('interpro');
 
 function getInterpro(d){
@@ -165,3 +166,4 @@ Template.interproscan.rendered = function(){
 		update()
 	}).trigger("resize");
  };
+ */

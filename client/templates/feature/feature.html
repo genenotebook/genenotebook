@@ -11,10 +11,13 @@
       <p>Comments: {{attributes.Comments}}</p>
 
       <ul class="nav nav-tabs">
-        <li role="presentation" class="active"><a href="#">Sequence</a></li>
-        <li role="presentation"><a href="#">Interpro domains</a></li>
-        <li role="presentation"><a href="#">Blast hits</a></li>
+        <li data-template="seq" role="presentation" class="active"><a href="#">Sequence</a></li>
+        <li data-template="genemodel" role="presentation"><a href="#">Genemodel</a></li>
+        <li data-template="interproscan" role="presentation"><a href="#">Interpro domains</a></li>
+        <li data-template="blast" role="presentation"><a href="#">Blast hits</a></li>
       </ul>
+      {{> Template.dynamic template=tab data=tabData }}
+      <!--
       {{#each transcripts}}
         <hr>
         <div class="well">
@@ -27,6 +30,7 @@
           <p class="seq">{{ seq }}</p>
         </div>
       {{/each}}
+      -->
     </div>
   </div>
   <!--

@@ -69,14 +69,16 @@ Template.interproscan.helpers({
 */
 
 Template.interproscan.rendered = function(){
-    var data = _.values(this.data.interproscan).sort(function(a,b){return a.start-b.start});
+    console.log(this.data);
+    const transcript = this.data.filter(function(x){return x.type === 'mRNA'})[0];
+    const data = _.values(transcript.interproscan).sort(function(a,b){return a.start-b.start});
     var filteredData = processDomains(data);
     var gapHeight = 5;
     var domainHeight = 7;
-    var _id = this.data._id._str;
-    var vis = this.find('#' + _id + '.interproscan');
+    //var _id = this.data._id._str;
+    var vis = this.find('.interproscan');
     var margin = {top: 10, right: 100, bottom: 20, left: 10};
-    var width = $('#' + _id).width() - margin.left - margin.right;
+    var width = $('.interproscan').width() - margin.left - margin.right;
     var coords = data.map(function(x){return [x.start,x.end]})
     var merged = [].concat.apply([],coords)
     var col = d3.scale.category20c();
@@ -163,7 +165,7 @@ Template.interproscan.rendered = function(){
             })
     }
     function update(){
-        width = $('#' + _id).width() - margin.left - margin.right;
+        width = $('.interproscan').width() - margin.left - margin.right;
         xScale.range([20,width-100])
         for (var i = 0;i < containers.length;i++){
         //for (var r in rects){

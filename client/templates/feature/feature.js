@@ -1,4 +1,20 @@
+Template.feature.onCreated(function(){
+  this.currentTab = new ReactiveVar('seq');
+})
+
 Template.feature.helpers({
+  tab:function(){
+    return Template.instance().currentTab.get();
+  },
+  tabData:function(){
+    const tab = Template.instance().currentTab.get();
+    const data = {
+      'seq': this.subfeatures.filter(function(x){return x.type === 'mRNA'}),
+      'interproscan': this.subfeatures.filter(function(x){return x.type === 'mRNA'}),
+      'genemodel': this.subfeatures
+    };
+    return data[tab];
+  },
   transcripts: function(){
     const transcripts = this.subfeatures.filter(function(x){return x.type === 'mRNA'});
     return transcripts
@@ -40,93 +56,18 @@ Template.feature.helpers({
   },
   subfeatureNumber: function(){
     return this.children.length;
-  },
-  subfeatureArray: function(){
-    var array = [];
-    Genes.find({ 'ID':{$in: this.children} }).forEach(function(sub){array.push(sub.start + '...' + sub.end)})
-    console.log(array);
-    return array;
-  },
-  subfeatures: function(){
-    //console.log(this.children);
-    return Genes.find({ 'ID':{$in: this.children} });
-  },
-  expand: function(){
-    var Id = this._id._str;
-    var expanded = Session.get('expand');
-    if (typeof expanded === 'undefined'){
-      return
-    }
-    if (expanded.indexOf(Id) >= 0){
-      return 'expanded';
-    }
-  },
-  expand_check: function(){
-    var Id = this._id._str;
-    var checked = Session.get('expand');
-    if (typeof checked === 'undefined'){
-      return
-    }
-    if (checked.indexOf(Id) >= 0){
-      return 'checked';
-    }
-  },
-  info_check: function(){
-    var Id = this._id._str;
-    var checked = Session.get('info');
-    if (typeof checked === 'undefined'){
-      return
-    }
-    if (checked.indexOf(Id) >= 0){
-      return 'checked';
-    }
   }
 });
 
 Template.feature.events({
-    "click .toggle-expand": function () {
-      //the following prevents 'event bubbling', this was causing mRNA features to be not expandable
-      //http://www.quirksmode.org/js/events_order.html
-      if (!e) var e = window.event;
-      e.cancelBubble = true;
-      if (e.stopPropagation) e.stopPropagation();
-      console.log(e)
-      var Id = this._id._str;
-      //console.log(Id);
-      var _expanded = Session.get('expand');
-      var expanded = _expanded ? _expanded.splice(0) : [];
-      var wasExpanded = expanded.indexOf(Id);
-      //console.log(wasExpanded);
-      if (wasExpanded < 0) {
-        e.target.defaultValue = '-';
-        expanded.push(Id);
-      } else {
-        e.target.defaultValue = '+';
-        expanded.splice(wasExpanded,1);
-      }
-      /*
-      var wasExpanded = false;
-      for (var i = expanded.length -1; i >= 0; i--){
-        if (expanded[i].equals(Id)){
-          expanded.splice(i,1);
-          wasExpanded = true;
-        }
-      }
-      if (!wasExpanded){
-        expanded.push(Id);
-      }
-      */
-      //console.log(expanded);
-      Session.set('expand',expanded);
-    },
-    "click .delete": function () {
-      Meteor.call("deleteTask",this._id);
-    },
-    "click .toggle-private": function () {
-      Meteor.call("setPrivate", this._id, ! this.private);
-      //Genes.remove(this._id);
-    }
-  });
+  'click .nav-tabs li': function(event,template){
+    var currentTab = $( event.target ).closest( "li" );
+    currentTab.addClass( "active" );
+    $( ".nav-tabs li" ).not( currentTab ).removeClass( "active" );
+    template.currentTab.set( currentTab.data( "template" ) );
+  }
+});
+
 Accounts.ui.config({
   passwordSignupFields: "USERNAME_ONLY"
 });
