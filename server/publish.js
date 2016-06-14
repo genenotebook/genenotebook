@@ -76,6 +76,12 @@ Meteor.publishComposite('genes',function(limit,search,filter){
 });
 */
 
+Meteor.publish('browser',function(track,seqid,start,end){
+	return Genes.find({'seqid':seqid,'start':{$gte:start},'end':{$lte:end}})
+})
+
+
+/*
 Meteor.publishComposite('browser',function(track,seqid,start,end){
 	return {
 		find: function(){
@@ -95,6 +101,7 @@ Meteor.publishComposite('browser',function(track,seqid,start,end){
 		}]
 	};
 });
+*/
 
 Meteor.publish('userList',function(){
 	return Meteor.users.find({});

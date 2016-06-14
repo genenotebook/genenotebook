@@ -36,7 +36,6 @@ def model_gene_feature(gene):
 def init(gff_file,fasta_file,gene_collection,track_collection):
 	print 'parsing gff'
 	assembly = fasta_file.split('/')[-1]
-	assembly = assembly.rstrip('.fasta')
 	track = gff_file.split('/')[-1]
 	track_name = '.'.join(track.split('.')[:-1])
 	

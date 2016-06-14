@@ -11,7 +11,6 @@ Template.admin.helpers({
 	},
 	tabData: function(){
 		const tab = Template.instance().currentTab.get();
-		console.log(tab);
 		const data = {
 			'users': Meteor.users.find({}),
 			'tracks':Tracks.find({})

@@ -3,10 +3,18 @@
 	<ul class="list-group">
 		{{#each this}}
 			<li class="list-group-item">
-				<p>Original file: {{track}}</p>
-				<p>Reference: {{assembly}}</p>
-				<p>Genes: {{gene}}</p>
-
+				<div class="row">
+					<div class="col-md-10">
+						<p>Original file: {{track}}</p>
+						<p>Reference: {{assembly}}</p>
+						<p>Genes: {{gene}}</p>
+					</div>
+					<div class="col-md-2">
+						<button type="button" class="btn btn-default makeblastdb">
+							<span class="glyphicon glyphicon-hdd" aria-hidden="true"></span> Make blast DB
+						</button>
+					</div>
+				</div>
 			</li>
 		{{/each}}
 	</ul>

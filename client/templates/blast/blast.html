@@ -1,0 +1,39 @@
+<template name="blast">
+	<div class="container">
+		<form role="form" id="blast">
+			<div class="panel panel-default">
+				<div class="panel-heading">Blast search</div>
+				<div class="panel-body">
+					<textarea class="form-control" id="blast_seq" type="text"></textarea>
+				</div>
+				<ul class="list-group">
+					<li class="list-group-item">
+						<label>Select track</label>
+						{{#each tracks}}
+							<div class="radio">
+								<label><input type="radio" class="track-radio" id="{{track}}" name="track-radio"> {{track}}</label>
+							</div>
+						{{/each}}
+					</li>
+					<li class="list-group-item">
+						Advanced options ...
+					</li>
+				</ul>
+				<div class="panel-footer">
+					<div class="row">
+						<div class="col-md-6">
+							<button type="button" class="btn btn-default">
+								<span class="glyphicon glyphicon-search" aria-hidden="true"></span> BlastP
+							</button>
+						</div>
+						<div class="col-md-6">
+							<button type="button" class="btn btn-default">
+								<span class="glyphicon glyphicon-search" aria-hidden="true"></span> BlastN
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</template>
