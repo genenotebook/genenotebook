@@ -9,8 +9,15 @@ Tracker.autorun(function(){
 
 Template.genelist.helpers({
   genes: function(){
-    const filter = Session.get('filter') || {};
-    return Genes.find(filter);
+    const query = Session.get('filter') || {};
+    const search = Session.get('search')
+    if (search) {
+      query.$or = [{'ID':{$regex:search}},{'attributes.Name':{$regex:search}}];
+      if (!query.hasOwnProperty('attributes.Productname')){
+        query.$or.push({'attributes.Productname':{$regex:search}})
+    }
+  }
+    return Genes.find(query,{sort:{'ID':1}});
   },
   transcripts: function(){
     const transcripts = this.subfeatures.filter(function(x){ return x.type === 'mRNA' });
@@ -22,7 +29,8 @@ Template.genelist.helpers({
     return !(Genes.find({'type':'gene'}).count() < Session.get("itemsLimit"));
   },
   hasFilter: function(){
-    return Session.get('filter');
+    const filter = Session.get('filter')
+    return filter;
   },
   isChecked: function(){
     if (Session.get('select-all')){
@@ -52,6 +60,14 @@ Template.genelist.helpers({
   },
   formatTrackName:function(trackName){
     return trackName.split('.')[0];
+  },
+  confidence:function(){
+    if (this.one_to_one_orthologs === 'High confidence') {
+      return 'label-success'
+    } else {
+      return 'label-danger'
+    }
+    //return confidence
   }
 });
 
@@ -124,11 +140,13 @@ Template.genelist.events({
 
     console.log('filter submit');
     console.log(filter);
-    Session.set('filter',filter);
+    if (Object.keys(filter).length > 0){
+          Session.set('filter',filter);
+    }
   },
   "click .reset_filter": function(event){
     event.preventDefault();
-    Session.set('filter',{});
+    Session.set('filter',false);
     Session.set('select-all',false);
     Session.set('checked',[]);
   },

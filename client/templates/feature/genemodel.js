@@ -1,116 +1,162 @@
+import d3 from 'd3';
+
+Template.genemodel.helpers({
+	scaffold:function(){
+		console.log(this)
+		return this.data.seqid
+	}
+})
+
 Template.genemodel.rendered = function(){
-	const transcripts = this.data.filter(function(x){return x.type === 'mRNA'});
-	const transcriptIds = transcripts.map(function(x){return x.ID});
-	console.log(transcripts);
-	const strand = transcripts[0].strand;
+	const barHeight = 20;
+
+	const transcriptData = this.data.subfeatures.filter(function(x){return x.type === 'mRNA'});
+
+	const strand = this.data.strand;
 
 	//select the div to plot in, set min max and margins
-	const vis = this.find('.genemodel');
-	const margin = {top: 5, right: 25, bottom: 0, left: 10};
+	const margin = {top: 0, right: 25, bottom: 20, left: 10};
     var width = $('.genemodel').width() - margin.left - margin.right;
-    const height = (transcripts.length * 40) - margin.top - margin.bottom;
+    const height = (transcriptData.length * 20) + margin.top + margin.bottom;
     
     //get transcript subfeatures, duplicate subs with multiple parents
-	const _subs = this.data.filter(function(x){return x.type === 'CDS'})
-	const subs = []
-	for (var i in _subs){
-		var _sub = _subs[i];
-		for (var j in _sub.parents){
-			parent = _sub.parents[j];
-			var sub = jQuery.extend({},_sub);
-			sub.parents = parent;
-			subs.push(sub)
-		};
-	};
+	const _subs = this.data.subfeatures.filter(function(x){return x.type === 'CDS'})
+	const splitSubs = _subs.map(function(sub){
+		return sub.parents.map(function(parent){
+			_sub = $.extend({},sub)
+			_sub.parents = parent
+			return _sub
+		})
+	})
+	const groupedSubs = _.groupBy([].concat(...splitSubs),'parents')
+	console.log(d3.values(groupedSubs))
 
-	//const coords = subs.map(function(x){return [x.start,x.end]});
-	//const merged = [].concat.apply([],coords)
-   
-    //set transcript min and max values
-    const starts = transcripts.map(function(x){return x.start});
-    const ends = transcripts.map(function(x){return x.end});
+    //get transcript min and max values
+    const starts = transcriptData.map(function(x){return x.start});
+    const ends = transcriptData.map(function(x){return x.end});
     const min = Math.min(...starts);
     const max = Math.max(...ends);
-    const mid = Math.round(min + ((max - min) / 2));
-
+    
 	//setup x scale 
-	const xScale = d3.scale.linear()
-						.domain([min,max])
-						.range([0,width])
+	const xScale = d3.scaleLinear()
+			.domain([min - ((max - min) / 10),max + ((max - min) / 10)])
+			.range([0,width])
 
     //select container and make svg element
-    const container = d3.select(vis).append('svg')
-    								.attr('height',height + margin.top + margin.bottom)
-    								.attr('width',width + margin.left + margin.right)
-    								.attr('transform','translate('+margin.left+','+margin.top+')')
-    
+    const svg = d3.select('.genemodel').append('svg')
+			.attr('height',height + margin.top + margin.bottom)
+			.attr('width',width + margin.left + margin.right)
+		.append('g')
+			.attr('transform','translate('+margin.left+','+margin.top+')')
+
+	//make svg groups per transcript
+	const transcripts = svg.selectAll('.transcript')
+			.data(d3.values(groupedSubs))
+		.enter().append('g')
+			.attr('class','transcript')
+			.attr('transform',function(d,i){
+				return 'translate(0,' + i * barHeight + ')'
+			})
+
+	//define arrowhead
+	const defs = svg.append('defs')
+			.append('marker')
+				.attr('id','arrow')
+				.attr('refX',1)
+				.attr('refY',5)
+				.attr('markerWidth',10)
+				.attr('markerHeight',10)
+				.attr('orient','auto')
+			.append('path')
+				.attr("d", "M 0 0 L 10 5 L 0 10 L 0 0")
+				.attr("class","arrowHead")
+				.style('fill','none')
+				.style('stroke','black')
+	
 	//plot backbone line
-	const line = container.selectAll('line').data(transcripts)
-	line.enter()
-		.append('line')
-		.style('stroke','black')
-		.attr('x1',function(d,i){
-			return xScale(d.start)
-		})
-		.attr('x2', function(d,i){
-			return xScale(d.end)
-		})
-		.attr('y1', function(d,i){
-			return (i + 1) * 20
-		})
-		.attr('y2',function(d,i){
-			return (i + 1) * 20
-		})
+	const line = transcripts.selectAll('line')
+			.data(function(exons){
+				const t = {}
+				const exonStarts = exons.map(function(exon){ return exon.start })
+				const exonEnds = exons.map(function(exon){ return exon.end })
+				const transcriptStart = Math.min(...exonStarts)
+				const transcriptEnd = Math.max(...exonEnds)
+				t.start = transcriptStart
+				t.end = transcriptEnd
+				t.ID = exons[0].parents
+				return [t]
+			})
+		.enter().append('line')
+			.attr('x1',function(d){
+				if (strand === '+') {
+					return xScale(d.start)
+				} else {
+					return xScale(d.end)
+				}
+			})
+			.attr('x2', function(d){
+				if (strand === '+'){
+					return xScale(d.end) 
+				} else {
+					return xScale(d.start) 
+				}
+			})
+			.attr('y1',15)
+			.attr('y2',15)
+			.attr('marker-end','url(#arrow)')
+			.style('stroke','black')
 
     //plot exons
-    const exons = container.selectAll('rect').data(subs)
-    exons.enter()
-		.append('rect')
-		.attr('x',function(d){  
-			//console.log(xScale(d.start))
-			return xScale(d.start)
-		})
-		.attr('y',function(d){
-			const i = transcriptIds.indexOf(d.parents);
-			return ((i + 1) * 20) - 5
-		})
-		.attr('width',function(d){
-			//console.log(xScale(d.end) - xScale(d.start))
-			return xScale(d.end) - xScale(d.start)
-		})
-		.attr('height',10)
-		.style('fill','red')
+    const exons = transcripts.selectAll('rect')
+    		.data(function(d){
+    			return d
+    		})
+    	.enter().append('rect')
+			.attr('x',function(d){  
+				return xScale(d.start)
+			})
+			.attr('y',10)
+			.attr('width',function(d){
+				return xScale(d.end) - xScale(d.start)
+			})
+			.attr('height',10)
+			.style('fill','rgb(251,106,74)')
+			.style('stroke','black')
+			.style('stroke-width',0.5)
 
     //plot axis
-    var xAxis = d3.svg.axis()
-    					.tickFormat(d3.format('d'))
-    					//.ticks(2)
-    					.tickValues([min,mid,max])
-    					.orient('top')
-    					.scale(xScale);
-    var xAxisGroup = container.append('g')
-    								.attr('class','x axis')
-    								.attr('transform','translate(0,'+height+')')
-    								.call(xAxis)
-    							.selectAll('text')
-    								//.attr('dy','2em')
-    								.attr('transform','rotate(0)')
-    								.style('text-anchor','start')
+    var xAxis = d3.axisBottom(xScale)
+    		//.ticks(5)
+    		.tickValues([min,(min + max) / 2,max])
+    		.tickPadding(5)
+
+    var xAxisGroup = svg.append('g')
+			.attr('class','x axis')
+			.attr('transform','translate(0,' + height + ')')
+			.call(xAxis)
+		.selectAll('text')
+			.attr('transform','rotate(0)')
+			.style('text-anchor','start')
 
 	function update(){
-		//console.log('update');
 		width = $('.genemodel').width() - margin.left - margin.right;
-		container.attr("width", width);
-		xScale.range([20,width - 20])
+		svg.attr("width", width);
+		xScale.range([0,width])
 		exons.attr('x',function(d){
 			return xScale(d.start)
 		})
 		.attr('width',function(d){
 			return xScale(d.end) - xScale(d.start);
 		})
-		line.attr('x2',width - 20)
+		line.attr('x2',function(d){ 
+			if (strand === '+'){
+				return xScale(d.end) + 10
+			} else {
+				return xScale(d.start) - 10
+			} 
+		})
 		xAxis.scale(xScale)
-		container.select('g.x.axis').call(xAxis)
+		svg.select('g.x.axis').call(xAxis)
 	}
 	
 	$(window).resize(function() {

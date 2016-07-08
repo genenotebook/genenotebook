@@ -1,5 +1,5 @@
 Template.feature.onCreated(function(){
-  this.currentTab = new ReactiveVar('seq');
+  this.currentTab = new ReactiveVar('info');
 })
 
 Template.feature.helpers({
@@ -9,9 +9,10 @@ Template.feature.helpers({
   tabData:function(){
     const tab = Template.instance().currentTab.get();
     const data = {
+      'info': this,
       'seq': this.subfeatures.filter(function(x){return x.type === 'mRNA'}),
       'interproscan': this.subfeatures.filter(function(x){return x.type === 'mRNA'}),
-      'genemodel': this.subfeatures
+      'genemodel': this
     };
     return data[tab];
   },
@@ -30,24 +31,6 @@ Template.feature.helpers({
       return ''
     }
   },
-  /*
-  interproscan: function(){
-    var array = [];
-    //console.log(this.interproscan)
-    for (var key in this.interproscan){
-      //console.log(key)
-      if (this.interproscan.hasOwnProperty(key)){
-        //console.log(this.interproscan[key])
-        var str = this.interproscan[key]['name'];
-        str += '...' + this.interproscan[key]['start'];
-        str += '...' + this.interproscan[key]['end'];
-        console.log(str);
-        array.push(str);
-      }
-    }
-    return array;
-  },
-  */
   featuretype: function(){
     return this.source;
   },
@@ -56,6 +39,12 @@ Template.feature.helpers({
   },
   subfeatureNumber: function(){
     return this.children.length;
+  },
+  domainCount: function(){
+    const transcripts = this.subfeatures.filter(function(x){return x.type === 'mRNA'});
+    const domains = transcripts.map(function(x){ return Object.keys(x.interproscan) })
+    console.log(domains)
+    return _.uniq(domains[0]).length
   }
 });
 

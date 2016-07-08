@@ -1,0 +1,14 @@
+<template name="info">
+	<div class="container">
+		<hr>
+		<p> Gene ID: {{ID}} </p>
+		<p> Gene name: {{attributes.Name}} </p>
+		<p> Product name: {{attributes.Productname}} </p>
+		<p> Coordinates: {{seqid}} {{start}} {{end}} {{strand}} </p>
+		<p> Orthologs: {{#each orthologs}}<a href="/gene/{{this}}">{{this}}</a> {{/each}}</p>
+		<p> Inparalogs: {{#each paralogs}}<a href="/gene/{{this}}">{{this}}</a> {{/each}}</p>
+		<p> Comments: {{attributes.Comments}} </p>
+		<p> Author: {{attributes.[Created by]}} </p>
+		<p> Orthogroup: {{orthogroup}} </p>
+	</div>
+</template>

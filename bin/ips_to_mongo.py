@@ -50,7 +50,7 @@ def upload_wrapper(collection):
 		return result['electionId'],result['nModified']
 	return upload
 
-def get_client():
+def get_client_ip():
 	print 'finding mongodb'
 	command = 'meteor mongo -U'
 	p = Popen(command.split(),stdout=PIPE,stderr=PIPE)
@@ -58,9 +58,9 @@ def get_client():
 	return stdout
 
 def main(gff_file):
-	client = get_client()
-	print client
-	client = MongoClient(client)
+	client_ip = get_client_ip()
+	print client_ip
+	client = MongoClient(client_ip)
 	db = client.meteor
 	collection = db.genes
 	upload_ips(gff_file,collection)

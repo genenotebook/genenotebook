@@ -1,3 +1,12 @@
+Template.tracks.helpers({
+	hasDb: function(){
+		console.log(this.blastdbs);
+		const hasDb = this.blastdbs !== undefined 
+		console.log(hasDb)
+		return hasDb
+	}
+})
+
 Template.tracks.events({
 	'click .makeblastdb':function(){
 		console.log(this.track)

@@ -1,97 +1,29 @@
 <template name="feature">
   <div class="feature panel panel-default">
     <div class="panel-heading">
-      <b>{{ID}}</b> {{attributes.Name}}
+      <b>
+        {{ID}} 
+        {{#if attributes.Name}}
+          ({{attributes.Name}})
+        {{/if}}
+      </b> {{attributes.Productname}}
     </div>
     <div class="panel-body">
+      <!---
       <p>Productname: {{attributes.Productname}}</p>
       <p>Chromosome: {{seqid}}</p>
       <p>Coordinates: {{start}} {{end}} {{strand}}</p>
       <p>Number of transcripts: {{transcripts.length}}</p>
       <p>Comments: {{attributes.Comments}}</p>
-
+      -->
       <ul class="nav nav-tabs">
-        <li data-template="seq" role="presentation" class="active"><a href="#">Sequence</a></li>
-        <li data-template="genemodel" role="presentation"><a href="#">Genemodel</a></li>
-        <li data-template="interproscan" role="presentation"><a href="#">Interpro domains</a></li>
+        <li data-template="info" role="presentation" class="active"><a href="#">Info</a></li>
+        <li data-template="seq" role="presentation"><a href="#">Sequence</a></li>
+        <li data-template="genemodel" role="presentation"><a href="#">Genemodel <span class="badge"> {{ transcripts.length }} </span></a></li>
+        <li data-template="interproscan" role="presentation"><a href="#">Interpro domains <span class="badge">{{ domainCount }}</span></a></li>
         <li data-template="blast" role="presentation"><a href="#">Blast hits</a></li>
       </ul>
       {{> Template.dynamic template=tab data=tabData }}
-      <!--
-      {{#each transcripts}}
-        <hr>
-        <div class="well">
-          <p class="seq">>{{ ID }}</p>
-          <p class="seq">{{ pep }}</p>
-        </div>
-        <hr>
-        <div class="well">
-          <p class="seq">>{{ ID }}</p>
-          <p class="seq">{{ seq }}</p>
-        </div>
-      {{/each}}
-      -->
     </div>
   </div>
-  <!--
-    <li>
-      <ul class="{{type}} list-group">
-        <li class="{{expand}} list-group-item">
-          <div class="featureswitch">
-            <input type="button" class="btn btn-primary toggle-expand" value="{{#unless expand}}+{{else}}-{{/unless}}">
-          <div class="checkbox expand"></div>
-          </div>
-          <p>
-            <button class="type">{{type}}</button>
-            <strong>
-              <a href="/gene/{{ID}}">{{ID}}  {{name}}</a>
-            </strong>
-          </p> 
-          {{#if isGene}}
-            <p>
-            <b>Product:</b> {{attributes.Productname}}
-            </p>
-            <p>
-            Coordinates: {{seqid}} {{start}} {{end}} {{strand}}
-            </p>
-            {{#if orthologs}}
-              <p>Orthologs: 
-              {{#each orthologs}}
-              <a href="/gene/{{this}}">{{this}}</a>
-              {{/each}}
-              </p>
-            {{/if}}
-          {{/if}}
-          {{#if isTranscript}}
-            <hr>
-            <div class="well">
-              {{> genemodel this}}
-            </div>
-            <hr>
-            <div class="well">
-              {{> interproscan this}}
-            </div>
-            <hr>
-            <div class="well">
-              <p class="seq">>{{ID}}</p>
-              <p class="seq">{{ pep }}</p>
-            </div>
-            <hr>
-            <div class="well">
-              <p class="seq">>{{ID}}</p>
-              <p class="seq">{{ seq }}</p>
-            </div>
-          {{/if}}
-        </li>
-        {{#if expand}}
-        	{{#if children.length}}
-  	        {{#each subfeatures}}
-  	          {{> feature}}
-  	        {{/each}}
-          {{/if}}
-        {{/if}}
-    </ul>
-    </li>
-    -->
-
 </template>

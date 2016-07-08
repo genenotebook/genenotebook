@@ -19,8 +19,6 @@ accounts-password
 fourseven:scss
 iron:router
 reywood:publish-composite
-d3
-electronifiejs:pages
 ecmascript-runtime
 meteorhacks:fast-render
 tinytest
@@ -40,3 +38,6 @@ universe:modules
 themeteorchef:bert
 harrison:papa-parse
 reactive-var
+modules
+raix:handlebar-helpers
+peerlibrary:xml2js

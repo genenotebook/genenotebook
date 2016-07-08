@@ -98,15 +98,27 @@
                 <div class="row">
                   <div class="col-md-11">
                     <p>
-          					<b><a class="genelink" href="/gene/{{ID}}">{{ID}}</a> <span class="badge">{{transcripts.length}}</span></b>
-          					(<i><a class="genelink" href="/gene/{{attributes.[putative orthologs]}}">{{attributes.[putative orthologs]}}</a></i>)
+                      <a class="genelink" href="/gene/{{ID}}">{{ID}}</a>
+                      {{#if orthologs}}
+                        &nbsp;
+                        <span class="label label-primary">
+                          {{orthologs.length}} Orthologs
+                        </span>
+                        <span class="label {{confidence}}">
+                          {{one_to_one_orthologs}}
+                        </span>
+                      {{/if}}
+                      {{#if paralogs}}
+                        &nbsp;
+                        <span class="label label-info">
+                          {{paralogs.length}} Inparalogs
+                        </span>
+                      {{/if}}
                     </p>
-                    {{#if attributes.Name}}
-                      <b>
-                        {{attributes.Name}}: 
-                      </b>
-                    {{/if}}
-                    {{attributes.Productname}}
+                    <p>
+                      <b> {{attributes.Name}} </b>
+                      {{attributes.Productname}}
+                    </p>
                   </div>
                   <div class="col-md-1">
                     <button type="button" class="btn btn-default select-gene">

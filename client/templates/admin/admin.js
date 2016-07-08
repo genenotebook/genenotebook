@@ -15,7 +15,6 @@ Template.admin.helpers({
 			'users': Meteor.users.find({}),
 			'tracks':Tracks.find({})
 		};
-		console.log(data[tab].fetch()[0])
 		return data[tab];
 	}
 })

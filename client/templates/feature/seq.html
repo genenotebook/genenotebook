@@ -1,14 +1,14 @@
 <template name="seq">
-	{{#each this}}
-		<hr>
-        <div class="well">
-          <p class="seq">>{{ ID }}</p>
-          <p class="seq">{{ pep }}</p>
-        </div>
-        <hr>
-        <div class="well">
-          <p class="seq">>{{ ID }}</p>
-          <p class="seq">{{ seq }}</p>
-        </div>
-	{{/each}}
+  <div class="container">
+  	{{#each this}}
+  		<hr>
+          <div class="well">
+            <p class="seq">>{{ ID }} <br> {{ pep }}</p>
+          </div>
+          <hr>
+          <div class="well">
+            <p class="seq">>{{ ID }} <br> {{ seq }}</p>
+          </div>
+  	{{/each}}
+  </div>
 </template>
