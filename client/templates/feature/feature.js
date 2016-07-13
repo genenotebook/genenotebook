@@ -1,6 +1,9 @@
+Meteor.subscribe('orthogroups')
+/*
 Template.feature.onCreated(function(){
   this.currentTab = new ReactiveVar('info');
 })
+*/
 
 Template.feature.helpers({
   tab:function(){
@@ -45,6 +48,10 @@ Template.feature.helpers({
     const domains = transcripts.map(function(x){ return Object.keys(x.interproscan) })
     console.log(domains)
     return _.uniq(domains[0]).length
+  },
+  orthogroupSize: function(){
+    const og = Orthogroups.findOne({'ID':this.orthogroup})
+    return og.alignment.length
   }
 });
 

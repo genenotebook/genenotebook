@@ -1,5 +1,22 @@
+/*
 Meteor.publish('singleGene',function(ID){
 	return Genes.find({'ID':ID})
+})
+*/
+
+Meteor.publishComposite('singleGene',function(ID){
+	return {
+		find: function(){
+			return Genes.find({'ID':ID});
+		},
+		children: [
+			{
+				find: function(gene){
+					return Orthogroups.find({'ID':gene.orthogroup})
+				}
+			}
+		]
+	}
 })
 
 Meteor.publish('genes',function(limit,search,query){
@@ -15,6 +32,10 @@ Meteor.publish('genes',function(limit,search,query){
 	return Genes.find(query,{limit:limit,sort:{'ID':1}})
 })
 
+Meteor.publish('orthogroup',function(ID){
+	return Orthogroups.find({'ID':ID})
+})
+
 Meteor.publish('browser',function(track,seqid,start,end){
 	return Genes.find({'seqid':seqid,'start':{$gte:start},'end':{$lte:end}})
 })
@@ -24,7 +45,7 @@ Meteor.publish('userList',function(){
 })
 
 Meteor.publish('interpro',function(){
-	//return Interpro.find();
+	return Interpro.find();
 })
 
 Meteor.publish('tracks',function(){

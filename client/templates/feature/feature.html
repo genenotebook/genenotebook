@@ -14,7 +14,7 @@
         <li role="presentation"><a href="#seq">Sequence</a></li>
         <li role="presentation"><a href="#genemodel">Genemodel <span class="badge"> {{ transcripts.length }} </span></a></li>
         <li role="presentation"><a href="#interproscan">Interpro domains <span class="badge">{{ domainCount }}</span></a></li>
-        <li role="presentation"><a href="#">Blast hits</a></li>
+        <li role="presentation"><a href="#orthogroup">Orthogroup <span class="badge">{{ orthogroupSize }}</span></a></li>
       </ul>
     </div>
       <!--
@@ -25,6 +25,7 @@
         {{>genemodel}}
         {{>interproscan}}
         {{>seq}}
+        {{>orthogroup}}
       </div>
     
   </div>

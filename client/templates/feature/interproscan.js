@@ -32,7 +32,6 @@ Template.interproscan.rendered = function(){
     const transcript = this.data.subfeatures.filter(function(x){return x.type === 'mRNA'})[0];
     const id = transcript.ID;
     const data = _.values(transcript.interproscan).sort(function(a,b){return a.start-b.start});
-    console.log(data)
     const groupedData = _.groupBy(data,'name')
     const groupedDataArray = d3.values(groupedData);
 
@@ -93,12 +92,10 @@ Template.interproscan.rendered = function(){
     //draw domains
     var rect = domains.selectAll('rect')
             .data(function(domain){
-                console.log(domain)
                 return domain
             })
         .enter().append('rect')
             .attr('x',function(d){
-                console.log(d)
                 return xScale(d.start * 3)
             })
             .attr('width',function(d){
