@@ -1,31 +1,13 @@
-/*
-.feature {
-	//@include margin(0 5em 0 5em)
-	list-style-type: none;
-	ul {
-		background:white;
-		&.genelist {
-			list-style-type: none;
-			padding: 0px;
-			margin: 0px;
-		}
-		&.gene {
-			border-radius: 2px;//$base-border-radius;
-			box-sizing:border-box;
-
-			padding: 0.5em;
-			box-shadow: 2px 3px 17px -2px rgba(0,0,0,0.66);
-			//@include margin(0.5em 0em 0.5em 0em);
-			li {
-				list-style-type: none;
-			}
-		}
-		.featureswitch {
-			float: right;
-		}
-	}
+.feature-panel{
+	//position:fixed;
+	height:85%;
 }
-*/
+
+.feature-info{
+	height:79%;
+	overflow-y: scroll;
+}
+
 p.seq {
 	//@include margin(0em 2em 0em 0em);
 	overflow-wrap: break-word;

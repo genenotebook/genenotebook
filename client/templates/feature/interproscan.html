@@ -1,5 +1,9 @@
 <template name="interproscan">
-	<hr>
-	<div class="interproscan well">
-	</div>
+	<section id="interproscan">
+		{{#each transcripts}}
+			<hr>
+			<h3>Interpro domains</h3>
+			<div class="interproscan well" id="{{this.ID}}"></div>
+		{{/each}}
+	</section>
 </template>

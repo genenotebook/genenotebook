@@ -10,8 +10,8 @@ Template.feature.helpers({
     const tab = Template.instance().currentTab.get();
     const data = {
       'info': this,
-      'seq': this.subfeatures.filter(function(x){return x.type === 'mRNA'}),
-      'interproscan': this.subfeatures.filter(function(x){return x.type === 'mRNA'}),
+      'seq': this,//this.subfeatures.filter(function(x){return x.type === 'mRNA'}),
+      'interproscan': this,//this.subfeatures.filter(function(x){return x.type === 'mRNA'}),
       'genemodel': this
     };
     return data[tab];
@@ -49,13 +49,27 @@ Template.feature.helpers({
 });
 
 Template.feature.events({
-  'click .nav-tabs li': function(event,template){
-    var currentTab = $( event.target ).closest( "li" );
-    currentTab.addClass( "active" );
-    $( ".nav-tabs li" ).not( currentTab ).removeClass( "active" );
-    template.currentTab.set( currentTab.data( "template" ) );
+  'click .nav-tabs li': function(event){
+    const currentTab = $( event.target ).closest('li');
+    currentTab.addClass('active');
+    $('.nav-tabs li').not(currentTab).removeClass('active');
+
+    const target = currentTab.context.hash
+    targetOffset = $(target).offset().top
+    $('html','body').animate({scrollTop:targetOffset},200);
+    //template.currentTab.set( currentTab.data( "template" ) );
   }
 });
+
+Template.feature.rendered = function(){
+  /*
+  $('#feature-nav').affix({
+    offset: {
+      top: 50
+    }
+  });
+  */
+}
 
 Accounts.ui.config({
   passwordSignupFields: "USERNAME_ONLY"

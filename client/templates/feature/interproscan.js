@@ -20,23 +20,24 @@ function getInterpro(d){
 	return interpro
 }
 
-/*
+
 Template.interproscan.helpers({
-    domains : function(){
-        var data = _.values(this.data.interproscan).sort(function(a,b){return a.start-b.start});
-        var filteredData = processDomains(data);
+    transcripts : function(){
+        return this.subfeatures.filter(function(x){return x.type === 'mRNA'})
     }
 })
-*/
+
 
 Template.interproscan.rendered = function(){
-    const transcript = this.data.filter(function(x){return x.type === 'mRNA'})[0];
+    const transcript = this.data.subfeatures.filter(function(x){return x.type === 'mRNA'})[0];
+    const id = transcript.ID;
     const data = _.values(transcript.interproscan).sort(function(a,b){return a.start-b.start});
     console.log(data)
     const groupedData = _.groupBy(data,'name')
     const groupedDataArray = d3.values(groupedData);
 
-    var lineHeight = 15;
+    const lineHeight = 20;
+    const nameSpacing = 140
 
     var margin = {top: 10, right: 10, bottom: 10, left: 10};
     var width = $('.interproscan').width() - margin.left - margin.right;
@@ -44,12 +45,12 @@ Template.interproscan.rendered = function(){
 
     //set min and max values
     var start = 0;
-    var end = this.data[0].seq.length;
+    var end = transcript.seq.length;
 
     //setup x scale 
     var xScale = d3.scaleLinear()
             .domain([0,end])
-            .range([0,width])
+            .range([nameSpacing,width])
     
     //setup tooltip                    
     const tooltip = d3.select('body').append('div')
@@ -97,6 +98,7 @@ Template.interproscan.rendered = function(){
             })
         .enter().append('rect')
             .attr('x',function(d){
+                console.log(d)
                 return xScale(d.start * 3)
             })
             .attr('width',function(d){
@@ -126,10 +128,20 @@ Template.interproscan.rendered = function(){
             .style('opacity',1)
             .style('stroke','black')
             .style('stroke-width',0.5)
+    //add domain names
+    var names = domains.selectAll('text')
+            .data(function(domain){
+                return [domain[0]]
+            })
+        .enter().append('text')
+            .attr('x',0)
+            .attr('y',10)
+            .text(function(d){ return d.name })
+
     
     function update(){
         width = $('.interproscan').width() - margin.left - margin.right;
-        xScale.range([40,width])
+        xScale.range([nameSpacing,width])
         svg.attr('width',width)
         rect.attr('x',function(d){ 
             return xScale(d.start * 3)

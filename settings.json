@@ -1,0 +1,9 @@
+{
+  "private": {
+    "blastDir":"",
+    "mongoUser":"",
+    "mongoPassword":""
+  },
+  "public": {
+    "name":"genebook"
+}

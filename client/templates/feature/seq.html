@@ -1,14 +1,16 @@
 <template name="seq">
-  <div class="container">
-  	{{#each this}}
+  <section id="seq">
+  	{{#each transcripts}}
   		<hr>
-          <div class="well">
-            <p class="seq">>{{ ID }} <br> {{ pep }}</p>
-          </div>
-          <hr>
-          <div class="well">
-            <p class="seq">>{{ ID }} <br> {{ seq }}</p>
-          </div>
+        <h3>Sequence</h3>
+        <h5>Protein sequence</h5>
+        <div class="well">
+          <p class="seq">>{{ this.ID }} <br> {{ this.pep }}</p>
+        </div>
+        <h5>Nucleotide sequence</h5>
+        <div class="well">
+          <p class="seq">>{{ this.ID }} <br> {{ this.seq }}</p>
+        </div>
   	{{/each}}
-  </div>
+  </section>
 </template>

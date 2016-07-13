@@ -3,7 +3,6 @@ Session.setDefault('itemsLimit', ITEMS_INCREMENT);
 Session.setDefault('select-all',false);
 Meteor.subscribe('tracks');
 Tracker.autorun(function(){
-  //console.log(Session.get('search'))
   Meteor.subscribe('genes',Session.get('itemsLimit'),Session.get('search'),Session.get('filter'));
 })
 

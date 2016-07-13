@@ -1,5 +1,5 @@
 <template name="feature">
-  <div class="feature panel panel-default">
+  <div class="feature-panel panel panel-default">
     <div class="panel-heading">
       <b>
         {{ID}} 
@@ -9,21 +9,23 @@
       </b> {{attributes.Productname}}
     </div>
     <div class="panel-body">
-      <!---
-      <p>Productname: {{attributes.Productname}}</p>
-      <p>Chromosome: {{seqid}}</p>
-      <p>Coordinates: {{start}} {{end}} {{strand}}</p>
-      <p>Number of transcripts: {{transcripts.length}}</p>
-      <p>Comments: {{attributes.Comments}}</p>
-      -->
-      <ul class="nav nav-tabs">
-        <li data-template="info" role="presentation" class="active"><a href="#">Info</a></li>
-        <li data-template="seq" role="presentation"><a href="#">Sequence</a></li>
-        <li data-template="genemodel" role="presentation"><a href="#">Genemodel <span class="badge"> {{ transcripts.length }} </span></a></li>
-        <li data-template="interproscan" role="presentation"><a href="#">Interpro domains <span class="badge">{{ domainCount }}</span></a></li>
-        <li data-template="blast" role="presentation"><a href="#">Blast hits</a></li>
+      <ul class="nav nav-tabs" id="feature-nav" data-spy="affix">
+        <li role="presentation" class="active"><a href="#info">Info</a></li>
+        <li role="presentation"><a href="#seq">Sequence</a></li>
+        <li role="presentation"><a href="#genemodel">Genemodel <span class="badge"> {{ transcripts.length }} </span></a></li>
+        <li role="presentation"><a href="#interproscan">Interpro domains <span class="badge">{{ domainCount }}</span></a></li>
+        <li role="presentation"><a href="#">Blast hits</a></li>
       </ul>
-      {{> Template.dynamic template=tab data=tabData }}
     </div>
+      <!--
+      {{> Template.dynamic template=tab data=tabData }}
+      -->
+      <div class="container feature-info">
+        {{>info}}
+        {{>genemodel}}
+        {{>interproscan}}
+        {{>seq}}
+      </div>
+    
   </div>
 </template>

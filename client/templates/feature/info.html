@@ -1,6 +1,7 @@
 <template name="info">
-	<div class="container">
+	<section id="info">
 		<hr>
+		<h3>General information</h3>
 		<p> Gene ID: {{ID}} </p>
 		<p> Gene name: {{attributes.Name}} </p>
 		<p> Product name: {{attributes.Productname}} </p>
@@ -10,5 +11,5 @@
 		<p> Comments: {{attributes.Comments}} </p>
 		<p> Author: {{attributes.[Created by]}} </p>
 		<p> Orthogroup: {{orthogroup}} </p>
-	</div>
+	</section>
 </template>

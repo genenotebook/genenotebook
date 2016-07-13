@@ -1,3 +1,13 @@
+//Session.setDefault('hasSearch',false)
+Tracker.autorun(function(){
+	const search = Session.get('search');
+	if (search){
+		console.log(search)
+		console.log($('input[name="search"]').val())
+		$('input[name="search"]').val(search)
+	}
+})
+
 Template.header.rendered = function() {
 	var menuToggle = $('#js-mobile-menu').unbind();
 	$('#js-navigation-menu').removeClass("show");
@@ -15,22 +25,29 @@ Template.header.rendered = function() {
 Template.header.helpers({
   isAdmin: function(){
     return Meteor.user()
+  },
+  search: function(){
+  	return Session.get('search')
   }
 })
 
 Template.header.events({
-	"submit .search": function(event) {
+	'keyup input.search': function(){
+		Session.set('hasSearch',true)	
+	},
+	'submit .search': function(event) {
 		event.preventDefault();
 		var search = event.target.search.value;
-		console.log(search);
 		if (search){
-			Router.go('search',{'_search':search})
-			//Router.go('search',{'search':search})
-			//window.location = '/search='+search
+			//Router.go('search',{'_search':search})
+			Router.go('genes',{},{'query':{'search':search}})
 		}
-		//Session.set('search',search);
 	},
-	"click #genelist":function(){
+	'click #clear-search': function(){
+		console.log('clear search')
 		Session.set('search',null);
+		$('input[name="search"]').val('')
+		//Router.go('genes',{},{'query':{}})
+		//Session.set('hasSearch',false);
 	}
 })
