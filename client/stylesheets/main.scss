@@ -3,8 +3,19 @@
 //import utils
 @import "util/_variables.import.scss";
 
+//@import '{}/node_modules/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css';
+//@import '{}/node_modules/awesome-bootstrap-checkbox/*';
+
+
+
+/*
+The following is actually a symlink to node_modules/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.scss
+Currently it is not possible to directly import scss from node_modules, but this hack works
+*/
+//@import 'util/_awesome-bootstrap-checkbox.scss';
+
 //import globals
-//@import "globals/_switch.import.scss";
+@import "globals/_checkbox.import.scss";
 @import "globals/_global.import.scss";
 
 //import template stuffs

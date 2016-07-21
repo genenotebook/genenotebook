@@ -41,3 +41,4 @@ reactive-var
 modules
 raix:handlebar-helpers
 peerlibrary:xml2js
+runelytics:nouislider

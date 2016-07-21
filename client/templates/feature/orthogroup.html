@@ -1,8 +1,8 @@
 <template name="orthogroup">
 	<section id="orthogroup">
-	<hr>
-	<h3>Orthogroup</h3>
-		Alignmentscore: {{ alignmentScore orthogroup }}
+		<hr>
+		<h3>Orthogroup {{orthogroup.ID}}</h3>
+		<h5>Alignmentscore: {{ alignmentScore orthogroup }}</h5>
 		<div class="well alignment">
 			{{#each alignment orthogroup}}
 			<p class="msa">

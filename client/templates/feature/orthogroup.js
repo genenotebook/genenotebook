@@ -65,6 +65,6 @@ Template.orthogroup.helpers({
 		//from http://stackoverflow.com/questions/10359907/array-sum-and-average
 		const avgSeqLength = seqLengths.reduce(function(sum,a){ return sum + a },0) / (sequences.length || 1)
 
-		return infoChars / avgSeqLength
+		return (infoChars / avgSeqLength).toFixed(3)
 	}
 })

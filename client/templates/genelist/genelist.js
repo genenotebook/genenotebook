@@ -11,9 +11,9 @@ Template.genelist.helpers({
     const query = Session.get('filter') || {};
     const search = Session.get('search')
     if (search) {
-      query.$or = [{'ID':{$regex:search}},{'attributes.Name':{$regex:search}}];
-      if (!query.hasOwnProperty('attributes.Productname')){
-        query.$or.push({'attributes.Productname':{$regex:search}})
+      query.$or = [{'ID':{$regex:search}},{'Name':{$regex:search}}];
+      if (!query.hasOwnProperty('Productname')){
+        query.$or.push({'Productname':{$regex:search}})
     }
   }
     return Genes.find(query,{sort:{'ID':1}});
@@ -71,6 +71,10 @@ Template.genelist.helpers({
 });
 
 Template.genelist.events({
+  'click input.ternary-toggle[type=checkbox]': function(event){
+    console.log(event.target)
+    toggleSwitch(event.target)
+  },
   "click .genelink": function(){
     /*
     var id = this._id._str;
@@ -113,27 +117,27 @@ Template.genelist.events({
     }
 
     //check productname radiobuttons
-    if ($('.productname-radio#yes').is(':checked')){
+    if ($('.productname-radio#product-yes').is(':checked')){
       console.log('productname yes')
-      filter['attributes.Productname'] = {$ne:'None'};
-    } else if ($('.productname-radio#no').is(':checked')){
+      filter['Productname'] = {$ne:'None'};
+    } else if ($('.productname-radio#product-no').is(':checked')){
       console.log('productname no')
-      filter['attributes.Productname'] = 'None'
-    } else if ($('.productname-radio#idc').is(':checked')){
+      filter['Productname'] = 'None'
+    } else if ($('.productname-radio#product-idc').is(':checked')){
       console.log('productname dont care')
       if (filter.hasOwnProperty('productname')){
-        delete filter['attributes.Productname'];
+        delete filter['Productname'];
       }
     }
 
     //check manual radiobuttons
-    if ($('.manual-radio#yes').is(':checked')){
-      filter['attributes.Name'] = {$exists:true};
-    } else if ($('.manual-radio#no').is(':checked')){
-      filter['attributes.Name'] = {$exists:false};
-    } else if ($('.manual-radio#idc').is(':checked')){
-      if (filter.hasOwnProperty('attributes.Name')){
-        delete filter['attributes.Name'];
+    if ($('.manual-radio#manual-yes').is(':checked')){
+      filter['Name'] = {$exists:true};
+    } else if ($('.manual-radio#manual-no').is(':checked')){
+      filter['Name'] = {$exists:false};
+    } else if ($('.manual-radio#manual-idc').is(':checked')){
+      if (filter.hasOwnProperty('Name')){
+        delete filter['Name'];
       }
     }
 
@@ -183,6 +187,19 @@ Template.genelist.events({
   }
 });
 
+Template.genelist.rendered = function(){
+  const input = document.getElementById('slider')
+  
+  noUiSlider.create(input,{
+    start: [20,80],
+    connect: true,
+    range: {
+      'min': [0],
+      'max': [100]
+    }
+  })
+}
+
 // whenever #showMoreResults becomes visible, retrieve more results
 function showMoreVisible() {
     var threshold, target = $('#showMoreGenes');
@@ -205,8 +222,30 @@ function showMoreVisible() {
         }
     }        
 }
- 
 // run the above func every time the user scrolls
 $(window).scroll(showMoreVisible)
+
+//toggle between checked/unchecked/indeterminate for checkboxes to determine query yes/no/don't care
+function toggleSwitch(checkbox) {
+  const parent = $(checkbox).parent();
+  console.log(parent);
+  if (checkbox.readOnly){
+    //go from negative to unchecked
+    parent.removeClass('checkbox-danger');
+    checkbox.checked=checkbox.readOnly=false;
+  } else if (!checkbox.checked){
+    //go from positive to negative
+    parent.addClass('checkbox-danger');
+    parent.removeClass('checkbox-success');
+    checkbox.readOnly=checkbox.checked=true;
+  } else {
+    //go from unchecked to positive
+    parent.addClass('checkbox-success');
+    parent.removeClass('checkbox-danger');
+
+ }
+}
+ 
+
 
 

@@ -1,0 +1,33 @@
+#!/usr/bin/python
+"""
+bioportal
+"""
+
+__author__ = 'rensholmer'
+
+import sys
+import json
+import os
+from subprocess import Popen,PIPE
+
+def set_env():
+	with open('example_settings.json') as filehandle:
+		settings = json.load(filehandle)
+	os.environ['MONGO_URL'] = settings['private']['mongoUrl']
+	os.environ['ROOT_URL'] = settings['private']['rootUrl']
+	os.environ['MAIL_URL'] = settings['private']['mailUrl']
+	os.environ['PORT'] = settings['private']['port']
+
+def run():
+	command = 'node .bioportal/bundle/main.js'
+	print command
+	p = Popen(command.split(),stderr=PIPE)
+	for line in iter(p.stderr.readline,''):
+		print line
+
+def main():
+	set_env()
+	run()
+
+if __name__ == '__main__':
+	main()

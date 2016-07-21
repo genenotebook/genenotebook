@@ -25,7 +25,7 @@ Template.feature.helpers({
   },
   isOwner: function () {
     return this.owner === Meteor.userId();
-  },
+  }/*,
   name: function() {
     var name = this.attributes.Name;
     if (typeof name !== 'undefined'){
@@ -33,7 +33,7 @@ Template.feature.helpers({
     } else {
       return ''
     }
-  },
+  }*/,
   featuretype: function(){
     return this.source;
   },

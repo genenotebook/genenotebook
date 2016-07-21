@@ -19,14 +19,19 @@ def model_subfeature(subfeature):
 		sub_dic.pop(key,None)
 	sub_dic['attributes'].pop('ID')
 	sub_dic['attributes'].pop('Parent',None)
+	for key,value in sub_dic['attributes'].iteritems():
+		sub_dic[key] = value
+	sub_dic.pop('attributes')
 	return sub_dic
 
 def model_gene_feature(gene):
 	gene_dic = gene.todict()
 	gene_dic['attributes'].pop('ID')
 	gene_dic['attributes'].pop('Parent',None)
-	gene_dic.pop('parents')
-	gene_dic.pop('children')
+	for key,value in gene_dic['attributes'].iteritems():
+		gene_dic[key] = value
+	for remove in ('parents','children','attributes'):
+		gene_dic.pop(remove)
 	gene_dic['subfeatures'] = []
 	for subfeature in gene.get_children(featuretype=['mRNA','CDS']):
 		sub_dic = model_subfeature(subfeature)
@@ -55,29 +60,15 @@ def init(gff_file,fasta_file,gene_collection,track_collection):
 		bulk.insert(gene_dic)
 		meta.setdefault('gene',0)
 		meta['gene'] += 1
-	#for feature in gff.getitems(featuretype='gene'):
-	#	feature_dic = feature.todict()
-	#	feature_dic['track'] = track
-	#	feature_dic['assembly'] = assembly
 
-	#	bulk.insert(feature_dic)
-	#	meta.setdefault(feature.featuretype,0)
-	#	meta[feature.featuretype] += 1
-	
 	print 'uploading to mongodb'
 	print '...'
 	bulk.execute()
-	#print 'uploaded {0} genes, {1} transcripts, {2} cds'.format(meta['gene'],meta['mRNA'],meta['CDS'])
 	print 'uploaded {0} genes'.format(meta['gene'])
 	print 'indexing'
 	gene_collection.create_index('ID')
 	gene_collection.create_index('type')
-	#gene_collection.create_index('children')
-	#gene_collection.create_index('parents')
-	#gene_collection.create_index('start')
-	#gene_collection.create_index('end')
 	gene_collection.create_index([('seqid',pymongo.TEXT),('start',pymongo.ASCENDING),('end',pymongo.ASCENDING)])
-	#gene_collection.create_index('subfeatures')
 	gene_collection.create_index('subfeatures.ID')
 	print 'setting metadata'
 	track_collection.insert_one(meta)
@@ -91,20 +82,30 @@ def get_md5(file):
 	md5 = md5.split()[0]
 	return md5
 
-def get_client():
+def get_client_address():
 	print 'finding mongodb'
 	command = 'meteor mongo -U'
 	p = Popen(command.split(),stdout=PIPE,stderr=PIPE)
-	stdout,stderr = p.communicate()
-	return stdout
+	client_address,stderr = p.communicate()
+	return client_address
 
-def main(gff_file,fasta_file=None):
-	client = get_client()
-	print client
-	client = pymongo.MongoClient(client)
-	db = client.meteor
+def main(gff_file=None,fasta_file=None,settings_file=None):
+	#settings_file = 'settings.json'
+	if settings_file:
+		with open(settings_file) as filehandle:
+			settings = json.load(filehandle)
+			client_address = settings['private']['mongoUrl']
+	else:
+		client_address = get_client_address()
+	print client_address
+	client = pymongo.MongoClient(client_address)
+
+	db_string = client_address.split('/')[-1]
+	db = client[db_string]
+	
 	gene_collection = db.genes
 	track_collection = db.tracks
+	
 	init(gff_file,fasta_file,gene_collection,track_collection)
 
 if __name__ == '__main__':

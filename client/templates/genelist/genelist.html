@@ -1,7 +1,6 @@
 <template name="genelist">
   <div class="container">
   	<div class="genelist row">
-  		<!--{{> filter}}-->
       <div class="col-md-4">
         <form role="form" id="genelist_filter">
           <div class="panel panel-default">
@@ -20,38 +19,76 @@
                   <label>Tracks</label><span class="badge">{{tracks.count}}</span>
                   {{#each tracks}}
                     <div class="checkbox">
-                      <label><input type="checkbox" class="track-checkbox" id="{{formatTrackName track}}">{{formatTrackName track}}</label>
+                      <input type="checkbox" class="track-checkbox" id="{{formatTrackName track}}">
+                      <label for="{{formatTrackName track}}">{{formatTrackName track}}</label>
                     </div>
                   {{/each}}
                 </li>
 
                 <li class="list-group-item">
+                  <label>Features</label>
+                  <div class="checkbox">
+                      <input type="checkbox" class="ternary-toggle" id="Productname">
+                      <label for="Productname">
+                        Productname
+                      </label>
+                  </div>
+                  <div class="checkbox">
+                      <input type="checkbox" class="ternary-toggle" id="Manual annotation">
+                      <label for="Manual annotation">
+                        Manual annotation
+                      </label>
+                  </div>
+                  <div class="checkbox">
+                      <input type="checkbox" class="ternary-toggle" id="Singleton">
+                      <label for="Singleton">
+                        Singleton
+                      </label>
+                  </div>
+                  <div class="checkbox">
+                      <input type="checkbox" class="ternary-toggle" id="Domains">
+                      <label for="Domains">
+                        Domains
+                      </label>
+                  </div>
+                </li>
+
+                <li class="list-group-item">
                 <label>Has productname</label>
                 <div class="radio">
-                  <label><input type="radio" class="productname-radio" id="yes" name="productname-radio"> Yes </label>
+                  <input type="radio" class="productname-radio" id="product-yes" name="productname-radio">
+                  <label for="product-yes"> Yes </label>
                 </div>
                 <div class="radio">
-                  <label><input type="radio" class="productname-radio" id="no" name="productname-radio"> No </label>
+                  <input type="radio" class="productname-radio" id="product-no" name="productname-radio">
+                  <label for="product-no"> No </label>
                 </div>
                 <div class="radio">
-                  <label><input type="radio" class="productname-radio" id="idc" name="productname-radio"> I don't care </label>
+                  <input type="radio" class="productname-radio" id="product-idc" name="productname-radio">
+                  <label for="product-idc"> I don't care </label>
                 </div>
                 </li>
 
                 <li class="list-group-item">
                 <label>Manual annotation</label>
                 <div class="radio">
-                  <label><input type="radio" class="manual-radio" id="yes" name="manual-radio"> Yes </label>
+                  <input type="radio" class="manual-radio" id="manual-yes" name="manual-radio">
+                  <label for="manual-yes"> Yes </label>
                 </div>
                 <div class="radio">
-                  <label><input type="radio" class="manual-radio" id="no" name="manual-radio"> No </label>
+                  <input type="radio" class="manual-radio" id="manual-no" name="manual-radio">
+                  <label for="manual-no"> No </label>
                 </div>
                 <div class="radio">
-                  <label><input type="radio" class="manual-radio" id="idc" name="manual-radio"> I don't care </label>
+                  <input type="radio" class="manual-radio" id="manual-idc" name="manual-radio">
+                  <label for="manual-idc"> I don't care </label>
                 </div>
                 </li>
 
-                <li class="list-group-item">Another filter <span class="badge">...</span></li>
+                <li class="list-group-item">
+                  Another filter <span class="badge">...</span>
+                  <div class="noUiSlider" id="slider"></div>
+                </li>
                 <li class="list-group-item">
                   ...
                 </li>
@@ -93,7 +130,6 @@
         {{#if genes.count }}
       		<ul class="genelist list-group">
       			{{#each genes}}
-      				<!--{{>feature}}-->
       				<li class="list-group-item">
                 <div class="row">
                   <div class="col-md-11">
@@ -121,8 +157,8 @@
                       {{/if}}
                     </p>
                     <p>
-                      <b> {{attributes.Name}} </b>
-                      {{attributes.Productname}}
+                      <b> {{Name}} </b>
+                      {{Productname}}
                     </p>
                   </div>
                   <div class="col-md-1">
@@ -136,7 +172,6 @@
       		</ul>
       		{{#if moreResults}}
       			<div id="showMoreGenes">
-      					<!--<span class="loading">Loading...</span>-->
                 {{>loading}}
       			</div>
           {{/if}}

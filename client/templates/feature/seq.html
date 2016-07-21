@@ -1,16 +1,16 @@
 <template name="seq">
   <section id="seq">
+    <hr>
+    <div class="btn-group sequence-toggle pull-right" role="group">
+      <button type="button" class="btn btn-default">Nucleotide</button>
+      <button type="button" class="btn btn-default active">Protein</button>
+    </div>
+    <h3>Sequence</h3>
+    
   	{{#each transcripts}}
-  		<hr>
-        <h3>Sequence</h3>
-        <h5>Protein sequence</h5>
-        <div class="well">
-          <p class="seq">>{{ this.ID }} <br> {{ this.pep }}</p>
-        </div>
-        <h5>Nucleotide sequence</h5>
-        <div class="well">
-          <p class="seq">>{{ this.ID }} <br> {{ this.seq }}</p>
-        </div>
+      <div class="well">
+        <p class="seq">>{{ this.ID }} <br> {{ seq this }}</p>
+      </div>
   	{{/each}}
   </section>
 </template>

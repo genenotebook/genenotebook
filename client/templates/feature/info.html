@@ -2,14 +2,16 @@
 	<section id="info">
 		<hr>
 		<h3>General information</h3>
-		<p> Gene ID: {{ID}} </p>
-		<p> Gene name: {{attributes.Name}} </p>
-		<p> Product name: {{attributes.Productname}} </p>
-		<p> Coordinates: {{seqid}} {{start}} {{end}} {{strand}} </p>
-		<p> Orthologs: {{#each orthologs}}<a href="/gene/{{this}}">{{this}}</a> {{/each}}</p>
-		<p> Inparalogs: {{#each paralogs}}<a href="/gene/{{this}}">{{this}}</a> {{/each}}</p>
-		<p> Comments: {{attributes.Comments}} </p>
-		<p> Author: {{attributes.[Created by]}} </p>
-		<p> Orthogroup: {{orthogroup}} </p>
+		<p> Gene ID: {{ID}} <br>
+		Gene name: <b>{{Name}}</b> <br>
+		Product name: {{Productname}} <br>
+		Coordinates: {{seqid}} {{start}} {{end}} {{strand}} <br>
+		Orthologs: {{#each orthologs}}<a href="/gene/{{this}}">{{this}}</a> {{/each}} <br>
+		Inparalogs: {{#each paralogs}}<a href="/gene/{{this}}">{{this}}</a> {{/each}} <br>
+		Comments: {{Comments}} <br>
+		Author: {{[Created by]}} <br>
+		Orthogroup: {{orthogroup}} <br>
+		Domains: {{#each domains.InterPro}}<a href="https://www.ebi.ac.uk/interpro/entry/{{this}}" target="_blank">{{this}}</a> {{/each}}</p>
+
 	</section>
 </template>
