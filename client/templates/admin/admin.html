@@ -1,25 +1,13 @@
 <template name="admin">
 	<div class="container">
-		<p><b> Admin panel</b></p>
+		<h3> Admin panel</h3>
+		<hr>
 		<ul class="nav nav-tabs">
 			<li data-template="users" role="presentation" class="active"><a href="#">Users</a></li>
 			<li data-template="genomes" role="presentation"><a href="#">Genomes</a></li>
 			<li data-template="tracks" role="presentation"><a href="#">Tracks</a></li>
-			<li data-template="experiments" role="presentation"><a href="#">Experiments</a></li>
+			<li data-template="admin_experiments" role="presentation"><a href="#">Experiments</a></li>
 		</ul>
 		{{> Template.dynamic template=tab data=tabData}}
-		<!--
-		<p></p>
-		<ul class="list-group row">
-			{{#each users}}
-				<li class="list-group-item">
-				Username: {{username}} {{email}} 
-				Roles: {{#each roles}}
-					{{this}} / 
-				{{/each}}
-				</li>
-			{{/each}}
-		</ul>
-		-->
 	</div>
 </template>

@@ -1,124 +1,95 @@
 <template name="genelist">
-  <div class="container">
+  <div class="container-fluid">
   	<div class="genelist row">
-      <div class="col-md-4">
+      <div class="col-md-3">
         <form role="form" id="genelist_filter">
           <div class="panel panel-default">
-            <div class="panel-heading">Filter options</div>
-              <div class="panel-body">
-                <p>Select a combination of filters below</p>
+            <div class="panel-heading">
+              <div class="pull-right">
+                {{#if hasFilter}}
+                  <button type="button" class="btn btn-danger btn-sm reset_filter">
+                    <span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span> Reset
+                  </button>
+                {{/if}}
               </div>
-              <ul class="filter list-group">
+              <h5><b>Filter options</b></h5>
+            </div>
+            <div class="panel-body">
+              <p>Select a combination of filters below</p>
+            </div>
+            <ul class="filter list-group">
 
-                <li class="list-group-item">
-                  <label for="gene_id_filter">Gene IDs</label>
-                  <textarea class="form-control" id="gene_id_filter" type="text"></textarea>
-                </li>
+              <li class="list-group-item">
+                <label for="gene_id_filter">Gene IDs</label>
+                <textarea class="form-control" id="gene_id_filter" type="text"></textarea>
+              </li>
 
-                <li class="list-group-item">
-                  <label>Tracks</label><span class="badge">{{tracks.count}}</span>
-                  {{#each tracks}}
-                    <div class="checkbox">
-                      <input type="checkbox" class="track-checkbox" id="{{formatTrackName track}}">
-                      <label for="{{formatTrackName track}}">{{formatTrackName track}}</label>
-                    </div>
-                  {{/each}}
-                </li>
-
-                <li class="list-group-item">
-                  <label>Features</label>
+              <li class="list-group-item">
+                <label>Tracks</label>
+                {{#each tracks}}
                   <div class="checkbox">
-                      <input type="checkbox" class="ternary-toggle" id="Productname">
-                      <label for="Productname">
-                        Productname
-                      </label>
+                    <input type="checkbox" class="track-checkbox" id="{{track}}">
+                    <label for="{{track}}">{{formatTrackName track}}</label>
                   </div>
-                  <div class="checkbox">
-                      <input type="checkbox" class="ternary-toggle" id="Manual annotation">
-                      <label for="Manual annotation">
-                        Manual annotation
-                      </label>
-                  </div>
-                  <div class="checkbox">
-                      <input type="checkbox" class="ternary-toggle" id="Singleton">
-                      <label for="Singleton">
-                        Singleton
-                      </label>
-                  </div>
-                  <div class="checkbox">
-                      <input type="checkbox" class="ternary-toggle" id="Domains">
-                      <label for="Domains">
-                        Domains
-                      </label>
-                  </div>
-                </li>
+                {{/each}}
+              </li>
 
-                <li class="list-group-item">
-                <label>Has productname</label>
-                <div class="radio">
-                  <input type="radio" class="productname-radio" id="product-yes" name="productname-radio">
-                  <label for="product-yes"> Yes </label>
+              <li class="list-group-item">
+                <label>Features</label>
+                <div class="checkbox">
+                    <input type="checkbox" class="ternary-toggle" id="Productname">
+                    <label for="Productname">
+                      Productname
+                    </label>
                 </div>
-                <div class="radio">
-                  <input type="radio" class="productname-radio" id="product-no" name="productname-radio">
-                  <label for="product-no"> No </label>
+                <div class="checkbox">
+                    <input type="checkbox" class="ternary-toggle" id="Name">
+                    <label for="Name">
+                      Manual annotation
+                    </label>
                 </div>
-                <div class="radio">
-                  <input type="radio" class="productname-radio" id="product-idc" name="productname-radio">
-                  <label for="product-idc"> I don't care </label>
+                <div class="checkbox">
+                    <input type="checkbox" class="ternary-toggle" id="singleton">
+                    <label for="singleton">
+                      Singleton
+                    </label>
                 </div>
-                </li>
+                <div class="checkbox">
+                  <input type="checkbox" class="ternary-toggle" id="paralogs">
+                  <label for="paralogs">
+                    Inparalog
+                  </label>
+                </div>
+                <div class="checkbox">
+                    <input type="checkbox" class="ternary-toggle" id="domains">
+                    <label for="domains">
+                      Domains
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <input type="checkbox" class="ternary-toggle" id="orthogroup">
+                    <label for="orthogroup">
+                      Orthogroup
+                    </label>
+                </div>
+              </li>
 
-                <li class="list-group-item">
-                <label>Manual annotation</label>
-                <div class="radio">
-                  <input type="radio" class="manual-radio" id="manual-yes" name="manual-radio">
-                  <label for="manual-yes"> Yes </label>
-                </div>
-                <div class="radio">
-                  <input type="radio" class="manual-radio" id="manual-no" name="manual-radio">
-                  <label for="manual-no"> No </label>
-                </div>
-                <div class="radio">
-                  <input type="radio" class="manual-radio" id="manual-idc" name="manual-radio">
-                  <label for="manual-idc"> I don't care </label>
-                </div>
-                </li>
-
-                <li class="list-group-item">
-                  Another filter <span class="badge">...</span>
-                  <div class="noUiSlider" id="slider"></div>
-                </li>
-                <li class="list-group-item">
-                  ...
-                </li>
-              </ul>
+              <li class="list-group-item">
+                Another filter <span class="badge">...</span>
+                <div class="noUiSlider" id="slider"></div>
+              </li>
+              <li class="list-group-item">
+                ...
+              </li>
+            </ul>
               <div class="panel-footer">
-                <div class="row">
-                  <div class="col-md-6">
-                    <button type="submit" class="btn btn-default">
-                      <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Apply filters
-                    </button>
-                  </div>
-                  <div class="col-md-6">
-                    {{#if hasFilter}}
-                      <button type="button" class="btn btn-danger reset_filter">
-                        <span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span> Clear filters
-                      </button>
-                    {{/if}}
-                  </div>
-                </div>
+
               </div>
             </div>
           </form>
         </div>
-      <div class="col-md-8">
-        <div class="row">
-          <div class="col-md-10 btn-group" role="group">
-            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-sort-by-attributes-alt"></span></button>
-            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-sort-by-attributes"></span></button>
-          </div>
-          <div class="col-md-2 btn-group" role="group">
+      <div class="col-md-9 clearfix">
+          <div class="pull-right btn-group" role="group">
             <button type="button" class="export-data btn btn-success" data-loading-text="...">
               <span class="glyphicon glyphicon-download"></span>
             </button>
@@ -126,47 +97,52 @@
               <span class="select-button glyphicon glyphicon-ok {{isChecked}}"></span>
             </button>
           </div>
-        </div>
+          
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default">
+              <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+            </button>
+            <button type="button" class="btn btn-default">
+              <span class="glyphicon glyphicon-sort-by-attributes"></span>
+            </button>
+          </div>
+          
+          <span class="label label-default">{{ queryCount }} results</span>
+
         {{#if genes.count }}
       		<ul class="genelist list-group">
       			{{#each genes}}
       				<li class="list-group-item">
-                <div class="row">
-                  <div class="col-md-11">
-                    <p>
-                      <a class="genelink" href="/gene/{{ID}}">{{ID}}</a>
-                      {{#if orthologs}}
-                        &nbsp;
-                        <span class="label label-primary">
-                          {{orthologs.length}} Orthologs
-                        </span>
-                        <span class="label {{confidence}}">
-                          {{one_to_one_orthologs}}
-                        </span>
-                      {{/if}}
-                      {{#if paralogs}}
-                        &nbsp;
-                        <span class="label label-info">
-                          {{paralogs.length}} Inparalogs
-                        </span>
-                      {{/if}}
-                      {{#if singleton}}
-                        <span class="label label-warning">
-                          Singleton
-                        </span>
-                      {{/if}}
-                    </p>
-                    <p>
-                      <b> {{Name}} </b>
-                      {{Productname}}
-                    </p>
-                  </div>
-                  <div class="col-md-1">
-                    <button type="button" class="btn btn-default select-gene">
-                      <span class="select-button glyphicon glyphicon-ok {{isChecked}}"></span>
-                    </button>
-                  </div>
-                </div>
+                <button type="button" class="btn btn-default select-gene pull-right">
+                  <span class="select-button glyphicon glyphicon-ok {{isChecked}}"></span>
+                </button>
+                <p>
+                  <a class="genelink" href="/gene/{{ID}}">{{ID}}</a>
+                  {{#if orthologs}}
+                    &nbsp;
+                    <span class="label label-default">
+                      {{orthologs.length}} Orthologs
+                    </span>
+                    <span class="label {{confidence}}">
+                      {{one_to_one_orthologs}}
+                    </span>
+                  {{/if}}
+                  {{#if paralogs}}
+                    &nbsp;
+                    <span class="label label-info">
+                      {{paralogs.length}} Inparalogs
+                    </span>
+                  {{/if}}
+                  {{#if singleton}}
+                    <span class="label label-warning">
+                      Singleton
+                    </span>
+                  {{/if}}
+                </p>
+                <p>
+                  <b> {{Name}} </b>
+                  {{Productname}}
+                </p>
       				</li>
       			{{/each}}
       		</ul>

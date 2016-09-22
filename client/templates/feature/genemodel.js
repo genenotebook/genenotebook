@@ -29,7 +29,7 @@ Template.genemodel.rendered = function(){
 		})
 	})
 	const groupedSubs = _.groupBy([].concat(...splitSubs),'parents')
-	console.log(d3.values(groupedSubs))
+	//console.log(d3.values(groupedSubs))
 
     //get transcript min and max values
     const starts = transcriptData.map(function(x){return x.start});
@@ -120,7 +120,7 @@ Template.genemodel.rendered = function(){
 				return xScale(d.end) - xScale(d.start)
 			})
 			.attr('height',10)
-			.style('fill','rgb(251,106,74)')
+			.style('fill','#3690c0')
 			.style('stroke','black')
 			.style('stroke-width',0.5)
 

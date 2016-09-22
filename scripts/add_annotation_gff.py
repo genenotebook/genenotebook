@@ -100,7 +100,7 @@ def main(gff_file=None,fasta_file=None,settings_file=None):
 	print client_address
 	client = pymongo.MongoClient(client_address)
 
-	db_string = client_address.split('/')[-1]
+	db_string = client_address.strip().split('/')[-1]
 	db = client[db_string]
 	
 	gene_collection = db.genes

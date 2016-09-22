@@ -3,30 +3,26 @@
 	<ul class="list-group">
 		{{#each this}}
 			<li class="list-group-item">
-				<div class="row">
-					<div class="col-md-8">
-						<p>Original file: {{track}}</p>
-						<p>Reference: {{assembly}}</p>
-						<p>Genes: {{gene}}</p>
-					</div>
-					<div class="col-md-4">
-						<div class="btn-group">
-							{{#if hasDb}}
-								<button type="button" class="btn btn-warning makeblastdb">
-									<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Remake
-								</button>
-								<button type="button" class="btn btn-danger deleteblastdb">
-									<span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span> Delete 
-								</button>
-							{{else}}
-							<button type="button" class="btn btn-default makeblastdb">
-								<span class="glyphicon glyphicon-hdd" aria-hidden="true"></span> Make blast DB
-							</button>
-							{{/if}}
-							<button type="button" class="btn btn-default disabled">Blast DB</button>
-						</div>
-					</div>
+				<div class="btn-group pull-right">
+					{{#if hasDb}}
+						<button type="button" class="btn btn-warning makeblastdb">
+							<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Remake
+						</button>
+						<button type="button" class="btn btn-danger deleteblastdb">
+							<span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span> Delete 
+						</button>
+					{{else}}
+					<button type="button" class="btn btn-default makeblastdb">
+						<span class="glyphicon glyphicon-hdd" aria-hidden="true"></span> Make blast DB
+					</button>
+					{{/if}}
+					<button type="button" class="btn btn-default disabled">Blast DB</button>
 				</div>
+				<p>
+					Original file: {{track}}<br>
+					Reference: {{assembly}}<br>
+					Genes: {{gene}}
+				</p>
 			</li>
 		{{/each}}
 	</ul>

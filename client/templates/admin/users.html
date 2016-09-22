@@ -3,8 +3,56 @@
 	<ul class="list-group">
 		{{#each this}}
 			<li class="list-group-item">
-				<p> Username: <strong>{{username}}</strong></p>
-				<p> Roles: {{roles}} </p>
+				{{#if edit username}}
+					<form class="form-horizontal" id="{{username}}">
+						<div class="btn-group pull-right">
+							<button type="button" class="btn btn-success btn-sm save">SAVE</button>
+							<button type="button" class="btn btn-danger btn-sm cancel">CANCEL</button>
+						</div>
+
+						<div class="form-group">
+							<label for="username" class="col-sm-2 control-label">Username:</label>
+							<div class="col-sm-6">
+								<input type="text" class="form-control" id="username" value="{{username}}">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="firstname" class="col-sm-2 control-label">First name:</label>
+							<div class="col-sm-6">
+								<input type="text" class="form-control" id="firstname" value="{{profile.first_name}}">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="lastname" class="col-sm-2 control-label">Last name:</label>
+							<div class="col-sm-6">
+								<input type="text" class="form-control" id="lastname" value="{{profile.last_name}}">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="lastname" class="col-sm-2 control-label">Email address:</label>
+							<div class="col-sm-6">
+								<input type="text" class="form-control" id="email" value="{{emails}}">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="roles" class="col-sm-2 control-label">Access level:</label>
+							<div class="col-sm-6 btn-group" role="group" id="roles">
+								<button type="button" class="btn btn-secondary">User</button>
+								<button type="button" class="btn btn-secondary">Curator</button>
+								<button type="button" class="btn btn-secondary">Admin</button>
+							</div>
+						</div>
+					</form>
+				{{else}}
+					<button type="button" class="btn btn-primary btn-sm pull-right edit" id="{{username}}">EDIT</button>
+					<p> 
+						Username: <strong>{{username}}</strong><br>
+						First name: {{profile.first_name}}<br>
+						Last name: {{profile.last_name}}<br>
+						Email address: {{#each emails}}{{this.address}}{{/each}}<br>
+						Roles: {{roles}}
+					</p>
+				{{/if}}
 			</li>
 		{{/each}}
 	</ul>

@@ -47,7 +47,7 @@ Template.header.events({
 		console.log('clear search')
 		Session.set('search',null);
 		$('input[name="search"]').val('')
-		//Router.go('genes',{},{'query':{}})
+		Router.go('genes',{},{'query':{}})
 		//Session.set('hasSearch',false);
 	}
 })

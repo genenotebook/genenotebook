@@ -1,32 +1,36 @@
 <template name="feature">
-  <div class="feature-panel panel panel-default">
-    <div class="panel-heading">
-      <b>
-        {{ID}} 
-        {{#if Name}}
-          ({{Name}})
-        {{/if}}
-      </b> {{Productname}}
-    </div>
-    <div class="panel-body">
-      <ul class="nav nav-tabs" id="feature-nav" data-spy="affix">
-        <li role="presentation" class="active"><a href="#info">Info</a></li>
-        <li role="presentation"><a href="#seq">Sequence</a></li>
-        <li role="presentation"><a href="#genemodel">Genemodel <span class="badge"> {{ transcripts.length }} </span></a></li>
-        <li role="presentation"><a href="#interproscan">Interpro domains <span class="badge">{{ domainCount }}</span></a></li>
-        <li role="presentation"><a href="#orthogroup">Orthogroup <span class="badge">{{ orthogroupSize }}</span></a></li>
-      </ul>
-    </div>
-      <!--
-      {{> Template.dynamic template=tab data=tabData }}
-      -->
-      <div class="container feature-info">
-        {{>info}}
-        {{>genemodel}}
-        {{>interproscan}}
-        {{>seq}}
-        {{>orthogroup}}
+  <div class="container">
+    <div class="feature-panel panel panel-default">
+      <div class="panel-heading">
+        <b>
+          {{ID}} 
+          {{#if Name}}
+            ({{Name}})
+          {{/if}}
+        </b> {{Productname}}
       </div>
-    
+      <div class="panel-body">
+        <ul class="nav nav-tabs" id="feature-nav" data-spy="affix">
+          <li role="presentation" class="active"><a href="#info">Info</a></li>
+          <li role="presentation"><a href="#seq">Sequence</a></li>
+          <li role="presentation"><a href="#genemodel">Genemodel <span class="badge"> {{ transcripts.length }} </span></a></li>
+          <li role="presentation"><a href="#interproscan">Interpro domains <span class="badge">{{ domainCount }}</span></a></li>
+          <li role="presentation"><a href="#orthogroup">Orthogroup <span class="badge">{{ orthogroupSize }}</span></a></li>
+          <li role="presentation"><a href="#experiments">Experiments <span class="badge"> 2 </span></a></li>
+        </ul>
+      
+        <!--
+        {{> Template.dynamic template=tab data=tabData }}
+        -->
+        <div class="feature-info">
+          {{>info}}
+          {{>genemodel}}
+          {{>interproscan}}
+          {{>seq}}
+          {{>orthogroup}}
+          {{>experiments}}
+        </div>
+      </div>
+    </div>
   </div>
 </template>

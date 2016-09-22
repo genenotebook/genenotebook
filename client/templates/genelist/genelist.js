@@ -1,6 +1,7 @@
 var ITEMS_INCREMENT = 40;
 Session.setDefault('itemsLimit', ITEMS_INCREMENT);
 Session.setDefault('select-all',false);
+Session.setDefault('filter',{}  )
 Meteor.subscribe('tracks');
 Tracker.autorun(function(){
   Meteor.subscribe('genes',Session.get('itemsLimit'),Session.get('search'),Session.get('filter'));
@@ -11,9 +12,9 @@ Template.genelist.helpers({
     const query = Session.get('filter') || {};
     const search = Session.get('search')
     if (search) {
-      query.$or = [{'ID':{$regex:search}},{'Name':{$regex:search}}];
+      query.$or = [{'ID':{$regex:search, $options: 'i'}},{'Name':{$regex:search, $options: 'i'}}];
       if (!query.hasOwnProperty('Productname')){
-        query.$or.push({'Productname':{$regex:search}})
+        query.$or.push({'Productname':{$regex:search, $options: 'i'}})
     }
   }
     return Genes.find(query,{sort:{'ID':1}});
@@ -29,7 +30,13 @@ Template.genelist.helpers({
   },
   hasFilter: function(){
     const filter = Session.get('filter')
-    return filter;
+    return !_.isEmpty(filter);
+  },
+  queryCount:function(){
+    Meteor.call('queryCount',Session.get('filter'),function(err,res){
+      if(!err) Session.set('queryCount',res);
+    })
+    return Session.get('queryCount');
   },
   isChecked: function(){
     if (Session.get('select-all')){
@@ -54,7 +61,6 @@ Template.genelist.helpers({
     }
   },
   tracks:function(){
-    //console.log(Tracks.find({}).fetch());
     return Tracks.find({});
   },
   formatTrackName:function(trackName){
@@ -66,90 +72,80 @@ Template.genelist.helpers({
     } else {
       return 'label-danger'
     }
-    //return confidence
   }
 });
 
 Template.genelist.events({
+  'input #gene_id_filter': function(event){
+    const filter = Session.get('filter')
+    const geneIdString = event.currentTarget.value
+    const temp = geneIdString ? geneIdString.split('\n') : [];
+    const filterGeneIds = temp.filter(function(x){ return x });
+    if (filterGeneIds.length > 0){
+      filter.ID = {$in:filterGeneIds}
+      Session.set('filter',filter)
+    }
+  },
+  'click input.track-checkbox[type=checkbox]': function(event){
+    const filter = Session.get('filter');
+    const checkbox = event.target;
+    const parent = $(checkbox).parent();
+    const id = parent.context.id;
+    if (checkbox.checked){
+      if (!filter.hasOwnProperty('track')){
+        filter['track'] = {'$in':[id]}
+      } else {
+        filter['track']['$in'].push(id)
+      }
+    } else {
+      filter['track']['$in'] = _.without(filter['track']['$in'],id)
+    } 
+    if (filter['track']['$in'].length === 0){
+      delete filter['track']
+    }
+    Session.set('filter',filter)
+  },
   'click input.ternary-toggle[type=checkbox]': function(event){
-    console.log(event.target)
-    toggleSwitch(event.target)
-  },
-  "click .genelink": function(){
-    /*
-    var id = this._id._str;
-    console.log(this);
-    var _expanded = Session.get('expand');
-    var expanded = _expanded ? _expanded.slice(0) : [];
-    var wasExpanded = expanded.indexOf(id);
-    if (wasExpanded < 0) {
-      expanded.push(Id);
+    const filter = Session.get('filter');
+    const checkbox = event.target;
+    const parent = $(checkbox).parent();
+    const id = parent.context.id;
+    if (id === 'Productname'){
+      positiveQuery = {$ne:'None'}
+      negativeQuery = 'None'
+    } else {
+      positiveQuery = {$exists:true}
+      negativeQuery = {$exists:false}
     }
-    */
-  },
-  "submit #genelist_filter": function(event){
-    event.preventDefault();
-    //empty object to initialize filter
-    const filter = {}
-    //check if anything in gene_id textarea
-    const gene_id_string = $('#gene_id_filter').get(0).value;
-    const filter_gene_ids = gene_id_string ? gene_id_string.split('\n') : [];
-    if (filter_gene_ids.length > 0){
-      console.log(filter_gene_ids)
-      filter.ID = {$in:filter_gene_ids}
-      //filter.ID = filter_gene_ids
-    }
-    //check track checkboxes
-    const tracks = Tracks.find({}).fetch();
-    const trackNames = tracks.map(function(x){return x.track.split('.')[0]});
-    const filter_tracks = []
-    for (var i in trackNames){
-      const trackName = trackNames[i];
-      const trackButton = $('.track-checkbox#'+trackName);
-      if (trackButton.is(':checked')){
-        filter_tracks.push(tracks[i].track)
-      }
-    }
-    if (filter_tracks.length > 0){
-      //console.log(filter_tracks)
-      filter.track = {$in:filter_tracks}
-      //filter.tracks = filter_tracks
-    }
+    console.log(parent.context.id);
+    if (checkbox.readOnly){
+      //go from negative to unchecked
+      delete filter[id]
+      parent.removeClass('checkbox-danger');
+      checkbox.checked=checkbox.readOnly=false;
+    } else if (!checkbox.checked){
+      //go from positive to negative
+      filter[id] = negativeQuery;
+      parent.addClass('checkbox-danger');
+      parent.removeClass('checkbox-success');
+      checkbox.readOnly=checkbox.checked=true;
+    } else {
+      //go from unchecked to positive
+      filter[id] = positiveQuery;
+      parent.addClass('checkbox-success');
+      parent.removeClass('checkbox-danger');
 
-    //check productname radiobuttons
-    if ($('.productname-radio#product-yes').is(':checked')){
-      console.log('productname yes')
-      filter['Productname'] = {$ne:'None'};
-    } else if ($('.productname-radio#product-no').is(':checked')){
-      console.log('productname no')
-      filter['Productname'] = 'None'
-    } else if ($('.productname-radio#product-idc').is(':checked')){
-      console.log('productname dont care')
-      if (filter.hasOwnProperty('productname')){
-        delete filter['Productname'];
-      }
-    }
-
-    //check manual radiobuttons
-    if ($('.manual-radio#manual-yes').is(':checked')){
-      filter['Name'] = {$exists:true};
-    } else if ($('.manual-radio#manual-no').is(':checked')){
-      filter['Name'] = {$exists:false};
-    } else if ($('.manual-radio#manual-idc').is(':checked')){
-      if (filter.hasOwnProperty('Name')){
-        delete filter['Name'];
-      }
-    }
-
-    console.log('filter submit');
-    console.log(filter);
-    if (Object.keys(filter).length > 0){
-          Session.set('filter',filter);
-    }
+   }
+   Session.set('filter',filter)
   },
   "click .reset_filter": function(event){
     event.preventDefault();
-    Session.set('filter',false);
+    const filters = $('input[type=checkbox]');
+    filters.each(function(){
+      this.checked = this.readOnly = false;
+    })
+    $('#gene_id_filter').val('');
+    Session.set('filter',{});
     Session.set('select-all',false);
     Session.set('checked',[]);
   },
@@ -227,8 +223,17 @@ $(window).scroll(showMoreVisible)
 
 //toggle between checked/unchecked/indeterminate for checkboxes to determine query yes/no/don't care
 function toggleSwitch(checkbox) {
+  const filter = Session.get(filter)
   const parent = $(checkbox).parent();
-  console.log(parent);
+  const id = parent.context.id;
+  if (id === 'Productname'){
+    positiveQuery = {$ne:'None'}
+    negativeQuery = 'None'
+  } else {
+    positiveQuery = {$exists:true}
+    negativeQuery = {$exists:false}
+  }
+  console.log(parent.context.id);
   if (checkbox.readOnly){
     //go from negative to unchecked
     parent.removeClass('checkbox-danger');

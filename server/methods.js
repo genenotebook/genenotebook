@@ -31,6 +31,11 @@ function makeFasta(track){
 
 
 Meteor.methods({
+	queryCount:function(filter){
+		//const filter = Session.get('filter');
+		const count = Genes.find(filter).count()
+		return count
+	},
 	makeBlastDb: function(track){
 		this.unblock();
 		const dbtypes = ['nucl','prot'];

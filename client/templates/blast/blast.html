@@ -23,8 +23,9 @@
 					<li class="list-group-item">
 						<label>Select tracks</label>
 						{{#each tracks}}
-							<div class="radio track-select">
-								<label><input type="checkbox" class="track-radio" id="{{track}}" name="track-radio">  {{track}}</label>
+							<div class="checkbox track-select">
+								<input type="checkbox" class="track-checkbox" id="{{track}}" name="track-checkbox">
+								<label for="{{track}}">{{track}}</label>
 							</div>
 						{{/each}}
 					</li>

@@ -65,7 +65,7 @@ Template.blast.helpers({
 })
 
 Template.blast.events({
-	'keyup #blast_seq':function(event){
+	'input #blast_seq':function(event){
 		const input = event.currentTarget.value;
 		//validate input here
 
