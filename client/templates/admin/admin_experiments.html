@@ -1,0 +1,49 @@
+<template name="admin_experiments">
+	<p></p>
+	<ul class="list-group">
+		{{#each this}}
+			<li class="list-group-item">
+				{{#if edit ID}}
+					<form class="form-horizontal" id="{{ID}}">
+						<div class="btn-group pull-right">
+							<button type="button" class="btn btn-success btn-sm save">SAVE</button>
+							<button type="button" class="btn btn-danger btn-sm cancel">CANCEL</button>
+						</div>
+						<div class="form-group">
+							<label for="name" class="col-sm-2 control-label">Name:</label>
+							<div class="col-sm-6">
+								<input type="text" class="form-control" id="name" value="{{ID}}">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="experiment" class="col-sm-2 control-label">Experiment:</label>
+							<div class="col-sm-6">
+								<input type="text" class="form-control" id="experiment" value="{{experiment}}">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="description" class="col-sm-2 control-label">Description:</label>
+							<div class="col-sm-6">
+								<textarea type="text" class="form-control" id="description">{{description}}</textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="counts" class="col-sm-2 control-label">Total counts:</label>
+							<div class="col-sm-6">
+								<input type="text" class="form-control" id="counts" value="{{totalCounts}}" disabled>
+							</div>
+						</div>
+					</form>
+				{{else}}
+					<button type="button" class="btn btn-primary btn-sm pull-right edit" id="{{ID}}">EDIT</button>
+					<p>
+						{{ID}}<br>
+						{{experiment}}<br>
+						{{description}}<br>
+						{{totalCounts}}
+					</p>
+				{{/if}}
+			</li>
+		{{/each}}
+	</ul>	
+</template>
