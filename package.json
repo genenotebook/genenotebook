@@ -4,6 +4,10 @@
   "description": "A portable website for browsing and querying genome sequences and annotations",
   "license": "AGPL-3.0",
   "dependencies": {
-    "bcrypt": "^0.8.7"
+    "bcrypt": "^0.8.7",
+    "d3": "^4.2.6",
+    "d3-scale-chromatic": "^1.0.2",
+    "lodash": "^4.16.2",
+    "meteor-node-stubs": "^0.2.3"
   }
 }
