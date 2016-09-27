@@ -1,0 +1,10 @@
+<template name="adminFilterOptions">
+	<p></p>
+	<ul class="list-group">
+	{{ #each this }}
+		<li class="list-group-item">
+		{{ _id }} {{ name }} {{ show }}
+		</li>
+	{{ /each }}
+	</ul>
+</template>

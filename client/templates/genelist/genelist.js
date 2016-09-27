@@ -1,11 +1,13 @@
 var ITEMS_INCREMENT = 40;
 Session.setDefault('itemsLimit', ITEMS_INCREMENT);
 Session.setDefault('select-all',false);
-Session.setDefault('filter',{}  )
+Session.setDefault('filter',{})
+Session.setDefault('selection',[])
 Meteor.subscribe('tracks');
 Tracker.autorun(function(){
   Meteor.subscribe('genes',Session.get('itemsLimit'),Session.get('search'),Session.get('filter'));
 })
+
 
 Template.genelist.helpers({
   genes: function(){
@@ -19,21 +21,15 @@ Template.genelist.helpers({
   }
     return Genes.find(query,{sort:{'ID':1}});
   },
-  transcripts: function(){
-    const transcripts = this.subfeatures.filter(function(x){ return x.type === 'mRNA' });
-    return transcripts
-  },
   moreResults: function(){
     // If, once the subscription is ready, we have less rows than we
     // asked for, we've got all the rows in the collection.
     return !(Genes.find({'type':'gene'}).count() < Session.get("itemsLimit"));
   },
-  hasFilter: function(){
-    const filter = Session.get('filter')
-    return !_.isEmpty(filter);
-  },
   queryCount:function(){
-    Meteor.call('queryCount',Session.get('filter'),function(err,res){
+    const search = Session.get('search');
+    const filter = Session.get('filter');
+    Meteor.call('queryCount',search,filter,function(err,res){
       if(!err) Session.set('queryCount',res);
     })
     return Session.get('queryCount');
@@ -43,10 +39,10 @@ Template.genelist.helpers({
       return 'checked'
     } else {
       const id = this.ID;
-      const checked = Session.get('checked');
-      if (typeof checked === 'undefined'){
+      const selection = Session.get('selection');
+      if (typeof selection === 'undefined'){
         return 'unchecked'
-      } else if (checked.indexOf(id) >= 0){
+      } else if (selection.indexOf(id) >= 0){
         return 'checked';
       } else {
         return 'unchecked'
@@ -60,17 +56,12 @@ Template.genelist.helpers({
       return 'unchecked'
     }
   },
-  tracks:function(){
-    return Tracks.find({});
-  },
-  formatTrackName:function(trackName){
-    return trackName.split('.')[0];
-  },
-  confidence:function(){
-    if (this.one_to_one_orthologs === 'High confidence') {
-      return 'label-success'
+  selection: function(){
+    const selection = Session.get('selection')
+    if (selection.length > 0){
+      return true
     } else {
-      return 'label-danger'
+      return Session.get('select-all')
     }
   }
 });
@@ -110,13 +101,10 @@ Template.genelist.events({
     const checkbox = event.target;
     const parent = $(checkbox).parent();
     const id = parent.context.id;
-    if (id === 'Productname'){
-      positiveQuery = {$ne:'None'}
-      negativeQuery = 'None'
-    } else {
-      positiveQuery = {$exists:true}
-      negativeQuery = {$exists:false}
-    }
+    
+    const positiveQuery = {$exists:true}
+    const negativeQuery = {$exists:false}
+    
     console.log(parent.context.id);
     if (checkbox.readOnly){
       //go from negative to unchecked
@@ -138,7 +126,7 @@ Template.genelist.events({
    }
    Session.set('filter',filter)
   },
-  "click .reset_filter": function(event){
+  'click .reset_filter': function(event){
     event.preventDefault();
     const filters = $('input[type=checkbox]');
     filters.each(function(){
@@ -149,37 +137,63 @@ Template.genelist.events({
     Session.set('select-all',false);
     Session.set('checked',[]);
   },
-  "click .export-data":function(event,template){
-    $(event.target).button('loading');
-    let name        = 'name',   //Meteor.user().profile.name,
-        fileName    = 'fileName'   //`${name.first} ${name.last}`,
-        //profileHtml = Modules.client.getProfileHTML();
-        /*
-    Meteor.call('exportData',profileHtml,(error,response) => {
-      if (error) {
-        Bert.alert( error.reason, 'warning' );
-      } else if ( response ) {
-      // We'll handle the download here.
-      }
-    })
-    */
-  },
-  "click .select-gene":function(){
-    console.log(this);
+  'click .select-gene':function(){
     const id = this.ID;
-    const _checked = Session.get('checked');
-    const checked = _checked ? _checked.slice(0) : [];
-    const wasChecked= checked.indexOf(id);
-    if (wasChecked < 0) {
-      checked.push(id);
+    const selection = Session.get('selection');
+    //if ID was not selected index will be negative
+    const wasSelected = selection.indexOf(id);
+    if (wasSelected < 0){
+      selection.push(id)
     } else {
-      checked.splice(wasChecked,1);
+      selection.splice(wasSelected,1);
     }
-    Session.set('checked',checked)
+    Session.set('selection',selection)
   },
-  "click .select-all":function(){
+  'click .select-all':function(){
     const selectAll = Session.get('select-all');
     Session.set('select-all',!selectAll);
+  },
+  'click #download': function(event,template){
+    event.preventDefault();
+    const selectAll = Session.get('select-all');
+    
+    let query;
+    if (selectAll){
+      query = Session.get('filter') || {};
+      const search = Session.get('search')
+      if (search) {
+        query.$or = [{'ID':{$regex:search, $options: 'i'}},{'Name':{$regex:search, $options: 'i'}}];
+        if (!query.hasOwnProperty('Productname')){
+            query.$or.push({'Productname':{$regex:search, $options: 'i'}})
+        }
+      }
+    } else {
+      const geneIds = Session.get('selection');
+      query = { ID: { $in: geneIds } };
+    } 
+
+    Bert.defaults.hideDelay = 999999;
+    
+    Bert.alert({
+      message:'Preparing download',
+      style:'growl-bottom-right',
+      icon:'fa-circle-o-notch'
+    });
+
+    Bert.defaults.hideDelay = 2500;
+
+    Meteor.call('format.gff',query,function(err,res){
+      
+      if (err){
+        Bert.alert('Preparing download failed','error','growl-bottom-right');
+      } else {
+        Bert.alert('Preparing download finished','success','growl-bottom-right');
+        const blob = new Blob([res],{type: 'text/plain;charset=utf-8'})
+        const date = new Date()
+
+        saveAs(blob,'bioportal.' + date.toISOString() + '.gff3')
+      }
+    })
   }
 });
 

@@ -11,11 +11,10 @@ Meteor.publishComposite('singleGene',function(ID){
 			},
 			{
 				find: function(gene){
+					const domains = []
 					if (gene.domains !== undefined){
-						var domains = gene.domains.InterPro
-					} else {
-						var domains = []
-					}
+						domains.push(...gene.domains.InterPro)
+					} 
 					return Interpro.find({'ID':{$in:domains}})
 				}
 			}
@@ -54,3 +53,7 @@ Meteor.publish('experiments',function(){
 Meteor.publish('tracks',function(){
 	return Tracks.find({});
 });
+
+Meteor.publish('filterOptions',function(){
+	return FilterOptions.find({});
+})

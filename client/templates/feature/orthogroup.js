@@ -33,7 +33,6 @@ Template.orthogroup.helpers({
 	tree: function(orthogroup){
 		const treeString = orthogroup.phylogenetic_tree;
 		const tree = parseNewick(treeString);
-		//console.log(tree)
 		return tree;
 	},
 	alignmentScore: function(orthogroup){
@@ -96,8 +95,6 @@ Template.orthogroup.rendered = function(){
 		.attr('height', height + margin.bottom + margin.top)
 		.attr('width', width + margin.left + margin.right)
 
-	console.log(svg);
-
 	let chart = svg.append('g')
 
 	let link = chart.append('g')
@@ -126,13 +123,12 @@ Template.orthogroup.rendered = function(){
 			})
 			.style('text-anchor','start')
 			.attr('transform',function(d){ return 'translate(' + ( d.y + 10 ) + ',' + ( d.x + 3 ) +')' })
-			.text(function(d){ console.log(d); return d.data.name })
+			.text(function(d){ return d.data.name })
 
 }
 
 function step(startX,endX,startY,endY){
 	return 'M' + startY + ',' + startX + ' L' + startY + ',' + endX + ' ' + endY + ',' + endX;
-	//return 'M' + startX + ',' + startY + ' L' + endX + ',' + startY + ' ' + endX + ',' + endY;
 }
 
 

@@ -1,0 +1,123 @@
+<template name="filter">
+	<form role="form" id="genelist_filter">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="pull-right">
+            {{#if hasFilter}}
+              <button type="button" class="btn btn-danger btn-sm reset_filter">
+                <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span> Reset
+              </button>
+            {{/if}}
+          </div>
+          <h5><b>Filter options</b></h5>
+        </div>
+        <div class="panel-body">
+          <p>Select a combination of filters below</p>
+        </div>
+        <ul class="filter list-group">
+
+          <!-- gene id filter -->
+          <li class="list-group-item">
+            <label for="gene_id_filter">Gene IDs</label>
+            <textarea class="form-control" id="gene_id_filter" type="text"></textarea>
+          </li>
+          <!-- end gene id filter -->
+
+          <!-- tracks -->
+          <li class="list-group-item">
+            <label>Tracks</label>
+            {{#each tracks}}
+              <div class="checkbox">
+                <input type="checkbox" class="track-checkbox" id="{{track}}">
+                <label for="{{track}}">{{formatTrackName track}}</label>
+              </div>
+            {{/each}}
+          </li>
+          <!-- end tracks -->
+
+          <!-- features -->
+          <li class="list-group-item">
+            <div class="dropdown">
+              <button class="btn btn-default btn-sm dropdown-toggle pull-right" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="featuremenu-button">
+                <i class="fa fa-plus" aria-hidden="true"></i>
+              </button>
+              <ul class="dropdown-menu scrollable-menu pull-right" role="menu" aria-labelledby="featuremenu-button">
+                {{#each features}}
+                  <li role="presentation" >
+                    <a role="menuitem" class="dropdown-item featuremenu-item">{{_id}}</a>
+                  </li>
+                {{/each}}
+              </ul>
+            </div>
+            <label>Features</label>
+            {{#each selectedFeatures}}
+              <div class="checkbox">
+                  <input type="checkbox" class="ternary-toggle" id="{{_id}}">
+                  <label for="{{_id}}">
+                    {{_id}}
+                  </label>
+              </div>
+            {{/each}}
+          </li>
+          <!-- end features -->
+          
+          <!--
+          <li class="list-group-item">
+            <label>Features</label>
+            <div class="checkbox">
+                <input type="checkbox" class="ternary-toggle" id="Productname">
+                <label for="Productname">
+                  Productname
+                </label>
+            </div>
+            <div class="checkbox">
+                <input type="checkbox" class="ternary-toggle" id="Name">
+                <label for="Name">
+                  Manual annotation
+                </label>
+            </div>
+            <div class="checkbox">
+                <input type="checkbox" class="ternary-toggle" id="singleton">
+                <label for="singleton">
+                  Singleton
+                </label>
+            </div>
+            <div class="checkbox">
+              <input type="checkbox" class="ternary-toggle" id="paralogs">
+              <label for="paralogs">
+                Inparalog
+              </label>
+            </div>
+            <div class="checkbox">
+                <input type="checkbox" class="ternary-toggle" id="domains">
+                <label for="domains">
+                  Domains
+                </label>
+            </div>
+            <div class="checkbox">
+                <input type="checkbox" class="ternary-toggle" id="orthogroup">
+                <label for="orthogroup">
+                  Orthogroup
+                </label>
+            </div>
+            <div class="checkbox">
+                <input type="checkbox" class="ternary-toggle" id="changed">
+                <label for="changed">
+                  Changed
+                </label>
+            </div>
+          </li>
+          -->
+
+          <li class="list-group-item">
+            Another filter <span class="badge">...</span>
+            <div class="noUiSlider" id="slider"></div>
+          </li>
+          
+        </ul>
+          <div class="panel-footer">
+
+          </div>
+        </div>
+      </form>
+</template>

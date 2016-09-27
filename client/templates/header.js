@@ -48,6 +48,5 @@ Template.header.events({
 		Session.set('search',null);
 		$('input[name="search"]').val('')
 		Router.go('genes',{},{'query':{}})
-		//Session.set('hasSearch',false);
 	}
 })

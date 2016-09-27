@@ -1,4 +1,4 @@
-Template.tracks.helpers({
+Template.adminTracks.helpers({
 	hasDb: function(){
 		console.log(this.blastdbs);
 		const hasDb = this.blastdbs !== undefined 
@@ -7,18 +7,15 @@ Template.tracks.helpers({
 	}
 })
 
-Template.tracks.events({
+Template.adminTracks.events({
 	'click .makeblastdb':function(){
 		console.log(this.track)
 		const track = this.track;
 		Meteor.call('makeBlastDb',track,function(error,result){
-			if (result){
-				console.log('result')
-				console.log(result)
-			}
 			if (error){
-				console.log('error')
-				console.log(error)
+				Bert.alert('makeBlastDb failed!','danger','growl-top-right');
+			} else {
+				Bert.alert('makeBlastDb finished','success','growl-top-right')
 			}
 		});
 	}

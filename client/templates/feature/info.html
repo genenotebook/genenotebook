@@ -1,17 +1,88 @@
 <template name="info">
 	<section id="info">
 		<hr>
+		
+		{{ #if isInRole 'curator' }}
+			{{ #if editing }}
+				<div class="btn-group pull-right">
+					<button type="button" class="btn btn-success btn-sm save">
+						<i class="fa fa-floppy-o" aria-hidden="true"></i> Save
+					</button>
+					<button type="button" class="btn btn-danger btn-sm cancel">CANCEL</button>
+				</div>
+			{{ else }}
+				<button type="button" class="btn btn-primary btn-sm pull-right edit">
+					<i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit
+				</button>
+			{{ /if }}
+		{{ /if }}
 		<h3>General information</h3>
-		<p> Gene ID: {{ID}} <br>
-		Gene name: <b>{{Name}}</b> <br>
-		Product name: {{Productname}} <br>
-		Coordinates: {{seqid}} {{start}} {{end}} {{strand}} <br>
-		Orthologs: {{#each orthologs}}<a href="/gene/{{this}}">{{this}}</a> {{/each}} <br>
-		Inparalogs: {{#each paralogs}}<a href="/gene/{{this}}">{{this}}</a> {{/each}} <br>
-		Comments: {{Comments}} <br>
-		Author: {{[Created by]}} <br>
-		Orthogroup: {{orthogroup}} <br>
-		Domains: {{#each domains.InterPro}}<a href="https://www.ebi.ac.uk/interpro/entry/{{this}}" target="_blank">{{this}}</a> {{/each}}</p>
-
+		<div class="table-responive">
+			<table class="table table-hover">
+				<tbody>
+					<tr>
+						<td>Gene name</td>
+						<td>
+							{{ #if editing }}
+								<input type="text" class="form-control" id="Name" value="{{ Name }}">
+							{{ else }}
+								<b>{{ Name }}</b>
+							{{ /if }}
+						</td>
+					</tr>
+					<tr>
+						<td>Product name</td>
+						<td>{{ Productname }}</td>
+					</tr>
+					<tr>
+						<td>Coordinates</td>
+						<td>{{ seqid }} {{ start }} {{ end }} {{ end }}</td>
+					</tr>
+					<tr>
+						<td>Orthologs</td>
+						<td>{{ #each orthologs }}<a href="/gene/{{this}}">{{ this }}</a> {{ /each }}</td>
+					</tr>
+					<tr>
+						<td>Inparalogs</td>
+						<td>{{ #each paralogs }}<a href="/gene/{{this}}">{{this}}</a> {{ /each }}</td>
+					</tr>
+					<tr>
+						<td>Author</td>
+						<td>{{ author }}</td>
+					</tr>
+					<tr>
+						<td>Orthogroup</td>
+						<td>{{ orthogroup }}</td>
+					</tr>
+					<tr>
+						<td>Domains</td>
+						<td>{{ #each domains.InterPro }}<a href="https://www.ebi.ac.uk/interpro/entry/{{this}}" target="_blank">{{ this }}</a> {{ /each }}</td>
+					</tr>
+					<tr>
+						<td>Pseudogene</td>
+						<td>
+							{{ #if editing }}
+								<div class="checkbox">
+					                <input type="checkbox" id="Pseudogene" {{ isPseudogene }}>
+					                <label for="Pseudogene"></label>
+				                </div>
+				            {{ else }}
+				            	{{ Pseudogene }}
+				            {{ /if }}
+			            </td>
+					</tr>
+					<tr>
+						<td>Comments</td>
+						<td>
+							{{ #if editing }}
+								<textarea type="text" class="form-control" rows="3" id="Comments">{{ Comments }}</textarea>
+							{{ else }}
+								{{ Comments }}
+							{{ /if }} 
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 	</section>
 </template>

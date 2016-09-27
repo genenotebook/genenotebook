@@ -2,102 +2,25 @@
   <div class="container-fluid">
   	<div class="genelist row">
       <div class="col-md-3">
-        <form role="form" id="genelist_filter">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <div class="pull-right">
-                {{#if hasFilter}}
-                  <button type="button" class="btn btn-danger btn-sm reset_filter">
-                    <span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span> Reset
-                  </button>
-                {{/if}}
-              </div>
-              <h5><b>Filter options</b></h5>
-            </div>
-            <div class="panel-body">
-              <p>Select a combination of filters below</p>
-            </div>
-            <ul class="filter list-group">
-
-              <li class="list-group-item">
-                <label for="gene_id_filter">Gene IDs</label>
-                <textarea class="form-control" id="gene_id_filter" type="text"></textarea>
-              </li>
-
-              <li class="list-group-item">
-                <label>Tracks</label>
-                {{#each tracks}}
-                  <div class="checkbox">
-                    <input type="checkbox" class="track-checkbox" id="{{track}}">
-                    <label for="{{track}}">{{formatTrackName track}}</label>
-                  </div>
-                {{/each}}
-              </li>
-
-              <li class="list-group-item">
-                <label>Features</label>
-                <div class="checkbox">
-                    <input type="checkbox" class="ternary-toggle" id="Productname">
-                    <label for="Productname">
-                      Productname
-                    </label>
-                </div>
-                <div class="checkbox">
-                    <input type="checkbox" class="ternary-toggle" id="Name">
-                    <label for="Name">
-                      Manual annotation
-                    </label>
-                </div>
-                <div class="checkbox">
-                    <input type="checkbox" class="ternary-toggle" id="singleton">
-                    <label for="singleton">
-                      Singleton
-                    </label>
-                </div>
-                <div class="checkbox">
-                  <input type="checkbox" class="ternary-toggle" id="paralogs">
-                  <label for="paralogs">
-                    Inparalog
-                  </label>
-                </div>
-                <div class="checkbox">
-                    <input type="checkbox" class="ternary-toggle" id="domains">
-                    <label for="domains">
-                      Domains
-                    </label>
-                </div>
-                <div class="checkbox">
-                    <input type="checkbox" class="ternary-toggle" id="orthogroup">
-                    <label for="orthogroup">
-                      Orthogroup
-                    </label>
-                </div>
-              </li>
-
-              <li class="list-group-item">
-                Another filter <span class="badge">...</span>
-                <div class="noUiSlider" id="slider"></div>
-              </li>
-              <li class="list-group-item">
-                ...
-              </li>
-            </ul>
-              <div class="panel-footer">
-
-              </div>
-            </div>
-          </form>
-        </div>
+        {{>filter}}
+      </div>
       <div class="col-md-9 clearfix">
+        <!-- genelist -->
+        {{#if genes.count }}
           <div class="pull-right btn-group" role="group">
-            <button type="button" class="export-data btn btn-success" data-loading-text="...">
-              <span class="glyphicon glyphicon-download"></span>
-            </button>
-            <button type="button" class="btn btn-default select-all">
-              <span class="select-button glyphicon glyphicon-ok {{isChecked}}"></span>
-            </button>
+              {{#if selection}}
+              <button type="button" class="btn btn-success" data-toggle="modal" data-target="#download-modal">
+                <i class="fa fa-download" aria-hidden="true"></i> Download 
+              </button>
+              <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#download-modal">
+                <i class="fa fa-external-link" aria-hidden="true"></i> Send 
+              </button>
+              {{/if}}
+              <button type="button" class="btn btn-default select-all">
+                <span class="select-button glyphicon glyphicon-ok {{isChecked}}"></span>
+              </button>
           </div>
-          
+            
           <div class="btn-group" role="group">
             <button type="button" class="btn btn-default">
               <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
@@ -106,55 +29,66 @@
               <span class="glyphicon glyphicon-sort-by-attributes"></span>
             </button>
           </div>
-          
+            
           <span class="label label-default">{{ queryCount }} results</span>
 
-        {{#if genes.count }}
-      		<ul class="genelist list-group">
-      			{{#each genes}}
-      				<li class="list-group-item">
+        	<ul class="genelist list-group">
+        		{{#each genes}}
+        			<li class="list-group-item">
                 <button type="button" class="btn btn-default select-gene pull-right">
                   <span class="select-button glyphicon glyphicon-ok {{isChecked}}"></span>
                 </button>
                 <p>
                   <a class="genelink" href="/gene/{{ID}}">{{ID}}</a>
-                  {{#if orthologs}}
-                    &nbsp;
-                    <span class="label label-default">
-                      {{orthologs.length}} Orthologs
-                    </span>
-                    <span class="label {{confidence}}">
-                      {{one_to_one_orthologs}}
-                    </span>
-                  {{/if}}
-                  {{#if paralogs}}
-                    &nbsp;
-                    <span class="label label-info">
-                      {{paralogs.length}} Inparalogs
-                    </span>
-                  {{/if}}
-                  {{#if singleton}}
-                    <span class="label label-warning">
-                      Singleton
-                    </span>
-                  {{/if}}
-                </p>
-                <p>
                   <b> {{Name}} </b>
                   {{Productname}}
                 </p>
       				</li>
-      			{{/each}}
-      		</ul>
-      		{{#if moreResults}}
-      			<div id="showMoreGenes">
+        		{{/each}}
+        	</ul>
+          {{#if moreResults}}
+            <div id="showMoreGenes">
                 {{>loading}}
-      			</div>
+            </div>
           {{/if}}
         {{ else }}
-          <p> Nothing found </p>
+          <div class="alert alert-danger" role="alert"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> No search results</div>
         {{ /if }}
+        <!-- end genelist -->
       </div>
   	</div>
   </div>
+  <!-- download modal -->
+  <div class="modal" id="download-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <h4 class="modal-title" id="myModalLabel">
+                Download data for 
+                <b>
+                  {{ #if selection.length }}
+                    {{ selection.length }}
+                  {{ else }}
+                    {{ queryCount }}
+                  {{ /if }}
+                </b>
+                genes 
+              </h4>
+        </div>
+        <div class="modal-body">
+          <form class="form-horizontal" id="download-form">
+            <p>It is currently only possible to download gff3-format files with essential attributes.
+            </p>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success save" id="download"><span class="glyphicon glyphicon-download"></span> Download</button>
+        </div>
+      </div>
+    </div> 
+  </div>
+  <!-- end download modal -->
 </template>

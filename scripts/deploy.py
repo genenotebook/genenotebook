@@ -28,7 +28,7 @@ def npm_install():
 		print line.strip()
 
 def main(settings):
-	if os.path.exists(' .bioportal'):
+	if os.path.exists('.bioportal'):
 		print 'overwriting existing build'
 		shutil.rmtree('.bioportal')
 	meteor_build()
@@ -36,4 +36,7 @@ def main(settings):
 	print 'finished'
 
 if __name__ == '__main__':
-	main(*sys.argv[1:])
+	if len(sys.argv) == 2:
+		main(*sys.argv[1:])
+	else:
+		print 'please provide config file as argument'

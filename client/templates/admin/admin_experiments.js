@@ -1,13 +1,13 @@
 Session.set('editExperiments',[])
 
-Template.admin_experiments.helpers({
+Template.adminExperiments.helpers({
 	edit : function(ID){
 		const edit = Session.get('editExperiments');
 		return edit.indexOf(ID) > -1;
 	}
 })
 
-Template.admin_experiments.events({
+Template.adminExperiments.events({
 	'click .edit':function(event){
 		const id = event.target.id;
 		const edit = Session.get('editExperiments');

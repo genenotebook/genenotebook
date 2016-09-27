@@ -99,11 +99,11 @@ Template.blast.events({
 		console.log(blastType)
 		Meteor.call('blast',blastType,query,tracks,function(error,result){
 			if (error) {
-				console.log(error.reason)
-				return;
+				Bert.alert('BLAST failed!','danger','growl-top-right');
+			} else {
+				Session.set('blastResult',result)
+				Bert.alert('BLAST finished!','success','growl-top-right');
 			}
-			console.log('result: ',result)
-			Session.set('blastResult',result)
 		});
 	}
 })
