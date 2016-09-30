@@ -58,7 +58,7 @@ def get_orthogroups(infile):
 			orthogroups[gene_id] = features
 	return orthogroups
 
-def main(infile):
+def main(infile,settings_file=None):
 	if settings_file:
 		with open(settings_file) as filehandle:
 			settings = json.load(filehandle)
@@ -71,7 +71,7 @@ def main(infile):
 	db_string = client_address.strip().split('/')[-1]
 	db = client[db_string]
 	collection = db.genes
-	
+
 	orthogroups = get_orthogroups(infile)
 	
 	
