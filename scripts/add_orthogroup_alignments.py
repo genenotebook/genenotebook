@@ -58,9 +58,14 @@ def get_alignments(folder):
 			alignment.append(fasta_dict)
 		yield og,alignment
 
-def main(folder):
+def main(folder,settings_file=None):
+	if settings_file:
+		with open(settings_file) as filehandle:
+			settings = json.load(filehandle)
+			client_address = settings['private']['mongoUrl']
+	else:
+		client_address = get_client_address()
 	alignments = get_alignments(folder)
-	client_ip = get_client_ip()
 	print client_ip
 	client = MongoClient(client_ip)
 	db = client.meteor

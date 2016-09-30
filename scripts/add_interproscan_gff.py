@@ -89,10 +89,15 @@ def get_client_ip():
 	stdout,stderr = p.communicate()
 	return stdout
 
-def main(gff_file):
+def main(gff_file,settings_file=None):
+	if settings_file:
+		with open(settings_file) as filehandle:
+			settings = json.load(filehandle)
+			client_address = settings['private']['mongoUrl']
+	else:
+		client_address = get_client_address()
 	client_ip = get_client_ip()
 	print client_ip
-	client = MongoClient(client_ip)
 	db = client.meteor
 	gene_collection = db.genes
 	interpro_collection = db.interpro
