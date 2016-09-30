@@ -1,4 +1,5 @@
-//Session.setDefault('hasSearch',false)
+Session.setDefault('login',false)
+
 Tracker.autorun(function(){
 	const search = Session.get('search');
 	if (search){
@@ -48,5 +49,14 @@ Template.header.events({
 		Session.set('search',null);
 		$('input[name="search"]').val('')
 		Router.go('genes',{},{'query':{}})
+	},
+	'click #signin':function(event,template){
+		event.preventDefault();
+		Router.go('login')
+		//Modal.show('loginModal');
+	},
+	'click #signout':function(event,template){
+		event.preventDefault();
+		Meteor.logout();
 	}
 })

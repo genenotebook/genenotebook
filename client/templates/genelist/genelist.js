@@ -3,7 +3,9 @@ Session.setDefault('itemsLimit', ITEMS_INCREMENT);
 Session.setDefault('select-all',false);
 Session.setDefault('filter',{})
 Session.setDefault('selection',[])
+Session.setDefault('download-progress','progress unknown')
 Meteor.subscribe('tracks');
+Meteor.subscribe('downloads');
 Tracker.autorun(function(){
   Meteor.subscribe('genes',Session.get('itemsLimit'),Session.get('search'),Session.get('filter'));
 })
@@ -67,75 +69,10 @@ Template.genelist.helpers({
 });
 
 Template.genelist.events({
-  'input #gene_id_filter': function(event){
-    const filter = Session.get('filter')
-    const geneIdString = event.currentTarget.value
-    const temp = geneIdString ? geneIdString.split('\n') : [];
-    const filterGeneIds = temp.filter(function(x){ return x });
-    if (filterGeneIds.length > 0){
-      filter.ID = {$in:filterGeneIds}
-      Session.set('filter',filter)
-    }
-  },
-  'click input.track-checkbox[type=checkbox]': function(event){
-    const filter = Session.get('filter');
-    const checkbox = event.target;
-    const parent = $(checkbox).parent();
-    const id = parent.context.id;
-    if (checkbox.checked){
-      if (!filter.hasOwnProperty('track')){
-        filter['track'] = {'$in':[id]}
-      } else {
-        filter['track']['$in'].push(id)
-      }
-    } else {
-      filter['track']['$in'] = _.without(filter['track']['$in'],id)
-    } 
-    if (filter['track']['$in'].length === 0){
-      delete filter['track']
-    }
-    Session.set('filter',filter)
-  },
-  'click input.ternary-toggle[type=checkbox]': function(event){
-    const filter = Session.get('filter');
-    const checkbox = event.target;
-    const parent = $(checkbox).parent();
-    const id = parent.context.id;
-    
-    const positiveQuery = {$exists:true}
-    const negativeQuery = {$exists:false}
-    
-    console.log(parent.context.id);
-    if (checkbox.readOnly){
-      //go from negative to unchecked
-      delete filter[id]
-      parent.removeClass('checkbox-danger');
-      checkbox.checked=checkbox.readOnly=false;
-    } else if (!checkbox.checked){
-      //go from positive to negative
-      filter[id] = negativeQuery;
-      parent.addClass('checkbox-danger');
-      parent.removeClass('checkbox-success');
-      checkbox.readOnly=checkbox.checked=true;
-    } else {
-      //go from unchecked to positive
-      filter[id] = positiveQuery;
-      parent.addClass('checkbox-success');
-      parent.removeClass('checkbox-danger');
-
-   }
-   Session.set('filter',filter)
-  },
-  'click .reset_filter': function(event){
-    event.preventDefault();
-    const filters = $('input[type=checkbox]');
-    filters.each(function(){
-      this.checked = this.readOnly = false;
-    })
-    $('#gene_id_filter').val('');
-    Session.set('filter',{});
-    Session.set('select-all',false);
-    Session.set('checked',[]);
+  'click .nav-tabs li': function(event,template){
+    var currentTab = $( event.target ).closest( "li" );
+    currentTab.addClass( "active" );
+    $( ".nav-tabs li" ).not( currentTab ).removeClass( "active" );
   },
   'click .select-gene':function(){
     const id = this.ID;
@@ -155,6 +92,7 @@ Template.genelist.events({
   },
   'click #download': function(event,template){
     event.preventDefault();
+    const format = $('.active.download-format').attr('id');
     const selectAll = Session.get('select-all');
     
     let query;
@@ -170,19 +108,61 @@ Template.genelist.events({
     } else {
       const geneIds = Session.get('selection');
       query = { ID: { $in: geneIds } };
-    } 
+    }
 
+    /*
+    Meteor.call('initialize-download',query,format,function(err,downloadId){
+      console.log('downloadId',downloadId)
+      const download = Downloads.find({_id:downloadId})
+      download.observeChanges({
+        changed: function(id,fields){
+          if (fields.progress === 'finished'){
+            console.log('finished')
+            //save
+          } else {
+            Session.set('download-progress',fields.progress)
+          }
+        }
+      })
+    });
+    */
+    /*pseudocode todo
+      //do this in the method:
+      check if query previously downloaded:
+      downloads.find({query:query})
+      //do this here
+     meteor.call('initialize-download',format,query,function(err,res){
+        _id = res
+        cursor = downloads.find({_id:_id})
+        cursor.observeChanges({
+           changed: function(id,fields){
+             if fields.progress === 'finished':
+                save file
+             else 
+                 Session.set('download-progress',fields.progress )
+           }
+        })
+     })
+     
+
+
+    */
+
+    
     Bert.defaults.hideDelay = 999999;
     
     Bert.alert({
-      message:'Preparing download',
+      type:'prepare-download',
+      title:'Preparing download',
+      message:'This may take a while',
+      type:'primary',
       style:'growl-bottom-right',
-      icon:'fa-circle-o-notch'
+      icon:'fa-circle-o-notch fa-spin'
     });
 
     Bert.defaults.hideDelay = 2500;
 
-    Meteor.call('format.gff',query,function(err,res){
+    Meteor.call('format.' + format,query,function(err,res){
       
       if (err){
         Bert.alert('Preparing download failed','error','growl-bottom-right');
@@ -191,24 +171,17 @@ Template.genelist.events({
         const blob = new Blob([res],{type: 'text/plain;charset=utf-8'})
         const date = new Date()
 
-        saveAs(blob,'bioportal.' + date.toISOString() + '.gff3')
+        saveAs(blob,'bioportal.' + date.toISOString() + '.' + format)
       }
     })
+    
   }
+
 });
 
-Template.genelist.rendered = function(){
-  const input = document.getElementById('slider')
-  
-  noUiSlider.create(input,{
-    start: [20,80],
-    connect: true,
-    range: {
-      'min': [0],
-      'max': [100]
-    }
-  })
-}
+
+
+
 
 // whenever #showMoreResults becomes visible, retrieve more results
 function showMoreVisible() {
@@ -235,35 +208,7 @@ function showMoreVisible() {
 // run the above func every time the user scrolls
 $(window).scroll(showMoreVisible)
 
-//toggle between checked/unchecked/indeterminate for checkboxes to determine query yes/no/don't care
-function toggleSwitch(checkbox) {
-  const filter = Session.get(filter)
-  const parent = $(checkbox).parent();
-  const id = parent.context.id;
-  if (id === 'Productname'){
-    positiveQuery = {$ne:'None'}
-    negativeQuery = 'None'
-  } else {
-    positiveQuery = {$exists:true}
-    negativeQuery = {$exists:false}
-  }
-  console.log(parent.context.id);
-  if (checkbox.readOnly){
-    //go from negative to unchecked
-    parent.removeClass('checkbox-danger');
-    checkbox.checked=checkbox.readOnly=false;
-  } else if (!checkbox.checked){
-    //go from positive to negative
-    parent.addClass('checkbox-danger');
-    parent.removeClass('checkbox-success');
-    checkbox.readOnly=checkbox.checked=true;
-  } else {
-    //go from unchecked to positive
-    parent.addClass('checkbox-success');
-    parent.removeClass('checkbox-danger');
 
- }
-}
  
 
 

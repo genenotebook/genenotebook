@@ -46,11 +46,15 @@
 											<input type="text" class="form-control" id="{{username}}-email" value="{{emails.[0].address}}" disabled>
 										</div>
 									</div>
+
 									<div class="form-group">
 										<label for="roles" class="col-sm-4 control-label">Access level:</label>
 										<div class="col-sm-6">
 											<div class="radio-inline">
-											  <label><input class="{{username}}-accesslevel" type="radio" name="optradio" id="user" checked>User</label>
+												<label><input class="{{username}}-accesslevel" type="radio" name="optradio" id="registered" checked>Registered (no access)</label>
+											</div>
+											<div class="radio-inline">
+											  <label><input class="{{username}}-accesslevel" type="radio" name="optradio" id="user">User</label>
 											</div>
 											<div class="radio-inline">
 											  <label><input class="{{username}}-accesslevel" type="radio" name="optradio" id="curator">Curator</label>
@@ -60,6 +64,8 @@
 											</div>
 										</div>
 									</div>
+
+									<input id="accesslevel-slider"/>
 								</form>
 							</div>
 							<div class="modal-footer">

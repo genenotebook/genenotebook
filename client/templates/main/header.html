@@ -1,0 +1,76 @@
+<template name="header">
+	<header class="navigation" role="banner">
+		<nav class="navbar navbar-default">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" 
+					data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" 
+					aria-expanded="false">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="/">Parasponia Genebook</a>
+				</div>
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+					{{#if currentUser}}
+					<ul class="nav navbar-nav">
+						<li class="active"><a href="#">News<span class="sr-only">(current)</span></a></li>
+						<li><a href="{{pathFor route='genes'}}" id="genes">Genes</a></li>
+						<li><a href="{{pathFor route='blast'}}" id="blast">Blast</a></li>
+					</ul>
+					<form class="navbar-form navbar-left search" role="search">
+						<div class="form-group">
+							<input type="search" name="search" class="form-control search" placeholder="Search" value="{{ search }}">
+						</div>
+						<button type="submit" class="btn btn-default">Search</button>
+						{{#if search}}
+							<button class="btn btn-danger" id="clear-search">
+								<span class="glyphicon glyphicon-remove-circle"></span>
+							</button>
+						{{/if}}
+					</form>
+					{{/if}}
+					<ul class="nav navbar-nav navbar-right">
+						{{ #if isInRole 'admin' }}
+						<li>
+							<a href="/admin"><span class="glyphicon glyphicon-cog"></span> Admin settings</a>
+						</li>
+						{{ /if }}
+						{{ #if currentUser }}
+						<li>
+						<div class="dropdown">
+			              <button class="btn btn-default dropdown-toggle navbar-btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="featuremenu-button">
+			               <span class="glyphicon glyphicon-user"></span> {{ currentUser.username }}
+			              </button>
+			              <ul class="dropdown-menu scrollable-menu" role="menu" aria-labelledby="featuremenu-button">
+			               
+			                  <li role="presentation" class="disabled">
+			                    <a role="menuitem" class="dropdown-item featuremenu-item">Edit profile</a>
+			                  </li>
+			                  <li role="presentation" class="disabled">
+			                    <a role="menuitem" class="dropdown-item featuremenu-item">My favourites</a>
+			                  </li>
+			                  <li role="separator" class="divider"></li>
+			                  <li role="presentation">
+			                  	<button type="button" class="btn btn-danger center-block" id="signout">Sign out</button>
+			                  </li>
+			                
+			              </ul>
+			            </div>
+			            </li>
+						{{else}}
+						<button type="button" class="btn btn-primary navbar-btn" id="signin">
+							<span class="glyphicon glyphicon-user"></span> Sign in
+						</button>
+						{{/if}}
+						<!--
+						{{> loginButtons align="right"}}
+						-->
+					</ul>
+				</div>
+			</div>
+		</nav>
+	</header>
+</template>

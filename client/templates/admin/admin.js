@@ -4,7 +4,7 @@ Meteor.subscribe('experiments');
 Meteor.subscribe('filterOptions');
 
 Template.admin.onCreated(function(){
-	this.currentTab = new ReactiveVar('users');
+	this.currentTab = new ReactiveVar('adminUsers');
 })
 
 Template.admin.helpers({

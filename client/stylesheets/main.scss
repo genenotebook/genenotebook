@@ -7,7 +7,10 @@
 @import "globals/_checkbox.import.scss";
 @import "globals/_global.import.scss";
 
-//import template stuffs
+//import main
+@import "../templates/main/_login.import.scss";
+@import "../templates/main/_register.import.scss";
+
 //imports for feature pages
 @import "../templates/feature/_feature.import.scss";
 @import "../templates/feature/_info.import.scss";

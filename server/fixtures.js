@@ -10,6 +10,6 @@ Meteor.startup(function () {
                 last_name: 'admin',
             }
         });
-        Roles.addUsersToRoles(userId,['admin','curator','user']);
+        Roles.addUsersToRoles(userId,['admin','curator','user','registered']);
     }
 });

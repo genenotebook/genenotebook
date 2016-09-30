@@ -43,3 +43,5 @@ peerlibrary:xml2js
 runelytics:nouislider
 shell-server
 meteorhacks:kadira
+peppelg:bootstrap-3-modal
+amr:parsley.js
