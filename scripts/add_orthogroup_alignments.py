@@ -8,6 +8,7 @@ __author__ = 'rensholmer'
 import sys
 import glob
 import re
+import json
 import gff_toolkit as gt
 from subprocess import Popen,PIPE
 import pymongo

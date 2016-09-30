@@ -11,6 +11,7 @@ import re
 #import gff_toolkit as gt
 from subprocess import Popen,PIPE
 import pymongo
+import json
 
 def upload_trees(trees,collection):
 	bulk = collection.initialize_unordered_bulk_op()
