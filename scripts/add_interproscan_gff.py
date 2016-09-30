@@ -96,9 +96,12 @@ def main(gff_file,settings_file=None):
 			client_address = settings['private']['mongoUrl']
 	else:
 		client_address = get_client_address()
-	client_ip = get_client_ip()
-	print client_ip
-	db = client.meteor
+	print client_address
+	client = pymongo.MongoClient(client_address)
+
+	db_string = client_address.strip().split('/')[-1]
+	db = client[db_string]
+
 	gene_collection = db.genes
 	interpro_collection = db.interpro
 	upload_ips(gff_file,gene_collection,interpro_collection)

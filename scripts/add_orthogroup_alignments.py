@@ -65,10 +65,12 @@ def main(folder,settings_file=None):
 			client_address = settings['private']['mongoUrl']
 	else:
 		client_address = get_client_address()
-	alignments = get_alignments(folder)
-	print client_ip
-	client = MongoClient(client_ip)
-	db = client.meteor
+	print client_address
+	client = pymongo.MongoClient(client_address)
+
+	db_string = client_address.strip().split('/')[-1]
+	db = client[db_string]
+	
 	collection = db.orthogroups
 	upload_alignments(alignments,collection)
 
