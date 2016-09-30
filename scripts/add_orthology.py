@@ -6,7 +6,8 @@ orthology_to_mongo.py
 __author__ = 'rensholmer'
 
 import sys
-from pymongo import MongoClient
+import json
+import pymongo
 from subprocess import Popen,PIPE
 
 def upload_orthogroups(orthogroups,collection):
