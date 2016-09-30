@@ -59,13 +59,22 @@ def get_orthogroups(infile):
 	return orthogroups
 
 def main(infile):
-	orthogroups = get_orthogroups(infile)
-	#quit()
-	client_ip = get_client_ip()
-	print client_ip
-	client = MongoClient(client_ip)
-	db = client.meteor
+	if settings_file:
+		with open(settings_file) as filehandle:
+			settings = json.load(filehandle)
+			client_address = settings['private']['mongoUrl']
+	else:
+		client_address = get_client_address()
+	print client_address
+	client = pymongo.MongoClient(client_address)
+
+	db_string = client_address.strip().split('/')[-1]
+	db = client[db_string]
 	collection = db.genes
+	
+	orthogroups = get_orthogroups(infile)
+	
+	
 	upload_orthogroups(orthogroups,collection)
 	
 

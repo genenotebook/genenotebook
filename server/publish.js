@@ -34,12 +34,12 @@ Meteor.publish('genes',function(limit,search,query){
 	return Genes.find(query,{ limit: limit, sort: { 'ID': 1 } })
 })
 
-Meteor.publish('orthogroup',function(ID){
-	return Orthogroups.find({ 'ID': ID })
+Meteor.publish('orthogroups',function(ID){
+	return Orthogroups.find({ 'ID': ID });
 })
 
 Meteor.publish('browser',function(track,seqid,start,end){
-	return Genes.find({ 'seqid': seqid, 'start': { $gte: start }, 'end': { $lte: end } })
+	return Genes.find({ 'seqid': seqid, 'start': { $gte: start }, 'end': { $lte: end } });
 })
 
 Meteor.publish('userList',function(){
@@ -56,4 +56,8 @@ Meteor.publish('tracks',function(){
 
 Meteor.publish('filterOptions',function(){
 	return FilterOptions.find({});
+})
+
+Meteor.publish('interpro',function(){
+	return Interpro.find({});
 })

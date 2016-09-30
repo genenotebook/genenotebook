@@ -1,6 +1,8 @@
 import d3 from 'd3';
 import { schemeSet3 } from 'd3-scale-chromatic';
 
+Meteor.subscribe('orthogroups');
+
 function parseNewick(a){
 	//Copyright 2011 Jason Davies https://github.com/jasondavies/newick.js
 	for(var e=[],r={},s=a.split(/\s*(;|\(|\)|,|:)\s*/),t=0;t<s.length;t++){
@@ -71,13 +73,13 @@ Template.orthogroup.helpers({
 })
 
 Template.orthogroup.rendered = function(){
-	const ID = this.ID + '.1';
+	console.log('orthogroup this',this)
+	const ID = this.data.ID + '.1';
 	const og = Orthogroups.findOne({'ID':this.data.orthogroup});
 	const treeData = parseNewick(og.phylogenetic_tree);
 	const hierarchy = d3.hierarchy(treeData)
 		.sum(function(d){ return d.value })
-		.sort(function(a, b){ return b.height - a.height || b.value - a.value; })
-		;
+		.sort(function(a, b){ return b.height - a.height || b.value - a.value; });
 
 	let margin = {top: 10, right: 10, bottom: 10, left: 20};
     let width = $('.experiments').width() - margin.left - margin.right;

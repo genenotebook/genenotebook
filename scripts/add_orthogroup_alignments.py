@@ -46,7 +46,7 @@ def get_client_ip():
 	return stdout
 
 def get_alignments(folder):
-	files = glob.glob(folder + '*fa')
+	files = glob.glob(folder + '/*fa')
 	for file in files:
 		og = file.split('/')[-1].strip('.fa')
 		alignment = []

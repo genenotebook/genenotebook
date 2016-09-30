@@ -1,6 +1,9 @@
 import d3 from 'd3';
 import { schemeSet3 } from 'd3-scale-chromatic';
 
+_ = lodash;
+
+Meteor.subscribe('interpro');
 
 function getInterproId(d){
 	let interpro;

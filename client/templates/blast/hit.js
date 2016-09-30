@@ -1,5 +1,3 @@
-import { mapKeys } from 'lodash'
-
 Template.blasthit.helpers({
 	hspNum:function(){
 		const hspNum = this.Hit_hsps[0].Hsp.length;
@@ -17,7 +15,7 @@ Template.blasthit.helpers({
 	hsps:function(){
 		const hsps = this.Hit_hsps[0].Hsp
 		const formattedHsps = hsps.map(function(obj){
-			const newObj = mapKeys(obj,function(value,key){
+			const newObj = _.mapKeys(obj,function(value,key){
 				return key.replace('-','_')
 			})
 			return newObj
