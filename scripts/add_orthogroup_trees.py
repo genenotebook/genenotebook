@@ -76,6 +76,8 @@ def main(folder,settings_file=None):
 	db = client[db_string]
 
 	collection = db.orthogroups
+
+	trees = get_trees(folder)
 	upload_trees(trees,collection)
 
 if __name__ == '__main__':

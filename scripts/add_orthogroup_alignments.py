@@ -73,6 +73,8 @@ def main(folder,settings_file=None):
 	db = client[db_string]
 
 	collection = db.orthogroups
+
+	alignments = get_alignments(folder)
 	upload_alignments(alignments,collection)
 
 if __name__ == '__main__':
