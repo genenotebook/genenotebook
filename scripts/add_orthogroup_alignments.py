@@ -10,7 +10,7 @@ import glob
 import re
 import gff_toolkit as gt
 from subprocess import Popen,PIPE
-from pymongo import MongoClient
+import pymongo
 
 def upload_alignments(alignments,collection):
 	bulk = collection.initialize_unordered_bulk_op()
@@ -70,7 +70,7 @@ def main(folder,settings_file=None):
 
 	db_string = client_address.strip().split('/')[-1]
 	db = client[db_string]
-	
+
 	collection = db.orthogroups
 	upload_alignments(alignments,collection)
 

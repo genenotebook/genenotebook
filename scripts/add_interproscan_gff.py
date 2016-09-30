@@ -8,7 +8,7 @@ __author__ = 'rensholmer'
 import sys
 import json
 import re
-from pymongo import MongoClient
+import pymongo
 import gff_toolkit as gt
 from subprocess import Popen,PIPE
 from urllib2  import urlopen
