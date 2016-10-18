@@ -1,7 +1,9 @@
-Meteor.publishComposite('singleGene',function(ID){
+Meteor.publishComposite('singleGene',function(geneId){
+	Genes.update({ 'ID': geneId },{ $addToSet: { 'viewing': this.userId } })
 	return {
 		find: function(){
-			return Genes.find({'ID':ID});
+			//Meteor.call('addToViewing',geneId);
+			return Genes.find({'ID':geneId});
 		},
 		children: [
 			{
@@ -38,9 +40,11 @@ Meteor.publish('orthogroups',function(ID){
 	return Orthogroups.find({ 'ID': ID });
 })
 
+/*
 Meteor.publish('browser',function(track,seqid,start,end){
 	return Genes.find({ 'seqid': seqid, 'start': { $gte: start }, 'end': { $lte: end } });
 })
+*/
 
 Meteor.publish('userList',function(){
 	return Meteor.users.find({});
