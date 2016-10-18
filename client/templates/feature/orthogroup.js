@@ -73,7 +73,6 @@ Template.orthogroup.helpers({
 })
 
 Template.orthogroup.rendered = function(){
-	console.log('orthogroup this',this)
 	const ID = this.data.ID + '.1';
 	const og = Orthogroups.findOne({'ID':this.data.orthogroup});
 	const treeData = parseNewick(og.phylogenetic_tree);

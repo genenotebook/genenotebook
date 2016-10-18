@@ -146,5 +146,15 @@ Meteor.methods({
 		a = Genes.mapReduce(function(){for (var key in this){emit(key,null) }},function(key,values){return null},{out:{inline:1}})
 		console.log(a)
 		a.results.forEach(function(i){ FilterOptions.findAndModify({ query:{_id:i._id}, update:{$setOnInsert:{show:true,canEdit:false}}, new:true, upsert:true }) })
+	},
+	'removeFromViewing':function(geneId){
+		if (! this.userId) {
+			throw new Meteor.Error('not-authorized');
+		}
+		Genes.update({ 'ID': geneId },{ $pull: { 'viewing': this.userId } })
+		const viewing = Genes.findOne({'ID': geneId}).viewing
+		if ( viewing.length === 0 ){
+			Genes.update({ 'ID': geneId },{ $unset: { 'viewing': 1 } } )
+		} 
 	}
 })

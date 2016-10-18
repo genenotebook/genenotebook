@@ -1,3 +1,7 @@
+import { diff, apply } from 'rus-diff'; 
+
+_ = lodash;
+
 Session.set('editInfo',false)
 
 Template.info.helpers({
@@ -11,8 +15,10 @@ Template.info.helpers({
 		console.log(this);
 	},
 	isPseudogene:function(){
-		if (this.Pseudogene[0] === 'True'){
-			return 'checked'
+		if (this.hasOwnProperty('Pseudogene')){
+			if (this.Pseudogene[0] === 'True'){
+				return 'checked'
+			}
 		}
 	}
 })
@@ -23,16 +29,36 @@ Template.info.events({
 		Session.set('editInfo',!edit);
 	},
 	'click .save': function(event,template){
+		let newGene = _.clone(this);
+
 		const data = {
-			Name:template.find('#Name').value,
+			Name: template.find('#Name').value,
 			Comments: template.find('#Comments').value,
-			changed: {
-				author:Meteor.userId(),
-				createdAt: new Date()
-			}
+			Pseudogene: template.find('#Pseudogene').checked
 		}
 
-		Meteor.call('geneInfo.update',this._id,data,function(error,result){
+		console.log(data)
+		
+		if (data.Name !== ''){
+			newGene.Name = [data.Name]
+		}
+		if (data.Comments !== ''){
+			newGene.Comments = [data.Comments]
+		}
+
+		if (data.Pseudogene === true){
+			newGene.Pseudogene = true
+		} else if (newGene.hasOwnProperty('Pseudogene')) {
+			delete newGene.Pseudogene
+		}
+
+		const delta = diff(newGene,this);
+		console.log(delta);
+		const reset = apply(newGene,delta)
+		console.log(_.isEqual(reset,this))
+
+
+		Meteor.call('geneInfo.update',newGene,delta,function(error,result){
 			if (error) {
 				Bert.alert('Updating failed!','danger','growl-top-right')
 			}
