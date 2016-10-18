@@ -8,6 +8,12 @@
             ({{Name}})
           {{/if}}
         </b> {{Productname}}
+        <div class="pull-right">
+          Watched by: 
+          {{#each viewing}}
+            <button type="button" class="btn btn-primary btn-xs" disabled>{{user this}}</button>
+          {{/each}}
+        </div>
       </div>
       <div class="panel-body">
         <ul class="nav nav-tabs" id="feature-nav" data-spy="affix">

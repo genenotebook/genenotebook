@@ -25,15 +25,7 @@ Template.feature.helpers({
   },
   isOwner: function () {
     return this.owner === Meteor.userId();
-  }/*,
-  name: function() {
-    var name = this.attributes.Name;
-    if (typeof name !== 'undefined'){
-      return name
-    } else {
-      return ''
-    }
-  }*/,
+  },
   featuretype: function(){
     return this.source;
   },
@@ -51,6 +43,10 @@ Template.feature.helpers({
   orthogroupSize: function(){
     const og = Orthogroups.findOne({'ID':this.orthogroup})
     return og.alignment.length
+  },
+  user: function(userId){
+    const user = Meteor.users.findOne({'_id':userId});
+    return user.username
   }
 });
 
