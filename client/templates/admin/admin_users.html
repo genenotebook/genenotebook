@@ -3,7 +3,15 @@
 	<ul class="list-group">
 		{{#each this}}
 			<li class="list-group-item">
-				<button type="button" class="btn btn-primary btn-sm pull-right" data-toggle="modal" data-target="#{{username}}-modal">EDIT</button>
+				<div class="btn-group pull-right">
+					<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#{{username}}-modal">
+						<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+					</button>
+					<button type="button" class="btn btn-danger btn-sm cancel">
+						<span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
+					</button>
+				</div>
+				
 				<p> 
 					Username: <strong>{{username}}</strong><br>
 					First name: {{profile.first_name}}<br>
