@@ -48,3 +48,5 @@ amr:parsley.js
 alethes:lodash
 check
 danimal:userpresence
+zuuk:stale-session
+fongandrew:find-and-modify

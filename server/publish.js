@@ -1,8 +1,10 @@
 Meteor.publishComposite('singleGene',function(geneId){
+	if (!this.userId){
+		throw new Meteor.Error('Unauthorized')
+	}
 	Genes.update({ 'ID': geneId },{ $addToSet: { 'viewing': this.userId } })
 	return {
 		find: function(){
-			//Meteor.call('addToViewing',geneId);
 			return Genes.find({'ID':geneId});
 		},
 		children: [
@@ -25,6 +27,9 @@ Meteor.publishComposite('singleGene',function(geneId){
 })
 
 Meteor.publish('genes',function(limit,search,query){
+	if (!this.userId){
+		throw new Meteor.Error('Unauthorized')
+	}
 	var limit = limit || 40;
 	var query = query || {};
 	if (search) {
@@ -47,21 +52,42 @@ Meteor.publish('browser',function(track,seqid,start,end){
 */
 
 Meteor.publish('userList',function(){
-	return Meteor.users.find({});
+	if (!this.userId){
+		throw new Meteor.Error('Unauthorized')
+	}
+	if (Roles.userIsInRole(this.userId,'admin')){
+		return Meteor.users.find({});
+	} else if (Roles.userIsInRole(this.userId,['user','curator'])){
+		return Meteor.users.find({},{fields:{username:1}})
+	} else {
+		throw new Meteor.Error('Unauthorized')
+	}
 })
 
 Meteor.publish('experiments',function(){
+	if (!this.userId){
+		throw new Meteor.Error('Unauthorized')
+	}
 	return Experiments.find({});
 })
 
 Meteor.publish('tracks',function(){
+	if (!this.userId){
+		throw new Meteor.Error('Unauthorized')
+	}
 	return Tracks.find({});
 });
 
 Meteor.publish('filterOptions',function(){
+	if (!this.userId){
+		throw new Meteor.Error('Unauthorized')
+	}
 	return FilterOptions.find({});
 })
 
 Meteor.publish('interpro',function(){
+	if (!this.userId){
+		throw new Meteor.Error('Unauthorized')
+	}
 	return Interpro.find({});
 })

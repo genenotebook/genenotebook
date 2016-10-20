@@ -1,9 +1,8 @@
-Meteor.subscribe('orthogroups')
-/*
-Template.feature.onCreated(function(){
-  this.currentTab = new ReactiveVar('info');
-})
-*/
+Meteor.subscribe('orthogroups');
+Meteor.subscribe('userList');
+
+Session.setDefault('viewing',[]);
+
 
 Template.feature.helpers({
   tab:function(){
@@ -41,11 +40,11 @@ Template.feature.helpers({
     return _.uniq(domains[0]).length
   },
   orthogroupSize: function(){
-    const og = Orthogroups.findOne({'ID':this.orthogroup})
+    const og = Orthogroups.findOne({ID:this.orthogroup})
     return og.alignment.length
   },
   user: function(userId){
-    const user = Meteor.users.findOne({'_id':userId});
+    const user = Meteor.users.findOne({ _id: userId });
     return user.username
   }
 });
@@ -73,8 +72,5 @@ Template.feature.rendered = function(){
   */
 }
 
-Accounts.ui.config({
-  passwordSignupFields: "USERNAME_ONLY"
-});
 
  

@@ -143,9 +143,56 @@ Meteor.methods({
 		if (! Roles.userIsInRole(this.userId,'curator')){
 			throw new Meteor.Error('not-authorized');
 		}
-		a = Genes.mapReduce(function(){for (var key in this){emit(key,null) }},function(key,values){return null},{out:{inline:1}})
-		console.log(a)
-		a.results.forEach(function(i){ FilterOptions.findAndModify({ query:{_id:i._id}, update:{$setOnInsert:{show:true,canEdit:false}}, new:true, upsert:true }) })
+
+		this.unblock();
+		//meteor requires async code to be run in a fiber/future
+		const fut = new Future();
+
+		//put the future that will hold the mapreduce output in the meteor environment, this will be used as callback for the mapreduce
+		const mapReduceCallback = Meteor.bindEnvironment(function(err,res){
+				if (err){
+					fut.throw(err)
+				} else {
+					fut.return(res)
+				}
+			} 
+		)
+
+		//mapreduce to find all keys for all genes, this takes a while
+		a = Genes.rawCollection().mapReduce(
+			function(){
+				//map function 
+				for (var key in this){
+					emit(key,null) 
+				}
+			},
+			function(key,values){
+				//reduce function
+				return null
+			},
+			{ out: { inline: 1 } }, //output options
+			mapReduceCallback
+		)
+
+		//let the future wait for the mapreduce to finish
+		const mapReduceResults = fut.wait();
+
+		//process mapreduce output and put it in a collection
+		mapReduceResults.forEach(function(i){ 
+			FilterOptions.findAndModify({ 
+				query: { _id: i._id }, 
+				update: { $setOnInsert: { name: i._id, show: true, canEdit: false } }, 
+				new: true, 
+				upsert: true 
+			}) 
+		})
+		//add the viewing option, since this key is dynamic it will not allways be present on any gene, but we do want to filter on this
+		FilterOptions.findAndModify({
+			query: { _id: 'viewing' },
+			update: { $setOnInsert: { name: 'viewing', show: true, canEdit: false } }, 
+			new: true, 
+			upsert: true 
+		})
 	},
 	'removeFromViewing':function(geneId){
 		if (! this.userId) {

@@ -3,6 +3,30 @@ Meteor.subscribe('tracks');
 
 Session.setDefault('selectedFeatures',['Comment','Productname','Pseudogene','orthogroup','paralogs','singleton'])
 
+function updateCheckboxes(){
+  const filter = Session.get('filter')
+  const checkboxes = $('.feature-checkbox')
+  checkboxes.each(function(index,checkbox){
+    const parent = $(checkbox).parent()
+    if ( filter.hasOwnProperty(checkbox.id) ){
+      if ( filter[checkbox.id]['$exists'] === true ){
+        parent.removeClass('checkbox-danger');
+        parent.addClass('checkbox-success')
+        checkbox.checked = true;
+        checkbox.readOnly = false;
+      } else {
+        parent.addClass('checkbox-danger');
+        parent.removeClass('checkbox-success')
+        checkbox.checked = checkbox.readOnly = true;
+      }
+    } else {
+      parent.removeClass('checkbox-danger');
+      parent.removeClass('checkbox-success')
+      checkbox.checked = checkbox.readOnly = false;
+    }
+  })
+}
+
 Template.filter.helpers({
     hasFilter: function(){
         const filter = Session.get('filter');
@@ -67,20 +91,21 @@ Template.filter.events({
       if (checkbox.readOnly){
         //go from negative to unchecked
         delete filter[id]
-        parent.removeClass('checkbox-danger');
-        checkbox.checked=checkbox.readOnly=false;
+        //parent.removeClass('checkbox-danger');
+        //checkbox.checked = checkbox.readOnly = false;
       } else if (!checkbox.checked){
         //go from positive to negative
         filter[id] = negativeQuery;
-        parent.addClass('checkbox-danger');
-        parent.removeClass('checkbox-success');
-        checkbox.readOnly=checkbox.checked=true;
+        //parent.addClass('checkbox-danger');
+        //parent.removeClass('checkbox-success');
+        //checkbox.readOnly = checkbox.checked = true;
       } else {
         //go from unchecked to positive
         filter[id] = positiveQuery;
-        parent.addClass('checkbox-success');
-        parent.removeClass('checkbox-danger');
+        //parent.addClass('checkbox-success');
+        //parent.removeClass('checkbox-danger');
      }
+     updateCheckboxes()
      Session.set('filter',filter)
     },
     'click .reset_filter': function(event){
@@ -117,34 +142,6 @@ Template.filter.onRendered(function(){
     }
   })
   */
+  updateCheckboxes()
 })
 
-//toggle between checked/unchecked/indeterminate for checkboxes to determine query yes/no/don't care
-function toggleSwitch(checkbox) {
-  const filter = Session.get(filter)
-  const parent = $(checkbox).parent();
-  const id = parent.context.id;
-  if (id === 'Productname'){
-    positiveQuery = {$ne:'None'}
-    negativeQuery = 'None'
-  } else {
-    positiveQuery = {$exists:true}
-    negativeQuery = {$exists:false}
-  }
-  console.log(parent.context.id);
-  if (checkbox.readOnly){
-    //go from negative to unchecked
-    parent.removeClass('checkbox-danger');
-    checkbox.checked=checkbox.readOnly=false;
-  } else if (!checkbox.checked){
-    //go from positive to negative
-    parent.addClass('checkbox-danger');
-    parent.removeClass('checkbox-success');
-    checkbox.readOnly=checkbox.checked=true;
-  } else {
-    //go from unchecked to positive
-    parent.addClass('checkbox-success');
-    parent.removeClass('checkbox-danger');
-
- }
-}
