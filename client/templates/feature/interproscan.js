@@ -176,7 +176,7 @@ Template.interproscan.rendered = function(){
             .attr('y',0)
             .html(function(d){
                 let ipr = getInterproId(d)
-                return '<button type="button" class="btn btn-default btn-sm">' + ipr + '</button>'
+                return '<button type="button" class="btn btn-default btn-xs">' + ipr + '</button>'
             })
     /*
     var names = domains.selectAll('text')

@@ -1,5 +1,5 @@
 <template name="filter">
-	<form role="form" id="genelist_filter">
+	<form role="form" id="genelist_filter" autocomplete="off">
       <div class="panel panel-default">
         <div class="panel-heading">
           <div class="pull-right">
@@ -11,9 +11,11 @@
           </div>
           <h5><b>Filter options</b></h5>
         </div>
+        <!--
         <div class="panel-body">
           <p>Select a combination of filters below</p>
         </div>
+        -->
         <ul class="filter list-group">
 
           <!-- gene id filter -->
@@ -22,6 +24,13 @@
             <textarea class="form-control" id="gene_id_filter" type="text"></textarea>
           </li>
           <!-- end gene id filter -->
+
+          <!-- orthogroup filter -->
+          <li class="list-group-item">
+            <label for="orthogroup_filter">Orthogroup</label>
+            <input type="text" class="form-control" id="orthogroup_filter">
+          </li>
+          <!-- orthogroup filter -->
 
           <!-- tracks -->
           <li class="list-group-item">
@@ -44,7 +53,7 @@
               <ul class="dropdown-menu scrollable-menu pull-right" role="menu" aria-labelledby="featuremenu-button">
                 {{#each features}}
                   <li role="presentation" >
-                    <a role="menuitem" class="dropdown-item featuremenu-item">{{_id}}</a>
+                    <a role="menuitem" class="dropdown-item featuremenu-item">{{ ID }}</a>
                   </li>
                 {{/each}}
               </ul>
@@ -52,9 +61,9 @@
             <label>Features</label>
             {{#each selectedFeatures}}
               <div class="checkbox">
-                  <input type="checkbox" class="ternary-toggle feature-checkbox" id="{{_id}}">
-                  <label for="{{_id}}">
-                    {{_id}}
+                  <input type="checkbox" class="ternary-toggle feature-checkbox" id="{{ ID }}">
+                  <label for="{{ ID }}">
+                    {{ ID }}
                   </label>
               </div>
             {{/each}}

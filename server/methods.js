@@ -180,19 +180,23 @@ Meteor.methods({
 		//process mapreduce output and put it in a collection
 		mapReduceResults.forEach(function(i){ 
 			FilterOptions.findAndModify({ 
-				query: { _id: i._id }, 
+				query: { ID: i._id }, 
 				update: { $setOnInsert: { name: i._id, show: true, canEdit: false } }, 
 				new: true, 
 				upsert: true 
 			}) 
 		})
-		//add the viewing option, since this key is dynamic it will not allways be present on any gene, but we do want to filter on this
-		FilterOptions.findAndModify({
-			query: { _id: 'viewing' },
-			update: { $setOnInsert: { name: 'viewing', show: true, canEdit: false } }, 
-			new: true, 
-			upsert: true 
+		//add the viewing and editing option, since this key is dynamic it will not allways be present on any gene, but we do want to filter on this
+		const permanentOptions = ['viewing','editing']
+		permanentOptions.forEach(function(optionId){
+			FilterOptions.findAndModify({
+				query: { ID: optionId },
+				update: { $setOnInsert: { name: optionId, show: true, canEdit: false } }, 
+				new: true, 
+				upsert: true 
+			})
 		})
+		
 	},
 	'removeFromViewing':function(geneId){
 		if (! this.userId) {
@@ -203,5 +207,23 @@ Meteor.methods({
 		if ( viewing.length === 0 ){
 			Genes.update({ 'ID': geneId },{ $unset: { 'viewing': 1 } } )
 		} 
+	},
+	'lock.gene':function(geneId){
+		if (! this.userId) {
+			throw new Meteor.Error('not-authorized');
+		}
+		if (! Roles.userIsInRole(this.userId,'curator')){
+			throw new Meteor.Error('not-authorized');
+		}
+		Genes.update({ 'ID': geneId },{ $set: { editing: this.userId } })
+	},
+	'unlock.gene':function(geneId){
+		if (! this.userId) {
+			throw new Meteor.Error('not-authorized');
+		}
+		if (! Roles.userIsInRole(this.userId,'curator')){
+			throw new Meteor.Error('not-authorized');
+		}
+		Genes.update({ 'ID': geneId },{ $unset: { editing: 1 } })
 	}
 })

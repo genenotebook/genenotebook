@@ -29,26 +29,27 @@ Template.header.helpers({
   },
   search: function(){
   	return Session.get('search')
+  },
+  searching: function(){
+  	return Session.get('search') || Session.get('searching')
   }
 })
 
 Template.header.events({
 	'keyup input.search': function(){
-		Session.set('hasSearch',true)	
+		Session.set('searching',true)	
 	},
 	'submit .search': function(event) {
 		event.preventDefault();
 		var search = event.target.search.value;
 		if (search){
-			//Router.go('search',{'_search':search})
 			Router.go('genes',{},{'query':{'search':search}})
 		}
 	},
 	'click #clear-search': function(){
-		console.log('clear search')
 		Session.set('search',null);
 		$('input[name="search"]').val('')
-		Router.go('genes',{},{'query':{}})
+		//Router.go('genes',{},{'query':{}})
 	},
 	'click #signin':function(event,template){
 		event.preventDefault();

@@ -1,88 +1,136 @@
 <template name="info">
 	<section id="info">
 		<hr>
-		
-		{{ #if isInRole 'curator' }}
-			{{ #if editing }}
-				<div class="btn-group pull-right">
-					<button type="button" class="btn btn-success btn-sm save">
-						<i class="fa fa-floppy-o" aria-hidden="true"></i> Save
-					</button>
-					<button type="button" class="btn btn-danger btn-sm cancel">CANCEL</button>
-				</div>
-			{{ else }}
-				<button type="button" class="btn btn-primary btn-sm pull-right edit">
-					<i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit
+			{{ #if viewingHistory }}
+				<button type="button" class="btn btn-default btn-sm pull-right hideHistory">
+					<i class="fa fa-times-circle-o" aria-hidden="true"></i> 
+					Hide history
 				</button>
+			{{ else }}
+				{{ #if editing }}
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-sm save">
+							<i class="fa fa-floppy-o" aria-hidden="true"></i> Save
+						</button>
+						<button type="button" class="btn btn-default btn-sm cancel">
+							<i class="fa fa-times-circle-o" aria-hidden="true"></i> Cancel
+						</button>
+					</div>
+				{{ else }}
+					<div class="btn-group pull-right">
+					{{ #if locked }}
+						{{ #if isInRole 'curator' }}
+							<button type="button" class="btn btn-default btn-sm edit" disabled>
+								<i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit (locked)
+							</button>
+						{{ /if }}
+					{{ else }}
+						{{ #if isInRole 'curator' }}
+							<button type="button" class="btn btn-default btn-sm edit">
+								<i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit
+							</button>
+						{{ /if }}
+						{{ #if editNumber }}
+							<button type="button" class="btn btn-default btn-sm pull-right viewingHistory">
+								<i class="fa fa-history" aria-hidden="true"></i> 
+								Show history
+								<small><span class="label label-default label-as-badge">{{ editNumber }}</span></small> 
+							</button>
+						{{ /if }}
+					{{ /if }}
+					</div>
+				{{ /if }}
 			{{ /if }}
-		{{ /if }}
 		<h3>General information</h3>
-		<div class="table-responive">
-			<table class="table table-hover">
-				<tbody>
-					<tr>
-						<td>Gene name</td>
-						<td>
-							{{ #if editing }}
-								<input type="text" class="form-control" id="Name" value="{{ Name }}">
-							{{ else }}
-								<b>{{ Name }}</b>
-							{{ /if }}
-						</td>
-					</tr>
-					<tr>
-						<td>Product name</td>
-						<td>{{ Productname }}</td>
-					</tr>
-					<tr>
-						<td>Coordinates</td>
-						<td>{{ seqid }} {{ start }} {{ end }} {{ end }}</td>
-					</tr>
-					<tr>
-						<td>Orthologs</td>
-						<td>{{ #each orthologs }}<a href="/gene/{{this}}">{{ this }}</a> {{ /each }}</td>
-					</tr>
-					<tr>
-						<td>Inparalogs</td>
-						<td>{{ #each paralogs }}<a href="/gene/{{this}}">{{this}}</a> {{ /each }}</td>
-					</tr>
-					<tr>
-						<td>Author</td>
-						<td>{{ author }}</td>
-					</tr>
-					<tr>
-						<td>Orthogroup</td>
-						<td>{{ orthogroup }}</td>
-					</tr>
-					<tr>
-						<td>Domains</td>
-						<td>{{ #each domains.InterPro }}<a href="https://www.ebi.ac.uk/interpro/entry/{{this}}" target="_blank">{{ this }}</a> {{ /each }}</td>
-					</tr>
-					<tr>
-						<td>Pseudogene</td>
-						<td>
-							{{ #if editing }}
-								<div class="checkbox">
-					                <input type="checkbox" id="Pseudogene" {{ isPseudogene }}>
-					                <label for="Pseudogene"></label>
-				                </div>
-				            {{ else }}
-				            	{{ Pseudogene }}
-				            {{ /if }}
-			            </td>
-					</tr>
-					<tr>
-						<td>Comments</td>
-						<td>
-							{{ #if editing }}
-								<textarea type="text" class="form-control" rows="3" id="Comments">{{ Comments }}</textarea>
-							{{ else }}
-								{{ Comments }}
-							{{ /if }} 
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+		{{ #if viewingHistory }}
+			<div class="alert alert-danger" role="alert">
+			<i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+			You are watching version <b>{{ currentVersion }} / {{ editNumber }}</b> of this gene by {{ editBy }} at {{ editAt }}.
+			{{ #if isInRole 'curator' }}
+				<a href="#" class="alert-link">Click here to revert to this version.</a>
+			{{ /if }} 
+			</div>
+			<nav>
+			  <ul class="pager">
+			    <li class="previous"><a href="#"><i class="fa fa-arrow-left" aria-hidden="true"></i> Older</a></li>
+			    <li class="next"><a href="#">Newer <i class="fa fa-arrow-right" aria-hidden="true"></i></a></li>
+			  </ul>
+			</nav>
+		{{ else }}
+
+		{{ /if }}
+		{{ #with versionHistory }}
+			<div class="table-responive">
+				<table class="table table-hover">
+					<tbody>
+						<tr>
+							<td>Gene ID</td>
+							<td>{{ ID }}</td>
+						</tr>
+						<tr class="">
+							<td>Gene name</td>
+							<td>
+								{{ #if editing }}
+									<input type="text" class="form-control" id="Name" value="{{ Name }}">
+								{{ else }}
+									<b>{{ Name }}</b>
+								{{ /if }}
+							</td>
+						</tr>
+						<tr>
+							<td>Product name</td>
+							<td>{{ Productname }}</td>
+						</tr>
+						<tr>
+							<td>Coordinates</td>
+							<td>{{ seqid }} {{ start }} {{ end }} {{ strand }}</td>
+						</tr>
+						<tr>
+							<td>Orthologs</td>
+							<td>{{ #each orthologs }}<a href="/gene/{{this}}">{{ this }}</a> {{ /each }}</td>
+						</tr>
+						<tr>
+							<td>Inparalogs</td>
+							<td>{{ #each paralogs }}<a href="/gene/{{this}}">{{this}}</a> {{ /each }}</td>
+						</tr>
+						<tr>
+							<td>Author</td>
+							<td>{{ author }}</td>
+						</tr>
+						<tr>
+							<td>Orthogroup</td>
+							<td>{{ orthogroup }}</td>
+						</tr>
+						<tr>
+							<td>Domains</td>
+							<td>{{ #each domains.InterPro }}<a href="https://www.ebi.ac.uk/interpro/entry/{{this}}" target="_blank">{{ this }}</a> {{ /each }}</td>
+						</tr>
+						<tr>
+							<td>Pseudogene</td>
+							<td>
+								{{ #if editing }}
+									<div class="checkbox">
+						                <input type="checkbox" id="Pseudogene" {{ isPseudogene }}>
+						                <label for="Pseudogene"></label>
+					                </div>
+					            {{ else }}
+					            	{{ Pseudogene }}
+					            {{ /if }}
+				            </td>
+						</tr>
+						<tr>
+							<td>Comments</td>
+							<td>
+								{{ #if editing }}
+									<textarea type="text" class="form-control" rows="3" id="Comments">{{ Comments }}</textarea>
+								{{ else }}
+									{{ Comments }}
+								{{ /if }} 
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		{{ /with }}
 	</section>
 </template>

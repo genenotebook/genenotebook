@@ -12,7 +12,8 @@ Template.experiments.rendered = function(){
 		x.description = sample.description;
 		maxTpm = Math.max(maxTpm,x.tpm);
 	})
-	maxTpm = Math.round(maxTpm) + 1;
+
+	maxTpm = Math.round(maxTpm) + Math.max(1,(maxTpm / 10));
 
 	const data = _.groupBy(experiments,function(x){return x.exp})
 	const dataArray = _.values(data);
@@ -82,14 +83,8 @@ Template.experiments.rendered = function(){
             .attr('transform','translate(0,' + (height + 10) + ')')
             .call(xAxis)
         .selectAll('text')
-            //.attr('transform','rotate(-90)')
-            .attr('transform',function(index){
-                let name = experimentNames[index];
-                if (name !== undefined){
-                    return 'translate(20,' + ((name.length * 3) + 0) +  ')rotate(-90)';
-                }
-            } )
-            .style('text-anchor','start')
+            .attr('transform','translate(30,5)rotate(-65)')
+            .style('text-anchor','end')
 };
 
 

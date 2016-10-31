@@ -5,8 +5,8 @@ Session.setDefault('selectedFeatures',['Comment','Productname','Pseudogene','ort
 
 function updateCheckboxes(){
   const filter = Session.get('filter')
-  const checkboxes = $('.feature-checkbox')
-  checkboxes.each(function(index,checkbox){
+  const featureCheckboxes = $('.feature-checkbox')
+  featureCheckboxes.each(function(index,checkbox){
     const parent = $(checkbox).parent()
     if ( filter.hasOwnProperty(checkbox.id) ){
       if ( filter[checkbox.id]['$exists'] === true ){
@@ -14,7 +14,7 @@ function updateCheckboxes(){
         parent.addClass('checkbox-success')
         checkbox.checked = true;
         checkbox.readOnly = false;
-      } else {
+      } else if ( filter[checkbox.id]['$exists'] === false ){
         parent.addClass('checkbox-danger');
         parent.removeClass('checkbox-success')
         checkbox.checked = checkbox.readOnly = true;
@@ -25,6 +25,33 @@ function updateCheckboxes(){
       checkbox.checked = checkbox.readOnly = false;
     }
   })
+  if (filter.hasOwnProperty('track')){
+    const trackCheckboxes = $('.track-checkbox');
+    trackCheckboxes.each(function(index,checkbox){
+      if (filter['track']['$in'].indexOf(checkbox.id) < 0){
+        checkbox.checked = false
+      } else {
+        checkbox.checked = true
+      }
+    })
+  }
+  
+
+}
+
+function updateInputfields(){
+  const filter = Session.get('filter')
+  if (filter.hasOwnProperty('ID')){
+    const geneIdsField = $('#gene_id_filter')
+    geneIdsField.val(filter.ID.join('\n'))
+  }
+  
+  if (filter.hasOwnProperty('orthogroup')){
+    if (!filter.orthogroup.hasOwnProperty('$exists')){
+      const orthogroupField = $('#orthogroup_filter')
+      orthogroupField.val(filter.orthogroup)
+    }
+  }
 }
 
 Template.filter.helpers({
@@ -33,12 +60,12 @@ Template.filter.helpers({
         return !_.isEmpty(filter);
     },
     features: function(){
-        const features = FilterOptions.find({});
+        const features = FilterOptions.find({show:true},{sort:{ID:1}});
         return features
     },
     selectedFeatures: function(){
         const selectedFeatures = Session.get('selectedFeatures')
-        return FilterOptions.find({ _id: { $in: selectedFeatures } })
+        return FilterOptions.find({ ID: { $in: selectedFeatures } },{sort:{ID:1}})
     },
     tracks:function(){
         return Tracks.find({});
@@ -49,84 +76,90 @@ Template.filter.helpers({
 })
 
 Template.filter.events({
-    'input #gene_id_filter': function(event){
-        const filter = Session.get('filter')
-        const geneIdString = event.currentTarget.value
-        const temp = geneIdString ? geneIdString.split('\n') : [];
-        const filterGeneIds = temp.filter(function(x){ return x });
-        if (filterGeneIds.length > 0){
-          filter.ID = {$in:filterGeneIds}
-          Session.set('filter',filter)
-        }
-      },
-    'click input.track-checkbox[type=checkbox]': function(event){
-        const filter = Session.get('filter');
-        const checkbox = event.target;
-        const parent = $(checkbox).parent();
-        const id = parent.context.id;
-        if (checkbox.checked){
-          if (!filter.hasOwnProperty('track')){
-            filter['track'] = {'$in':[id]}
-          } else {
-            filter['track']['$in'].push(id)
-          }
-        } else {
-          filter['track']['$in'] = _.without(filter['track']['$in'],id)
-        } 
-        if (filter['track']['$in'].length === 0){
-          delete filter['track']
-        }
+  'keydown #orthogroup_filter': function(event){
+    if (event.keyCode === 13){
+      event.preventDefault();
+    }
+  },
+  'input #gene_id_filter': function(event){
+      const filter = Session.get('filter')
+      const geneIdString = event.currentTarget.value
+      const temp = geneIdString ? geneIdString.split('\n') : [];
+      const filterGeneIds = temp.filter(function(x){ return x });
+      if (filterGeneIds.length > 0){
+        filter.ID = {$in:filterGeneIds}
         Session.set('filter',filter)
-      },
-    'click input.ternary-toggle[type=checkbox]': function(event){
+      }
+  },
+  'input #orthogroup_filter': function(event){
+    const filter = Session.get('filter');
+    const orthogroup = event.currentTarget.value.trim();
+    if (orthogroup.length > 0){
+      filter.orthogroup = orthogroup
+      Session.set('filter',filter)
+    }
+  },
+  'click input.track-checkbox[type=checkbox]': function(event){
       const filter = Session.get('filter');
       const checkbox = event.target;
       const parent = $(checkbox).parent();
       const id = parent.context.id;
-        
-      const positiveQuery = {$exists:true}
-      const negativeQuery = {$exists:false}
-        
-      console.log(parent.context.id);
-      if (checkbox.readOnly){
-        //go from negative to unchecked
-        delete filter[id]
-        //parent.removeClass('checkbox-danger');
-        //checkbox.checked = checkbox.readOnly = false;
-      } else if (!checkbox.checked){
-        //go from positive to negative
-        filter[id] = negativeQuery;
-        //parent.addClass('checkbox-danger');
-        //parent.removeClass('checkbox-success');
-        //checkbox.readOnly = checkbox.checked = true;
-      } else {
-        //go from unchecked to positive
-        filter[id] = positiveQuery;
-        //parent.addClass('checkbox-success');
-        //parent.removeClass('checkbox-danger');
-     }
-     updateCheckboxes()
-     Session.set('filter',filter)
-    },
-    'click .reset_filter': function(event){
-      event.preventDefault();
-      const filters = $('input[type=checkbox]');
-      filters.each(function(){
-        this.checked = this.readOnly = false;
-      })
-      $('#gene_id_filter').val('');
-      Session.set('filter',{});
-      Session.set('select-all',false);
-      Session.set('checked',[]);
-    },  
-    'click .featuremenu-item':function(event,template){
-        const feature = event.target.text;
-        const selectedFeatures = Session.get('selectedFeatures');
-        if (selectedFeatures.indexOf(feature) < 0){
-            selectedFeatures.push(feature);
+      if (checkbox.checked){
+        if (!filter.hasOwnProperty('track')){
+          filter['track'] = {'$in':[id]}
+        } else {
+          filter['track']['$in'].push(id)
         }
-        Session.set('selectedFeatures',selectedFeatures);
-    }
+      } else {
+        filter['track']['$in'] = _.without(filter['track']['$in'],id)
+      } 
+      if (filter['track']['$in'].length === 0){
+        delete filter['track']
+      }
+      Session.set('filter',filter)
+    },
+  'click input.ternary-toggle[type=checkbox]': function(event){
+    const filter = Session.get('filter');
+    const checkbox = event.target;
+    const parent = $(checkbox).parent();
+    const id = parent.context.id;
+      
+    const positiveQuery = {$exists:true}
+    const negativeQuery = {$exists:false}
+      
+    console.log(parent.context.id);
+    if (checkbox.readOnly){
+      //go from negative to unchecked
+      delete filter[id]
+    } else if (!checkbox.checked){
+      //go from positive to negative
+      filter[id] = negativeQuery;
+    } else {
+      //go from unchecked to positive
+      filter[id] = positiveQuery;
+   }
+   Session.set('filter',filter)
+   updateCheckboxes()
+  },
+  'click .reset_filter': function(event){
+    event.preventDefault();
+    const filters = $('input[type=checkbox]');
+    filters.each(function(){
+      this.checked = this.readOnly = false;
+    })
+    $('#gene_id_filter, #orthogroup_filter').val('');
+    Session.set('filter',{});
+    Session.set('select-all',false);
+    Session.set('checked',[]);
+  },  
+  'click .featuremenu-item':function(event,template){
+      const feature = event.target.text;
+      const selectedFeatures = Session.get('selectedFeatures');
+      if (selectedFeatures.indexOf(feature) < 0){
+          selectedFeatures.push(feature);
+      }
+      Session.set('selectedFeatures',selectedFeatures);
+  }
 })
 
 Template.filter.onRendered(function(){
@@ -143,5 +176,6 @@ Template.filter.onRendered(function(){
   })
   */
   updateCheckboxes()
+  updateInputfields()
 })
 

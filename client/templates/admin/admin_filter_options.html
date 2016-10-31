@@ -6,7 +6,51 @@
 	</button>
 	{{ #each this }}
 		<li class="list-group-item">
-		{{ _id }} {{ name }} {{ show }}
+		
+		{{ #if edit ID }}
+			<form class="form-horizontal" id="{{ID}}">
+				<div class="btn-group pull-right">
+					<button type="button" class="btn btn-default btn-sm save">Save</button>
+					<button type="button" class="btn btn-danger btn-sm cancel">Cancel</button>
+				</div>
+				<div class="form-group">
+					<label for="ID" class="col-sm-2 control-label">ID:</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control" id="ID" value="{{ ID }}" disabled>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="name" class="col-sm-2 control-label">Display name:</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control" id="name" value="{{ name }}">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Visual:</label>
+					<div class="col-sm-6">
+						<div class="checkbox">
+	                		<input type="checkbox" id="show" {{ isVisual }}>
+	                		<label for="show"></label>
+	                	</div>
+	                </div>
+                </div>
+				<div class="form-group">
+					<label for="permissions" class="col-sm-2 control-label">Permissions:</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control" id="permissions" disabled>
+					</div>
+				</div>
+			</form>
+
+		{{ else }}
+			<button class="btn btn-default pull-right edit" id="{{ ID }}">Edit</button>
+			<p>
+			ID: {{ ID }} <br>
+			Display name: {{ name }} <br>
+			Visual: {{ show }} <br>
+			Permissions: ...
+			</p>
+		{{/if}}
 		</li>
 	{{ /each }}
 	</ul>
