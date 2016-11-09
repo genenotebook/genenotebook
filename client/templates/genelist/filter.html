@@ -1,15 +1,16 @@
 <template name="filter">
 	<form role="form" id="genelist_filter" autocomplete="off">
       <div class="panel panel-default">
-        <div class="panel-heading">
-          <div class="pull-right">
+        <div class="panel-heading clearfix">
+            <button class="btn btn-sm pull-right" type="button">
+              <i class="fa fa-arrow-left" aria-hidden="true"></i>
+            </button>
             {{#if hasFilter}}
               <button type="button" class="btn btn-danger btn-sm reset_filter">
-                <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span> Reset
+                <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span> Clear filters
               </button>
             {{/if}}
-          </div>
-          <h5><b>Filter options</b></h5>
+          <p></p>
         </div>
         <!--
         <div class="panel-body">
@@ -17,7 +18,12 @@
         </div>
         -->
         <ul class="filter list-group">
-
+          <li class="list-group-item">
+            <ul class="nav nav-tabs" id="feature-nav" data-spy="affix">
+              <li role="presentation" class="active"><a href="#">Filter options</a></li>
+              <li role="presentation"><a href="#">Display options</a></li>
+            </ul>
+          </li>
           <!-- gene id filter -->
           <li class="list-group-item">
             <label for="gene_id_filter">Gene IDs</label>

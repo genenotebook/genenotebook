@@ -1,3 +1,7 @@
+import lodash from 'lodash';
+
+_ = lodash;
+
 Template.blasthit.helpers({
 	hspNum:function(){
 		const hspNum = this.Hit_hsps[0].Hsp.length;

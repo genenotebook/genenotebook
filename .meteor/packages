@@ -43,7 +43,6 @@ runelytics:nouislider
 shell-server@0.2.1
 peppelg:bootstrap-3-modal
 amr:parsley.js
-alethes:lodash
 check@1.2.4
 danimal:userpresence
 zuuk:stale-session

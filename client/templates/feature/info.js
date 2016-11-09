@@ -1,4 +1,5 @@
 import { diff, apply } from 'rus-diff'; 
+import lodash from 'lodash';
 
 _ = lodash;
 
