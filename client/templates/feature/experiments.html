@@ -1,6 +1,23 @@
 <template name="experiments">
 	<section id="experiments">
 		<hr>
+		<!--
+		<div class="dropdown pull-right">
+            <a id="dLabel" role="button" data-toggle="dropdown" class="btn btn-default" data-target="#">
+                Select experiments <span class="caret"></span>
+            </a>
+    		<ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
+    			{{#each experiments}}
+    				<li><a href="#" id="{[ this }}">{{ this.exp }}</a></li>
+    			{{/each}}
+            </ul>
+        </div>
+        -->
+        <select class="selectpicker pull-right" data-actions-box="true" data-live-search="true" multiple> 
+        	{{#each experiments}}
+        		<option selected> {{ this.exp }} </option>
+        	{{/each}}
+        </select>
 		<h3>Experiments</h3>
 		<div class="well experiments">
 			<!-- this div is filled in with d3 -->

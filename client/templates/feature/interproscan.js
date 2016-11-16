@@ -47,7 +47,6 @@ Template.interproscan.helpers({
     }
 })
 
-
 Template.interproscan.rendered = function(){
     const transcript = this.data.subfeatures.filter(function(x){return x.type === 'mRNA'})[0];
     const id = transcript.ID;
@@ -141,7 +140,7 @@ Template.interproscan.rendered = function(){
             .attr('rx',2)
             .attr('ry',2)
             .each(function(d,i){
-                //initialize bootstrap popover for every rect
+                //initialize bootstrap popover for every rect, bootstrap popup dismissal is automatically taken care of by code in client/main/app-body.js
                 $(this).popover({
                     title:d.name,
                     html:true,
