@@ -10,6 +10,7 @@
     "d3-scale-chromatic": "^1.0.2",
     "meteor-node-stubs": "^0.2.3",
     "object-hash": "^1.1.4",
-    "rus-diff": "^1.1.0"
+    "rus-diff": "^1.1.0",
+    "simpl-schema": "0.0.3"
   }
 }
