@@ -88,7 +88,6 @@ Template.interproscan.rendered = function(){
     //draw axis first, so it sits nicely in the back
     var xAxis = d3.axisBottom(xScale)
             .ticks(10)
-            //.tickArguments([4,'s'])
             .tickPadding(-height - margin.top - margin.bottom - 20)
             .tickSize(height + margin.top + margin.bottom)
 
@@ -97,7 +96,6 @@ Template.interproscan.rendered = function(){
             .attr('transform','translate(0,10)')
             .call(xAxis)
         .selectAll('text')
-            //.attr('dy','2em')
             .attr('transform','rotate(0)')
             .style('text-anchor','start')
 
