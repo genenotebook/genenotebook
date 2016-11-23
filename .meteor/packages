@@ -50,3 +50,4 @@ zuuk:stale-session
 fongandrew:find-and-modify
 blaze
 ostrio:files
+dispatch:mocha-phantomjs

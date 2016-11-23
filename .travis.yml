@@ -4,13 +4,17 @@ node_js:
   - "5.1"
   - "0.12"
 before_install:
+  #- "curl -L https://raw.githubusercontent.com/arunoda/travis-ci-meteor-packages/master/configure.sh | /bin/sh"
   - "curl https://install.meteor.com | /bin/sh"
-  - export PATH="$HOME/.meteor:$PATH"
-  - "npm install -g spacejam"
+  #- export PATH="$HOME/.meteor:$PATH"
+  #- "npm install -g spacejam"
   #- "curl -L https://raw.githubusercontent.com/arunoda/travis-ci-laika/master/configure.sh | /bin/sh"
+before_script:
+  - "export PATH=$HOME/.meteor:$PATH"
 services:
   - mongodb
 #env:
 #  - LAIKA_OPTIONS="-t 5000"
 script:
-  - "spacejam test-packages"
+  #- "spacejam test-packages"
+  - "meteor test --once --driver-package dispatch:mocha-phantomjs"
