@@ -1,0 +1,5 @@
+.meteor/* linguist-vendored
+*.js linguist-language=Javascript
+*.html linguist-language=Html
+*.scss linguist-language=Css
+
