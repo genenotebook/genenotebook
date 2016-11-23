@@ -3,12 +3,19 @@ node_js:
   - "6.2"
   - "5.1"
   - "0.12"
+compiler:
+  - "g++"
 before_install:
+  - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+  - sudo apt-get update -qq
   #- "curl -L https://raw.githubusercontent.com/arunoda/travis-ci-meteor-packages/master/configure.sh | /bin/sh"
   - "curl https://install.meteor.com | /bin/sh"
   #- export PATH="$HOME/.meteor:$PATH"
   #- "npm install -g spacejam"
   #- "curl -L https://raw.githubusercontent.com/arunoda/travis-ci-laika/master/configure.sh | /bin/sh"
+install:
+  - sudo apt-get install -qq g++-4.8
+  - export CXX="g++-4.8"
 before_script:
   - "export PATH=$HOME/.meteor:$PATH"
 services:
