@@ -1,4 +1,5 @@
 import d3 from 'd3';
+import lodash from 'lodash';
 import { schemeSet3 } from 'd3-scale-chromatic';
 
 _ = lodash;
@@ -45,7 +46,6 @@ Template.interproscan.helpers({
         return Interpro.find({'ID':{$in:this.domains.InterPro}})
     }
 })
-
 
 Template.interproscan.rendered = function(){
     const transcript = this.data.subfeatures.filter(function(x){return x.type === 'mRNA'})[0];
@@ -140,7 +140,7 @@ Template.interproscan.rendered = function(){
             .attr('rx',2)
             .attr('ry',2)
             .each(function(d,i){
-                //initialize bootstrap popover for every rect
+                //initialize bootstrap popover for every rect, bootstrap popup dismissal is automatically taken care of by code in client/main/app-body.js
                 $(this).popover({
                     title:d.name,
                     html:true,

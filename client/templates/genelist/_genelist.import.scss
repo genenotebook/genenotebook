@@ -12,3 +12,14 @@
 .bert-alert.prepare-download {
 	color:lighten(#000,30%);
 }
+
+.genelist {
+	min-width: 100%;
+    min-height: 100%;
+    background-color: #fff;
+    position: relative;
+    top: 0;
+    bottom: 100%;
+    left: 0;
+    z-index: 1;
+}

@@ -8,6 +8,7 @@
     "bcrypt": "^0.8.7",
     "d3": "^4.2.6",
     "d3-scale-chromatic": "^1.0.2",
+    "lodash": "^4.16.6",
     "meteor-node-stubs": "^0.2.3",
     "object-hash": "^1.1.4",
     "rus-diff": "^1.1.0"

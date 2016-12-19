@@ -36,8 +36,13 @@ Template.feature.helpers({
   },
   domainCount: function(){
     const transcripts = this.subfeatures.filter(function(x){return x.type === 'mRNA'});
-    const domains = transcripts.map(function(x){ return Object.keys(x.interproscan) })
-    return _.uniq(domains[0]).length
+    const domains = transcripts.map(function(transcript){ return _.keys(transcript.interproscan) })
+    if (domains.length){
+      return _.uniq(domains[0]).length
+    } else {
+      return 0
+    }
+    
   },
   orthogroupSize: function(){
     const og = Orthogroups.findOne({ID:this.orthogroup})
