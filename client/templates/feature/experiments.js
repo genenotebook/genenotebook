@@ -20,6 +20,18 @@ Template.experiments.helpers({
     }
 })
 
+Template.experiments.events({
+    'change .selectpicker': function(event, template){
+        const selection = [];
+        let selected = $('.selectpicker option:selected');
+        selected.each(function(index,value){
+            selection.push($(value).val())
+        })
+        Session.set('selection',selection)
+        //drawExperiments.call(template);
+    }
+})
+
 Template.experiments.rendered = function(){
 
     $('.selectpicker').selectpicker({
@@ -28,22 +40,26 @@ Template.experiments.rendered = function(){
       title:'Select experiments'
     });
 
+	drawExperiments.call(this);
+};
 
-	let experiments = this.data.experiments;
+function drawExperiments(){
+    let experiments = this.data.experiments;
     const selection = Session.get('selection')
+    
     if (selection.length){
-         let experiments = experiments.filter(function(exp){
+         let experiments = this.data.experiments.filter(function(exp){
             return (selection.indexOf(exp.exp) > -1) 
         })
     }
-	const transcript = this.data.subfeatures.filter(function(x){return x.type === 'mRNA'})[0]
-	const maxTpm = Math.max(...experiments.map(function(experiment){ return experiment.tpm }))
+
+    const maxTpm = Math.max(...experiments.map(function(experiment){ return experiment.tpm }))
    
-	const data = _.groupBy(experiments,function(x){return x.exp})
-	const dataArray = _.values(data);
+    const data = _.groupBy(experiments,function(x){ return x.exp })
+    const dataArray = _.values(data);
     const experimentNames = _.keys(data);
 
-	let margin = {top: 10, right: 10, bottom: 100, left: 30};
+    let margin = {top: 10, right: 10, bottom: 100, left: 30};
     let width = $('.experiments').width() - margin.left - margin.right;
     let height = 250 - margin.bottom - margin.top;
 
@@ -55,23 +71,24 @@ Template.experiments.rendered = function(){
             .domain([0,maxTpm])
             .range([height,0])
 
+    //setup x scale
     let xScale = d3.scaleLinear()
         .domain([0,Math.min(width / barWidth,maxBars)])
         .range([0,Math.min(barWidth * maxBars,width)])
 
     let svg = d3.select('.experiments').append('svg')
-    	.attr('width', width + margin.left + margin.right)
-    	.attr('height', height + margin.top + margin.bottom)
-    	.append('g')
-    	.attr('class','container')
-    	.attr('transform','translate(' + margin.left + ',' + margin.top + ')');
+        .attr('width', width + margin.left + margin.right)
+        .attr('height', height + margin.top + margin.bottom)
+        .append('g')
+        .attr('class','container')
+        .attr('transform','translate(' + margin.left + ',' + margin.top + ')');
 
     let experimentGroups = svg.selectAll('g')
-    	.data(dataArray).enter()
-    		.append('g')
-    		.attr('transform',function(d,i){
-    			return 'translate(' + (i + 1)  * barWidth + ',0)'
-    		})
+        .data(dataArray).enter()
+            .append('g')
+            .attr('transform',function(d,i){
+                return 'translate(' + (i + 1)  * barWidth + ',0)'
+            })
 
     let bars = experimentGroups.selectAll('rect')
         .data(dataArray)
@@ -90,21 +107,20 @@ Template.experiments.rendered = function(){
             d3.select(this)
                 .attr('fill-opacity','0')
         })
-        //.style('fill','#3690c0')
 
     let points = experimentGroups.selectAll('circle')
-    	.data(function(d){
-    		return d
-    	})
-    	.enter().append('circle')
+        .data(function(d){
+            return d
+        })
+        .enter().append('circle')
         .attr('cx',function(){
             const jitterWidth = 0.1;
             return jitter(-(barWidth * jitterWidth),(barWidth * jitterWidth))
         })
-    	.attr('cy',function(d){
-    		return yScale(d.tpm);
-    	})
-    	.attr('r',5)
+        .attr('cy',function(d){
+            return yScale(d.tpm);
+        })
+        .attr('r',5)
         .on('mouseover',function(d){
             d3.select(this)
                 .attr('r',7)
@@ -167,8 +183,7 @@ Template.experiments.rendered = function(){
         .selectAll('text')
             .attr('transform','translate(30,5)rotate(-65)')
             .style('text-anchor','end')
-};
-
+}
 
 
 
