@@ -161,9 +161,10 @@ Meteor.methods({
 		//mapreduce to find all keys for all genes, this takes a while
 		a = Genes.rawCollection().mapReduce(
 			function(){
-				//map function 
-				for (var key in this){
-					emit(key,null) 
+				//map function
+				let keys = Object.keys(this) 
+				for (let i = 0; i < keys.length; i++){
+					emit(keys[i],null) 
 				}
 			},
 			function(key,values){

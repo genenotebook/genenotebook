@@ -42,7 +42,7 @@ es5-shim@4.6.15
 fastclick@1.0.13
 fongandrew:find-and-modify@1.0.0
 fortawesome:fontawesome@4.7.0
-fourseven:scss@3.10.1
+fourseven:scss@3.13.0
 geojson-utils@1.0.10
 harrison:papa-parse@1.1.1
 hot-code-push@1.0.4
@@ -85,7 +85,7 @@ npm-mongo@2.2.11_2
 observe-sequence@1.0.14
 ordered-dict@1.0.9
 ostrio:cookies@2.0.5
-ostrio:files@1.7.5
+ostrio:files@1.7.6
 peerlibrary:blocking@0.5.2
 peerlibrary:xml2js@0.4.8_1
 peppelg:bootstrap-3-modal@1.0.4
