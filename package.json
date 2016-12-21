@@ -7,6 +7,7 @@
     "asteroid": "^2.0.3",
     "babel-runtime": "^6.20.0",
     "babyparse": "^0.4.6",
+    "babel-runtime": "^6.18.0",
     "bcrypt": "^0.8.7",
     "bufferutil": "^1.3.0",
     "d3": "^4.2.6",
@@ -17,6 +18,7 @@
     "object-hash": "^1.1.4",
     "rus-diff": "^1.1.0",
     "utf-8-validate": "^2.0.0",
-    "ws": "^1.1.1"
+    "ws": "^1.1.1",
+    "simpl-schema": "0.0.3"
   }
 }

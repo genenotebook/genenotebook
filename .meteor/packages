@@ -51,3 +51,6 @@ ostrio:files
 dispatch:mocha-phantomjs
 gwendall:body-events
 jesperwe:bootstrap-select
+aldeed:schema-index
+aldeed:simple-schema
+babel-runtime
