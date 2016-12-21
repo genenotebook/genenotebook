@@ -1,3 +1,6 @@
+data/*
+node_modules
+!.gitignore
 !.meteor/packages
 !.meteor/versions
 !.meteor/status
@@ -5,12 +8,6 @@
 .meteor/local
 .meteor/meteorite
 *sublime*
-data/PanWU01x14*
-data/TorRG33x02*
-data/orthology_final.txt
-data/Alignments*
-data/NJ_Trees*
-data/transcriptome
 *elasticsearch*
 production_settings.json
 server/kadira.js
