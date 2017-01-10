@@ -3,15 +3,27 @@ const Baby = require('babyparse');
 const fs = require('fs');
 
 Meteor.methods({
-	addGff: function(fileName){
+	addGff: function(fileName, reference, trackName){
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}
 		if (! Roles.userIsInRole(this.userId,'curator')){
 			throw new Meteor.Error('not-authorized');
 		}
+
+		const existingTrack = Tracks.find({ track: trackName }).fetch().length
+		if (existingTrack){
+			throw new Meteor.Error('Track exists: ' + trackName);
+		}
+
+		const existingReference = References.find({ reference: reference }).fetch().length
+		if (!existingReference){
+			throw new Meteor.Error('Invalid reference: ' + reference)
+		}
+
 		const fileHandle = fs.readFileSync(fileName,{encoding:'binary'});
 
+		console.log('start parsing')
 		Baby.parse(fileHandle, {
 			delimiter: '\t',
 			dynamicTyping: true,
@@ -21,87 +33,48 @@ Meteor.methods({
 				console.log(error)
 			},
 			complete: function(results,file){
-				genes = formatGff(results.data)
-				console.log(genes)
-				return 'succes'
-				/*
-				request.post({
-					url: 'http://localhost:3000/api/login',
-					form: {
-						username: commander.username,
-						password: commander.password
+				console.log('parsing done')
+				genes = formatGff(results.data, reference, trackName)
+				console.log('gene documents created')
+				let geneCount = 0
+				genes.forEach(function(gene) {
+					GeneSchema.validate(gene)
+					let existingGene = Genes.find({ID:gene.ID}).fetch().length
+					if (existingGene){
+						throw new Meteor.Error('Duplicate gene ID: ' + gene.ID)
 					}
-				}, function(error,response,body){
-					console.log('autheticated')
-					let data = JSON.parse(body)
-					if ( data.status === 'success'){
-						let userId = data.data.userId;
-						let authToken = data.data.authToken;
-						console.log(userId,authToken)
-						uploadGenes(genes,userId,authToken);
-					}
+					geneCount += 1
 				})
-				*/
+				console.log('gene documents validated')
+				genes.forEach(function(gene){
+					Genes.insert(gene)
+					console.log('inserted',gene.ID)
+				})
+				Tracks.insert({
+					track: trackName,
+					reference: reference,
+					geneCount: geneCount
+				})
+				Meteor.call('scan.features')
 			}
 		})
+		return true
 	}
 })
 
-function parseGff(fileName){
-	const fileHandle = fs.readFileSync(fileName,{encoding:'binary'});
-
-	Baby.parse(fileHandle, {
-		delimiter: '\t',
-		dynamicTyping: true,
-		skipEmptyLines: true,
-		comments: '#',
-		error: function(error,file){
-			console.log(error)
-		},
-		complete: function(results,file){
-			genes = formatGff(results.data)
-			genes.forEach(function(gene){
-				
-			})
-			/*
-			request.post({
-				url: 'http://localhost:3000/api/login',
-				form: {
-					username: commander.username,
-					password: commander.password
-				}
-			}, function(error,response,body){
-				console.log('autheticated')
-				let data = JSON.parse(body)
-				if ( data.status === 'success'){
-					let userId = data.data.userId;
-					let authToken = data.data.authToken;
-					console.log(userId,authToken)
-					uploadGenes(genes,userId,authToken);
-				}
-			})
-			*/
-		}
-	})
-}
-
-function formatGff(parsedResults){
+function formatGff(parsedResults, reference, trackName){
 	const temp = {}
-	for (line of parsedResults){
+	parsedResults.forEach(function(line){
 		assert.equal(line.length,9)
+
 		let sub = {
-			seqid: line[0],
-			source: line[1],
 			type: line[2],
 			start: line[3],
 			end: line[4],
 			score: line[5],
-			strand: line[6],
-			phase: line[7],
 			attributes: formatAttributes(line[8])
 		}
-		
-		assert(sub.attributes.ID);
+
 		sub.ID = sub.attributes.ID[0];
 		delete sub.attributes.ID;
 
@@ -110,21 +83,35 @@ function formatGff(parsedResults){
 			delete sub.attributes.Parent;
 		}
 
+		if (sub.type === 'gene'){
+			sub.seqid = line[0]
+			sub.source = line[1]
+			sub.strand = line[6]
+			sub.reference = reference
+			sub.track = trackName
+			GeneSchema.validate(sub)
+		} else {
+			sub.phase = line[7]
+			SubfeatureSchema.validate(sub)
+		}
 		temp[sub.ID] = sub
-	}
-	for (subId of Object.keys(temp)){
+	})
+
+	Object.keys(temp).forEach(function(subId){
 		let sub = temp[subId]
 		if (sub.parents !== undefined){
 			for (parentId of sub.parents){
-				if (temp[parentId].children === undefined){
+				let parent = temp[parentId]
+				if (parent.children === undefined){
 					temp[parentId].children = []
 				}
 				temp[parentId].children.push(sub.ID)
 			}
 		}
-	}
+	})
+
 	const gff = []
-	for (subId of Object.keys(temp)){
+	Object.keys(temp).forEach(function(subId){
 		let sub = temp[subId];
 		if (sub.type === 'gene'){
 			sub.subfeatures = []
@@ -138,7 +125,8 @@ function formatGff(parsedResults){
 			}
 			gff.push(sub)
 		}
-	}
+	})
+
 	return gff
 }
 

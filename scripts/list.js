@@ -1,37 +1,27 @@
 #!/usr/bin/node
 
 if (!module.parent){
-	const assert = require('assert');
 	const commander = require('commander');
-	const Baby = require('babyparse');
-	const fs = require('fs');
 	const asteroid = require('asteroid');
-	const path = require('path');
 
-	let fileName, reference;
-
+	let what;
+	
 	commander
-		.arguments('<genome_annotation.gff>')
+		.arguments('<what>')
 		.option('-u, --username <username>','The user to authenticate as [REQUIRED]')
 		.option('-p, --password <password>','The user\'s password [REQUIRED]')
-		.option('-r, --reference <reference genome>','Reference genome on which the annotation fits [REQUIRED]')
-		.option('-t, --trackname <annotation trackname>','Name of the annotation track')
-		.action(function(file){
-			fileName = path.resolve(file);
+		.action(function(value){
+			what = value;
 		})
 		.parse(process.argv)
 
 	if ( commander.username === undefined ||
 		commander.password === undefined ||
-		commander.reference === undefined ||
-		fileName === undefined ){
+		what === undefined ){
 		commander.help()
 	}
 
-	const trackName = commander.trackname || fileName;
-
-
-	console.log(commander.username,commander.password,fileName,trackName)
+	console.log(commander.username,commander.password,what)
 	
 	const Connection = asteroid.createClass()
 
@@ -44,16 +34,13 @@ if (!module.parent){
 		password: commander.password
 	})
 
-	portal.call('addGff', fileName, commander.reference, trackName)
+	portal.call('list', what)
 		.then(result => {
 			console.log(result)
 			portal.disconnect()
-			//process.exit(0)
 		})
 		.catch(error => {
 			console.log(error)
 			portal.disconnect()
-			//process.exit(1)
 		})	
 }
-
