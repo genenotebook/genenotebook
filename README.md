@@ -3,6 +3,7 @@
 ###Requirements:
 
 * node.js (on mac: ```brew install node```)
+* mongodb (on max: ```brew install mongodb```)
 * meteor (```curl https://install.meteor.com/ | sh```) 
 
 
