@@ -1,5 +1,6 @@
 Meteor.subscribe('orthogroups');
 Meteor.subscribe('userList');
+Meteor.subscribe('references',this.seqid);
 
 Session.setDefault('viewing',[]);
 
@@ -45,8 +46,12 @@ Template.feature.helpers({
     
   },
   orthogroupSize: function(){
-    const og = Orthogroups.findOne({ID:this.orthogroup})
-    return og.alignment.length
+    const orthogroup = Orthogroups.findOne({ID:this.orthogroup})
+    let orthogroupSize = 0
+    if (orthogroup !== undefined){
+      orthogroupSize = orthogroup.alignment.length
+    }
+    return orthogroupSize
   },
   user: function(userId){
     const user = Meteor.users.findOne({ _id: userId });

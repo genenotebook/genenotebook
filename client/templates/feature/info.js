@@ -7,37 +7,42 @@ Session.setDefault('reversions',[])
 Session.setDefault('viewingHistory',false)
 
 Template.info.helpers({
-	editing:function(){
+	attributes(){
+		return Object.keys(this.attributes).map((key) => {
+			return {key: key, value: this.attributes[key]}
+		})
+	},
+	editing(){
 		return this.editing === Meteor.userId()
 	},
-	editNumber:function(){
+	editNumber(){
 		return EditHistory.find({ID:this.ID}).count()
 	},
-	currentVersion:function(){
+	currentVersion(){
 		const reversions = Session.get('reversions');
 		const totalVersions = EditHistory.find({ID:this.ID}).count();
 		return totalVersions - reversions.length;
 	},
-	locked:function(){
+	locked(){
 		if (this.hasOwnProperty('editing')){
 			return this.editing !== Meteor.userId
 		}
 	},
-	author:function(){
+	author(){
 		return this['Created by'];
 	},
-	isPseudogene:function(){
+	isPseudogene(){
 		if (this.hasOwnProperty('Pseudogene')){
 			if (this.Pseudogene[0] === 'True'){
 				return 'checked'
 			}
 		}
 	},
-	versionHistory: function(){
+	versionHistory(){
 		const reversions = Session.get('reversions');
 		if (reversions.length > 0){
 			let current = _.clone(this);
-			reversions.forEach(function(reversion){
+			reversions.forEach( (reversion) => {
 				let revertString = reversion.revert;
 				let revertQuery = JSON.parse(revertString);
 				current = apply(current,revertQuery);
@@ -47,14 +52,14 @@ Template.info.helpers({
 			return this;
 		}
 	},
-	viewingHistory: function(){
+	viewingHistory(){
 		return Session.get('viewingHistory')
 	}
 })
 
 Template.info.events({
 	'click .edit': function(event,template){
-		Meteor.call('lock.gene',this.ID,function(err,ress){
+		Meteor.call('lock.gene', this.ID, (err, res) => {
 			if (err){
 				Bert.alert('locking gene failed','danger','growl-bottom-right')
 			} else {

@@ -9,14 +9,19 @@ Meteor.methods({
 		let retval;
 		switch( what ){
 			case 'tracks':
-				retval = Tracks.find({},{ fields: { _id: 0, trackName: 1 }}).fetch();
+				retval = Tracks.find({},{ fields: { _id: 0}}).fetch();
 				break;
 			case 'references':
-				retval = References.find({},{ fields: { _id: 0, reference: 1 }}).fetch();
+				retval = References.find(
+					{},
+					{ fields: { _id: 0, reference: 1 }}
+					).fetch().map(function(ret){
+						return ret.reference
+					});
 				break;
 			default:
 				throw new Meteor.Error('Can not list: ' + what) 
 		}
-		return retval;
+		return [...new Set(retval)];
 	}
 })

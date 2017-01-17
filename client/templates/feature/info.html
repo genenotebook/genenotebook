@@ -63,6 +63,13 @@
 			<div class="table-responive">
 				<table class="table table-hover">
 					<tbody>
+						{{ #each attributes }}
+							<tr>
+								<td>{{ this.key }}</td>
+								<td>{{ this.value }}</td>
+							</tr>
+						{{ /each }}
+						<!--
 						<tr>
 							<td>Gene ID</td>
 							<td>{{ ID }}</td>
@@ -79,7 +86,7 @@
 						</tr>
 						<tr>
 							<td>Product name</td>
-							<td>{{ Productname }}</td>
+							<td>{{ attributes.Productname }}</td>
 						</tr>
 						<tr>
 							<td>Coordinates</td>
@@ -128,6 +135,7 @@
 								{{ /if }} 
 							</td>
 						</tr>
+						-->
 					</tbody>
 				</table>
 			</div>

@@ -2,20 +2,20 @@
   <div class="container-fluid">
   	<div class="genelist row">
       <div class="col-md-3">
-        {{>filter}}
+        {{ >filter }}
       </div>
       <div class="col-md-9 clearfix">
         <!-- genelist -->
-        {{#if genes.count }}
+        {{ #if genes.count }}
           <div class="pull-right btn-group" role="group">
-              {{#if selection}}
+              {{ #if selection }}
               <button type="button" class="btn btn-success" data-toggle="modal" data-target="#download-modal">
                 <i class="fa fa-download" aria-hidden="true"></i> Download 
               </button>
               <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#download-modal">
                 <i class="fa fa-external-link" aria-hidden="true"></i> Send 
               </button>
-              {{/if}}
+              {{ /if }}
               <button type="button" class="btn btn-default select-all">
                 <span class="select-button glyphicon glyphicon-ok {{isChecked}}"></span>
               </button>
@@ -33,24 +33,25 @@
           <b>{{ queryCount }}</b> query results
 
         	<ul class="genelist list-group">
-        		{{#each genes}}
+        		{{ #each genes }}
         			<li class="list-group-item">
                 <button type="button" class="btn btn-default select-gene pull-right">
                   <span class="select-button glyphicon glyphicon-ok {{isChecked}}"></span>
                 </button>
                 <p>
-                  <a class="genelink" href="/gene/{{ID}}">{{ID}}</a>
-                  <b> {{Name}} </b>
-                  {{Productname}}
+                  <a class="genelink" href="/gene/{{ID}}">{{ ID }}</a>
+                  <b> {{ attributes.Name }} </b>
+                  {{ attributes.Productname }}
+                  {{ >genemodel }}
                 </p>
       				</li>
-        		{{/each}}
+        		{{ /each }}
         	</ul>
-          {{#if moreResults}}
+          {{ #if moreResults }}
             <div id="showMoreGenes">
-                {{>loading}}
+                {{ >loading }}
             </div>
-          {{/if}}
+          {{ /if }}
         {{ else }}
           <div class="alert alert-danger" role="alert"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> No search results</div>
         {{ /if }}

@@ -1,9 +1,10 @@
 const fs = require('fs');
 const readline = require('readline');
 const Fiber = Npm.require('fibers');
+const Future = Npm.require('fibers/future');
 
 Meteor.methods({
-	addReference: function(fileName, referenceName){
+	addReference(fileName, referenceName){
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}
@@ -23,13 +24,13 @@ Meteor.methods({
 		let seq = {}
 		let fasta = []
 		
-		lineReader.on('line', function(line){
+		const fut = new Future();
+		console.log('start parsing')
+		lineReader.on('line', (line) => {
 			if (line[0] === '>'){
 				if (seq.header !== undefined){
-					console.log(seq.header,seq.reference,seq.seq.length)
-					ReferenceSchema.validate(seq)
 					
-					Fiber(function(){
+					new Fiber(function(){
 						let existingHeader = References.find({ 
 							reference: referenceName, 
 							header: seq.header
@@ -51,14 +52,46 @@ Meteor.methods({
 			}
 		})
 
-		lineReader.on('close',function(){
+		lineReader.on('close',() => {
+			//add the last sequence in the file
+			new Fiber(function(){
+				let existingHeader = References.find({ 
+					reference: referenceName, 
+					header: seq.header
+				}).fetch().length
+
+				if (existingHeader){
+					throw new Meteor.Error('Duplicate header: ' + seq.header)
+				}
+			}).run()
+			fasta.push(seq)
+
 			console.log('finished parsing')
-			Fiber(function(){
-				fasta.forEach(function(sequence){
-					console.log('inserting',sequence.header)
-					References.insert(sequence)
+			new Fiber(function(){
+				fasta.forEach( (seq) => {
+					console.log('inserting',seq.header)
+					let chunksize = 10000;
+					let splitSeq = seq.seq.match(new RegExp('.{1,'+ chunksize + '}','g'))
+
+					let start = 0;
+					let end = 0;
+
+					splitSeq.forEach( (seqPart) => {
+						end += seqPart.length
+						References.insert({
+							header: seq.header,
+							seq: seqPart,
+							reference: seq.reference,
+							start: start,
+							end: end
+						})
+						start += seqPart.length;
+						;
+					} )
 				})
+				fut.return(1)
 			}).run()
 		})
+		return fut.wait()
 	}
 })

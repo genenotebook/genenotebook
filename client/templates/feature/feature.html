@@ -26,12 +26,16 @@
         {{> Template.dynamic template=tab data=tabData }}
         -->
         <div class="feature-info">
-          {{>info this}}
-          {{>genemodel this}}
-          {{>interproscan this}}
-          {{>seq this}}
-          {{>orthogroup this}}
-          {{>experiments this}}
+          {{>info}}
+          {{>module_genemodel}}
+          <!--
+          {{>interproscan}}
+          -->
+          {{>seq}}
+          <!--
+          {{>orthogroup}}
+          {{>experiments}}
+          -->
         </div>
       </div>
     </div>

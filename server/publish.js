@@ -3,17 +3,17 @@ Meteor.publishComposite('singleGene',function(geneId){
 		this.ready()
 		//throw new Meteor.Error('Unauthorized')
 	} else if (this.userId !== null){
-		Genes.update({ 'ID': geneId },{ $addToSet: { 'viewing': this.userId } })
+		Genes.update({ ID: geneId },{ $addToSet: { viewing: this.userId } })
 	}
 	
 	return {
 		find: function(){
-			return Genes.find({'ID':geneId});
+			return Genes.find({ ID: geneId });
 		},
 		children: [
 			{
 				find: function(gene){
-					return Orthogroups.find({'ID':gene.orthogroup})
+					return Orthogroups.find({ ID:  gene.orthogroup})
 				}
 			},
 			{
@@ -24,17 +24,22 @@ Meteor.publishComposite('singleGene',function(geneId){
 							domains = gene.domains.InterPro
 						}
 					} 
-					return Interpro.find({ 'ID': { $in: domains } })
+					return Interpro.find({ ID: { $in: domains } })
 				}
 			},
 			{
 				find: function(gene){
-					return EditHistory.find({'ID':gene.ID})
+					return EditHistory.find({ ID : gene.ID })
 				}
 			},
 			{
 				find: function(gene){
 					return Meteor.users.find({})
+				}
+			},
+			{
+				find: function(gene){
+					return References.find({ reference: gene.reference, header: gene.seqid })
 				}
 			}
 		]
@@ -57,7 +62,17 @@ Meteor.publish('genes',function(limit,search,query){
 	return Genes.find(query,{ limit: limit, sort: { 'ID': 1 } })
 })
 
+Meteor.publish('references',function(seqid){
+	if (!this.userId){
+		this.ready()
+	}
+	return References.find({ header: seqid });
+})
+
 Meteor.publish('orthogroups',function(ID){
+	if (!this.userId){
+		this.ready()
+	}
 	return Orthogroups.find({ 'ID': ID });
 })
 

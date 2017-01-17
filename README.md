@@ -2,10 +2,14 @@
 ----
 ###Requirements:
 
-* node.js
-* meteor  
-* gff_toolkit
+* node.js (on mac: ```brew install node```)
+* meteor (```curl https://install.meteor.com/ | sh```) 
+
+
+To run a small example:
 
 ```
-pip install gff_toolkit
+meteor npm install --save
+node scripts/add_test_data.sh
+meteor
 ```

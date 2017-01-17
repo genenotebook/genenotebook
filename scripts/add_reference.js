@@ -1,4 +1,4 @@
-#!/usr/bin/node
+#!/usr/bin/env node
 
 if (!module.parent){
 	const assert = require('assert');

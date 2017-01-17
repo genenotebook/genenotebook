@@ -1,9 +1,11 @@
 const assert = require('assert');
 const Baby = require('babyparse');
 const fs = require('fs');
+const lodash = require('lodash');
+_ = lodash;
 
 Meteor.methods({
-	addGff: function(fileName, reference, trackName){
+	addGff(fileName, reference, trackName){
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}
@@ -23,21 +25,23 @@ Meteor.methods({
 
 		const fileHandle = fs.readFileSync(fileName,{encoding:'binary'});
 
-		console.log('start parsing')
+		console.log('start reading')
 		Baby.parse(fileHandle, {
 			delimiter: '\t',
 			dynamicTyping: true,
 			skipEmptyLines: true,
 			comments: '#',
-			error: function(error,file){
+			error(error,file) {
 				console.log(error)
 			},
-			complete: function(results,file){
-				console.log('parsing done')
+			complete(results,file) {
+				console.log('reading done')
+				console.log('start formatting')
 				genes = formatGff(results.data, reference, trackName)
-				console.log('gene documents created')
+				console.log('formatting done')
+				console.log('start validating')
 				let geneCount = 0
-				genes.forEach(function(gene) {
+				genes.forEach( (gene) => {
 					GeneSchema.validate(gene)
 					let existingGene = Genes.find({ID:gene.ID}).fetch().length
 					if (existingGene){
@@ -45,16 +49,18 @@ Meteor.methods({
 					}
 					geneCount += 1
 				})
-				console.log('gene documents validated')
-				genes.forEach(function(gene){
+				console.log('validating done')
+				genes.forEach( (gene) => {
 					Genes.insert(gene)
 					console.log('inserted',gene.ID)
 				})
+				
 				Tracks.insert({
 					track: trackName,
 					reference: reference,
 					geneCount: geneCount
 				})
+				
 				Meteor.call('scan.features')
 			}
 		})
@@ -62,9 +68,9 @@ Meteor.methods({
 	}
 })
 
-function formatGff(parsedResults, reference, trackName){
+const formatGff = (parsedResults, reference, trackName) => {
 	const temp = {}
-	parsedResults.forEach(function(line){
+	parsedResults.forEach( (line) => {
 		assert.equal(line.length,9)
 
 		let sub = {
@@ -97,7 +103,7 @@ function formatGff(parsedResults, reference, trackName){
 		temp[sub.ID] = sub
 	})
 
-	Object.keys(temp).forEach(function(subId){
+	Object.keys(temp).forEach( (subId) => {
 		let sub = temp[subId]
 		if (sub.parents !== undefined){
 			for (parentId of sub.parents){
@@ -111,14 +117,20 @@ function formatGff(parsedResults, reference, trackName){
 	})
 
 	const gff = []
-	Object.keys(temp).forEach(function(subId){
+	Object.keys(temp).forEach( (subId) => {
 		let sub = temp[subId];
 		if (sub.type === 'gene'){
 			sub.subfeatures = []
 			let children = getChildren(subId,temp);
 			let child = children.next()
 			while (!child.done){
-				if (child.value !== sub){
+				let notSelf = child.value !== sub;
+
+				let notPresent = _.findIndex(sub.subfeatures, (existingSub) => { 
+						return _.isEqual(sub,existingSub) 
+					}) < 0;
+
+				if (notSelf && notPresent){
 					sub.subfeatures.push(child.value)
 				}
 				child = children.next()
@@ -140,7 +152,7 @@ function *getChildren(Id,Gff){
 	}
 }
 
-function formatAttributes(attributeString){
+const formatAttributes = (attributeString) => {
 	const attributes = {}
 	for (attribute of attributeString.split(';')){
 		splitAttribute = attribute.split('=');

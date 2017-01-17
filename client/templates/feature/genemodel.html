@@ -1,9 +1,13 @@
-<template name="genemodel">
+<template name="module_genemodel">
 	<section id="genemodel">
 		<hr>
 		<h3>Genemodel</h3>
-		<div class="well genemodel">
-			<span class="label label-default"> {{ seqid }}</span>
-		</div>
+		{{ >genemodel }}
 	</section>
+</template>
+
+<template name="genemodel">
+	<div class="well genemodel" id="{{ ID }}">
+		<span class="label label-default"> {{ seqid }}</span>
+	</div>
 </template>

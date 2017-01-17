@@ -2,17 +2,36 @@ import d3 from 'd3';
 
 Template.genemodel.helpers({
 	scaffold:function(){
-		console.log(this)
 		return this.data.seqid
 	}
 })
 
-Template.genemodel.rendered = function(){
-	const barHeight = 20;
+Template.genemodel.rendered = function()  {
+	const gene = this.data;
+	let config = {
+		color: {
+			'CDS': '#3690c0',
+			'exon': 'lightblue',
+			'five_prime_UTR': 'grey',
+			'three_prime_UTR': 'grey'
+		},
+		size: {
+			'CDS': 10,
+			'exon': 10,
+			'five_prime_UTR': 5,
+			'three_prime_UTR': 5
+		},
+		spacing: 5,
+		drawSubfeatures: ['CDS','three_prime_UTR','five_prime_UTR']
+	}
+	config.maxSize = Math.max(...Object.values(config.size))
+	config.midLine = config.maxSize + config.spacing
 
-	const transcriptData = this.data.subfeatures.filter(function(x){return x.type === 'mRNA'});
+	const transcriptData = gene.subfeatures.filter( (sub) => {
+		return sub.type === 'mRNA'
+	});
 
-	const strand = this.data.strand;
+	const strand = gene.strand;
 
 	//select the div to plot in, set min max and margins
 	const margin = {top: 0, right: 25, bottom: 20, left: 10};
@@ -20,20 +39,23 @@ Template.genemodel.rendered = function(){
     const height = (transcriptData.length * 20) + margin.top + margin.bottom;
     
     //get transcript subfeatures, duplicate subs with multiple parents
-	const _subs = this.data.subfeatures.filter(function(x){return x.type === 'CDS'})
-	const splitSubs = _subs.map(function(sub){
-		return sub.parents.map(function(parent){
+	const _subs = gene.subfeatures.filter( (sub) => {
+		return config.drawSubfeatures.indexOf(sub.type) >= 0
+	})
+
+	const splitSubs = _subs.map( (sub) => {
+		return sub.parents.map( (parent) => {
 			_sub = $.extend({},sub)
 			_sub.parents = parent
 			return _sub
 		})
 	})
+
 	const groupedSubs = _.groupBy([].concat(...splitSubs),'parents')
-	//console.log(d3.values(groupedSubs))
 
     //get transcript min and max values
-    const starts = transcriptData.map(function(x){return x.start});
-    const ends = transcriptData.map(function(x){return x.end});
+    const starts = transcriptData.map( (x) => {return x.start});
+    const ends = transcriptData.map( (x) => {return x.end});
     const min = Math.min(...starts);
     const max = Math.max(...ends);
     
@@ -43,19 +65,20 @@ Template.genemodel.rendered = function(){
 			.range([0,width])
 
     //select container and make svg element
-    const svg = d3.select('.genemodel').append('svg')
+    const svg = d3.select('#' + gene.ID.replace(/\./g,'\\.') ).append('svg')
 			.attr('height',height + margin.top + margin.bottom)
 			.attr('width',width + margin.left + margin.right)
 		.append('g')
 			.attr('transform','translate('+margin.left+','+margin.top+')')
-
+	
+	const trackHeight = config.maxSize + (2 * config.spacing)
 	//make svg groups per transcript
 	const transcripts = svg.selectAll('.transcript')
 			.data(d3.values(groupedSubs))
 		.enter().append('g')
 			.attr('class','transcript')
-			.attr('transform',function(d,i){
-				return 'translate(0,' + i * barHeight + ')'
+			.attr('transform', (d,i) => {
+				return 'translate(0,' + i * trackHeight + ')'
 			})
 
 	//define arrowhead
@@ -75,10 +98,10 @@ Template.genemodel.rendered = function(){
 	
 	//plot backbone line
 	const line = transcripts.selectAll('line')
-			.data(function(exons){
+			.data( (exons) => {
 				const t = {}
-				const exonStarts = exons.map(function(exon){ return exon.start })
-				const exonEnds = exons.map(function(exon){ return exon.end })
+				const exonStarts = exons.map( (exon) => { return exon.start })
+				const exonEnds = exons.map( (exon) => { return exon.end })
 				const transcriptStart = Math.min(...exonStarts)
 				const transcriptEnd = Math.max(...exonEnds)
 				t.start = transcriptStart
@@ -87,40 +110,68 @@ Template.genemodel.rendered = function(){
 				return [t]
 			})
 		.enter().append('line')
-			.attr('x1',function(d){
+			.attr('x1', (d) => {
 				if (strand === '+') {
 					return xScale(d.start)
 				} else {
 					return xScale(d.end)
 				}
 			})
-			.attr('x2', function(d){
+			.attr('x2', (d) => {
 				if (strand === '+'){
 					return xScale(d.end) 
 				} else {
 					return xScale(d.start) 
 				}
 			})
-			.attr('y1',15)
-			.attr('y2',15)
+			.attr('y1',config.midLine)
+			.attr('y2',config.midLine)
 			.attr('marker-end','url(#arrow)')
 			.style('stroke','black')
 
     //plot exons
     const exons = transcripts.selectAll('rect')
-    		.data(function(d){
+    		.data( (d) => {
     			return d
     		})
     	.enter().append('rect')
-			.attr('x',function(d){  
+			.attr('x', (d) => {  
 				return xScale(d.start)
 			})
-			.attr('y',10)
-			.attr('width',function(d){
+			.attr('y',(d) => {
+				
+				return config.midLine - ( config.size[d.type] / 2 )
+				/*
+				if (d.type === 'CDS'){
+					return 10
+				} else {
+					return 12.5
+				}
+				*/
+			})
+			.attr('width',(d) => {
 				return xScale(d.end) - xScale(d.start)
 			})
-			.attr('height',10)
-			.style('fill','#3690c0')
+			.attr('height',(d) => {
+				return config.size[d.type]
+				/*
+				if (d.type === 'CDS'){
+					return 10
+				} else {
+					return 5
+				}
+				*/
+			})
+			.style('fill',(d) => {
+				return config.color[d.type]
+				/*
+				if (d.type === 'CDS'){
+					return '#3690c0'
+				} else {
+					return 'grey'
+				}
+				*/
+			})
 			.style('stroke','black')
 			.style('stroke-width',0.5)
 
@@ -138,17 +189,17 @@ Template.genemodel.rendered = function(){
 			.attr('transform','rotate(0)')
 			.style('text-anchor','start')
 
-	function update(){
+	let update = () => {
 		width = $('.genemodel').width() - margin.left - margin.right;
 		svg.attr("width", width);
 		xScale.range([0,width])
-		exons.attr('x',function(d){
+		exons.attr('x', (d) => {
 			return xScale(d.start)
 		})
-		.attr('width',function(d){
+		.attr('width', (d) => {
 			return xScale(d.end) - xScale(d.start);
 		})
-		line.attr('x2',function(d){ 
+		line.attr('x2', (d) => { 
 			if (strand === '+'){
 				return xScale(d.end) + 10
 			} else {
@@ -159,7 +210,7 @@ Template.genemodel.rendered = function(){
 		svg.select('g.x.axis').call(xAxis)
 	}
 	
-	$(window).resize(function() {
+	$(window).resize(() => {
 		update()
 	}).trigger("resize");
 
