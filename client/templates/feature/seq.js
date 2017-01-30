@@ -54,10 +54,15 @@ Template.seq.helpers({
 		cdsArray.forEach( (cds) => {
 			let start = cds.start - refStart  - 1;
 			let end = cds.end - refStart;
+
+			let exonPosition = _.findIndex(cdsArray, (_cds) => { 
+						return _.isEqual(cds,_cds) 
+					});
+
 			if (this.strand === '-' && 
-				cdsArray.indexOf(cds) === cdsArray.length - 1 &&
+				exonPosition === cdsArray.length -1 &&
 				cdsArray.length !== 1){
-				end += 1
+				end += 2
 			}
 			seq += reference.slice(start,end)
 
