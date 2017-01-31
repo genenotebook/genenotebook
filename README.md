@@ -2,7 +2,7 @@
 ----
 ###Requirements:
 
-* node.js
+* node.js v4
 * meteor  
 * gff_toolkit
 
