@@ -24,24 +24,6 @@ Meteor.methods({
 				genes = formatGff(results.data)
 				console.log(genes)
 				return 'succes'
-				/*
-				request.post({
-					url: 'http://localhost:3000/api/login',
-					form: {
-						username: commander.username,
-						password: commander.password
-					}
-				}, function(error,response,body){
-					console.log('autheticated')
-					let data = JSON.parse(body)
-					if ( data.status === 'success'){
-						let userId = data.data.userId;
-						let authToken = data.data.authToken;
-						console.log(userId,authToken)
-						uploadGenes(genes,userId,authToken);
-					}
-				})
-				*/
 			}
 		})
 	}
