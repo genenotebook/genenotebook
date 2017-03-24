@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+"use strict";
+
 if (!module.parent){
 	const assert = require('assert');
 	const commander = require('commander');
@@ -13,7 +15,7 @@ if (!module.parent){
 		.arguments('<reference.fasta>')
 		.option('-u, --username <username>','The user to authenticate as [REQUIRED]')
 		.option('-p, --password <password>','The user\'s password [REQUIRED]')
-		.option('-n, --referencename <reference name>','Reference name')
+		.option('-r, --referencename <reference name>','Reference name')
 		.action(function(file){
 			fileName = path.resolve(file);
 		})

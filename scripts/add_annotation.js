@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+"use strict";
+
 if (!module.parent){
 	const assert = require('assert');
 	const commander = require('commander');

@@ -16,9 +16,9 @@
 							</div>
 						</div>
 						<div class="form-group">
-							<label for="experiment" class="col-sm-2 control-label">Experiment:</label>
+							<label for="group" class="col-sm-2 control-label">Group:</label>
 							<div class="col-sm-6">
-								<input type="text" class="form-control" id="experiment" value="{{experiment}}">
+								<input type="text" class="form-control" id="group" value="{{group}}">
 							</div>
 						</div>
 						<div class="form-group">
@@ -37,10 +37,10 @@
 				{{else}}
 					<button type="button" class="btn btn-primary btn-sm pull-right edit" id="{{ID}}">EDIT</button>
 					<p>
-						{{ID}}<br>
-						{{experiment}}<br>
-						{{description}}<br>
-						{{totalCounts}}
+						ID: {{ ID }}<br>
+						Group: {{ group }}<br>
+						Description: {{ description }}<br>
+						Permissions: {{ permissions }}<br>
 					</p>
 				{{/if}}
 			</li>

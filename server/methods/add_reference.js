@@ -43,7 +43,7 @@ Meteor.methods({
 					fasta.push(seq)
 				}
 				seq = { 
-					reference: referenceName, 
+					referenceName: referenceName, 
 					header: line.split('>')[1].split(' ')[0],
 					seq: '' 
 				}
@@ -56,7 +56,7 @@ Meteor.methods({
 			//add the last sequence in the file
 			new Fiber(function(){
 				let existingHeader = References.find({ 
-					reference: referenceName, 
+					referenceName: referenceName, 
 					header: seq.header
 				}).fetch().length
 
@@ -81,7 +81,7 @@ Meteor.methods({
 						References.insert({
 							header: seq.header,
 							seq: seqPart,
-							reference: seq.reference,
+							referenceName: seq.referenceName,
 							start: start,
 							end: end
 						})

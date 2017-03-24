@@ -31,7 +31,45 @@ function makeFasta(track){
 
 
 Meteor.methods({
-	queryCount:function(search,query){
+	getSingleGeneData(geneId){
+		if (! this.userId) {
+			throw new Meteor.Error('not-authorized');
+		}
+		if (! Roles.userIsInRole(this.userId,'user')){
+			throw new Meteor.Error('not-authorized');
+		}
+		console.log(geneId)
+		const roles = Roles.getRolesForUser(this.userId);
+		const visibleSamples = Experiments.find({ permissions: { $in: roles } }, { _id: 1 }).fetch()
+		const sampleIds = visibleSamples.map( (sample) => { return sample._id })
+
+		const fut = new Future();
+
+		let genes = Genes.aggregate([
+				{ $match: { ID: geneId } },
+				{ $addFields: { 
+					expression: { 
+						$filter: { 
+							input: '$expression', 
+							as: 'sample', 
+							cond: { $in: ['$$sample.experimentId',sampleIds] }
+						}
+					}
+				}
+			}
+		],(err,res) => {
+			if (err){
+				fut.throw(err)
+			} else {
+				fut.return(res)
+			}
+		})
+
+		let data = fut.wait()
+		console.log(data)
+		return data[0]
+	},
+	queryCount (search,query){
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}
@@ -47,7 +85,7 @@ Meteor.methods({
 		const count = Genes.find(query).count()
 		return count
 	},
-	makeBlastDb: function(track){
+	makeBlastDb (track){
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}
@@ -88,7 +126,7 @@ Meteor.methods({
 			Tracks.update({'track':track},{ '$set' : {['blastdbs.' + dbtype] : track + '.' + dbtype } } )
 		}
 	},
-	blast: function(blastType,query,trackNames){
+	blast (blastType,query,trackNames){
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}
@@ -162,7 +200,7 @@ Meteor.methods({
 		a = Genes.rawCollection().mapReduce(
 			function(){
 				//map function
-				let keys = Object.keys(this) 
+				let keys = Object.keys(this.attributes) 
 				for (let i = 0; i < keys.length; i++){
 					emit(keys[i],null) 
 				}
@@ -180,27 +218,28 @@ Meteor.methods({
 		const mapReduceResults = fut.wait();
 
 		//process mapreduce output and put it in a collection
-		mapReduceResults.forEach(function(i){ 
+		mapReduceResults.forEach( (feature) => { 
+			let name = feature._id
 			FilterOptions.findAndModify({ 
-				query: { ID: i._id }, 
-				update: { $setOnInsert: { name: i._id, show: true, canEdit: false } }, 
+				query: { ID: name }, 
+				update: { $setOnInsert: { name: name, query: `attributes.${name}`, show: true, canEdit: false } }, 
 				new: true, 
 				upsert: true 
 			}) 
 		})
 		//add the viewing and editing option, since this key is dynamic it will not allways be present on any gene, but we do want to filter on this
-		const permanentOptions = ['viewing','editing']
+		const permanentOptions = ['viewing','editing','expression']
 		permanentOptions.forEach(function(optionId){
 			FilterOptions.findAndModify({
 				query: { ID: optionId },
-				update: { $setOnInsert: { name: optionId, show: true, canEdit: false } }, 
+				update: { $setOnInsert: { name: optionId, query: optionId, show: true, canEdit: false } }, 
 				new: true, 
 				upsert: true 
 			})
 		})
 		
 	},
-	'removeFromViewing':function(geneId){
+	removeFromViewing (geneId){
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}

@@ -1,0 +1,14 @@
+<template name="expression">
+  <section id="expression">
+    <hr>
+        <select class="selectpicker pull-right" data-actions-box="true" data-live-search="true" multiple> 
+          {{#each experiments}}
+            <option selected> {{ this.group }} </option>
+          {{/each}}
+        </select>
+    <h3>Expression</h3>
+    <div class="well experiments" id="{{ ID }}_expression">
+      <!-- this div is filled in with d3 -->
+    </div>
+  </section>
+</template>

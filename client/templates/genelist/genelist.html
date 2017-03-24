@@ -22,7 +22,7 @@
           </div>
             
           <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default">
+            <button type="button" class="btn btn-default active">
               <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
             </button>
             <button type="button" class="btn btn-default">
@@ -41,8 +41,8 @@
                 <p>
                   <a class="genelink" href="/gene/{{ID}}">{{ ID }}</a>
                   <b> {{ attributes.Name }} </b>
-                  {{ attributes.Productname }}
-                  {{ >genemodel }}
+                  {{ attributes.Note }}
+                  {{ >expression }}
                 </p>
       				</li>
         		{{ /each }}

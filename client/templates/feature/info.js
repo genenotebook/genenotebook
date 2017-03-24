@@ -1,7 +1,5 @@
 import { diff, apply } from 'rus-diff'; 
-import lodash from 'lodash';
-
-_ = lodash;
+import clone from 'lodash/clone';
 
 Session.setDefault('reversions',[])
 Session.setDefault('viewingHistory',false)
@@ -41,7 +39,7 @@ Template.info.helpers({
 	versionHistory(){
 		const reversions = Session.get('reversions');
 		if (reversions.length > 0){
-			let current = _.clone(this);
+			let current = clone(this);
 			reversions.forEach( (reversion) => {
 				let revertString = reversion.revert;
 				let revertQuery = JSON.parse(revertString);
@@ -70,15 +68,13 @@ Template.info.events({
 	},
 	'click .save': function(event,template){
 		let oldGene = this;
-		let newGene = _.clone(this);
+		let newGene = clone(this);
 
 		const data = {
 			Name: template.find('#Name').value,
 			Comments: template.find('#Comments').value,
 			Pseudogene: template.find('#Pseudogene').checked
 		}
-
-		console.log(data)
 		
 		if (data.Name.length === 0){
 			if ( newGene.hasOwnProperty('Name') ){

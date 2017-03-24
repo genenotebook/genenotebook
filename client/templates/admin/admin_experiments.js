@@ -28,7 +28,7 @@ Template.adminExperiments.events({
 		const selector = '#' + id.replace(/(:|\.|\[|\]|,|\/)/g,'\\$1')
 		const data = {
 			ID: template.find('#name').value,
-			experiment: template.find('#experiment').value,
+			group: template.find('#group').value,
 			description: template.find('#description').value
 		}		
 		Meteor.call('experiments.update',this._id,data)

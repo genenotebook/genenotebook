@@ -63,79 +63,24 @@
 			<div class="table-responive">
 				<table class="table table-hover">
 					<tbody>
+						<tr>
+							<td>Reference</td>
+							<td>{{ this.reference }}</td>
+						</tr>
+						<tr>
+							<td>Genome coordinates</td>
+							<td>{{ this.seqid }} {{ this.start }}..{{this.end}} {{ this.strand }}</td>
+						</tr>
+						<tr>
+							<td>Source</td>
+							<td>{{ this.source }}</td>
+						</tr>
 						{{ #each attributes }}
 							<tr>
 								<td>{{ this.key }}</td>
 								<td>{{ this.value }}</td>
 							</tr>
 						{{ /each }}
-						<!--
-						<tr>
-							<td>Gene ID</td>
-							<td>{{ ID }}</td>
-						</tr>
-						<tr class="">
-							<td>Gene name</td>
-							<td>
-								{{ #if editing }}
-									<input type="text" class="form-control" id="Name" value="{{ Name }}">
-								{{ else }}
-									<b>{{ Name }}</b>
-								{{ /if }}
-							</td>
-						</tr>
-						<tr>
-							<td>Product name</td>
-							<td>{{ attributes.Productname }}</td>
-						</tr>
-						<tr>
-							<td>Coordinates</td>
-							<td>{{ seqid }} {{ start }} {{ end }} {{ strand }}</td>
-						</tr>
-						<tr>
-							<td>Orthologs</td>
-							<td>{{ #each orthologs }}<a href="/gene/{{this}}">{{ this }}</a> {{ /each }}</td>
-						</tr>
-						<tr>
-							<td>Inparalogs</td>
-							<td>{{ #each paralogs }}<a href="/gene/{{this}}">{{this}}</a> {{ /each }}</td>
-						</tr>
-						<tr>
-							<td>Author</td>
-							<td>{{ author }}</td>
-						</tr>
-						<tr>
-							<td>Orthogroup</td>
-							<td>{{ orthogroup }}</td>
-						</tr>
-						<tr>
-							<td>Domains</td>
-							<td>{{ #each domains.InterPro }}<a href="https://www.ebi.ac.uk/interpro/entry/{{this}}" target="_blank">{{ this }}</a> {{ /each }}</td>
-						</tr>
-						<tr>
-							<td>Pseudogene</td>
-							<td>
-								{{ #if editing }}
-									<div class="checkbox">
-						                <input type="checkbox" id="Pseudogene" {{ isPseudogene }}>
-						                <label for="Pseudogene"></label>
-					                </div>
-					            {{ else }}
-					            	{{ Pseudogene }}
-					            {{ /if }}
-				            </td>
-						</tr>
-						<tr>
-							<td>Comments</td>
-							<td>
-								{{ #if editing }}
-									<textarea type="text" class="form-control" rows="3" id="Comments">{{ Comments }}</textarea>
-								{{ else }}
-									{{ Comments }}
-								{{ /if }} 
-							</td>
-						</tr>
-						-->
 					</tbody>
 				</table>
 			</div>

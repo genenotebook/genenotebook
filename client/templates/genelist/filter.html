@@ -44,7 +44,7 @@
             {{#each tracks}}
               <div class="checkbox">
                 <input type="checkbox" class="track-checkbox" id="{{track}}">
-                <label for="{{track}}">{{formatTrackName track}}</label>
+                <label for="{{track}}">{{trackName}}</label>
               </div>
             {{/each}}
           </li>
@@ -67,8 +67,8 @@
             <label>Features</label>
             {{#each selectedFeatures}}
               <div class="checkbox">
-                  <input type="checkbox" class="ternary-toggle feature-checkbox" id="{{ ID }}">
-                  <label for="{{ ID }}">
+                  <input type="checkbox" class="ternary-toggle feature-checkbox" id="{{ query }}">
+                  <label for="{{ query }}">
                     {{ ID }}
                   </label>
               </div>

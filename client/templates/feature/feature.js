@@ -1,9 +1,9 @@
-Meteor.subscribe('orthogroups');
-Meteor.subscribe('userList');
-Meteor.subscribe('references',this.seqid);
+import uniq from 'lodash/uniq';
 
-Session.setDefault('viewing',[]);
-
+Tracker.autorun( () => {
+  Meteor.subscribe('userList');
+  Session.setDefault('viewing',[]);
+})
 
 Template.feature.helpers({
   tab:function(){
@@ -20,7 +20,7 @@ Template.feature.helpers({
     return data[tab];
   },
   transcripts: function(){
-    const transcripts = this.subfeatures.filter(function(x){return x.type === 'mRNA'});
+    const transcripts = this.subfeatures.filter( (sub) => {return sub.type === 'mRNA'});
     return transcripts
   },
   isOwner: function () {
@@ -36,10 +36,11 @@ Template.feature.helpers({
     return this.children.length;
   },
   domainCount: function(){
-    const transcripts = this.subfeatures.filter(function(x){return x.type === 'mRNA'});
-    const domains = transcripts.map(function(transcript){ return _.keys(transcript.interproscan) })
+    //const transcripts = this.subfeatures.filter( (sub) => {return sub.type === 'mRNA'});
+    //const domains = transcripts.map( (transcript) => { return Object.keys(transcript.interproscan) })
+    const domains = this.domains ? this.domains : []
     if (domains.length){
-      return _.uniq(domains[0]).length
+      return uniq(domains[0]).length
     } else {
       return 0
     }

@@ -1,7 +1,7 @@
 Meteor.subscribe('filterOptions');
 Meteor.subscribe('tracks');
 
-Session.setDefault('selectedFeatures',['Comment','Productname','Pseudogene','orthogroup','paralogs','singleton'])
+Session.setDefault('selectedFeatures',['Note','Comment','Productname','Pseudogene','orthogroup','paralogs','singleton'])
 
 function updateCheckboxes(){
   const filter = Session.get('filter')
@@ -123,11 +123,10 @@ Template.filter.events({
     const checkbox = event.target;
     const parent = $(checkbox).parent();
     const id = parent.context.id;
-      
+
     const positiveQuery = {$exists:true}
     const negativeQuery = {$exists:false}
       
-    console.log(parent.context.id);
     if (checkbox.readOnly){
       //go from negative to unchecked
       delete filter[id]

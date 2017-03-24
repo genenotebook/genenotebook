@@ -28,6 +28,7 @@ Template.seq.helpers({
 
 		const transcript = transcripts[transcriptIndex]
 
+		//find all CDS features and sort them on start coordinate
 		const cdsArray = this.subfeatures.filter( (sub) => { 
 			return sub.parents.indexOf(transcript.ID) >= 0 && sub.type === 'CDS'
 		}).sort( (a,b) => {
@@ -35,52 +36,53 @@ Template.seq.helpers({
 		})
 
 		let refStart = 10e99;
-
-		const reference = References.find({ 
+		let referenceSubscription = Meteor.subscribe('references',this.seqid)
+		
+		//find all reference fragments overlapping the mRNA feature
+		let reference = References.find({ 
 			header: this.seqid, 
 			$and: [ 
 				{ start: {$lt: this.end} }, 
 				{ end: {$gt: this.start} }
 			] 
-		}).fetch().sort( (a,b) => {
-			return a.start - b.start
-		}).map( (ref) => {
-			refStart = Math.min(refStart,ref.start)
-			return ref.seq
-		}).join('')
+		}).fetch()
 
-		let seq = ''
+		let seq = '...loading...';
 
-		cdsArray.forEach( (cds) => {
-			let start = cds.start - refStart  - 1;
-			let end = cds.end - refStart;
+		if (reference.length){
+			reference = reference.sort( (a,b) => {
+				//sort on start coordinate
+				return a.start - b.start
+			}).map( (ref) => {
+				//find starting position of first reference fragment
+				refStart = Math.min(refStart,ref.start)
+				return ref.seq
+			}).join('')
 
-			let exonPosition = _.findIndex(cdsArray, (_cds) => { 
-						return _.isEqual(cds,_cds) 
-					});
+			seq = cdsArray.map( (cds, index) => {
+				let start = cds.start - refStart - 1;
+				let end = cds.end - refStart;
+				return reference.slice(start,end)
+			}).join('')
 
-			if (this.strand === '-' && 
-				exonPosition === cdsArray.length -1 &&
-				cdsArray.length !== 1){
-				end += 2
+			let phase;
+			if (this.strand === '-'){
+				seq = revcomp(seq)
+				phase = cdsArray[cdsArray.length -1].phase
+			} else {
+				phase = cdsArray[0].phase
 			}
-			seq += reference.slice(start,end)
+	 
+			if ([1,2].indexOf(phase) >= 0){
+				seq = seq.slice(phase)
+			}
 
-		})
-
-		if (this.strand === '-'){
-			seq = revcomp(seq)
+			const seqType = Session.get('seqType')
+			if (seqType === 'Protein'){
+				seq = translate(seq.toUpperCase())
+			} 
 		}
-
-		const phase = cdsArray[0].phase
-		if ([1,2].indexOf(phase) >= 0){
-			seq = seq.slice(phase)
-		}
-
-		const seqType = Session.get('seqType')
-		if (seqType === 'Protein'){
-			seq = translate(seq.toUpperCase())
-		} 
+		
 
 		return seq
 	}
@@ -95,7 +97,7 @@ Template.seq.events({
 		Session.set('seqType',target.text())
 	},
 	'click .select-transcript-seq' : function(event, template){
-		const transcripts = Template.parentData(1).subfeatures.filter( (sub) => {
+		const transcripts = Template.parentData(0).subfeatures.filter( (sub) => {
 			return sub.type === 'mRNA'
 		}).map( (sub) => {
 			return sub.ID

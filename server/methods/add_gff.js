@@ -1,11 +1,13 @@
 const assert = require('assert');
 const Baby = require('babyparse');
 const fs = require('fs');
-const lodash = require('lodash');
-_ = lodash;
+//const lodash = require('lodash');
+import findIndex from 'lodash/findIndex';
+import isEqual from 'lodash/isEqual';
+//_ = lodash;
 
 Meteor.methods({
-	addGff(fileName, reference, trackName){
+	addGff(fileName, referenceName, trackName){
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}
@@ -13,14 +15,14 @@ Meteor.methods({
 			throw new Meteor.Error('not-authorized');
 		}
 
-		const existingTrack = Tracks.find({ track: trackName }).fetch().length
+		const existingTrack = Tracks.find({ trackName: trackName }).fetch().length
 		if (existingTrack){
 			throw new Meteor.Error('Track exists: ' + trackName);
 		}
 
-		const existingReference = References.find({ reference: reference }).fetch().length
+		const existingReference = References.find({ referenceName: referenceName }).fetch().length
 		if (!existingReference){
-			throw new Meteor.Error('Invalid reference: ' + reference)
+			throw new Meteor.Error('Invalid reference: ' + referenceName)
 		}
 
 		const fileHandle = fs.readFileSync(fileName,{encoding:'binary'});
@@ -37,7 +39,7 @@ Meteor.methods({
 			complete(results,file) {
 				console.log('reading done')
 				console.log('start formatting')
-				genes = formatGff(results.data, reference, trackName)
+				genes = formatGff(results.data, referenceName, trackName)
 				console.log('formatting done')
 				console.log('start validating')
 				let geneCount = 0
@@ -50,15 +52,16 @@ Meteor.methods({
 					geneCount += 1
 				})
 				console.log('validating done')
+				
+				Tracks.insert({
+					trackName: trackName,
+					reference: referenceName,
+					geneCount: geneCount
+				})
+
 				genes.forEach( (gene) => {
 					Genes.insert(gene)
 					console.log('inserted',gene.ID)
-				})
-				
-				Tracks.insert({
-					track: trackName,
-					reference: reference,
-					geneCount: geneCount
 				})
 				
 				Meteor.call('scan.features')
@@ -68,7 +71,7 @@ Meteor.methods({
 	}
 })
 
-const formatGff = (parsedResults, reference, trackName) => {
+const formatGff = (parsedResults, referenceName, trackName) => {
 	const temp = {}
 	parsedResults.forEach( (line) => {
 		assert.equal(line.length,9)
@@ -93,7 +96,7 @@ const formatGff = (parsedResults, reference, trackName) => {
 			sub.seqid = line[0]
 			sub.source = line[1]
 			sub.strand = line[6]
-			sub.reference = reference
+			sub.reference = referenceName
 			sub.track = trackName
 			GeneSchema.validate(sub)
 		} else {
@@ -126,8 +129,8 @@ const formatGff = (parsedResults, reference, trackName) => {
 			while (!child.done){
 				let notSelf = child.value !== sub;
 
-				let notPresent = _.findIndex(sub.subfeatures, (existingSub) => { 
-						return _.isEqual(sub,existingSub) 
+				let notPresent = findIndex(sub.subfeatures, (existingSub) => { 
+						return isEqual(sub,existingSub) 
 					}) < 0;
 
 				if (notSelf && notPresent){
