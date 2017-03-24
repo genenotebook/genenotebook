@@ -4,8 +4,6 @@
 
 * node.js v4
 * meteor  
-* gff_toolkit
+* mongodb
 
-```
-pip install gff_toolkit
-```
+Browse genomes, genomic annotations and expression levels. Update functionality, version history.
