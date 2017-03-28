@@ -57,7 +57,7 @@ Template.info.helpers({
 
 Template.info.events({
 	'click .edit': function(event,template){
-		Meteor.call('lock.gene', this.ID, (err, res) => {
+		Meteor.call('lockGene', this.ID, (err, res) => {
 			if (err){
 				Bert.alert('locking gene failed','danger','growl-bottom-right')
 			} else {
@@ -104,12 +104,12 @@ Template.info.events({
 		const revert = diff(newGene,oldGene);
 		
 		if (update){
-			Meteor.call('geneInfo.update',oldGene.ID,update,revert,function(error,result){
+			Meteor.call('updateGeneInfo',oldGene.ID,update,revert,function(error,result){
 				if (error) {
 					Bert.alert('Updating failed!','danger','growl-bottom-right')
 				} else {
 					Bert.alert('Succesfully updated','default','growl-bottom-right')
-					Meteor.call('unlock.gene',oldGene.ID,function(err,res){
+					Meteor.call('unlockGene',oldGene.ID,function(err,res){
 						if (err){
 							Bert.alert('Unlocking failed','danger','growl-bottom-right')
 						} else {
@@ -119,7 +119,7 @@ Template.info.events({
 				}	
 			});
 		} else {
-			Meteor.call('unlock.gene',oldGene.ID,function(err,res){
+			Meteor.call('unlockGene',oldGene.ID,function(err,res){
 				if (err){
 					Bert.alert('Unlocking failed','danger','growl-bottom-right')
 				} else {
@@ -131,7 +131,7 @@ Template.info.events({
 		
 	},
 	'click .cancel': function(event,template){
-		Meteor.call('unlock.gene',this.ID,function(err,res){
+		Meteor.call('unlockGene',this.ID,function(err,res){
 			if (err){
 				Bert.alert('Unlocking failed','danger','growl-bottom-right')
 			} else {

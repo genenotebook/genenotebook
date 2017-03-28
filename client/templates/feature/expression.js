@@ -8,6 +8,10 @@ function jitter(min, max) {
 }
 
 Template.expression.helpers({
+    /**
+     * @this { expression template}
+     * @return {[object]}
+     */
     experiments(){
         this.expression.forEach( (sample) => {
             let sampleInfo = Experiments.findOne({'_id': sample.experimentId})
@@ -48,6 +52,10 @@ Template.expression.rendered = function(){
 	drawExpression.call(this);
 };
 
+/**
+ * Use d3 to draw the expression plot
+ * @return Null
+ */
 function drawExpression(){
     const selection = Session.get('selection')
 

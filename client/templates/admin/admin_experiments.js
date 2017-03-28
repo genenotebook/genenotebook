@@ -31,7 +31,7 @@ Template.adminExperiments.events({
 			group: template.find('#group').value,
 			description: template.find('#description').value
 		}		
-		Meteor.call('experiments.update',this._id,data)
+		Meteor.call('updateExperiments',this._id,data)
 		const edit = Session.get('editExperiments');
 		const index = edit.indexOf(id);
 		if (index > -1){

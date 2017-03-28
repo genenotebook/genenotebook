@@ -1,9 +1,11 @@
 const spawn = Npm.require('child_process').spawn;
 const Future = Npm.require('fibers/future');
 const parseString = xml2js.parseString;
-//const xml2js = Npm.require('xml2js');
 
-
+/**
+ * Keep track of what blast commands should use which databases
+ * @type {Object}
+ */
 const DB_TYPES = {	
 	'blastn':'nucl',
 	'tblastn':'nucl',
@@ -12,6 +14,11 @@ const DB_TYPES = {
 	'blastx':'prot'
 }
 
+/**
+ * format gene info into fasta format
+ * @param  {[type]}
+ * @return {[type]}
+ */
 function makeFasta(track){
 	const genes = Genes.find({'track':track},{fields:{'ID':1,'subfeatures':1},limit:100000});
 	const fastaProt = [];
@@ -31,6 +38,13 @@ function makeFasta(track){
 
 
 Meteor.methods({
+	/**
+	 * If all data of a single gene is being viewed use this method instead of a publication. 
+	 * (This is because aggregation in a publication is not reactive and problematic in various
+	 * other ways)
+	 * @param  {[type]}
+	 * @return {[type]}
+	 */
 	getSingleGeneData(geneId){
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
@@ -38,7 +52,7 @@ Meteor.methods({
 		if (! Roles.userIsInRole(this.userId,'user')){
 			throw new Meteor.Error('not-authorized');
 		}
-		console.log(geneId)
+		console.log('getSingleGeneData', geneId)
 		const roles = Roles.getRolesForUser(this.userId);
 		const visibleSamples = Experiments.find({ permissions: { $in: roles } }, { _id: 1 }).fetch()
 		const sampleIds = visibleSamples.map( (sample) => { return sample._id })
@@ -66,7 +80,6 @@ Meteor.methods({
 		})
 
 		let data = fut.wait()
-		console.log(data)
 		return data[0]
 	},
 	queryCount (search,query){
@@ -85,6 +98,11 @@ Meteor.methods({
 		const count = Genes.find(query).count()
 		return count
 	},
+	/**
+	 * Spin up a child process to construct a blast database
+	 * @param  {[type]}
+	 * @return {[type]}
+	 */
 	makeBlastDb (track){
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
@@ -126,6 +144,13 @@ Meteor.methods({
 			Tracks.update({'track':track},{ '$set' : {['blastdbs.' + dbtype] : track + '.' + dbtype } } )
 		}
 	},
+	/**
+	 * Spin up a child process to run blast
+	 * @param  {[type]}
+	 * @param  {[type]}
+	 * @param  {[type]}
+	 * @return {[type]}
+	 */
 	blast (blastType,query,trackNames){
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
@@ -174,7 +199,11 @@ Meteor.methods({
 		child.stdin.end()
 		return fut.wait()
 	},
-	'scan.features':function(){
+	/**
+	 * Map/reduce on all genes and their attributes to identify attribute keys which will be able for filtering
+	 * @return {[type]}
+	 */
+	scanFeatures (){
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}
@@ -249,7 +278,12 @@ Meteor.methods({
 			Genes.update({ 'ID': geneId },{ $unset: { 'viewing': 1 } } )
 		} 
 	},
-	'lock.gene':function(geneId){
+	/**
+	 * Block a gene from being edited, this should happen when someone is editing a gene to prevent simultaneous edits
+	 * @param  {[type]}
+	 * @return {[type]}
+	 */
+	lockGene (geneId) {
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}
@@ -258,13 +292,26 @@ Meteor.methods({
 		}
 		Genes.update({ 'ID': geneId },{ $set: { editing: this.userId } })
 	},
-	'unlock.gene':function(geneId){
+	/**
+	 * This unlocks a gene from being blocked during editing. 
+	 * A gene should only be unlocked by the person that locked it
+	 * @param  {[type]}
+	 * @return {[type]}
+	 */
+	unlockGene (geneId) {
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}
 		if (! Roles.userIsInRole(this.userId,'curator')){
 			throw new Meteor.Error('not-authorized');
 		}
-		Genes.update({ 'ID': geneId },{ $unset: { editing: 1 } })
+		const gene = Genes.findOne({ ID: geneId })
+		if (!gene){
+			throw new Meteor.Error('not-authorized')
+		}
+		console.log(gene.editing)
+		if (gene.editing === this.userId){
+			Genes.update({ ID: geneId },{ $unset: { editing: 1 } })
+		}
 	}
 })

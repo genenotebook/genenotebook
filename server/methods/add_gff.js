@@ -1,10 +1,15 @@
-const assert = require('assert');
-const Baby = require('babyparse');
-const fs = require('fs');
+//const assert = require('assert');
+//const Baby = require('babyparse');
+//const fs = require('fs');
 //const lodash = require('lodash');
+//_ = lodash;
+import assert from 'assert';
+import Baby from 'babyparse';
+import fs from 'fs';
 import findIndex from 'lodash/findIndex';
 import isEqual from 'lodash/isEqual';
-//_ = lodash;
+import mapValues from 'lodash/mapValues';
+
 
 Meteor.methods({
 	addGff(fileName, referenceName, trackName){
@@ -156,11 +161,18 @@ function *getChildren(Id,Gff){
 }
 
 const formatAttributes = (attributeString) => {
-	const attributes = {}
-	for (attribute of attributeString.split(';')){
-		splitAttribute = attribute.split('=');
-		assert.equal(splitAttribute.length,2);
-		attributes[splitAttribute[0]] = splitAttribute[1].split(',');
-	}
+	const rawAttributes = querystring.parse(attributeString,';','=')
+	const attributes = mapValues(rawAttributes, (attribute) => {
+		let attributesArray = attribute.split(',');
+		switch(attributesArray.length){
+			case 0:
+				throw new Meteor.Error('Incorrect attribute field');
+				break;
+			case 1:
+				return attributesArray[0];
+			default:
+				return attributesArray;
+		}
+	})
 	return attributes
 }

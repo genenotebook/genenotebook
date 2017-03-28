@@ -26,6 +26,6 @@ Template.adminUsers.events({
 
 		data.roles = roles
 
-		Meteor.call('users.update',this._id,data)
+		Meteor.call('updateUsers',this._id,data)
 	}
 })

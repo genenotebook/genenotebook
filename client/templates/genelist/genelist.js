@@ -111,7 +111,7 @@ Template.genelist.events({
     }
 
     /*
-    Meteor.call('initialize-download',query,format,function(err,downloadId){
+    Meteor.call('initializeDownload',query,format,function(err,downloadId){
       console.log('downloadId',downloadId)
       const download = Downloads.find({_id:downloadId})
       download.observeChanges({
@@ -162,7 +162,20 @@ Template.genelist.events({
 
     Bert.defaults.hideDelay = 2500;
 
-    Meteor.call('format.' + format,query,function(err,res){
+    let formatFunction;
+    switch(format){
+      case 'gff':
+        formatFunction = 'formatGff';
+        break;
+      case 'fasta':
+        formatFunction = 'formatFasta';
+        break;
+      default:
+        throw new Meteor.Error('Unkown format');
+        break
+    }
+
+    Meteor.call(formatFunction, query, (err,res) => {
       
       if (err){
         Bert.alert('Preparing download failed','error','growl-bottom-right');
@@ -170,17 +183,15 @@ Template.genelist.events({
         Bert.alert('Preparing download finished','success','growl-bottom-right');
         const blob = new Blob([res],{type: 'text/plain;charset=utf-8'})
         const date = new Date()
+        const dateString = date.toISOString()
 
-        saveAs(blob,'bioportal.' + date.toISOString() + '.' + format)
+        saveAs(blob,`bioportal.${dataString}.${format}`)//'bioportal.' + date.toISOString() + '.' + format)
       }
     })
     
   }
 
 });
-
-
-
 
 
 // whenever #showMoreResults becomes visible, retrieve more results

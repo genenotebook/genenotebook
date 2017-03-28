@@ -73,15 +73,6 @@ Template.feature.events({
   }
 });
 
-Template.feature.rendered = function(){
-  /*
-  $('#feature-nav').affix({
-    offset: {
-      top: 50
-    }
-  });
-  */
-}
 
 
  

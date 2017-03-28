@@ -14,7 +14,7 @@ Template.adminFilterOptions.helpers({
 
 Template.adminFilterOptions.events({
 	'click #refresh':function(){
-		Meteor.call('scan.features',function(err,res){
+		Meteor.call('scanFeatures',function(err,res){
 			if (err){
 				Bert.alert('Filter update failed','danger','growl-top-right');
 			} else {
@@ -45,7 +45,7 @@ Template.adminFilterOptions.events({
 			show: template.find('#show').checked,
 		}		
 		console.log(data)
-		Meteor.call('filterOptions.update',this._id,data)
+		Meteor.call('updateFilterOptions',this._id,data)
 		const edit = Session.get('editFilterOptions');
 		const index = edit.indexOf(id);
 		if (index > -1){
