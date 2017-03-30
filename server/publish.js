@@ -1,26 +1,26 @@
-/*import { publishComposite } from 'meteor/reywood:publish-composite';
+Meteor.publish('genes',function(limit, search, query) {
+		const publication = this;
+		if (!publication.userId){
+			publication.ready()
+		}
+		publication.autorun( (computation) => {
+			limit = limit || 40;
+			query = query || {};
+			if (search) {
+				query.$or = [{ 'ID': { $regex: search , $options: 'i' } },{ 'Name': { $regex: search , $options: 'i' } }];
+				if (!query.hasOwnProperty('Productname')){
+					query.$or.push({ 'Productname': { $regex: search , $options: 'i' } })
+				}
+			}
 
-publishComposite('singleGene',function(geneId){
-	if (!this.userId){
-		this.ready()
-		//throw new Meteor.Error('Unauthorized')
-	} else if (this.userId !== null){
-		Genes.update({ ID: geneId },{ $addToSet: { viewing: this.userId } })
-	}
+			const roles = Roles.getRolesForUser(publication.userId);
+			const visibleSamples = Experiments.find({ permissions: { $in: roles } }, { _id: 1 }).fetch()
+			const sampleIds = visibleSamples.map( (sample) => { return sample._id })
 
-	const roles = Roles.getRolesForUser(this.userId);
-	const visibleSamples = Experiments.find({ permissions: { $in: roles } }, { _id: 1 }).fetch()
-	const sampleIds = visibleSamples.map( (sample) => { return sample._id })
-	return {
-		find () {
-			//use find instead of findOne, since this should return a cursor (publishComposite implementation quirk?)
-			//return Genes.find({ ID: geneId },{ expression: { $elemMatch: { experimentId: { $in: sampleIds } } } } );
-			
-			let self = this;
-			console.log(sampleIds)
-
-			let genes = Genes.aggregate([
-				{ $match: { ID: geneId } },
+			//return Genes.find(query,{ limit: limit, sort: { 'ID': 1 } })
+			Genes.aggregate([
+				{ $match: query },
+				{ $limit: limit },
 				{ $addFields: { 
 					expression: { 
 						$filter: { 
@@ -31,66 +31,27 @@ publishComposite('singleGene',function(geneId){
 					}
 				}
 			}
-			], function(err,results){
-				results.forEach( (gene) => {
-					self.added('singleGene',gene._id,gene)
-					//console.log(gene)
-				} )
-				self.ready()
+			], function(err,res){
+				if (err){
+					throw new Meteor.Error('genes publish aggregate error')
+				}
+				res.forEach( (gene) =>{
+					publication.added('genes',gene._id,gene)
+				})
 			})
+			publication.ready()
+		})
 
-		},
-		children: [
-			{
-				find (gene) {
-					return Orthogroups.find({ ID:  gene.orthogroup})
-				}
-			},
-			{
-				find (gene) {
-					let domains = []
-					if ( gene.hasOwnProperty('domains') ){
-						if ( gene.domains.hasOwnProperty('InterPro') ){
-							domains = gene.domains.InterPro
-						}
-					} 
-					return Interpro.find({ ID: { $in: domains } })
-				}
-			},
-			{
-				find (gene) {
-					return EditHistory.find({ ID : gene.ID })
-				}
-			},
-			{
-				find (gene) {
-					return Meteor.users.find({})
-				}
-			},
-			{
-				find (gene) {
-					console.log('publishComposite References',gene)
-					return References.find({ 
-						header: gene.seqid,
-						$and: [ 
-							{ start: {$lt: gene.end} }, 
-							{ end: {$gt: gene.start} }
-						] 
-					})
-				}
-			}
-		]
-	}
-})
-*/
+	})
 
 Meteor.publish({
-	genes (limit,search,query) {
+	/*genes: function(limit, search, query) {
+		console.log('this.autorun',this.autorun())
 		if (!this.userId){
 			this.ready()
 		}
-		var limit = limit || 40;
-		var query = query || {};
+		limit = limit || 40;
+		query = query || {};
 		if (search) {
 			query.$or = [{ 'ID': { $regex: search , $options: 'i' } },{ 'Name': { $regex: search , $options: 'i' } }];
 			if (!query.hasOwnProperty('Productname')){
@@ -98,7 +59,7 @@ Meteor.publish({
 			}
 		}
 		return Genes.find(query,{ limit: limit, sort: { 'ID': 1 } })
-	},
+	},*/
 	references (seqid) {
 		if (!this.userId){
 			this.ready()

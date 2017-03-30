@@ -59,7 +59,7 @@ Meteor.methods({
 
 		const fut = new Future();
 
-		let genes = Genes.aggregate([
+		Genes.aggregate([
 				{ $match: { ID: geneId } },
 				{ $addFields: { 
 					expression: { 
