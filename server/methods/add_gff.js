@@ -1,14 +1,16 @@
-//const assert = require('assert');
-//const Baby = require('babyparse');
-//const fs = require('fs');
-//const lodash = require('lodash');
-//_ = lodash;
 import assert from 'assert';
 import Baby from 'babyparse';
 import fs from 'fs';
 import findIndex from 'lodash/findIndex';
 import isEqual from 'lodash/isEqual';
 import mapValues from 'lodash/mapValues';
+import querystring from 'querystring';
+/**
+ * Override the default querystring unescape function to be able to parse commas correctly in gff attributes
+ * @param  {[type]}
+ * @return {[type]}
+ */
+querystring.unescape = uri => uri;
 
 
 Meteor.methods({
@@ -69,7 +71,7 @@ Meteor.methods({
 					console.log('inserted',gene.ID)
 				})
 				
-				Meteor.call('scan.features')
+				Meteor.call('scanFeatures')
 			}
 		})
 		return true
@@ -89,7 +91,9 @@ const formatGff = (parsedResults, referenceName, trackName) => {
 			attributes: formatAttributes(line[8])
 		}
 
-		sub.ID = sub.attributes.ID[0];
+		console.log(sub.attributes)
+
+		sub.ID = sub.attributes.ID;
 		delete sub.attributes.ID;
 
 		if (sub.attributes.Parent !== undefined){
@@ -160,19 +164,43 @@ function *getChildren(Id,Gff){
 	}
 }
 
+/**
+ * This formats the attribute string into an object
+ * Object keys are attribute identifiers
+ * Object values are strings, arrays of string or arrays of objects
+ * @param  {[type]}
+ * @return {[type]}
+ */
 const formatAttributes = (attributeString) => {
 	const rawAttributes = querystring.parse(attributeString,';','=')
-	const attributes = mapValues(rawAttributes, (attribute) => {
-		let attributesArray = attribute.split(',');
-		switch(attributesArray.length){
+	const attributes = mapValues(rawAttributes, (rawAttribute, attributeName) => {
+		console.log(attributeName, rawAttribute)
+		const attributeArray = rawAttribute.split(',').map( (attribute) => {
+			attribute = unescape(attribute);
+			attribute.replace(/^"(.+(?="$))"$/, '$1');
+			if (['Dbxref','Ontology_term'].indexOf(attributeName) >= 0){
+				//turn attribute into object, split on colon
+				attribute = querystring.parse(attribute,'',':')
+			}
+			return attribute
+		} )
+
+		console.log(attributeName, attributeArray)
+		let attributeField = attributeArray;
+		switch(attributeArray.length){
 			case 0:
-				throw new Meteor.Error('Incorrect attribute field');
+				throw new Meteor.Error(`Incorrect attribute field: ${attributeString}`);
 				break;
 			case 1:
-				return attributesArray[0];
+				if (['Dbxref','Ontology_term','Parent'].indexOf(attributeName) < 0){
+					attributeField = attributeArray[0];
+				} 
+				break;
 			default:
-				return attributesArray;
+				break;
 		}
+		console.log(attributeName, attributeField)
+		return attributeField
 	})
 	return attributes
 }
