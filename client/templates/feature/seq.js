@@ -42,8 +42,8 @@ Template.seq.helpers({
 		let reference = References.find({ 
 			header: this.seqid, 
 			$and: [ 
-				{ start: {$lt: this.end} }, 
-				{ end: {$gt: this.start} }
+				{ start: {$lte: this.end} }, 
+				{ end: {$gte: this.start} }
 			] 
 		}).fetch()
 
@@ -83,7 +83,6 @@ Template.seq.helpers({
 			} 
 		}
 		
-
 		return seq
 	}
 })

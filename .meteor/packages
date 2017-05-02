@@ -15,28 +15,28 @@ jquery@1.11.10                  # Helpful client-side library
 tracker@1.1.2                 # Meteor's client-side reactive programming library
 
 es5-shim@4.6.15                # ECMAScript 5 compatibility for older browsers.
-ecmascript@0.6.3              # Enable ECMAScript2015+ syntax in app code
+ecmascript@0.7.2              # Enable ECMAScript2015+ syntax in app code
 
-accounts-password@1.3.4
+accounts-password@1.3.5
 fourseven:scss
 iron:router
 ecmascript-runtime@0.3.15
 meteorhacks:fast-render
 tinytest@1.0.12
 standard-minifier-css@1.3.4
-standard-minifier-js@1.2.3
+standard-minifier-js@2.0.0
 reywood:bootstrap3-sass
 accounts-ui@1.1.9
 alanning:roles
 random@1.0.10
-email@1.1.18
+email@1.2.0
 aldeed:collection2
 http@1.2.12
 pfafman:filesaver@1.3.2
 themeteorchef:bert
 harrison:papa-parse
 reactive-var@1.0.11
-modules@0.7.9
+modules@0.8.1
 raix:handlebar-helpers
 peerlibrary:xml2js
 runelytics:nouislider
@@ -54,3 +54,4 @@ jesperwe:bootstrap-select
 aldeed:schema-index
 babel-runtime@1.0.1
 
+jcbernack:reactive-aggregate

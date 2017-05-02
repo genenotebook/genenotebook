@@ -1,4 +1,4 @@
-Meteor.subscribe('filterOptions');
+Meteor.subscribe('attributes');
 Meteor.subscribe('tracks');
 
 Session.setDefault('selectedFeatures',['Note','Comment','Productname','Pseudogene','orthogroup','paralogs','singleton'])
@@ -60,12 +60,12 @@ Template.filter.helpers({
         return !_.isEmpty(filter);
     },
     features: function(){
-        const features = FilterOptions.find({show:true},{sort:{ID:1}});
+        const features = Attributes.find({show:true},{sort:{ID:1}});
         return features
     },
     selectedFeatures: function(){
         const selectedFeatures = Session.get('selectedFeatures')
-        return FilterOptions.find({ ID: { $in: selectedFeatures } },{sort:{ID:1}})
+        return Attributes.find({ ID: { $in: selectedFeatures } },{sort:{ID:1}})
     },
     tracks:function(){
         return Tracks.find({});

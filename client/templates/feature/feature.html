@@ -1,4 +1,5 @@
 <template name="feature">
+  {{#with singleGene}}
   <div class="container">
     <div class="feature-panel panel panel-default">
       <div class="panel-heading">
@@ -17,9 +18,21 @@
           <li role="presentation" class="active"><a href="#info">Info</a></li>
           <li role="presentation"><a href="#seq">Sequence</a></li>
           <li role="presentation"><a href="#genemodel">Genemodel <span class="badge"> {{ transcripts.length }} </span></a></li>
-          <li role="presentation"><a href="#interproscan">Interpro domains <span class="badge">{{ domainCount }}</span></a></li>
-          <li role="presentation"><a href="#orthogroup">Orthogroup <span class="badge">{{ orthogroupSize }}</span></a></li>
-          <li role="presentation"><a href="#experiments">Experiments <span class="badge"> {{ experiments.length }} </span></a></li>
+          {{#if interproscan}}
+            <li role="presentation">
+              <a href="#interproscan">Interpro domains <span class="badge">{{ domainCount }}</span></a>
+            </li>
+          {{/if}}
+          {{#if orthogroup}}
+            <li role="presentation">
+              <a href="#orthogroup">Orthogroup <span class="badge">{{ orthogroupSize }}</span></a>
+            </li>
+          {{/if}}
+          {{#if experiments}}
+            <li role="presentation">
+              <a href="#experiments">Experiments <span class="badge"> {{ experiments.length }} </span></a>
+            </li>
+          {{/if}}
         </ul>
       
         <!--
@@ -27,18 +40,24 @@
         -->
         <div class="feature-info">
           {{>info}}
-          {{>module_genemodel}}
-          <!--
-          {{>interproscan}}
-          -->
           {{>seq}}
-          <!--
-          {{>orthogroup}}
-          -->
-          {{>expression}}
+          {{>module_genemodel}}
+          
+
+          {{#if interproscan}}
+            {{>interproscan}}
+          {{/if}}
+          {{#if orthogroup}}
+            {{>orthogroup}}
+          {{/if}}
+          
+          {{#if expression}}
+            {{>expression}}
+          {{/if}}
           
         </div>
       </div>
     </div>
   </div>
+  {{/with}}
 </template>

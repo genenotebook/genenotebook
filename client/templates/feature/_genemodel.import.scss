@@ -6,8 +6,7 @@
 		shape-rendering: crispEdges;
 	}
 	svg {
-		//padding: 1em;
-		//@include margin(0em 2em 0em 0em);
+		font-family:'Roboto Mono';
 		.tick.major {
 			font-size: 0.7em;
 		}

@@ -30,7 +30,7 @@ Template.expression.helpers({
 })
 
 Template.expression.events({
-    'change .selectpicker': function(event, template){
+    'change #select-experiment': function(event, template){
         const selection = [];
         let selected = $('.selectpicker option:selected');
         selected.each(function(index,value){
@@ -43,7 +43,7 @@ Template.expression.events({
 
 Template.expression.rendered = function(){
 
-    $('.selectpicker').selectpicker({
+    $('#select-experiment').selectpicker({
       style: 'btn-default',
       size: 5,
       title:'Select experiments'

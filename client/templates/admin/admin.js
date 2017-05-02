@@ -1,23 +1,23 @@
 Meteor.subscribe('userList');
 Meteor.subscribe('tracks');
 Meteor.subscribe('experiments');
-Meteor.subscribe('filterOptions');
+Meteor.subscribe('attributes');
 
 Template.admin.onCreated(function(){
 	this.currentTab = new ReactiveVar('adminUsers');
 })
 
 Template.admin.helpers({
-	tab: function(){
+	tab(){
 		return Template.instance().currentTab.get();
 	},
-	tabData: function(){
+	tabData(){
 		const tab = Template.instance().currentTab.get();
 		const data = {
 			'adminUsers': Meteor.users.find({}),
-			'adminTracks':Tracks.find({}),
-			'adminExperiments':Experiments.find({}),
-			'adminFilterOptions':FilterOptions.find({})
+			'adminTracks': Tracks.find({}),
+			'adminExperiments': Experiments.find({}),
+			'adminAttributes': Attributes.find({})
 		};
 		return data[tab];
 	}

@@ -1,6 +1,7 @@
 const spawn = Npm.require('child_process').spawn;
 const Future = Npm.require('fibers/future');
-const parseString = xml2js.parseString;
+//const parseString = xml2js.parseString;
+import groupBy from 'lodash/groupby';
 
 /**
  * Keep track of what blast commands should use which databases
@@ -15,24 +16,142 @@ const DB_TYPES = {
 }
 
 /**
- * format gene info into fasta format
- * @param  {[type]}
- * @return {[type]}
+ * Reverse complement a DNA string
+ * @param  {[String]} seq [String representing DNA constisting of alphabet AaCcGgTtNn]
+ * @return {[String]}     [String representing DNA constisting of alphabet AaCcGgTtNn, reverse complement of input]
  */
-function makeFasta(track){
-	const genes = Genes.find({'track':track},{fields:{'ID':1,'subfeatures':1},limit:100000});
-	const fastaProt = [];
-	const fastaNucl = [];
-	genes.forEach(function(gene){
-		let transcripts = gene.subfeatures.filter(function(x){return x.type === 'mRNA'})
-		for (let transcript of transcripts){
-			const fastaHeader = '>' + gene.ID + ' ' + transcript.ID + '\n'
-			fastaProt.push(fastaHeader + transcript.pep + '\n')
-			fastaNucl.push(fastaHeader + transcript.seq + '\n')
-		}
+const revcomp = (seq) => {
+	const comp = {	
+		'A':'T','a':'t',
+		'T':'A','t':'a',
+		'C':'G','c':'g',
+		'G':'C','g':'c',
+		'N':'N','n':'n'
+	}
+	const revSeqArray = seq.split('').reverse()
+	const revCompSeqArray = revSeqArray.map( (nuc) => {
+		return comp[nuc]
 	})
-	const fasta = {'prot':fastaProt.join('\n') + '\n',
-					'nucl':fastaNucl.join('\n') + '\n'}
+	const revCompSeq = revCompSeqArray.join('')
+	return revCompSeq
+}
+
+/**
+ * Convert a DNA string into a amino acid string
+ * @param  {[String]} seq [String representing DNA constisting of alphabet ACGTN]
+ * @return {[String]}     [String representing the amino acid complement of input string]
+ */
+const translate = (seq) => {
+	const trans = {
+		'ACC': 'T', 'ACA': 'T', 'ACG': 'T',
+		'AGG': 'R', 'AGC': 'S', 'GTA': 'V',
+		'AGA': 'R', 'ACT': 'T', 'GTG': 'V',
+		'AGT': 'S', 'CCA': 'P', 'CCC': 'P',
+		'GGT': 'G', 'CGA': 'R', 'CGC': 'R',
+		'TAT': 'Y', 'CGG': 'R', 'CCT': 'P',
+		'GGG': 'G', 'GGA': 'G', 'GGC': 'G',
+		'TAA': '*', 'TAC': 'Y', 'CGT': 'R',
+		'TAG': '*', 'ATA': 'I', 'CTT': 'L',
+		'ATG': 'M', 'CTG': 'L', 'ATT': 'I',
+		'CTA': 'L', 'TTT': 'F', 'GAA': 'E',
+		'TTG': 'L', 'TTA': 'L', 'TTC': 'F',
+		'GTC': 'V', 'AAG': 'K', 'AAA': 'K',
+		'AAC': 'N', 'ATC': 'I', 'CAT': 'H',
+		'AAT': 'N', 'GTT': 'V', 'CAC': 'H',
+		'CAA': 'Q', 'CAG': 'Q', 'CCG': 'P',
+		'TCT': 'S', 'TGC': 'C', 'TGA': '*',
+		'TGG': 'W', 'TCG': 'S', 'TCC': 'S',
+		'TCA': 'S', 'GAG': 'E', 'GAC': 'D',
+		'TGT': 'C', 'GCA': 'A', 'GCC': 'A',
+		'GCG': 'A', 'GCT': 'A', 'CTC': 'L',
+		'GAT': 'D'}
+	const codonArray = seq.match(/.{1,3}/g)
+	const pepArray = codonArray.map( (codon) => {
+		let aminoAcid = 'X'
+		if (codon.indexOf('N') < 0){
+			aminoAcid = trans[codon]
+		}
+		return aminoAcid
+	})
+	const pep = pepArray.join('')
+	return pep
+}
+
+/**
+ * format a complete annotation track of genes into fasta format for building blast database
+ * @param  {[String]} track [Track name of an annotation]
+ * @return {[Object]}
+ */
+const makeFasta = (track) => {
+	console.log('makeFasta',track)
+	const genes = Genes.find({'track':track},{fields:{'ID':1,'seqid':1,'start':1,'end':1,'subfeatures':1}});
+	const fastaPep = [];
+	const fastaNuc = [];
+	genes.forEach( (gene) => {
+		let transcripts = gene.subfeatures.filter( (subfeature) => { return subfeature.type === 'mRNA' })
+		transcripts.forEach( (transcript) => {
+			let transcriptSeq = `>${transcript.ID}\n`;
+			let transcriptPep = `>${transcript.ID}\n`;
+			let cdsArray = gene.subfeatures.filter( (sub) => { 
+				return sub.parents.indexOf(transcript.ID) >= 0 && sub.type === 'CDS'
+			}).sort( (a,b) => {
+				return a.start - b.start
+			})
+
+			let refStart = 10e99;
+			//let referenceSubscription = Meteor.subscribe('references',gene.seqid)
+			
+			//find all reference fragments overlapping the mRNA feature
+			let referenceArray = References.find({ 
+				header: gene.seqid, 
+				$and: [ 
+					{ start: {$lte: gene.end} }, 
+					{ end: {$gte: gene.start} }
+				] 
+			}).fetch()
+
+			if (referenceArray.length){
+				let reference = referenceArray.sort( (a,b) => {
+					//sort on start coordinate
+					return a.start - b.start
+				}).map( (ref) => {
+					//find starting position of first reference fragment
+					refStart = Math.min(refStart,ref.start)
+					return ref.seq
+				}).join('')
+
+				seq = cdsArray.map( (cds, index) => {
+					let start = cds.start - refStart - 1;
+					let end = cds.end - refStart;
+					return reference.slice(start,end)
+				}).join('')
+
+				let phase;
+				if (this.strand === '-'){
+					seq = revcomp(seq)
+					phase = cdsArray[cdsArray.length -1].phase
+				} else {
+					phase = cdsArray[0].phase
+				}
+		 
+				if ([1,2].indexOf(phase) >= 0){
+					seq = seq.slice(phase)
+				}
+
+				console.log(gene,seq)
+				let pep = translate(seq.toUpperCase());
+
+				transcriptSeq += seq;
+				fastaNuc.push(transcriptSeq)
+				
+				transcriptPep += pep;
+				fastaPep.push(transcriptPep);
+				
+			}
+		})
+	})
+	const fasta = {	'prot': fastaPep.join('\n') + '\n',
+									'nucl': fastaNuc.join('\n') + '\n'}
 	return fasta
 }
 
@@ -103,7 +222,7 @@ Meteor.methods({
 	 * @param  {[type]}
 	 * @return {[type]}
 	 */
-	makeBlastDb (track){
+	makeBlastDb (trackName){
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}
@@ -112,11 +231,12 @@ Meteor.methods({
 		}
 		this.unblock();
 		const dbtypes = ['nucl','prot'];
+		const fasta = makeFasta(trackName)
 
-		for (let dbtype of dbtypes) {
-			const fasta = makeFasta(track)
-			const outFile = track + '.' + dbtype
-			const child = spawn('makeblastdb',['-dbtype',dbtype,'-title',out,'-out',outFile]);
+		dbtypes.forEach( (dbtype) => {
+		//for (let dbtype of dbtypes) {
+			const outFile = `${trackName}.${dbtype}`
+			const child = spawn('makeblastdb',['-dbtype', dbtype, '-title', out, '-out', outFile]);
 			const pid = child.pid;
 			child.stdin.setEncoding('utf8');
 			child.stdout.setEncoding('utf8');
@@ -134,15 +254,15 @@ Meteor.methods({
 			})
 
 			if (err){
-				console.log('ERROR:\n' + err)
+				console.log(`ERROR:\n${err}`)
 			}
 
 			child.on('close',function(code){
-				console.log('makeblastdb exit code: ' + code)
+				console.log(`makeblastdb exit code: ${code}`)
 				console.log(out)
 			})
-			Tracks.update({'track':track},{ '$set' : {['blastdbs.' + dbtype] : track + '.' + dbtype } } )
-		}
+			Tracks.update({'trackName': trackName },{ '$set' : {[`blastdbs.${dbtype}`] : `${trackName}.${dbtype}` } } )
+		})
 	},
 	/**
 	 * Spin up a child process to run blast
@@ -163,10 +283,12 @@ Meteor.methods({
 		
 		const dbType = DB_TYPES[blastType]
 		
-		const tracks = Tracks.find({'track':{$in:trackNames} },{fields:{'blastdbs':1}}).fetch();
+		const tracks = Tracks.find({'trackName':{$in:trackNames} },{fields:{'blastdbs':1}}).fetch();
 		
 		const dbs = tracks.map(function(track){return track.blastdbs[dbType]}).join(' ')
 		
+		console.log(dbs)
+
 		const child = spawn(blastType,['-db',dbs,'-outfmt','5','-num_alignments','20'])
 		
 		child.stdin.setEncoding('utf8')
@@ -189,9 +311,13 @@ Meteor.methods({
 			console.log(err);
 		}
 
+		if (out){
+			console.log(out);
+		}
+
 		const o = child.on('close',function(code){
 			console.log('exit code: ' + code)
-			json_out = parseString(out,function(err,res){
+			json_out = xml2js.parseString(out,function(err,res){
 				fut.return(res)
 			});
 		})
@@ -249,9 +375,9 @@ Meteor.methods({
 		//process mapreduce output and put it in a collection
 		mapReduceResults.forEach( (feature) => { 
 			let name = feature._id
-			FilterOptions.findAndModify({ 
+			Attributes.findAndModify({ 
 				query: { ID: name }, 
-				update: { $setOnInsert: { name: name, query: `attributes.${name}`, show: true, canEdit: false } }, 
+				update: { $setOnInsert: { name: name, query: `attributes.${name}`, show: true, canEdit: false, reserved: false } }, 
 				new: true, 
 				upsert: true 
 			}) 
@@ -259,9 +385,9 @@ Meteor.methods({
 		//add the viewing and editing option, since this key is dynamic it will not allways be present on any gene, but we do want to filter on this
 		const permanentOptions = ['viewing','editing','expression']
 		permanentOptions.forEach(function(optionId){
-			FilterOptions.findAndModify({
+			Attributes.findAndModify({
 				query: { ID: optionId },
-				update: { $setOnInsert: { name: optionId, query: optionId, show: true, canEdit: false } }, 
+				update: { $setOnInsert: { name: optionId, query: optionId, show: true, canEdit: false, reserved: true } }, 
 				new: true, 
 				upsert: true 
 			})
@@ -272,11 +398,17 @@ Meteor.methods({
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}
-		Genes.update({ 'ID': geneId },{ $pull: { 'viewing': this.userId } })
-		const viewing = Genes.findOne({'ID': geneId}).viewing
-		if ( viewing.length === 0 ){
-			Genes.update({ 'ID': geneId },{ $unset: { 'viewing': 1 } } )
-		} 
+		Genes.update({ 'ID': geneId },{ $pull: { 'viewing': this.userId } }, (err,res) => {
+			if (err) {
+				throw new Meteor.Error('removeFromViewing server method error')
+			}
+			const gene = Genes.findOne({'ID': geneId})
+			console.log(gene)
+			//if ( viewing.length === 0 ){
+				//Genes.update({ 'ID': geneId },{ $unset: { 'viewing': 1 } } )
+			//} 
+		})
+		
 	},
 	/**
 	 * Block a gene from being edited, this should happen when someone is editing a gene to prevent simultaneous edits
@@ -290,7 +422,12 @@ Meteor.methods({
 		if (! Roles.userIsInRole(this.userId,'curator')){
 			throw new Meteor.Error('not-authorized');
 		}
-		Genes.update({ 'ID': geneId },{ $set: { editing: this.userId } })
+		Genes.update({ 'ID': geneId },{ $set: { editing: this.userId } }, (err,res) => {
+			if (err){
+				throw new Meteor.Error('Locking gene failed')
+			}
+			console.log(`${this.userId} is editing gene ${geneId}`)
+		})
 	},
 	/**
 	 * This unlocks a gene from being blocked during editing. 
@@ -309,9 +446,24 @@ Meteor.methods({
 		if (!gene){
 			throw new Meteor.Error('not-authorized')
 		}
-		console.log(gene.editing)
+
+		if (!gene.editing){
+			throw new Meteor.Error('not-authorized')
+		}
+
+		if (!(gene.editing === this.userId)){
+			throw new Meteor.Error('not-authorized')
+		}
+
+		console.log('allow unlock ===',gene.editing === this.userId)
 		if (gene.editing === this.userId){
-			Genes.update({ ID: geneId },{ $unset: { editing: 1 } })
+			console.log(`${this.userId} is no longer editing gene ${geneId}`)
+			Genes.update({ ID: geneId}, { $set: { editing: 'Unlocking' } }, (err,res) => {
+				if (err){
+					throw new Meteor.Error('Unlocking failed')
+				}
+				Genes.update({ ID: geneId },{ $unset: { editing: 1 } })
+			} )
 		}
 	}
 })

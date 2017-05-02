@@ -1,8 +1,8 @@
-Session.set('editFilterOptions',[])
+Session.set('editAttributes',[])
 
-Template.adminFilterOptions.helpers({
+Template.adminAttributes.helpers({
 	edit : function(ID){
-		const edit = Session.get('editFilterOptions');
+		const edit = Session.get('editAttributes');
 		return edit.indexOf(ID) > -1;
 	},
 	isVisual : function(){
@@ -12,30 +12,30 @@ Template.adminFilterOptions.helpers({
 	}
 })
 
-Template.adminFilterOptions.events({
+Template.adminAttributes.events({
 	'click #refresh':function(){
 		Meteor.call('scanFeatures',function(err,res){
 			if (err){
-				Bert.alert('Filter update failed','danger','growl-top-right');
+				Bert.alert('Attribute update failed','danger','growl-top-right');
 			} else {
-				Bert.alert('Filters updated','success','growl-top-right');
+				Bert.alert('Attribute updated','success','growl-top-right');
 			}
 		})
 	},
 	'click .edit':function(event){
 		const id = event.target.id;
-		const edit = Session.get('editFilterOptions');
+		const edit = Session.get('editAttributes');
 		edit.push(id);
-		Session.set('editFilterOptions',edit);
+		Session.set('editAttributes',edit);
 	},
 	'click .cancel':function(event){
 		const id = event.target.form.id;
-		const edit = Session.get('editFilterOptions');
+		const edit = Session.get('editAttributes');
 		const index = edit.indexOf(id);
 		if (index > -1){
 			edit.splice(index,1);
 		}
-		Session.set('editFilterOptions',edit);
+		Session.set('editAttributes',edit);
 	},
 	'click .save':function(event, template){
 		const id = event.target.form.id;
@@ -45,12 +45,12 @@ Template.adminFilterOptions.events({
 			show: template.find('#show').checked,
 		}		
 		console.log(data)
-		Meteor.call('updateFilterOptions',this._id,data)
-		const edit = Session.get('editFilterOptions');
+		Meteor.call('updateAttributes',this._id,data)
+		const edit = Session.get('editAttributes');
 		const index = edit.indexOf(id);
 		if (index > -1){
 			edit.splice(index,1);
 		}
-		Session.set('editFilterOptions',edit);
+		Session.set('editAttributes',edit);
 	}
 })

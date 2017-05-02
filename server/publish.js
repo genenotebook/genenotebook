@@ -35,7 +35,8 @@ Meteor.publish('genes',function(limit, search, query) {
 				if (err){
 					throw new Meteor.Error('genes publish aggregate error')
 				}
-				res.forEach( (gene) =>{
+				res.forEach( (gene) => {
+					console.log(`genelist ${gene.ID}`)
 					publication.added('genes',gene._id,gene)
 				})
 			})
@@ -44,22 +45,48 @@ Meteor.publish('genes',function(limit, search, query) {
 
 	})
 
-Meteor.publish({
-	/*genes: function(limit, search, query) {
-		console.log('this.autorun',this.autorun())
-		if (!this.userId){
-			this.ready()
-		}
-		limit = limit || 40;
-		query = query || {};
-		if (search) {
-			query.$or = [{ 'ID': { $regex: search , $options: 'i' } },{ 'Name': { $regex: search , $options: 'i' } }];
-			if (!query.hasOwnProperty('Productname')){
-				query.$or.push({ 'Productname': { $regex: search , $options: 'i' } })
+Meteor.publish('singleGene',function(geneId){
+	if (!this.userId){
+		this.ready()
+	}
+	console.log(geneId)
+	
+	//first find out which transcriptome samples the current user has acces to
+	const roles = Roles.getRolesForUser(this.userId);
+	const visibleSamples = Experiments.find({ permissions: { $in: roles } }, { _id: 1 }).fetch()
+	const sampleIds = visibleSamples.map( (sample) => { return sample._id })
+	
+	// Remember, ReactiveAggregate doesn't return anything
+	ReactiveAggregate(this, Genes, [
+		{ $match: { ID: geneId } },
+		{ $addFields: {
+			expression: {
+				$filter: {
+					input: '$expression',
+					as: 'sample',
+					cond: { $in: ['$$sample.experimentId', sampleIds] }
+				}
 			}
-		}
-		return Genes.find(query,{ limit: limit, sort: { 'ID': 1 } })
-	},*/
+		}}
+	])
+})
+
+Meteor.publish(null, function () {
+	if (!this.userId){
+		this.ready()
+		//throw new Meteor.Error('Unauthorized')
+	}
+	if (Roles.userIsInRole(this.userId,'admin')){
+		return Meteor.users.find({});
+	} else if (Roles.userIsInRole(this.userId,['user','curator'])){
+		return Meteor.users.find({},{fields:{username:1}})
+	} else {
+		this.ready()
+		//throw new Meteor.Error('Unauthorized')
+	}
+})
+
+Meteor.publish({
 	references (seqid) {
 		if (!this.userId){
 			this.ready()
@@ -71,20 +98,6 @@ Meteor.publish({
 			this.ready()
 		}
 		return Orthogroups.find({ 'ID': ID });
-	},
-	userList (){
-		if (!this.userId){
-			this.ready()
-			//throw new Meteor.Error('Unauthorized')
-		}
-		if (Roles.userIsInRole(this.userId,'admin')){
-			return Meteor.users.find({});
-		} else if (Roles.userIsInRole(this.userId,['user','curator'])){
-			return Meteor.users.find({},{fields:{username:1}})
-		} else {
-			this.ready()
-			//throw new Meteor.Error('Unauthorized')
-		}
 	},
 	experiments (){
 		if (!this.userId){
@@ -100,12 +113,12 @@ Meteor.publish({
 		}
 		return Tracks.find({});
 	},
-	filterOptions (){
+	attributes (){
 		if (!this.userId){
 			this.ready()
 			//throw new Meteor.Error('Unauthorized')
 		}
-		return FilterOptions.find({});
+		return Attributes.find({});
 	},
 	interpro (){
 		if (!this.userId){

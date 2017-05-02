@@ -7,8 +7,7 @@ Template.adminTracks.helpers({
 
 Template.adminTracks.events({
 	'click .makeblastdb':function(){
-		const track = this.track;
-		Meteor.call('makeBlastDb',track,function(error,result){
+		Meteor.call('makeBlastDb', this.trackName, (error, result) => {
 			if (error){
 				Bert.alert('makeBlastDb failed!','danger','growl-top-right');
 			} else {

@@ -6,6 +6,10 @@ Tracker.autorun( () => {
 })
 
 Template.feature.helpers({
+  singleGene(){
+    console.log(this.geneId)
+    return Genes.findOne({ ID: this.geneId })
+  },
   tab:function(){
     return Template.instance().currentTab.get();
   },

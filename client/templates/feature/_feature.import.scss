@@ -1,5 +1,4 @@
 .feature-panel{
-	//position:fixed;
 	height:85%;
 }
 
@@ -9,12 +8,11 @@
 }
 
 p.seq {
-	//@include margin(0em 2em 0em 0em);
 	overflow-wrap: break-word;
 	word-wrap: break-word;
 	overflow: wrap;
 	white-space:wrap;
-	font-family: Menlo,sans-serif;
+	font-family: 'Roboto Mono', monospace;
 	font-size: 0.8em;
 }
 
@@ -25,7 +23,7 @@ p.msa {
 .well.alignment {
 	overflow: auto;
 	white-space:nowrap;
-	font-family: Menlo,sans-serif;
+	font-family: 'Roboto Mono', monospace;
 	font-size: 0.8em;
 }
 

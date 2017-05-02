@@ -91,8 +91,6 @@ const formatGff = (parsedResults, referenceName, trackName) => {
 			attributes: formatAttributes(line[8])
 		}
 
-		console.log(sub.attributes)
-
 		sub.ID = sub.attributes.ID;
 		delete sub.attributes.ID;
 
@@ -172,9 +170,13 @@ function *getChildren(Id,Gff){
  * @return {[type]}
  */
 const formatAttributes = (attributeString) => {
+	//split attribute string on semicolons for separate attributes and on equalsign for key/values
 	const rawAttributes = querystring.parse(attributeString,';','=')
+
+	//sometimes there is an empty key, remove this
+	delete rawAttributes[''];
+
 	const attributes = mapValues(rawAttributes, (rawAttribute, attributeName) => {
-		console.log(attributeName, rawAttribute)
 		const attributeArray = rawAttribute.split(',').map( (attribute) => {
 			attribute = unescape(attribute);
 			attribute.replace(/^"(.+(?="$))"$/, '$1');
@@ -185,7 +187,6 @@ const formatAttributes = (attributeString) => {
 			return attribute
 		} )
 
-		console.log(attributeName, attributeArray)
 		let attributeField = attributeArray;
 		switch(attributeArray.length){
 			case 0:
@@ -199,7 +200,6 @@ const formatAttributes = (attributeString) => {
 			default:
 				break;
 		}
-		console.log(attributeName, attributeField)
 		return attributeField
 	})
 	return attributes

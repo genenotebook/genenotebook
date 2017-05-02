@@ -46,6 +46,15 @@ Template.genemodel.rendered = function()  {
   })
 
   const groupedSubs = _.groupBy([].concat(...splitSubs),'parents')
+  const plotData = d3.values(groupedSubs).map((transcript) => {
+    return transcript.sort((exon1,exon2) => {
+      if (exon1.type === 'exon'){
+        return -1
+      } else {
+        return 1
+      }
+    })
+  })
 
     //get transcript min and max values
     const starts = transcriptData.map( (x) => {return x.start});
@@ -125,24 +134,24 @@ Template.genemodel.rendered = function()  {
 
     //plot exons
     const exons = transcripts.selectAll('rect')
-        .data( (d) => {
-          return d
+        .data( (exon) => {
+          return exon
         })
       .enter().append('rect')
-      .attr('x', (d) => {  
-        return xScale(d.start)
+      .attr('x', (exon) => {  
+        return xScale(exon.start)
       })
-      .attr('y',(d) => {
-        return config.midLine - ( config.size[d.type] / 2 )
+      .attr('y',(exon) => {
+        return config.midLine - ( config.size[exon.type] / 2 )
       })
-      .attr('width',(d) => {
-        return xScale(d.end) - xScale(d.start)
+      .attr('width',(exon) => {
+        return xScale(exon.end) - xScale(exon.start)
       })
-      .attr('height',(d) => {
-        return config.size[d.type]
+      .attr('height',(exon) => {
+        return config.size[exon.type]
       })
-      .style('fill',(d) => {
-        return config.color[d.type]
+      .style('fill',(exon) => {
+        return config.color[exon.type]
       })
       .style('stroke','black')
       .style('stroke-width',0.5)

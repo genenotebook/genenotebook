@@ -1,3 +1,5 @@
+import FileSaver from 'file-saver'
+
 var ITEMS_INCREMENT = 40;
 Session.setDefault('itemsLimit', ITEMS_INCREMENT);
 Session.setDefault('select-all',false);
@@ -24,7 +26,7 @@ Template.genelist.helpers({
     return Genes.find(query,{sort:{'ID':1}});
   },
   moreResults: function(){
-    // If, once the subscription is ready, we have less rows than we
+    // If (once the subscription is ready) we have less rows than we
     // asked for, we've got all the rows in the collection.
     return !(Genes.find({'type':'gene'}).count() < Session.get("itemsLimit"));
   },
@@ -185,7 +187,7 @@ Template.genelist.events({
         const date = new Date()
         const dateString = date.toISOString()
 
-        saveAs(blob,`bioportal.${dataString}.${format}`)//'bioportal.' + date.toISOString() + '.' + format)
+        FileSaver.saveAs(blob,`bioportal.${dateString}.${format}`)//'bioportal.' + date.toISOString() + '.' + format)
       }
     })
     
