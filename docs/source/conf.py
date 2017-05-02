@@ -100,7 +100,7 @@ html_theme_options = {
     ],
     'navbar_sidebarrel': False,
     'navbar_fixed_top': 'true',
-    'bootswatch_theme': 'Paper',
+    #'bootswatch_theme': 'Paper',
     'source_link_position': 'exclude'
 }
 
