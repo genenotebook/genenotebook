@@ -5,7 +5,7 @@ node_modules
 !.meteor/packages
 !.meteor/versions
 !.meteor/status
-.bioportal
+.genebook
 .meteor/local
 .meteor/meteorite
 *sublime*
