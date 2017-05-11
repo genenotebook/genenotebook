@@ -1,7 +1,7 @@
 const spawn = Npm.require('child_process').spawn;
 const Future = Npm.require('fibers/future');
 //const parseString = xml2js.parseString;
-import groupBy from 'lodash/groupby';
+//import groupBy from 'lodash/groupby';
 
 /**
  * Keep track of what blast commands should use which databases
