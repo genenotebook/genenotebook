@@ -33,7 +33,7 @@ Meteor.publish('genes',function(limit, search, query) {
 			}
 			], function(err,res){
 				if (err){
-					throw new Meteor.Error('genes publish aggregate error')
+					throw new Meteor.Error(err)
 				}
 				res.forEach( (gene) => {
 					console.log(`genelist ${gene.ID}`)

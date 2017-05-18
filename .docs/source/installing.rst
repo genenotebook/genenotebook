@@ -12,6 +12,8 @@ Installing this on a Mac is as easy as:
 	curl https://install.meteor.com/ | sh
 	git clone https://github.com/holmrenser/genebook
 
+Check this_ if you run into npm user persission problems.
+
 The following will let you run a development version on your local machine:
 
 .. code-block:: bash
@@ -30,3 +32,4 @@ While the app is running you can run the following script to load some example d
 .. _Meteor.js: https://www.meteor.com/
 .. _MongoDB: https://www.mongodb.com/
 .. _Node.js: https://nodejs.org/
+.. _this: https://docs.npmjs.com/getting-started/fixing-npm-permissions/
