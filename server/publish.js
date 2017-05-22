@@ -36,7 +36,7 @@ Meteor.publish('genes',function(limit, search, query) {
 					throw new Meteor.Error(err)
 				}
 				res.forEach( (gene) => {
-					console.log(`genelist ${gene.ID}`)
+					console.log(`genelist ${gene.ID} ${gene._id}`)
 					publication.added('genes',gene._id,gene)
 				})
 			})
