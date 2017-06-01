@@ -20,6 +20,9 @@ Template.header.rendered = function() {
 }
 
 Template.header.helpers({
+	prefix: function(){
+		return 'Parasponia '
+	},
   isAdmin: function(){
     return Meteor.user()
   },
