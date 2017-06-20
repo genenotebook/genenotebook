@@ -107,3 +107,10 @@ Template.blast.events({
 		});
 	}
 })
+
+Template.blast.onCreated(function () {
+	let template = this;
+	template.autorun(function () {
+		template.subscribe('tracks');
+	})
+})

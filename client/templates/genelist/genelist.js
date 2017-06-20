@@ -1,6 +1,7 @@
  import FileSaver from 'file-saver'
 
 var ITEMS_INCREMENT = 40;
+
 Session.setDefault('itemsLimit', ITEMS_INCREMENT);
 Session.setDefault('select-all',false);
 Session.setDefault('filter',{})
@@ -8,19 +9,24 @@ Session.setDefault('selection',[])
 Session.setDefault('download-progress','progress unknown')
 Meteor.subscribe('tracks');
 Meteor.subscribe('downloads');
+/*
 Tracker.autorun(function(){
-  Meteor.subscribe('genes',Session.get('itemsLimit'),Session.get('search'),Session.get('filter'));
+  let itemsLimit = Session.get('itemsLimit');
+  let search = FlowRouter.getParam('_search')//Session.get('search');
+  let filter = Session.get('filter');
+  Meteor.subscribe('genes',itemsLimit,search,filter);
 })
+*/
 
 
 Template.genelist.helpers({
   genes: function(){
     const query = Session.get('filter') || {};
-    const search = Session.get('search')
+    const search = FlowRouter.getParam('_search')//Session.get('search')
     if (search) {
-      query.$or = [{'ID':{$regex:search, $options: 'i'}},{'Name':{$regex:search, $options: 'i'}}];
-      if (!query.hasOwnProperty('Productname')){
-        query.$or.push({'Productname':{$regex:search, $options: 'i'}})
+      query.$or = [{'ID':{$regex:search, $options: 'i'}},{'attributes.Name':{$regex:search, $options: 'i'}}];
+      if (!query.hasOwnProperty('attributes.Productname')){
+        query.$or.push({'attributes.Productname':{$regex:search, $options: 'i'}})
     }
   }
     return Genes.find(query,{sort:{'ID':1}});
@@ -31,7 +37,7 @@ Template.genelist.helpers({
     return !(Genes.find({'type':'gene'}).count() < Session.get("itemsLimit"));
   },
   queryCount:function(){
-    const search = Session.get('search');
+    const search = FlowRouter.getParam('_search');
     const filter = Session.get('filter');
     Meteor.call('queryCount',search,filter,function(err,res){
       if(!err) Session.set('queryCount',res);
@@ -100,11 +106,11 @@ Template.genelist.events({
     let query;
     if (selectAll){
       query = Session.get('filter') || {};
-      const search = Session.get('search')
+      const search = FlowRouter.getParam('_search')//Session.get('search')
       if (search) {
-        query.$or = [{'ID':{$regex:search, $options: 'i'}},{'Name':{$regex:search, $options: 'i'}}];
-        if (!query.hasOwnProperty('Productname')){
-            query.$or.push({'Productname':{$regex:search, $options: 'i'}})
+        query.$or = [{'ID':{$regex:search, $options: 'i'}},{'attributes.Name':{$regex:search, $options: 'i'}}];
+        if (!query.hasOwnProperty('attributes.Productname')){
+            query.$or.push({'attributes.Productname':{$regex:search, $options: 'i'}})
         }
       }
     } else {
@@ -187,7 +193,7 @@ Template.genelist.events({
         const date = new Date()
         const dateString = date.toISOString()
 
-        FileSaver.saveAs(blob,`bioportal.${dateString}.${format}`)//'bioportal.' + date.toISOString() + '.' + format)
+        FileSaver.saveAs(blob,`genebook.${dateString}.${format}`)//'bioportal.' + date.toISOString() + '.' + format)
       }
     })
     
@@ -196,7 +202,16 @@ Template.genelist.events({
 });
 
 Template.genelist.onCreated( function() {
-  
+  let template = this;
+  template.autorun(function(){
+    let itemsLimit = Session.get('itemsLimit');
+    let search = FlowRouter.getParam('_search')//Session.get('search');
+    let filter = Session.get('filter');
+
+    template.subscribe('genes',itemsLimit,search,filter);
+    template.subscribe('tracks');
+    template.subscribe('attributes');
+  })
 })
 
 

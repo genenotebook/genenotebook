@@ -31,3 +31,11 @@ Template.admin.events({
 		template.currentTab.set( currentTab.data( "template" ) );
 	}
 })
+
+Template.admin.onCreated(function () {
+	let template = this;
+	template.autorun(function () {
+		template.subscribe('tracks');
+		template.subscribe('experiments')
+	})
+})

@@ -7,8 +7,8 @@ Tracker.autorun( () => {
 
 Template.feature.helpers({
   singleGene(){
-    console.log(this.geneId)
-    return Genes.findOne({ ID: this.geneId })
+    let geneId = FlowRouter.getParam('_id');
+    return Genes.findOne({ ID: geneId })
   },
   tab:function(){
     return Template.instance().currentTab.get();
@@ -76,6 +76,15 @@ Template.feature.events({
     //template.currentTab.set( currentTab.data( "template" ) );
   }
 });
+
+Template.feature.onCreated( function () {
+  let template = this;
+  let geneId = FlowRouter.getParam('_id')
+  template.autorun( function () {
+    template.subscribe('editHistory');
+    template.subscribe('singleGene',geneId)
+  })
+})
 
 
 

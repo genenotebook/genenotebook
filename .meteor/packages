@@ -19,7 +19,6 @@ ecmascript@0.8.0              # Enable ECMAScript2015+ syntax in app code
 
 accounts-password@1.3.6
 fourseven:scss
-iron:router
 ecmascript-runtime@0.4.1
 meteorhacks:fast-render
 tinytest@1.0.12
@@ -57,3 +56,5 @@ babel-runtime@1.0.1
 jcbernack:reactive-aggregate
 dynamic-import
 kadira:flow-router
+kadira:blaze-layout
+arillo:flow-router-helpers

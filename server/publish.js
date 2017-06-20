@@ -1,7 +1,7 @@
 Meteor.publish('genes',function(limit, search, query) {
 		const publication = this;
 		if (!publication.userId){
-			publication.ready()
+			publication.stop()
 		}
 
 		limit = limit || 40;
@@ -37,7 +37,7 @@ Meteor.publish('genes',function(limit, search, query) {
 Meteor.publish('singleGene',function(geneId){
 	const publication = this;
 	if (!publication.userId){
-		publication.ready()
+		publication.stop()
 	}
 	
 	//first find out which transcriptome samples the current user has acces to
@@ -62,7 +62,7 @@ Meteor.publish('singleGene',function(geneId){
 
 Meteor.publish(null, function () {
 	if (!this.userId){
-		this.ready()
+		this.stop()
 		//throw new Meteor.Error('Unauthorized')
 	}
 	if (Roles.userIsInRole(this.userId,'admin')){
@@ -78,47 +78,47 @@ Meteor.publish(null, function () {
 Meteor.publish({
 	references (seqid) {
 		if (!this.userId){
-			this.ready()
+			this.stop()
 		}
 		return References.find({ header: seqid });
 	},
 	orthogroups (ID) {
 		if (!this.userId){
-			this.ready()
+			this.stop()
 		}
 		return Orthogroups.find({ 'ID': ID });
 	},
 	experiments (){
 		if (!this.userId){
-			this.ready()
+			this.stop()
 			//throw new Meteor.Error('Unauthorized')
 		}
 		return Experiments.find({});
 	},
 	tracks (){
 		if (!this.userId){
-			this.ready()
+			this.stop()
 			//throw new Meteor.Error('Unauthorized')
 		}
 		return Tracks.find({});
 	},
 	attributes (){
 		if (!this.userId){
-			this.ready()
+			this.stop()
 			//throw new Meteor.Error('Unauthorized')
 		}
 		return Attributes.find({});
 	},
 	interpro (){
 		if (!this.userId){
-			this.ready()
+			this.stop()
 			//throw new Meteor.Error('Unauthorized')
 		}
 		return Interpro.find({});
 	},
 	editHistory (){
 		if (!this.userId){
-			this.ready()
+			this.stop()
 			//throw new Meteor.Error('Unauthorized')
 		}
 		return EditHistory.find({});

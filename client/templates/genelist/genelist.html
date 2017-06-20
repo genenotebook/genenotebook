@@ -6,7 +6,7 @@
       </div>
       <div class="col-md-9 clearfix">
         <!-- genelist -->
-        {{ #if genes.count }}
+        
           <div class="pull-right btn-group" role="group">
               {{ #if selection }}
               <button type="button" class="btn btn-success" data-toggle="modal" data-target="#download-modal">
@@ -20,7 +20,7 @@
                 <span class="select-button glyphicon glyphicon-ok {{isChecked}}"></span>
               </button>
           </div>
-            
+      
           <div class="btn-group" role="group">
             <button type="button" class="btn btn-default active">
               <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
@@ -31,31 +31,40 @@
           </div>
             
           <b>{{ queryCount }}</b> query results
-
-        	<ul class="genelist list-group">
-        		{{ #each genes }}
-        			<li class="list-group-item">
-                <button type="button" class="btn btn-default select-gene pull-right">
-                  <span class="select-button glyphicon glyphicon-ok {{isChecked}}"></span>
-                </button>
-                <p>
-                  <a class="genelink" href="/gene/{{ID}}">{{ ID }}</a>
-                  <b> {{ attributes.Name }} </b>
-                  {{ attributes.Note }}
+        </div>
+        <div class="col-md-9 clearfix">
+ 
+            {{ #if genes.count }}
+              <ul class="genelist list-group">
+              {{ #each genes }}
+                <li class="list-group-item">
+                  <button type="button" class="btn btn-default select-gene pull-right">
+                    <span class="select-button glyphicon glyphicon-ok {{isChecked}}"></span>
+                  </button>
+                  <p>
+                    <a class="genelink" href="/gene/{{ID}}">{{ ID }}</a>
+                    <b> {{ attributes.Name }} </b>
+                    {{ attributes.Note }}
                   <!--{{ >expression }}-->
                   <!--{{ >genemodel }}-->
-                </p>
-      				</li>
-        		{{ /each }}
-        	</ul>
-          {{ #if moreResults }}
-            <div id="showMoreGenes">
-                {{ >loading }}
-            </div>
+                  <!--{{ >info }}-->
+                  </p>
+                </li>
+              {{ /each }}
+            </ul>
+            {{ #if moreResults }}
+              <div id="showMoreGenes">
+                {{> loading }}
+              </div>
+            {{ /if }}
+          {{ else }}
+            {{ #if Template.subscriptionsReady }}
+              <div class="alert alert-danger" role="alert"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> No search results</div>
+            {{ else }}
+              {{> loading }}
+            {{ /if }}
           {{ /if }}
-        {{ else }}
-          <div class="alert alert-danger" role="alert"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> No search results</div>
-        {{ /if }}
+        
         <!-- end genelist -->
       </div>
   	</div>

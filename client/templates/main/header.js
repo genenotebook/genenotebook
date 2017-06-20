@@ -27,10 +27,10 @@ Template.header.helpers({
     return Meteor.user()
   },
   search: function(){
-  	return Session.get('search')
+  	return FlowRouter.getParam('_search')//Session.get('search')
   },
   searching: function(){
-  	return Session.get('search') || Session.get('searching')
+  	return FlowRouter.getParam('_search') || Session.get('searching')
   }
 })
 
@@ -46,16 +46,14 @@ Template.header.events({
 		event.preventDefault();
 		var search = event.target.search.value;
 		if (search){
-			Router.go('genes',{},{'query':{'search':search}})
+			FlowRouter.redirect(`/search=${search}`)
+			//Router.go('genes',{},{'query':{'search':search}})
 		}
 	},
 	'click #clear-search': function(){
-		Session.set('search',null);
+		//Session.set('search',null);
 		$('input[name="search"]').val('')
-	},
-	'click #signin':function(event,template){
-		event.preventDefault();
-		Router.go('login')
+		FlowRouter.redirect('/genes')
 	},
 	'click #signout':function(event,template){
 		event.preventDefault();

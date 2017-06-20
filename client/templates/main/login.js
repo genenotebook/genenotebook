@@ -4,10 +4,12 @@ Template.login.events({
 		const username = $('#username').val()//event.target.username.value;
 		const password = $('#password').val()//event.target.password.value;
 		Meteor.loginWithPassword(username,password);
-		Router.go('genes')
-	},
-	'click #new-account':function(event,template){
-		event.preventDefault();
-		Router.go('register')
+
+		const redirectAfterLogin = Session.get('redirectAfterLogin')
+		if (redirectAfterLogin){
+			FlowRouter.redirect(redirectAfterLogin)
+		} else {
+			FlowRouter.redirect('/genes')
+		}
 	}
 })
