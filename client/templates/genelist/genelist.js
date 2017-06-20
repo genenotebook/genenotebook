@@ -1,4 +1,4 @@
-import FileSaver from 'file-saver'
+ import FileSaver from 'file-saver'
 
 var ITEMS_INCREMENT = 40;
 Session.setDefault('itemsLimit', ITEMS_INCREMENT);
@@ -194,6 +194,10 @@ Template.genelist.events({
   }
 
 });
+
+Template.genelist.onCreated( function() {
+  
+})
 
 
 // whenever #showMoreResults becomes visible, retrieve more results

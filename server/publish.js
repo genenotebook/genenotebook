@@ -4,43 +4,24 @@ Meteor.publish('genes',function(limit, search, query) {
 			publication.ready()
 		}
 
-		//autorun to check if dependencies have changed
-		//publication.autorun( (computation) => {
-			limit = limit || 40;
-			query = query || {};
-			if (search) {
-				query.$or = [{ 'ID': { $regex: search , $options: 'i' } },{ 'Name': { $regex: search , $options: 'i' } }];
-				if (!query.hasOwnProperty('Productname')){
-					query.$or.push({ 'Productname': { $regex: search , $options: 'i' } })
-				}
+		limit = limit || 40;
+		query = query || {};
+		if (search) {
+			query.$or = [{ 'ID': { $regex: search , $options: 'i' } },{ 'Name': { $regex: search , $options: 'i' } }];
+			if (!query.hasOwnProperty('Productname')){
+				query.$or.push({ 'Productname': { $regex: search , $options: 'i' } })
 			}
+		}
 
-			const roles = Roles.getRolesForUser(publication.userId);
-			const visibleSamples = Experiments.find({ permissions: { $in: roles } }, { _id: 1 }).fetch()
-			const sampleIds = visibleSamples.map( (sample) => { return sample._id })
+		const roles = Roles.getRolesForUser(publication.userId);
+		const visibleSamples = Experiments.find({ permissions: { $in: roles } }, { _id: 1 }).fetch()
+		const sampleIds = visibleSamples.map( (sample) => { return sample._id })
 
-			// Remember, ReactiveAggregate doesn't return anything
-			ReactiveAggregate(publication, Genes, [
-				{ $match: query },
-				{ $limit: limit },
-				{ $addFields: { 
-						expression: { 
-							$filter: { 
-								input: '$expression', 
-								as: 'sample', 
-								cond: { $in: ['$$sample.experimentId',sampleIds] }
-							}
-						}
-					}
-				}
-			])
-
-			/*
-			//return Genes.find(query,{ limit: limit, sort: { 'ID': 1 } })
-			Genes.aggregate([
-				{ $match: query },
-				{ $limit: limit },
-				{ $addFields: { 
+		// Remember, ReactiveAggregate doesn't return anything
+		ReactiveAggregate(publication, Genes, [
+			{ $match: query },
+			{ $limit: limit },
+			{ $addFields: { 
 					expression: { 
 						$filter: { 
 							input: '$expression', 
@@ -50,19 +31,7 @@ Meteor.publish('genes',function(limit, search, query) {
 					}
 				}
 			}
-			], function(err,res){
-				if (err){
-					throw new Meteor.Error(err)
-				}
-				res.forEach( (gene) => {
-					console.log(`genelist ${gene.ID} ${gene._id}`)
-					publication.added('genes',gene._id,gene)
-				})
-			})
-			publication.ready()
-			*/
-		//})
-
+		])
 	})
 
 Meteor.publish('singleGene',function(geneId){
@@ -70,29 +39,25 @@ Meteor.publish('singleGene',function(geneId){
 	if (!publication.userId){
 		publication.ready()
 	}
-	console.log(geneId)
 	
 	//first find out which transcriptome samples the current user has acces to
 	const roles = Roles.getRolesForUser(publication.userId);
 	const visibleSamples = Experiments.find({ permissions: { $in: roles } }, { _id: 1 }).fetch()
 	const sampleIds = visibleSamples.map( (sample) => { return sample._id })
 	
-	//autorun to check if dependencies have changed
-	//publication.autorun( (computation) => {
-		// Remember, ReactiveAggregate doesn't return anything
-		ReactiveAggregate(publication, Genes, [
-			{ $match: { ID: geneId } },
-			{ $addFields: {
-				expression: {
-					$filter: {
-						input: '$expression',
-						as: 'sample',
-						cond: { $in: ['$$sample.experimentId', sampleIds] }
-					}
+	// Remember, ReactiveAggregate doesn't return anything
+	ReactiveAggregate(publication, Genes, [
+		{ $match: { ID: geneId } },
+		{ $addFields: {
+			expression: {
+				$filter: {
+					input: '$expression',
+					as: 'sample',
+					cond: { $in: ['$$sample.experimentId', sampleIds] }
 				}
-			}}
-		])
-	//})
+			}
+		}}
+	])
 })
 
 Meteor.publish(null, function () {

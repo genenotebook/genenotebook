@@ -56,3 +56,4 @@ babel-runtime@1.0.1
 
 jcbernack:reactive-aggregate
 dynamic-import
+kadira:flow-router

@@ -1,64 +1,72 @@
 <template name="landingpage">
-	<div class="container">
-		<!--
-		This is an online resource for comparative genomics of <i>P. andersonii</i> and <i>T. orientalis</i> <br>
-		You can <a href='/login'>sign in</a> to make use of all functionality, including downloading public data. <br>
-		Reviewers will find login credentials in the manuscript.
-		-->
-		<!-- Page Features -->
+  <div class="container">
+    <header class="jumbotron hero-spacer">
+      <h2>Welcome to the </h2>
+      <h1>Parasponia Genebook</h1>
+      <p>
+        This is <i>the</i> resource for comparative genomics of <i>P. andersonii</i> and <i>T. orientalis</i>.<br>
+        It includes all Genebook functionality, and allows downloading of various data.
+      </p>
+      <p>
+        <a href="/register" class="btn btn-success btn-large">
+          <i class="fa fa-user-plus" aria-hidden="true"></i> Create an account
+        </a>
+        <a href="/login" class="btn btn-primary btn-large">
+          <i class="fa fa-sign-in" aria-hidden="true"></i> Sign in
+        </a>
+        <a href="http://genebook.readthedocs.io/" class="btn btn-default btn-large">
+          <i class="fa fa-github" aria-hidden="true"></i> About Genebook
+        </a>
+      </p>
+    </header>
 
-		<header class="jumbotron hero-spacer">
-            <h2>Welcome to the </h2>
-            <h1>Parasponia Genebook</h1>
-            <p>This is <i>the</i> resource for comparative genomics of <i>P. andersonii</i> and <i>T. orientalis</i>.<br>
-            It includes all Genebook functionality, and allows downloading of various data.</p>
-            <p><a href="/register" class="btn btn-success btn-large">Create an account</a>
-            <a href="/login" class="btn btn-primary btn-large">Sign in</a>
-            <a href="http://genebook.readthedocs.io/" class="btn btn-default btn-large">Read more about Genebook</a>
+    <div class="row text-center">
+
+      <div class="col-md-4 col-sm-6 hero-feature">
+        <div class="thumbnail">
+          <img src="/svg/008-menu.svg" alt="">
+          <div class="caption">
+            <h3>Gene list</h3>
+            <p>Browse through a list of genes with customizable queries</p>
+            <p>
+              <a href="/genes" class="btn btn-primary">
+                <i class="fa fa-list-ul" aria-hidden="true"></i> Browse
+              </a> 
             </p>
-        </header>
-
-        <div class="row text-center">
-
-            <div class="col-md-4 col-sm-6 hero-feature">
-                <div class="thumbnail">
-                    <img src="/svg/008-menu.svg" alt="">
-                    <div class="caption">
-                        <h3>Gene list</h3>
-                        <p>Browse through a list of genes with customizable queries</p>
-                        <p>
-                            <a href="/genes" class="btn btn-primary">Browse</a> 
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4 col-sm-6 hero-feature">
-                <div class="thumbnail">
-                    <img src="/svg/007-loupe.svg" alt="">
-                    <div class="caption">
-                        <h3>Advanced search</h3>
-                        <p>Search genomes, genes, experiments, meta-data etc.</p>
-                        <p>
-                            <a href="#" class="btn btn-primary">Search</a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4 col-sm-6 hero-feature">
-                <div class="thumbnail">
-                    <img src="/svg/001-server.svg" alt="">
-                    <div class="caption">
-                        <h3>BLAST</h3>
-                        <p>BLAST your protein or DNA sequence to full genomes and annotations </p>
-                        <p>
-                            <a href="/blast" class="btn btn-primary">Blast</a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-
+          </div>
         </div>
-	</div>
+      </div>
+
+      <div class="col-md-4 col-sm-6 hero-feature">
+        <div class="thumbnail">
+          <img src="/svg/007-loupe.svg" alt="">
+          <div class="caption">
+            <h3>Advanced search</h3>
+            <p>Search genomes, genes, experiments, meta-data etc.</p>
+            <p>
+              <a href="#" class="btn btn-primary">
+                <i class="fa fa-search" aria-hidden="true"></i> Search
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 col-sm-6 hero-feature">
+        <div class="thumbnail">
+          <img src="/svg/001-server.svg" alt="">
+          <div class="caption">
+            <h3>BLAST</h3>
+            <p>BLAST your protein or DNA sequence to full genomes and annotations </p>
+            <p>
+              <a href="/blast" class="btn btn-primary">
+                <i class="fa fa-server" aria-hidden="true"></i> Blast
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
 </template>
