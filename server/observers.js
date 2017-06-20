@@ -1,5 +1,7 @@
+/*
 Meteor.users.find({}).observeChanges({
 	changed: function(id,field){
+		console.log(id,field)
 		if ( field.hasOwnProperty('presence') ){
 			if ( field.presence.hasOwnProperty('status') ){
 				if (field.presence.status === 'offline'){
@@ -10,3 +12,4 @@ Meteor.users.find({}).observeChanges({
 		}
 	}
 });
+*/
