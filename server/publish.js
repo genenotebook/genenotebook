@@ -1,39 +1,45 @@
+import { publishComposite } from 'meteor/reywood:publish-composite';
+
 Meteor.publish('genes',function(limit, search, query) {
-		const publication = this;
-		if (!publication.userId){
-			publication.stop()
+	const publication = this;
+	if (!publication.userId){
+		publication.stop()
+	}
+
+	limit = limit || 40;
+	query = query || {};
+	if (search) {
+		query.$or = [{ 'ID': { $regex: search , $options: 'i' } },{ 'Name': { $regex: search , $options: 'i' } }];
+		if (!query.hasOwnProperty('Productname')){
+			query.$or.push({ 'Productname': { $regex: search , $options: 'i' } })
 		}
+	}
+	/*
+	const roles = Roles.getRolesForUser(publication.userId);
+	const visibleSamples = Experiments.find({ permissions: { $in: roles } }, { _id: 1 }).fetch()
+	const sampleIds = visibleSamples.map( (sample) => { return sample._id })
 
-		limit = limit || 40;
-		query = query || {};
-		if (search) {
-			query.$or = [{ 'ID': { $regex: search , $options: 'i' } },{ 'Name': { $regex: search , $options: 'i' } }];
-			if (!query.hasOwnProperty('Productname')){
-				query.$or.push({ 'Productname': { $regex: search , $options: 'i' } })
-			}
-		}
-
-		const roles = Roles.getRolesForUser(publication.userId);
-		const visibleSamples = Experiments.find({ permissions: { $in: roles } }, { _id: 1 }).fetch()
-		const sampleIds = visibleSamples.map( (sample) => { return sample._id })
-
-		// Remember, ReactiveAggregate doesn't return anything
-		ReactiveAggregate(publication, Genes, [
-			{ $match: query },
-			{ $limit: limit },
-			{ $addFields: { 
-					expression: { 
-						$filter: { 
-							input: '$expression', 
-							as: 'sample', 
-							cond: { $in: ['$$sample.experimentId',sampleIds] }
-						}
+	// Remember, ReactiveAggregate doesn't return anything
+	ReactiveAggregate(publication, Genes, [
+		{ $match: query },
+		{ $limit: limit },
+		{ $addFields: { 
+				expression: { 
+					$filter: { 
+						input: '$expression', 
+						as: 'sample', 
+						cond: { $in: ['$$sample.experimentId',sampleIds] }
 					}
 				}
 			}
-		])
-	})
+		}
+	])
+	*/
+	console.log(query)
+	return Genes.find(query,{limit: limit})
+})
 
+/*
 Meteor.publish('singleGene',function(geneId){
 	const publication = this;
 	if (!publication.userId){
@@ -58,6 +64,43 @@ Meteor.publish('singleGene',function(geneId){
 			}
 		}}
 	])
+})
+*/
+
+publishComposite('singleGene', function(geneId){
+	const publication = this;
+	if (!publication.userId){
+		publication.stop()
+	}
+
+	const roles = Roles.getRolesForUser(publication.userId);
+
+	return {
+		find(){
+			return Genes.find({ID: geneId})
+		},
+		children: [
+			{
+				find(gene){
+					return Experiments.find({
+						data: { 
+							$elemMatch : { 
+								ID: gene.ID 
+							} 
+						},
+						permissions: roles 
+					})
+				}
+			},
+			{
+				find(gene){
+					return References.find({
+						header: gene.seqid
+					})
+				}
+			}
+		]
+	}
 })
 
 Meteor.publish(null, function () {

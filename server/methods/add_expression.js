@@ -30,13 +30,28 @@ Meteor.methods({
 				console.log(error)
 			},
 			complete(results,file) {
+				let data = results.data.map((gene) => {
+					let existingGene = Genes.find({ID: gene.target_id}).fetch()
+					if (existingGene.length < 1){
+						throw new Meteor.Error(`${gene.target_id} is not an existing gene ID!`)
+					}
+					return { 
+						ID: gene.target_id,
+						raw_counts: gene.est_counts,
+						tpm: gene.tpm
+					}
+				})
+				
 				let experimentId = Experiments.insert({
 					ID: config.sampleName,
-					group: config.group,
+					experimentGroup: config.experimentGroup,
+					replicaGroup: config.replicaGroup,
 					description: config.description,
-					permissions: ['admin']
+					permissions: ['admin'],
+					data: data
 				})
 
+				/*
 				results.data.forEach( (gene) => {
 					Genes.update({ID:gene.target_id},{
 						$push: {
@@ -48,6 +63,7 @@ Meteor.methods({
 						}
 					})
 				})
+				*/
 
 			}
 		})

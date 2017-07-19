@@ -19,7 +19,8 @@ if (!module.parent){
 		.option('-p, --password <password>','The user\'s password [REQUIRED]')
 		.option('-t, --trackname <annotation trackname>','Name of the annotation track to which the genes belong [REQUIRED]')
 		.option('-s, --samplename <sample name>','Name of the sample [REQUIRED]')
-		.option('-g, --group <group name>','Name of the group/experiment to which the sample belongs')
+		.option('-e, --experimentgroup <experiment group name>','Name of the experiment to which the sample belongs')
+		.option('-r, --replicagroup <replica group name>','Name of the replica group to which the sample belongs')
 		.option('-d, --description <sample description>','Description of the sample')
 		.action(function(file){
 			fileName = path.resolve(file);
@@ -40,7 +41,8 @@ if (!module.parent){
 		fileName: fileName,
 		trackName: commander.trackname,
 		sampleName: commander.samplename,
-		group: commander.group ? commander.group : commander.samplename,
+		experimentGroup: commander.experimentgroup ? commander.experimentgroup : commander.samplename,
+		replicaGroup: commander.replicagroup ? commander.replicagroup : commander.samplename,
 		description: commander.description ? commander.description : commander.samplename,
 	}
 

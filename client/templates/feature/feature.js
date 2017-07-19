@@ -61,6 +61,25 @@ Template.feature.helpers({
   user: function(userId){
     const user = Meteor.users.findOne({ _id: userId });
     return user.username
+  },
+  expression: function(){
+    const gene = this;
+    //const roles = Roles.getRolesForUser(.userId);
+    const expression = Experiments.find({
+      data: { 
+        $elemMatch : { 
+          ID: gene.ID 
+        } 
+      }
+    }).fetch()
+    /*.map((exp) => {
+      let data = exp.data.filter((_gene) => {
+        return _gene.ID == gene.ID
+      })
+      exp.data = data
+      return exp
+    })*/
+    console.log(expression)
   }
 });
 
