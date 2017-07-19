@@ -4,42 +4,42 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-meteor-base@1.1.0             # Packages every Meteor app needs to have
+meteor-base@1.2.0-beta.9             # Packages every Meteor app needs to have
 meteorhacks:aggregate
 peerlibrary:reactive-publish
 mobile-experience@1.0.4       # Packages for a great mobile UX
-mongo@1.1.18                   # The database Meteor supports right now
+mongo@1.3.0-beta.9                   # The database Meteor supports right now
 blaze-html-templates@1.0.4    # Compile .html files into Meteor Blaze views
 session@1.1.7                 # Client-side reactive dictionary for your app
 jquery@1.11.10                  # Helpful client-side library
 tracker@1.1.3                 # Meteor's client-side reactive programming library
 
 es5-shim@4.6.15                # ECMAScript 5 compatibility for older browsers.
-ecmascript@0.8.0              # Enable ECMAScript2015+ syntax in app code
+ecmascript@0.9.0-beta.9              # Enable ECMAScript2015+ syntax in app code
 
-accounts-password@1.3.6
+accounts-password@1.5.0-beta.9
 fourseven:scss
-ecmascript-runtime@0.4.1
+ecmascript-runtime@0.5.0-beta.9
 meteorhacks:fast-render
 tinytest@1.0.12
 standard-minifier-css@1.3.4
-standard-minifier-js@2.1.0
+standard-minifier-js@2.2.0-beta.9
 reywood:bootstrap3-sass
-accounts-ui@1.1.9
+accounts-ui@1.2.0-beta.9
 alanning:roles
 random@1.0.10
-email@1.2.1
+email@1.2.3
 aldeed:collection2
-http@1.2.12
+http@1.3.0-beta.9
 pfafman:filesaver@1.3.2
 themeteorchef:bert
 harrison:papa-parse
 reactive-var@1.0.11
-modules@0.9.0
+modules@0.11.0-beta.9
 raix:handlebar-helpers
 peerlibrary:xml2js
 runelytics:nouislider
-shell-server@0.2.3
+shell-server@0.3.0-beta.9
 peppelg:bootstrap-3-modal
 check@1.2.5
 danimal:userpresence
@@ -51,10 +51,10 @@ dispatch:mocha-phantomjs
 gwendall:body-events
 jesperwe:bootstrap-select
 aldeed:schema-index
-babel-runtime@1.0.1
+babel-runtime@1.1.0-beta.9
 
 jcbernack:reactive-aggregate
-dynamic-import
+dynamic-import@0.2.0-beta.9
 kadira:flow-router
 kadira:blaze-layout
 arillo:flow-router-helpers
