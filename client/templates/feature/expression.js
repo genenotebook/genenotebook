@@ -13,6 +13,7 @@ Template.expression.helpers({
      * @return {[object]}
      */
     experiments(){
+        /*
         this.expression.forEach( (sample) => {
             let sampleInfo = Experiments.findOne({'_id': sample.experimentId})
             sample.group = sampleInfo.group;
@@ -26,6 +27,7 @@ Template.expression.helpers({
             return {group:key,samples:val}
         })
         return experiments
+        */
     }
 })
 

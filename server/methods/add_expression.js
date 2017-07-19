@@ -30,40 +30,36 @@ Meteor.methods({
 				console.log(error)
 			},
 			complete(results,file) {
-				let data = results.data.map((gene) => {
-					let existingGene = Genes.find({ID: gene.target_id}).fetch()
-					if (existingGene.length < 1){
-						throw new Meteor.Error(`${gene.target_id} is not an existing gene ID!`)
-					}
-					return { 
-						ID: gene.target_id,
-						raw_counts: gene.est_counts,
-						tpm: gene.tpm
-					}
+				const missingGenes = results.data.filter((result) => {
+					let existingGene = Genes.find({ID: result.target_id}).fetch()
+					return existingGene.length < 1
+				}).map((result) => {
+					return gene.target_id
 				})
-				
-				let experimentId = Experiments.insert({
+
+				if (missingGenes.length > 0){
+					throw new Meteor.Error(`${missingGenes.length} genes could not be found`)
+				}
+
+				const experimentId = ExperimentInfo.insert({
 					ID: config.sampleName,
 					experimentGroup: config.experimentGroup,
 					replicaGroup: config.replicaGroup,
 					description: config.description,
 					permissions: ['admin'],
-					data: data
 				})
-
-				/*
+				
 				results.data.forEach( (gene) => {
-					Genes.update({ID:gene.target_id},{
-						$push: {
-							expression: {
-								tpm: gene.tpm,
-								raw_counts: gene.est_counts,
-								experimentId: experimentId
-							}
-						}
+					Expression.insert({
+						geneId: gene.target_id,
+						experimentId: experimentId,
+						permissions: ['admin'],
+						raw_counts: gene.est_counts,
+						tpm: gene.tpm
 					})
+					
 				})
-				*/
+				
 
 			}
 		})

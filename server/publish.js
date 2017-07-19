@@ -82,15 +82,19 @@ publishComposite('singleGene', function(geneId){
 		children: [
 			{
 				find(gene){
-					return Experiments.find({
-						data: { 
-							$elemMatch : { 
-								ID: gene.ID 
-							} 
-						},
-						permissions: roles 
+					return Expression.find({
+						geneId: gene.ID
 					})
+				},
+				children: [
+				{
+					find(expression){
+						return ExperimentInfo.find({
+							_id: expression.experimentId
+						})
+					}
 				}
+				]
 			},
 			{
 				find(gene){
@@ -136,7 +140,7 @@ Meteor.publish({
 			this.stop()
 			//throw new Meteor.Error('Unauthorized')
 		}
-		return Experiments.find({});
+		return ExperimentInfo.find({});
 	},
 	tracks (){
 		if (!this.userId){

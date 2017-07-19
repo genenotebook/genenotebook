@@ -65,21 +65,9 @@ Template.feature.helpers({
   expression: function(){
     const gene = this;
     //const roles = Roles.getRolesForUser(.userId);
-    const expression = Experiments.find({
-      data: { 
-        $elemMatch : { 
-          ID: gene.ID 
-        } 
-      }
-    }).fetch()
-    /*.map((exp) => {
-      let data = exp.data.filter((_gene) => {
-        return _gene.ID == gene.ID
-      })
-      exp.data = data
-      return exp
-    })*/
-    console.log(expression)
+    const expression = Expression.find({geneId: gene.ID}).fetch()
+    
+    return expression.length > 0
   }
 });
 
