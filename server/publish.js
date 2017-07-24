@@ -77,20 +77,29 @@ publishComposite('singleGene', function(geneId){
 
 	return {
 		find(){
+			console.log('finding gene')
 			return Genes.find({ID: geneId})
 		},
 		children: [
 			{
 				find(gene){
+					console.log('finding expression values')
 					return Expression.find({
-						geneId: gene.ID
+						geneId: gene.ID,
+						permissions: {
+							$in: roles
+						}
 					})
 				},
 				children: [
 				{
 					find(expression){
+						console.log('finding experiment info')
 						return ExperimentInfo.find({
-							_id: expression.experimentId
+							_id: expression.experimentId,
+							permissions: {
+								$in: roles
+							}
 						})
 					}
 				}
@@ -98,8 +107,19 @@ publishComposite('singleGene', function(geneId){
 			},
 			{
 				find(gene){
+					console.log('finding sequence data')
 					return References.find({
-						header: gene.seqid
+						header: gene.seqid,
+						$and: [
+							{
+								start: {
+									$lte: gene.end
+								},
+								end: {
+									$gte: gene.start
+								}
+							}
+						]
 					})
 				}
 			}
@@ -135,7 +155,7 @@ Meteor.publish({
 		}
 		return Orthogroups.find({ 'ID': ID });
 	},
-	experiments (){
+	experimentInfo (){
 		if (!this.userId){
 			this.stop()
 			//throw new Meteor.Error('Unauthorized')

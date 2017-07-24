@@ -13,21 +13,23 @@ Template.expression.helpers({
      * @return {[object]}
      */
     experiments(){
-        /*
-        this.expression.forEach( (sample) => {
-            let sampleInfo = Experiments.findOne({'_id': sample.experimentId})
-            sample.group = sampleInfo.group;
-            sample.ID = sampleInfo.ID;
-            sample.description = sampleInfo.description;
+        const expression = Expression.find({geneId: this.ID}).fetch()
+
+        expression.forEach( (sample) => {
+            let sampleInfo = ExperimentInfo.findOne({'_id': sample.experimentId})
+            Object.assign(sample, sampleInfo)
         })
-        const data = _.groupBy(this.expression,(sample) => {
-            return sample.group
+
+        this.expression = expression
+
+        const data = _.groupBy(expression,(sample) => {
+            return sample.experimentGroup
         })
+
         const experiments = _.map(data,(val,key) => {
             return {group:key,samples:val}
         })
         return experiments
-        */
     }
 })
 
@@ -66,7 +68,7 @@ function drawExpression(){
         })
 
     const maxTpm = Math.max(1, ...experiments.map((sample) => { return sample.tpm }))
-    const data = _.groupBy(experiments,function(sample){ return sample.group })
+    const data = _.groupBy(experiments,function(sample){ return sample.replicaGroup })
     const dataArray = _.values(data);
     const experimentNames = _.keys(data);
 

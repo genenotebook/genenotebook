@@ -7,8 +7,9 @@ Tracker.autorun( () => {
 
 Template.feature.helpers({
   singleGene(){
-    let geneId = FlowRouter.getParam('_id');
-    return Genes.findOne({ ID: geneId })
+    const geneId = FlowRouter.getParam('_id');
+    const gene = Genes.findOne({ ID: geneId });
+    return gene
   },
   tab:function(){
     return Template.instance().currentTab.get();
@@ -62,7 +63,7 @@ Template.feature.helpers({
     const user = Meteor.users.findOne({ _id: userId });
     return user.username
   },
-  expression: function(){
+  hasExpression: function(){
     const gene = this;
     //const roles = Roles.getRolesForUser(.userId);
     const expression = Expression.find({geneId: gene.ID}).fetch()

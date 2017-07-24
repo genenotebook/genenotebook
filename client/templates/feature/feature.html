@@ -28,7 +28,7 @@
               <a href="#orthogroup">Orthogroup <span class="badge">{{ orthogroupSize }}</span></a>
             </li>
           {{/if}}
-          {{#if expression}}
+          {{#if hasExpression}}
             <li role="presentation">
               <a href="#expression">Expression <span class="badge"> {{ expression.length }} </span></a>
             </li>
@@ -51,7 +51,7 @@
             {{>orthogroup}}
           {{/if}}
           
-          {{#if expression}}
+          {{#if hasExpression}}
             {{>expression}}
           {{/if}}
           

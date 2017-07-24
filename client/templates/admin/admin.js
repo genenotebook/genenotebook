@@ -16,7 +16,7 @@ Template.admin.helpers({
 		const data = {
 			'adminUsers': Meteor.users.find({}),
 			'adminTracks': Tracks.find({}),
-			'adminExperiments': Experiments.find({}),
+			'adminExperiments': ExperimentInfo.find({}),
 			'adminAttributes': Attributes.find({})
 		};
 		return data[tab];
@@ -36,6 +36,6 @@ Template.admin.onCreated(function () {
 	let template = this;
 	template.autorun(function () {
 		template.subscribe('tracks');
-		template.subscribe('experiments')
+		template.subscribe('experimentInfo')
 	})
 })
