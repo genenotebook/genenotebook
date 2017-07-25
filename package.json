@@ -1,6 +1,6 @@
 {
-  "name": "bioportal",
-  "version": "0.1.0",
+  "name": "genebook",
+  "version": "0.1.1",
   "repository": "https://github.com/holmrenser/bioportal",
   "description": "A portable website for browsing and querying genome sequences and annotations",
   "license": "AGPL-3.0",
@@ -21,6 +21,7 @@
     "meteor-babel-helpers": "0.0.3",
     "meteor-node-stubs": "^0.2.3",
     "object-hash": "^1.1.4",
+    "request": "^2.81.0",
     "rus-diff": "^1.1.0",
     "simpl-schema": "0.0.3",
     "utf-8-validate": "^2.0.0",
