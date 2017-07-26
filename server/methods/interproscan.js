@@ -1,5 +1,5 @@
 import request from 'request';
-
+import Future from 'fibers/future';
 /**
  * Reverse complement a DNA string
  * @param  {[String]} seq [String representing DNA constisting of alphabet AaCcGgTtNn]
@@ -116,16 +116,66 @@ const makeFasta = (gene) => {
       let pep = translate(seq.toUpperCase());
 
       transcriptSeq += seq;
-      //fastaNuc.push(transcriptSeq)
       
       transcriptPep += pep;
-      //fastaPep.push(transcriptPep);
+      transcriptPep = transcriptPep.split('*').join('X')
     }
-    return {seq: transcriptSeq, pep: transcriptPep}
+    return {ID:transcript.ID, seq: transcriptSeq, pep: transcriptPep}
   })
   return sequences
 }
 
+function submitInterpro(sequenceId,peptide){
+  const submitJob = new Future();
+
+  request.post({
+    url: 'http://www.ebi.ac.uk/Tools/services/rest/iprscan5/run/',
+    form: {
+      email: 'rens.holmer@gmail.com',
+      title: `genebook protein ${sequenceId}`,
+      sequence: peptide
+    }
+  }, (error, response, jobId) => {
+    console.log('error:', error); // Print the error if one occurred 
+    console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received 
+    console.log('requestId:', jobId);
+    submitJob.return(jobId)
+  })
+
+  const jobId = submitJob.wait()
+
+  return jobId
+}
+
+function pollInterpro(jobId,cb){
+  const statusRequest = new Future();
+  const url = `http://www.ebi.ac.uk/Tools/services/rest/iprscan5/status/${jobId}`;
+  console.log(`Trying ${url}`)
+  request.get(url, (error,response,body) => {
+    console.log(error)
+    console.log(body)
+    statusRequest.return(body)
+  })
+  const status = statusRequest.wait()
+  if (status === 'RUNNING'){
+    //figure out a way to call the function with a parameter
+    Meteor.setTimeout(function(){return pollInterpro(jobId,cb)}, 100000)
+  } else {
+    cb(status)
+  }
+}
+
+function getInterproResults(jobId){
+  const future = new Future();
+  const url = `http://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/json`
+  console.log(`Trying ${url}`)
+  request.get(url, (error,response,body) => {
+    let interproAnnotation = JSON.parse(body)
+    future.return(interproAnnotation)
+  })
+  const results = future.wait()
+  return results
+}
 
 Meteor.methods({
   interproscan(geneId){
@@ -136,18 +186,32 @@ Meteor.methods({
       throw new Meteor.Error('not-authorized');
     }
 
+    //this.unblock();
     const gene = Genes.findOne({ID: geneId})
     const sequences = makeFasta(gene)
-    const peptides = sequences.map((sequence) => { return sequence.pep }).join('\n')
+    const results = sequences.map((sequence) => { 
+      const jobId = submitInterpro(sequence.ID, sequence.pep);
 
-    request.post({
-      url: 'http://www.ebi.ac.uk/Tools/services/rest/iprscan5/run/',
-      form: {
-        email: 'rens.holmer@gmail.com',
-        title: `genebook protein ${gene.ID}`,
-        sequence: peptides
+      const fut = new Future();
+      pollInterpro(jobId, (status) => {
+        console.log(`pollInterpro: ${status}`)
+        fut.return(status)
+      })
+
+      const finished = fut.wait();
+      
+      let results;
+
+      if (finished === 'FINISHED'){
+        results = getInterproResults(jobId)
+      } else {
+        results = 'Could not get results'
       }
+
+      return results
     })
-    return peptides
+    
+
+    return results
   }
 })
