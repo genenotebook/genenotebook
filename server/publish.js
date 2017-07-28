@@ -143,11 +143,11 @@ Meteor.publish(null, function () {
 })
 
 Meteor.publish({
-	references (seqid) {
+	references () {
 		if (!this.userId){
 			this.stop()
 		}
-		return References.find({ header: seqid });
+		return References.find({});
 	},
 	orthogroups (ID) {
 		if (!this.userId){
