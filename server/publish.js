@@ -143,6 +143,10 @@ Meteor.publish(null, function () {
 })
 
 Meteor.publish({
+	jobQueue () {
+		console.log('publish jobQueue')
+		return jobQueue.find({});
+	},
 	references () {
 		if (!this.userId){
 			this.stop()

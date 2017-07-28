@@ -82,15 +82,38 @@ Template.feature.events({
     targetOffset = $(target).offset().top
     $('html','body').animate({scrollTop:targetOffset},200);
     //template.currentTab.set( currentTab.data( "template" ) );
+  },
+  'click #interproscan': function(event,template){
+    console.log(this.ID)
+    const userId = Meteor.userId()
+    if (!userId) {
+      throw new Meteor.Error('not-authorized');
+    }
+    if (! Roles.userIsInRole(userId,'admin')){
+      throw new Meteor.Error('not-authorized');
+    }
+    
+    const jobQueue = JobCollection('jobQueue', { noCollectionSuffix: true });
+    const job = new Job(jobQueue, 'interproscan',
+      {
+        geneId: this.ID
+      })
+
+    job.priority('normal').save()
+  
   }
 });
 
 Template.feature.onCreated( function () {
   let template = this;
-  let geneId = FlowRouter.getParam('_id')
+  let geneId = FlowRouter.getParam('_id');
   template.autorun( function () {
     template.subscribe('editHistory');
     template.subscribe('singleGene',geneId)
+    
+    template.subscribe('jobQueue',()=>{
+      console.log('subscribed to jobQueue')
+    })
   })
 })
 

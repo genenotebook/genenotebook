@@ -204,11 +204,10 @@ Meteor.methods({
 
       if (finished === 'FINISHED'){
         results = getInterproResults(jobId)
-      } else {
-        results = 'Could not get results'
-      }
+        Genes.update({'subfeatures.ID':sequence.ID},{$set:{interproscan:results}})
+      } 
 
-      return results
+      return finished
     })
     
 
