@@ -92,9 +92,8 @@ Template.feature.events({
     if (! Roles.userIsInRole(userId,'admin')){
       throw new Meteor.Error('not-authorized');
     }
-    
-    const jobQueue = JobCollection('jobQueue', { noCollectionSuffix: true });
-    const job = new Job(jobQueue, 'interproscan',
+
+    const job = new Job(template.jobQueue, 'interproscan',
       {
         geneId: this.ID
       })
@@ -107,6 +106,11 @@ Template.feature.events({
 Template.feature.onCreated( function () {
   let template = this;
   let geneId = FlowRouter.getParam('_id');
+
+  console.log(template.jobQueue)
+
+  template.jobQueue = JobCollection('jobQueue', { noCollectionSuffix: true });
+
   template.autorun( function () {
     template.subscribe('editHistory');
     template.subscribe('singleGene',geneId)
@@ -115,6 +119,10 @@ Template.feature.onCreated( function () {
       console.log('subscribed to jobQueue')
     })
   })
+})
+
+Template.feature.onDestroyed(function(){
+  console.log('destroyed feature template')
 })
 
 
