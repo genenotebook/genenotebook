@@ -46,11 +46,12 @@ if (!module.parent){
 		description: commander.description ? commander.description : commander.samplename,
 	}
 
+	console.log(config)
 
 	const Connection = asteroid.createClass()
 
 	const portal = new Connection({
-		endpoint: 'ws://localhost:3001/websocket'
+		endpoint: 'ws://localhost:3000/websocket'
 	})
 
 	portal.loginWithPassword({

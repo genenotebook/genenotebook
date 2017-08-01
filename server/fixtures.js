@@ -24,4 +24,28 @@ Meteor.startup(function () {
         });
         Roles.addUsersToRoles(guestId,['user','registered'])
     }
+    //add the viewing, editing and expression option, 
+    //since some keys are dynamic it will not allways be present on any gene, 
+    //but we do want to filter on this
+    const permanentOptions = ['viewing','editing','expression']
+    permanentOptions.forEach(function(optionId){
+        console.log(`Adding default filter option: ${optionId}`)
+        Attributes.findAndModify({
+            query: { 
+                ID: optionId 
+            },
+            update: { 
+                $setOnInsert: { 
+                    name: optionId, 
+                    query: optionId, 
+                    show: true, 
+                    canEdit: false, 
+                    reserved: true,
+                    allReferences: true 
+                } 
+            }, 
+            new: true, 
+            upsert: true 
+        })
+    })
 });

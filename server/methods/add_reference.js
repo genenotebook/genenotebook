@@ -83,11 +83,18 @@ Meteor.methods({
 							seq: seqPart,
 							referenceName: seq.referenceName,
 							start: start,
-							end: end
+							end: end,
+							permissions: ['admin']
 						})
 						start += seqPart.length;
 						;
 					} )
+				})
+				ReferenceInfo.insert({
+					referenceName: referenceName,
+					permissions: ['admin'],
+					description: 'description',
+					organism: 'organism'
 				})
 				fut.return(1)
 			}).run()

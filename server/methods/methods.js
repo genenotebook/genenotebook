@@ -1,5 +1,7 @@
-const spawn = Npm.require('child_process').spawn;
-const Future = Npm.require('fibers/future');
+import { spawn } from 'child_process';
+import Future from 'fibers/future';
+//const spawn = Npm.require('child_process').spawn;
+//const Future = Npm.require('fibers/future');
 //const parseString = xml2js.parseString;
 //import groupBy from 'lodash/groupby';
 
@@ -157,50 +159,6 @@ const makeFasta = (track) => {
 
 
 Meteor.methods({
-	/**
-	 * If all data of a single gene is being viewed use this method instead of a publication. 
-	 * (This is because aggregation in a publication is not reactive and problematic in various
-	 * other ways)
-	 * @param  {[type]}
-	 * @return {[type]}
-	 */
-	getSingleGeneData(geneId){
-		if (! this.userId) {
-			throw new Meteor.Error('not-authorized');
-		}
-		if (! Roles.userIsInRole(this.userId,'user')){
-			throw new Meteor.Error('not-authorized');
-		}
-		console.log('getSingleGeneData', geneId)
-		const roles = Roles.getRolesForUser(this.userId);
-		const visibleSamples = Experiments.find({ permissions: { $in: roles } }, { _id: 1 }).fetch()
-		const sampleIds = visibleSamples.map( (sample) => { return sample._id })
-
-		const fut = new Future();
-
-		Genes.aggregate([
-				{ $match: { ID: geneId } },
-				{ $addFields: { 
-					expression: { 
-						$filter: { 
-							input: '$expression', 
-							as: 'sample', 
-							cond: { $in: ['$$sample.experimentId',sampleIds] }
-						}
-					}
-				}
-			}
-		],(err,res) => {
-			if (err){
-				fut.throw(err)
-			} else {
-				fut.return(res)
-			}
-		})
-
-		let data = fut.wait()
-		return data[0]
-	},
 	queryCount (search,query){
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
@@ -355,14 +313,20 @@ Meteor.methods({
 		a = Genes.rawCollection().mapReduce(
 			function(){
 				//map function
-				let keys = Object.keys(this.attributes) 
-				for (let i = 0; i < keys.length; i++){
-					emit(keys[i],null) 
-				}
+				let gene = this;
+				Object.keys(gene.attributes).forEach((key) => {
+					emit(key,{ reference: gene.reference })
+				})
 			},
 			function(key,values){
 				//reduce function
-				return null
+				let referenceSet = new Set()
+				values.forEach((value) => {
+					referenceSet.add(value.reference)
+				})
+				
+				let references = Array.from(referenceSet)
+				return { reference: references }
 			},
 			{ out: { inline: 1 } }, //output options
 			mapReduceCallback
@@ -373,26 +337,36 @@ Meteor.methods({
 		const mapReduceResults = fut.wait();
 
 		//process mapreduce output and put it in a collection
-		mapReduceResults.forEach( (feature) => { 
-			let name = feature._id
+		mapReduceResults.forEach( (feature) => {
+			console.log(feature)
+			let name = feature._id;
+			let reference = feature.value.reference;
+
+			if(!Array.isArray(reference)){
+				reference = [reference]
+			}
+
 			Attributes.findAndModify({ 
-				query: { ID: name }, 
-				update: { $setOnInsert: { name: name, query: `attributes.${name}`, show: true, canEdit: false, reserved: false } }, 
+				query: { 
+					ID: name 
+				}, 
+				update: {
+					$set: {
+						reference: reference
+					}, 
+					$setOnInsert: { 
+						name: name, 
+						query: `attributes.${name}`,
+						reference: reference, 
+						show: true, 
+						canEdit: false, 
+						reserved: false 
+					} 
+				}, 
 				new: true, 
 				upsert: true 
 			}) 
 		})
-		//add the viewing and editing option, since this key is dynamic it will not allways be present on any gene, but we do want to filter on this
-		const permanentOptions = ['viewing','editing','expression']
-		permanentOptions.forEach(function(optionId){
-			Attributes.findAndModify({
-				query: { ID: optionId },
-				update: { $setOnInsert: { name: optionId, query: optionId, show: true, canEdit: false, reserved: true } }, 
-				new: true, 
-				upsert: true 
-			})
-		})
-		
 	},
 	removeFromViewing (geneId){
 		if (! this.userId) {

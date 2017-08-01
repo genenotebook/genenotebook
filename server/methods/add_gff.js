@@ -63,7 +63,8 @@ Meteor.methods({
 				Tracks.insert({
 					trackName: trackName,
 					reference: referenceName,
-					geneCount: geneCount
+					geneCount: geneCount,
+					permissions: ['admin']
 				})
 
 				genes.forEach( (gene) => {
@@ -105,6 +106,7 @@ const formatGff = (parsedResults, referenceName, trackName) => {
 			sub.strand = line[6]
 			sub.reference = referenceName
 			sub.track = trackName
+			sub.permissions = ['admin']
 			GeneSchema.validate(sub)
 		} else {
 			sub.phase = line[7]
