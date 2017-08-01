@@ -14,58 +14,14 @@ Meteor.publish('genes',function(limit, search, query) {
 			query.$or.push({ 'Productname': { $regex: search , $options: 'i' } })
 		}
 	}
-	/*
-	const roles = Roles.getRolesForUser(publication.userId);
-	const visibleSamples = Experiments.find({ permissions: { $in: roles } }, { _id: 1 }).fetch()
-	const sampleIds = visibleSamples.map( (sample) => { return sample._id })
 
-	// Remember, ReactiveAggregate doesn't return anything
-	ReactiveAggregate(publication, Genes, [
-		{ $match: query },
-		{ $limit: limit },
-		{ $addFields: { 
-				expression: { 
-					$filter: { 
-						input: '$expression', 
-						as: 'sample', 
-						cond: { $in: ['$$sample.experimentId',sampleIds] }
-					}
-				}
-			}
-		}
-	])
-	*/
+	const roles = Roles.getRolesForUser(publication.userId);
+
+	query.permissions = { $in: roles }
+
 	console.log(query)
 	return Genes.find(query,{limit: limit})
 })
-
-/*
-Meteor.publish('singleGene',function(geneId){
-	const publication = this;
-	if (!publication.userId){
-		publication.stop()
-	}
-	
-	//first find out which transcriptome samples the current user has acces to
-	const roles = Roles.getRolesForUser(publication.userId);
-	const visibleSamples = Experiments.find({ permissions: { $in: roles } }, { _id: 1 }).fetch()
-	const sampleIds = visibleSamples.map( (sample) => { return sample._id })
-	
-	// Remember, ReactiveAggregate doesn't return anything
-	ReactiveAggregate(publication, Genes, [
-		{ $match: { ID: geneId } },
-		{ $addFields: {
-			expression: {
-				$filter: {
-					input: '$expression',
-					as: 'sample',
-					cond: { $in: ['$$sample.experimentId', sampleIds] }
-				}
-			}
-		}}
-	])
-})
-*/
 
 publishComposite('singleGene', function(geneId){
 	const publication = this;
@@ -78,7 +34,12 @@ publishComposite('singleGene', function(geneId){
 	return {
 		find(){
 			console.log('finding gene')
-			return Genes.find({ID: geneId})
+			return Genes.find({
+				ID: geneId,
+				permissions: {
+					$in: roles
+				}
+			})
 		},
 		children: [
 			{
@@ -108,16 +69,50 @@ publishComposite('singleGene', function(geneId){
 			{
 				find(gene){
 					console.log('finding sequence data')
+					console.log(gene.seqid,gene.end,gene.start)
 					return References.find({
 						header: gene.seqid,
 						$and: [
+							{ start: { $lte: gene.end } },
+							{ end: { $gte: gene.start } }
+						],
+						permissions: {
+							$in: roles
+						}
+					})
+				}
+			}
+		]
+	}
+})
+
+publishComposite('attributes', function(){
+	const publication = this;
+	if (!publication.userId){
+		publication.stop()
+	}
+
+	const roles = Roles.getRolesForUser(publication.userId);
+
+	return {
+		find(){
+			return ReferenceInfo.find({
+				permissions: {
+					$in: roles
+				}
+			})
+		},
+		children: [
+			{
+				find(reference){
+					console.log(reference)
+					return Attributes.find({
+						$or: [
 							{
-								start: {
-									$lte: gene.end
-								},
-								end: {
-									$gte: gene.start
-								}
+								reference: reference.referenceName
+							},
+							{
+								allReferences: true 
 							}
 						]
 					})
@@ -147,11 +142,29 @@ Meteor.publish({
 		console.log('publish jobQueue')
 		return jobQueue.find({});
 	},
-	references () {
-		if (!this.userId){
-			this.stop()
+	referenceInfo () {
+		const publication = this;
+		if (!publication.userId){
+			publication.stop()
 		}
-		return References.find({});
+		const roles = Roles.getRolesForUser(publication.userId);
+		return ReferenceInfo.find({
+			permissions: {
+				$in: roles
+			}
+		})
+	},
+	references () {
+		const publication = this;
+		if (!publication.userId){
+			publication.stop()
+		}
+		const roles = Roles.getRolesForUser(publication.userId);
+		return References.find({ 
+			permissions: {
+				$in: roles
+			} 
+		});
 	},
 	orthogroups (ID) {
 		if (!this.userId){
@@ -167,18 +180,17 @@ Meteor.publish({
 		return ExperimentInfo.find({});
 	},
 	tracks (){
-		if (!this.userId){
-			this.stop()
+		const publication = this;
+		if (!publication.userId){
+			publication.stop()
 			//throw new Meteor.Error('Unauthorized')
 		}
-		return Tracks.find({});
-	},
-	attributes (){
-		if (!this.userId){
-			this.stop()
-			//throw new Meteor.Error('Unauthorized')
-		}
-		return Attributes.find({});
+		const roles = Roles.getRolesForUser(publication.userId);
+		return Tracks.find({
+			permissions: {
+				$in: roles
+			}
+		});
 	},
 	interpro (){
 		if (!this.userId){
