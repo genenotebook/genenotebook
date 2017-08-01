@@ -6,8 +6,9 @@
         <b>
           {{ID}} 
         </b>
-        <button id="interproscan">INTERPROSCAN
-        </button>
+        {{ #if isInRole 'admin' }}
+          <button type="button" class="btn btn-danger btn-xs" id="interproscan">INTERPROSCAN</button>
+        {{/if}}
         <div class="pull-right">
           Watched by: 
           {{#each viewing}}

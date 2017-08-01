@@ -111,6 +111,8 @@ Template.feature.onCreated( function () {
 
   template.jobQueue = JobCollection('jobQueue', { noCollectionSuffix: true });
 
+  console.log(template.jobQueue)
+
   template.autorun( function () {
     template.subscribe('editHistory');
     template.subscribe('singleGene',geneId)
