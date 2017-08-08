@@ -1,36 +1,36 @@
-@import '{reywood:bootstrap3-sass}/bootstrap';
+@import '{}/node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 
 //import utils
-@import "util/_variables.import.scss";
+//@import "util/_variables.import.scss";
 
 //import globals
-@import "globals/_checkbox.import.scss";
-@import "globals/_global.import.scss";
+//@import "globals/_checkbox.import.scss";
+//@import "globals/_global.import.scss";
 
 //import main
-@import "../templates/main/_login.import.scss";
-@import "../templates/main/_register.import.scss";
-@import "../templates/main/_app-loading.import.scss";
+//@import "../templates/main/_login.import.scss";
+//@import "../templates/main/_register.import.scss";
+//@import "../templates/main/_app-loading.import.scss";
 
 //import landingpage
-@import "../templates/landingpage/_landingpage.import.scss";
+//@import "../templates/landingpage/_landingpage.import.scss";
 
 //imports for feature pages
-@import "../templates/feature/_feature.import.scss";
-@import "../templates/feature/_info.import.scss";
-@import "../templates/feature/_genemodel.import.scss";
-@import "../templates/feature/_interproscan.import.scss";
-@import "../templates/feature/_orthogroup.import.scss";
-@import "../templates/feature/_experiment.import.scss";
+//@import "../templates/feature/_feature.import.scss";
+//@import "../templates/feature/_info.import.scss";
+//@import "../templates/feature/_genemodel.import.scss";
+//@import "../templates/feature/_interproscan.import.scss";
+//@import "../templates/feature/_orthogroup.import.scss";
+//@import "../templates/feature/_experiment.import.scss";
 
 //imports for genelist page
-@import "../templates/genelist/_genelist.import.scss";
-@import "../templates/genelist/_filter.import.scss";
+//@import "../templates/genelist/_genelist.import.scss";
+//@import "../templates/genelist/_filter.import.scss";
 
 
 //imports for browser page
-@import "../templates/browser/_browser.import.scss";
+//@import "../templates/browser/_browser.import.scss";
 
 //imports for blast page
-@import "../templates/blast/_blast.import.scss";
+//@import "../templates/blast/_blast.import.scss";
 

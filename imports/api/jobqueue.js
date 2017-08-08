@@ -1,4 +1,4 @@
-import jobQueue from '/imports/startup/server/fixtures.js'
+import jobQueue from '/imports/startup/server/fixtures.js';
 
 const queue = jobQueue.processJobs(
   'interproscan',

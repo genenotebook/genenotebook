@@ -1,12 +1,21 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+import { Session } from 'meteor/session';
 //import { AccountsTemplates } from 'meteor/useraccounts:core';
 
 // Import to load these templates
-//import '../../ui/layouts/app-body.js';
-//import '../../ui/pages/root-redirector.js';
-//import '../../ui/pages/lists-show-page.js';
-//import '../../ui/pages/app-not-found.js';
+import '../../ui/layouts/app-body.js';
+
+import '../../ui/pages/genelist/genelist.js';
+import '../../ui/pages/feature/feature.js';
+import '../../ui/pages/blast/blast.js';
+import '../../ui/pages/admin/admin.js';
+import '../../ui/pages/landingpage/landingpage.js';
+
+import '../../ui/pages/main/login.js';
+import '../../ui/pages/main/register.js';
+
+import '../../ui/pages/app-not-found.js';
 
 // Import to override accounts templates
 //import '../../ui/accounts/accounts-templates.js';

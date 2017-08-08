@@ -115,7 +115,6 @@ reactive-dict@1.2.0-beta.9
 reactive-var@1.0.11
 reload@1.1.11
 retry@1.0.9
-reywood:bootstrap3-sass@3.3.7_1
 reywood:publish-composite@1.5.2
 routepolicy@1.0.12
 runelytics:nouislider@8.0.2
