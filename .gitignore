@@ -2,11 +2,6 @@
 data/*
 node_modules
 !.gitignore
-!.meteor/packages
-!.meteor/versions
-!.meteor/status
-.genebook
-.meteor/local
-.meteor/meteorite
+!.meteor
 *sublime*
 production_settings.json
