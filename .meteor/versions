@@ -107,6 +107,10 @@ raix:eventemitter@0.1.3
 raix:handlebar-helpers@0.2.5
 random@1.0.10
 rate-limit@1.0.8
+react@15.0.1
+react-meteor-data@0.2.12
+react-runtime@15.0.1
+react-template-helper@0.2.9
 reactive-dict@1.2.0-beta.9
 reactive-var@1.0.11
 reload@1.1.11
@@ -130,6 +134,7 @@ templating-runtime@1.3.2
 templating-tools@1.1.2
 themeteorchef:bert@2.1.1
 tinytest@1.0.12
+tmeasday:check-npm-versions@0.2.0
 tracker@1.1.3
 ui@1.0.13
 underscore@1.0.10

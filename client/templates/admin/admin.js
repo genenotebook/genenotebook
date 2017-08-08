@@ -38,7 +38,7 @@ Template.admin.onCreated(function () {
 	template.autorun(function () {
 		template.subscribe('tracks');
 		template.subscribe('experimentInfo');
-		template.subscribe('references');
+		template.subscribe('referenceInfo');
 		template.subscribe('attributes');
 	})
 })

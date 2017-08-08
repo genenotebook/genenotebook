@@ -1,4 +1,5 @@
 import uniq from 'lodash/uniq';
+import jobQueue from '/imports/startup/client/tmp.js';
 
 Tracker.autorun( () => {
   Meteor.subscribe('userList');
@@ -93,7 +94,7 @@ Template.feature.events({
       throw new Meteor.Error('not-authorized');
     }
 
-    const job = new Job(template.jobQueue, 'interproscan',
+    const job = new Job(jobQueue, 'interproscan',
       {
         geneId: this.ID
       })
@@ -107,19 +108,16 @@ Template.feature.onCreated( function () {
   let template = this;
   let geneId = FlowRouter.getParam('_id');
 
-  console.log(template.jobQueue)
 
-  template.jobQueue = JobCollection('jobQueue', { noCollectionSuffix: true });
-
-  console.log(template.jobQueue)
+  //template.jobQueue = JobCollection('jobQueue', { noCollectionSuffix: true });
 
   template.autorun( function () {
     template.subscribe('editHistory');
     template.subscribe('singleGene',geneId)
     
-    template.subscribe('jobQueue',()=>{
-      console.log('subscribed to jobQueue')
-    })
+    //template.subscribe('jobQueue',()=>{
+    //  console.log('subscribed to jobQueue')
+    //})
   })
 })
 

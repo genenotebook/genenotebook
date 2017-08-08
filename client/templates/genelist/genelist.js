@@ -202,6 +202,7 @@ Template.genelist.events({
 });
 
 Template.genelist.onCreated( function() {
+  console.log('created genelist template')
   let template = this;
   template.autorun(function(){
     let itemsLimit = Session.get('itemsLimit');

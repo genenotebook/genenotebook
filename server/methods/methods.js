@@ -326,6 +326,7 @@ Meteor.methods({
 				})
 				
 				let references = Array.from(referenceSet)
+				printjson(references)
 				return { reference: references }
 			},
 			{ out: { inline: 1 } }, //output options
@@ -335,6 +336,8 @@ Meteor.methods({
 
 		//let the future wait for the mapreduce to finish
 		const mapReduceResults = fut.wait();
+
+		console.log('mapreduceResults',mapreduceResults)
 
 		//process mapreduce output and put it in a collection
 		mapReduceResults.forEach( (feature) => {

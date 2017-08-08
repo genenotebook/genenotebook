@@ -36,7 +36,6 @@ Template.seq.helpers({
 		})
 
 		let refStart = 10e99;
-		let referenceSubscription = Meteor.subscribe('references',this.seqid)
 		
 		//find all reference fragments overlapping the mRNA feature
 		let reference = References.find({ 
