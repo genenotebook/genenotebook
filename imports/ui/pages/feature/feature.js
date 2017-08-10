@@ -2,9 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
-
 import uniq from 'lodash/uniq';
-import jobQueue from '/imports/startup/client/tmp.js';
+
+import jobQueue from '/imports/api/jobqueue/jobqueue.js';
+import { Genes } from '/imports/api/genes/gene_collection.js';
+import { ExperimentInfo, Transcriptomes } from '/imports/api/transcriptomes/transcriptome_collection.js';
 
 import './feature.html';
 import './feature.scss';
@@ -79,12 +81,17 @@ Template.feature.helpers({
     const user = Meteor.users.findOne({ _id: userId });
     return user.username
   },
-  hasExpression: function(){
+  hasTranscriptomes: function(){
     const gene = this;
-    //const roles = Roles.getRolesForUser(.userId);
-    const expression = Expression.find({geneId: gene.ID}).fetch()
+    const expression = Transcriptomes.find({geneId: gene.ID}).fetch()
     
     return expression.length > 0
+  },
+  transcriptomeNumber: function(){
+    const gene = this;
+    const expression = Transcriptomes.find({geneId: gene.ID}).fetch()
+    
+    return expression.length
   }
 });
 
@@ -123,16 +130,9 @@ Template.feature.onCreated( function () {
   let template = this;
   let geneId = FlowRouter.getParam('_id');
 
-
-  //template.jobQueue = JobCollection('jobQueue', { noCollectionSuffix: true });
-
   template.autorun( function () {
     template.subscribe('editHistory');
     template.subscribe('singleGene',geneId)
-    
-    //template.subscribe('jobQueue',()=>{
-    //  console.log('subscribed to jobQueue')
-    //})
   })
 })
 

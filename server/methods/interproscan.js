@@ -1,4 +1,5 @@
 import request from 'request';
+import { Meteor } from 'meteor/meteor';
 import Future from 'fibers/future';
 /**
  * Reverse complement a DNA string
@@ -204,10 +205,11 @@ Meteor.methods({
 
       if (finished === 'FINISHED'){
         results = getInterproResults(jobId)
-        Genes.update({'subfeatures.ID':sequence.ID},{$set:{interproscan:results}})
+        console.log(results)
+        Genes.update({'subfeatures.ID':sequence.ID},{$set:{interproscan:results[0].matches}})
       } 
 
-      return finished
+      return results
     })
     
 

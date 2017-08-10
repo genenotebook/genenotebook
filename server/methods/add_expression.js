@@ -1,11 +1,16 @@
+import { Meteor } from 'meteor/meteor';
+
 import assert from 'assert';
 import Baby from 'babyparse';
 import fs from 'fs';
 
+import Tracks from '/imports/api/genomes/track_collection.js';
+import { Genes } from '/imports/api/genes/gene_collection.js';
+import { ExperimentInfo, Transcriptomes } from '/imports/api/transcriptomes/transcriptome_collection.js';
+
 Meteor.methods({
-	//addExpression(fileName, trackName, experimentName){
-	addExpression(config){
-		console.log('trying to insert',config)
+	addTranscriptome(config){
+		console.log('trying to insert',config)	
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}
@@ -18,7 +23,7 @@ Meteor.methods({
 			throw new Meteor.Error(`Track does not exist: ${config.trackName}`);
 		}
 
-		const fileHandle = fs.readFileSync(config.fileName,{encoding:'binary'});
+		const fileHandle = fs.readFileSync(config.fileName, { encoding: 'binary' });
 
 		Baby.parse(fileHandle, {
 			delimiter: '\t',
@@ -50,7 +55,7 @@ Meteor.methods({
 				})
 				
 				results.data.forEach( (gene) => {
-					Expression.insert({
+					Transcriptomes.insert({
 						geneId: gene.target_id,
 						experimentId: experimentId,
 						permissions: ['admin'],

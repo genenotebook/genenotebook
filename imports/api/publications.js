@@ -1,9 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import { publishComposite } from 'meteor/reywood:publish-composite';
-//import jobQueue from '/imports/startup/server/fixtures.js';
+import { Roles } from 'meteor/alanning:roles';
+
+import { Genes } from '/imports/api/genes/gene_collection.js';
+import Attributes from '/imports/api/genes/attribute_collection.js';
+import Interpro from '/imports/api/genes/interpro_collection.js';
+import Orthogroups from '/imports/api/genes/orthogroup_collection.js';
+import EditHistory from '/imports/api/genes/edithistory_collection.js';
+import Tracks from '/imports/api/genomes/track_collection.js';
+import { References, ReferenceInfo } from '/imports/api/genomes/reference_collection.js';
+import { ExperimentInfo, Transcriptomes } from '/imports/api/transcriptomes/transcriptome_collection.js';
 
 Meteor.publish('genes',function(limit, search, query) {
-  console.log('publishing gene list')
+  //console.log('publishing gene list')
   const publication = this;
   if (!publication.userId){
     publication.stop()
@@ -26,7 +35,7 @@ Meteor.publish('genes',function(limit, search, query) {
 })
 
 publishComposite('singleGene', function(geneId){
-  console.log('publishing single gene')
+  //console.log('publishing single gene')
   const publication = this;
   if (!publication.userId){
     publication.stop()
@@ -36,7 +45,7 @@ publishComposite('singleGene', function(geneId){
 
   return {
     find(){
-      console.log('finding genes')
+      //console.log('finding genes')
       return Genes.find({
         ID: geneId,
         permissions: {
@@ -47,8 +56,8 @@ publishComposite('singleGene', function(geneId){
     children: [
       {
         find(gene){
-          console.log('finding experiment data')
-          return Expression.find({
+          //console.log('finding experiment data')
+          return Transcriptomes.find({
             geneId: gene.ID,
             permissions: {
               $in: roles
@@ -57,10 +66,10 @@ publishComposite('singleGene', function(geneId){
         },
         children: [
         {
-          find(expression){
-            console.log('finding experiment info')
+          find(transcriptome){
+            //console.log('finding experiment info')
             return ExperimentInfo.find({
-              _id: expression.experimentId,
+              _id: transcriptome.experimentId,
               permissions: {
                 $in: roles
               }
@@ -72,17 +81,6 @@ publishComposite('singleGene', function(geneId){
       {
         find(gene){
           console.log('finding reference sequence')
-          let res = References.find({
-            header: gene.seqid,
-            $and: [
-              { start: { $lte: gene.end } },
-              { end: { $gte: gene.start } }
-            ],
-            permissions: {
-              $in: roles
-            }
-          }).fetch()
-          console.log(res.length)
           return References.find({
             header: gene.seqid,
             $and: [

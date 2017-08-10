@@ -1,2 +1,2 @@
 import './publications.js';
-import './jobqueue.js';
+import './jobqueue/process-interproscan.js';

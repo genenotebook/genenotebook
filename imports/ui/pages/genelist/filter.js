@@ -2,13 +2,19 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 
+import Tracks from '/imports/api/genomes/track_collection.js';
+import Attributes from '/imports/api/genes/attribute_collection.js';
+
 import './filter.html';
 import './filter.scss';
 
 Meteor.subscribe('attributes');
 Meteor.subscribe('tracks');
 
-Session.setDefault('selectedFeatures',['Note','Comment','Productname','Pseudogene','orthogroup','paralogs','singleton'])
+Session.setDefault('selectedFeatures',
+  ['Note','Comment','Productname',
+  'Pseudogene','orthogroup','paralogs',
+  'singleton'])
 
 function updateCheckboxes(){
   const filter = Session.get('filter')

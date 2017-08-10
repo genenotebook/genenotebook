@@ -5,6 +5,8 @@ import { Session } from 'meteor/session';
 import d3 from 'd3';
 import { schemeSet3 } from 'd3-scale-chromatic';
 
+import { ExperimentInfo, Transcriptomes } from '/imports/api/transcriptomes/transcriptome_collection.js';
+
 import './expression.html';
 import './expression.scss';
 
@@ -20,7 +22,7 @@ Template.expression.helpers({
      * @return {[object]}
      */
     experiments(){
-        const expression = Expression.find({geneId: this.ID}).fetch()
+        const expression = Transcriptomes.find({geneId: this.ID}).fetch()
 
         expression.forEach( (sample) => {
             let sampleInfo = ExperimentInfo.findOne({'_id': sample.experimentId})
@@ -60,14 +62,14 @@ Template.expression.rendered = function(){
       title:'Select experiments'
     });
 
-	drawExpression.call(this);
+	drawTranscriptomes.call(this);
 };
 
 /**
  * Use d3 to draw the expression plot
  * @return Null
  */
-function drawExpression(){
+function drawTranscriptomes(){
     const selection = Session.get('selection')
 
     let experiments = this.data.expression.filter( (sample) => {

@@ -2,13 +2,15 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 
+import FileSaver from 'file-saver'
+
+import { Genes } from '/imports/api/genes/gene_collection.js';
+
 import './genelist.html';
 import './genelist.scss';
-
 import './filter.js';
 import '/imports/ui/components/loading.js';
 
-import FileSaver from 'file-saver'
 
 var ITEMS_INCREMENT = 40;
 
@@ -182,7 +184,7 @@ Template.genelist.events({
         break
     }
 
-    Meteor.call(formatFunction, query, (err,res) => {
+    Meteor.call(formatFunction, query, 'nucleotide', (err,res) => {
       
       if (err){
         Bert.alert('Preparing download failed','error','growl-bottom-right');

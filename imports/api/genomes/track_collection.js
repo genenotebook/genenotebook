@@ -1,6 +1,9 @@
-Tracks = new Mongo.Collection('tracks');
+import { Mongo } from 'meteor/mongo';
+import SimpleSchema from 'simpl-schema';
 
-blastDbSchema = new SimpleSchema({
+const Tracks = new Mongo.Collection('tracks');
+
+const blastDbSchema = new SimpleSchema({
   nucl: {
     type: String,
     label: 'Nucleotide blast database name'
@@ -12,7 +15,7 @@ blastDbSchema = new SimpleSchema({
   }
 })
 
-trackSchema = new SimpleSchema({
+const trackSchema = new SimpleSchema({
 	trackName: {
 		type: String,
     label: 'Annotation track name'
@@ -26,9 +29,14 @@ trackSchema = new SimpleSchema({
     optional: true,
   },
   permissions: {
-    type: [String],
+    type: Array,//[String],
     label: 'Track permissions'
+  },
+  'permissions.$': {
+    type: String
   }
 });
 
 Tracks.attachSchema(trackSchema);
+
+export default Tracks

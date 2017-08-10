@@ -1,9 +1,12 @@
-References = new Mongo.Collection('references');
+import { Mongo } from 'meteor/mongo';
+import SimpleSchema from 'simpl-schema';
+
+const References = new Mongo.Collection('references');
 
 const ReferenceSchema = new SimpleSchema({
 	header: {
 		type: String,
-		index: true,
+		//index: true,
 		label: 'Fasta style sequence header'
 	},
 	seq: {
@@ -12,28 +15,31 @@ const ReferenceSchema = new SimpleSchema({
 	},
 	referenceName: {
 		type: String,
-		index: true,
+		//index: true,
 		label: 'Reference name'
 	},
 	start: {
 		type: Number,
-		index: true,
+		//index: true,
 		label: 'Start position of sequence fragment on original sequence'
 	},
 	end: {
 		type: Number,
-		index: true,
+		//index: true,
 		label: 'End position of sequence fragment on original sequence'
 	},
 	permissions: {
-		type: [String],
+		type: Array,//[String],
 		label: 'User groups that are allowed to see this reference'
+	},
+	'permissions.$' : {
+		type: String
 	}
 })
 
 References.attachSchema(ReferenceSchema)
 
-ReferenceInfo = new Mongo.Collection('referenceInfo')
+const ReferenceInfo = new Mongo.Collection('referenceInfo')
 
 const ReferenceInfoSchema = new SimpleSchema({
 	referenceName: {
@@ -41,8 +47,11 @@ const ReferenceInfoSchema = new SimpleSchema({
 		label: 'Reference name'
 	},
 	permissions: {
-		type: [String],
+		type: Array,//[String],
 		label: 'User groups that are allowed to see this reference'
+	},
+	'permissions.$': {
+		type: String
 	},
 	description: {
 		type: String,
@@ -55,3 +64,5 @@ const ReferenceInfoSchema = new SimpleSchema({
 })
 
 ReferenceInfo.attachSchema(ReferenceInfoSchema)
+
+export { References, ReferenceInfo };

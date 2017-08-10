@@ -4,41 +4,36 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-meteor-base@1.2.0-beta.9             # Packages every Meteor app needs to have
-meteorhacks:aggregate
-peerlibrary:reactive-publish
+meteor-base@1.2.0-beta.16             # Packages every Meteor app needs to have
 mobile-experience@1.0.4       # Packages for a great mobile UX
-mongo@1.3.0-beta.9                   # The database Meteor supports right now
+mongo@1.3.0-beta.16                   # The database Meteor supports right now
 blaze-html-templates@1.0.4    # Compile .html files into Meteor Blaze views
 session@1.1.7                 # Client-side reactive dictionary for your app
 jquery@1.11.10                  # Helpful client-side library
 tracker@1.1.3                 # Meteor's client-side reactive programming library
 
 es5-shim@4.6.15                # ECMAScript 5 compatibility for older browsers.
-ecmascript@0.9.0-beta.9              # Enable ECMAScript2015+ syntax in app code
+ecmascript@0.9.0-beta.16              # Enable ECMAScript2015+ syntax in app code
 
-accounts-password@1.5.0-beta.9
+accounts-password@1.5.0-beta.16
 fourseven:scss
-ecmascript-runtime@0.5.0-beta.9
-meteorhacks:fast-render
+ecmascript-runtime@0.5.0-beta.16
 tinytest@1.0.12
 standard-minifier-css@1.3.4
-standard-minifier-js@2.2.0-beta.9
-accounts-ui@1.2.0-beta.9
+standard-minifier-js@2.2.0-beta.16
+accounts-ui@1.2.0-beta.16
 alanning:roles
 random@1.0.10
 email@1.2.3
-aldeed:collection2
-http@1.3.0-beta.9
+http@1.3.0-beta.16
 pfafman:filesaver@1.3.2
 themeteorchef:bert
 harrison:papa-parse
 reactive-var@1.0.11
-modules@0.11.0-beta.9
+modules@0.11.0-beta.16
 raix:handlebar-helpers
-peerlibrary:xml2js
 runelytics:nouislider
-shell-server@0.3.0-beta.9
+shell-server@0.3.0-beta.16
 peppelg:bootstrap-3-modal
 check@1.2.5
 danimal:userpresence
@@ -49,11 +44,8 @@ ostrio:files
 dispatch:mocha-phantomjs
 gwendall:body-events
 jesperwe:bootstrap-select
-aldeed:schema-index
-babel-runtime@1.1.0-beta.9
-
-jcbernack:reactive-aggregate
-dynamic-import@0.2.0-beta.9
+babel-runtime@1.1.0-beta.16
+dynamic-import@0.2.0-beta.16
 kadira:flow-router
 kadira:blaze-layout
 arillo:flow-router-helpers
@@ -61,3 +53,6 @@ reywood:publish-composite
 vsivsi:job-collection
 react
 react-template-helper
+reywood:bootstrap3-sass
+
+aldeed:collection2-core

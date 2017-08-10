@@ -59,7 +59,7 @@ if (!module.parent){
 		password: commander.password
 	})
 
-	portal.call('addExpression', config)
+	portal.call('addTranscriptome', config)
 		.then(result => {
 			console.log(result)
 			portal.disconnect()

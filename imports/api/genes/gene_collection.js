@@ -1,13 +1,14 @@
-//import SimpleSchema from '@clayne/simple-schema';
+import { Mongo } from 'meteor/mongo';
+import SimpleSchema from 'simpl-schema';
 
-Genes = new Mongo.Collection('genes');
+const Genes = new Mongo.Collection('genes');
 
-//create a base schema
-IntervalBaseSchema = new SimpleSchema({
+//create a base schema so we can add it at multiple places
+const IntervalBaseSchema = new SimpleSchema({
   ID: {
     type: String,
-    unique: true,
-    denyUpdate: true,
+    //unique: true,
+    //denyUpdate: true,
     label: 'Unique gene ID'
   },
   type: {
@@ -48,22 +49,20 @@ IntervalBaseSchema = new SimpleSchema({
     label: 'Any attributes'
   },
   children: {
-    type: [String],
+    type: Array,//[String],
     optional: true,
     label: 'Child subfeatures'
-  }  
+  },
+  'children.$': {
+    type: String
+  }
 });
 
-IntervalBaseSchema.messages({
-  'scoreError': '[label] must be either "." or a Number'
-})
 
-//extend the base schema for subfeatures like exon,CDS,mRNA
-//do this first so we can then add it to the gene schema
-SubfeatureSchema = new SimpleSchema([IntervalBaseSchema,{
-//SubfeatureSchame = IntervalBaseSchema.extend({
+//Define subfeature schema first so we can then add it to the gene schema
+const SubfeatureSchema = new SimpleSchema({
   phase: {
-    type: SimpleSchema.Integer,
+    type: SimpleSchema.oneOf(Number,String),
     allowedValues: [0,1,2,'.'],
     label: 'phase'
   },
@@ -73,15 +72,18 @@ SubfeatureSchema = new SimpleSchema([IntervalBaseSchema,{
     label: 'Subfeature types'
   },
   parents: {
-    type: [String],
+    type: Array,//[String],
     label: 'Parent subfeatures'
+  },
+  'parents.$': {
+    type: String
   }
-//})
-}])
+});
 
-//extend the base schema for gene features
-GeneSchema = new SimpleSchema([IntervalBaseSchema,{
-//GeneSchema = IntervalBaseSchema.extend({
+//extend the subfeature schema with base subfeatures
+SubfeatureSchema.extend(IntervalBaseSchema);
+
+const GeneSchema = new SimpleSchema({
   type: {
     type: String,
     allowedValues: ['gene'],
@@ -92,33 +94,43 @@ GeneSchema = new SimpleSchema([IntervalBaseSchema,{
     optional: true
   },
   viewing: {
-    type: [String],
+    type: Array,//[String],
     optional: true
+  },
+  'viewing.$': {
+    type: String
   },
   changed: {
     type: Boolean,
     optional: true
   },
   expression: {
-    type: [Object],
-    blackbox: true,
+    type: Array,//[Object],
     optional: true,
     label: 'Transcriptome counts and TPM'
   },
+  'expression.$': {
+    type: Object,
+    blackbox: true
+  },
   subfeatures: {
-    type: [SubfeatureSchema],
-    blackbox: true,
+    type: Array,//[SubfeatureSchema],
+    //blackbox: true,
     optional: true,
     label: 'Array of subfeatures'
   },
+  'subfeatures.$': {
+    type: Object,
+    blackbox: true
+  },
   reference: { 
     type: String,
-    denyUpdate: true,
+    //denyUpdate: true,
     label: 'Reference genome'
   },
   seqid: {
     type: String,
-    denyUpdate: true,
+    //denyUpdate: true,
     label: 'ID of the sequence on which the gene is, e.g. chr1'
   },
   source: {
@@ -140,15 +152,23 @@ GeneSchema = new SimpleSchema([IntervalBaseSchema,{
     label: 'Track name'
   },
   permissions: {
-    type: [String],
+    type: Array,//[String],
     label: 'Permission level'
+  },
+  'permissions.$': {
+    type: String
   },
   interproscan: {
     type: Object,
     blackbox: true,
+    optional: true,
     label: 'Interproscan annotation'
   }
-//})
-}])
+});
+
+//extend the gene schema with base features
+GeneSchema.extend(IntervalBaseSchema);
 
 Genes.attachSchema(GeneSchema);
+
+export { Genes, GeneSchema, SubfeatureSchema };

@@ -5,6 +5,8 @@ import { Session } from 'meteor/session';
 import { diff, apply } from 'rus-diff'; 
 import cloneDeep from 'lodash/cloneDeep';
 
+import EditHistory from '/imports/api/genes/edithistory_collection.js';
+
 import './info.html';
 import './info.scss';
 

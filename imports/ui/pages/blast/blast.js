@@ -3,6 +3,8 @@ import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 
+import Tracks from '/imports/api/genomes/track_collection.js';
+
 import './blast.html';
 import './blast.scss';
 

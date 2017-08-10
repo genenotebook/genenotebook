@@ -1,7 +1,11 @@
-const fs = require('fs');
-const readline = require('readline');
-const Fiber = Npm.require('fibers');
-const Future = Npm.require('fibers/future');
+import { Meteor } from 'meteor/meteor';
+
+import fs from 'fs';
+import readline from 'readline';
+import Fiber from 'fibers';
+import Future from 'fibers/future';
+
+import { ReferenceInfo, References } from '/imports/api/genomes/reference_collection.js';
 
 Meteor.methods({
 	addReference(fileName, referenceName){

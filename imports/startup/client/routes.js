@@ -11,6 +11,10 @@ import '../../ui/pages/feature/feature.js';
 import '../../ui/pages/blast/blast.js';
 import '../../ui/pages/admin/admin.js';
 import '../../ui/pages/landingpage/landingpage.js';
+import '../../ui/pages/user-profile/user-profile.js';
+
+import '../../ui/components/denied.html';
+
 
 import '../../ui/pages/main/login.js';
 import '../../ui/pages/main/register.js';

@@ -1,4 +1,5 @@
-import jobQueue from '/imports/startup/server/fixtures.js';
+import { Meteor } from 'meteor/meteor';
+import jobQueue from './jobqueue.js';
 
 const queue = jobQueue.processJobs(
   'interproscan',
@@ -8,8 +9,7 @@ const queue = jobQueue.processJobs(
   },
   function(job, callback){
     console.log(job.data.geneId)
+    Meteor.call('interproscan',job.data.geneId)
     job.done()
     callback()
   })
-
-

@@ -1,9 +1,8 @@
 import { spawn } from 'child_process';
 import Future from 'fibers/future';
-//const spawn = Npm.require('child_process').spawn;
-//const Future = Npm.require('fibers/future');
-//const parseString = xml2js.parseString;
-//import groupBy from 'lodash/groupby';
+import { Genes } from '/imports/api/genes/gene_collection.js';
+import Attributes from '/imports/api/genes/attribute_collection.js';
+import { reverseComplement, translate, getGeneSequences } from '/imports/api/util/util.js';
 
 /**
  * Keep track of what blast commands should use which databases
@@ -15,68 +14,6 @@ const DB_TYPES = {
 	'tblastx':'nucl',
 	'blastp':'prot',
 	'blastx':'prot'
-}
-
-/**
- * Reverse complement a DNA string
- * @param  {[String]} seq [String representing DNA constisting of alphabet AaCcGgTtNn]
- * @return {[String]}     [String representing DNA constisting of alphabet AaCcGgTtNn, reverse complement of input]
- */
-const revcomp = (seq) => {
-	const comp = {	
-		'A':'T','a':'t',
-		'T':'A','t':'a',
-		'C':'G','c':'g',
-		'G':'C','g':'c',
-		'N':'N','n':'n'
-	}
-	const revSeqArray = seq.split('').reverse()
-	const revCompSeqArray = revSeqArray.map( (nuc) => {
-		return comp[nuc]
-	})
-	const revCompSeq = revCompSeqArray.join('')
-	return revCompSeq
-}
-
-/**
- * Convert a DNA string into a amino acid string
- * @param  {[String]} seq [String representing DNA constisting of alphabet ACGTN]
- * @return {[String]}     [String representing the amino acid complement of input string]
- */
-const translate = (seq) => {
-	const trans = {
-		'ACC': 'T', 'ACA': 'T', 'ACG': 'T',
-		'AGG': 'R', 'AGC': 'S', 'GTA': 'V',
-		'AGA': 'R', 'ACT': 'T', 'GTG': 'V',
-		'AGT': 'S', 'CCA': 'P', 'CCC': 'P',
-		'GGT': 'G', 'CGA': 'R', 'CGC': 'R',
-		'TAT': 'Y', 'CGG': 'R', 'CCT': 'P',
-		'GGG': 'G', 'GGA': 'G', 'GGC': 'G',
-		'TAA': '*', 'TAC': 'Y', 'CGT': 'R',
-		'TAG': '*', 'ATA': 'I', 'CTT': 'L',
-		'ATG': 'M', 'CTG': 'L', 'ATT': 'I',
-		'CTA': 'L', 'TTT': 'F', 'GAA': 'E',
-		'TTG': 'L', 'TTA': 'L', 'TTC': 'F',
-		'GTC': 'V', 'AAG': 'K', 'AAA': 'K',
-		'AAC': 'N', 'ATC': 'I', 'CAT': 'H',
-		'AAT': 'N', 'GTT': 'V', 'CAC': 'H',
-		'CAA': 'Q', 'CAG': 'Q', 'CCG': 'P',
-		'TCT': 'S', 'TGC': 'C', 'TGA': '*',
-		'TGG': 'W', 'TCG': 'S', 'TCC': 'S',
-		'TCA': 'S', 'GAG': 'E', 'GAC': 'D',
-		'TGT': 'C', 'GCA': 'A', 'GCC': 'A',
-		'GCG': 'A', 'GCT': 'A', 'CTC': 'L',
-		'GAT': 'D'}
-	const codonArray = seq.match(/.{1,3}/g)
-	const pepArray = codonArray.map( (codon) => {
-		let aminoAcid = 'X'
-		if (codon.indexOf('N') < 0){
-			aminoAcid = trans[codon]
-		}
-		return aminoAcid
-	})
-	const pep = pepArray.join('')
-	return pep
 }
 
 /**
@@ -130,7 +67,7 @@ const makeFasta = (track) => {
 
 				let phase;
 				if (this.strand === '-'){
-					seq = revcomp(seq)
+					seq = reverseComplement(seq)
 					phase = cdsArray[cdsArray.length -1].phase
 				} else {
 					phase = cdsArray[0].phase
@@ -159,6 +96,33 @@ const makeFasta = (track) => {
 
 
 Meteor.methods({
+	formatFasta (query, sequenceType){
+		if (! this.userId) {
+			throw new Meteor.Error('not-authorized');
+		}
+		
+		const genes = Genes.find(query).fetch();
+
+		const geneSequences = genes.map((gene) => {
+			return getGeneSequences(gene)
+		})
+
+		const transcriptSequences = [].concat.apply([],geneSequences)
+
+		const fastaArray = transcriptSequences.map((transcript) => {
+			console.log(transcript)
+			let fasta = `>${transcript.transcriptId}\n`
+			if (sequenceType === 'protein') {
+				fasta += transcript.pep.match(/.{1,60}/g).join('\n');
+			} else if (sequenceType === 'nucleotide') {
+				fasta += transcript.seq.match(/.{1,60}/g).join('\n');
+			}
+			return fasta
+		})
+
+		const allFasta = fastaArray.join('\n')
+		return allFasta
+	},
 	queryCount (search,query){
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
@@ -301,13 +265,12 @@ Meteor.methods({
 
 		//put the future that will hold the mapreduce output in the meteor environment, this will be used as callback for the mapreduce
 		const mapReduceCallback = Meteor.bindEnvironment(function(err,res){
-				if (err){
-					fut.throw(err)
-				} else {
-					fut.return(res)
-				}
-			} 
-		)
+			if (err){
+				fut.throw(err)
+			} else {
+				fut.return(res)
+			}
+		})
 
 		//mapreduce to find all keys for all genes, this takes a while
 		a = Genes.rawCollection().mapReduce(
@@ -315,19 +278,20 @@ Meteor.methods({
 				//map function
 				let gene = this;
 				Object.keys(gene.attributes).forEach((key) => {
-					emit(key,{ reference: gene.reference })
+					emit(key,{ references: [ gene.reference ] })
 				})
 			},
 			function(key,values){
 				//reduce function
 				let referenceSet = new Set()
 				values.forEach((value) => {
-					referenceSet.add(value.reference)
+					value.references.forEach((ref) => {
+						referenceSet.add(ref)
+					})
 				})
 				
 				let references = Array.from(referenceSet)
-				printjson(references)
-				return { reference: references }
+				return { references: references }
 			},
 			{ out: { inline: 1 } }, //output options
 			mapReduceCallback
@@ -337,30 +301,24 @@ Meteor.methods({
 		//let the future wait for the mapreduce to finish
 		const mapReduceResults = fut.wait();
 
-		console.log('mapreduceResults',mapreduceResults)
+		console.log('mapReduceResults',mapReduceResults)
 
 		//process mapreduce output and put it in a collection
 		mapReduceResults.forEach( (feature) => {
-			console.log(feature)
 			let name = feature._id;
-			let reference = feature.value.reference;
-
-			if(!Array.isArray(reference)){
-				reference = [reference]
-			}
+			let references = feature.value.references;
 
 			Attributes.findAndModify({ 
 				query: { 
-					ID: name 
+					name: name 
 				}, 
 				update: {
 					$set: {
-						reference: reference
+						references: references
 					}, 
 					$setOnInsert: { 
-						name: name, 
+						name: name,
 						query: `attributes.${name}`,
-						reference: reference, 
 						show: true, 
 						canEdit: false, 
 						reserved: false 

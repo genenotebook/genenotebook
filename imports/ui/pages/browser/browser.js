@@ -1,8 +1,17 @@
+import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/template';
+import { Tracker } from 'meteor/tracker';
+
+import './browser.html';
+import './browser.scss';
+
+
 Session.setDefault('seqid','PanWU01x14_asm01_scf00001');
 Session.setDefault('start',409500);
 Session.setDefault('end',413500);
 Session.setDefault('track','PanWU01x14_asm01_ann01')
-Deps.autorun(function(){
+Tracker.autorun(function(){
 	var track = Session.get('track')
 	var seqid = Session.get('seqid');
 	var start = Session.get('start');
@@ -171,7 +180,7 @@ Template.browser.onRendered(function(){
 	
 	//container.call(tip);
 
-	Deps.autorun(function(){
+	Tracker.autorun(function(){
 		var track = Session.get('track')
 		var seqid = Session.get('seqid');
 		var start = Session.get('start');

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 import assert from 'assert';
 import Baby from 'babyparse';
 import fs from 'fs';
@@ -5,6 +7,11 @@ import findIndex from 'lodash/findIndex';
 import isEqual from 'lodash/isEqual';
 import mapValues from 'lodash/mapValues';
 import querystring from 'querystring';
+
+import { Genes, GeneSchema, SubfeatureSchema } from '/imports/api/genes/gene_collection.js';
+import { References, ReferenceInfo } from '/imports/api/genomes/reference_collection.js';
+import Tracks from '/imports/api/genomes/track_collection.js';
+
 /**
  * Override the default querystring unescape function to be able to parse commas correctly in gff attributes
  * @param  {[type]}

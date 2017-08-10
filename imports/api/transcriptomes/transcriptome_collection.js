@@ -1,10 +1,13 @@
-ExperimentInfo = new Mongo.Collection('experiments');
+import { Mongo } from 'meteor/mongo';
+import SimpleSchema from 'simpl-schema';
 
-ExperimentsSchema = new SimpleSchema({
+const ExperimentInfo = new Mongo.Collection('experiments');
+
+const ExperimentsSchema = new SimpleSchema({
 	ID: {
 		type: String,
 		label: 'Short identifier',
-		index: true
+		//index: true
 	},
 	experimentGroup: {
 		type: String,
@@ -19,41 +22,49 @@ ExperimentsSchema = new SimpleSchema({
 		label: 'Experiment description'
 	},
 	permissions: {
-		type: [String],
+		type: Array,//[String],
 		label: 'User groups that can access this experiment'
+	},
+	'permissions.$': {
+		type: String
 	}
 })
 
 ExperimentInfo.attachSchema(ExperimentsSchema);
 
-Expression = new Mongo.Collection('expression');
+const Transcriptomes = new Mongo.Collection('transcriptomes');
 
-ExpressionSchema = new SimpleSchema({
+const TranscriptomeSchema = new SimpleSchema({
 	geneId: {
 		type: String,
 		label: 'Gene ID',
-		index: true
+		//index: true
 	},
 	experimentId: {
 		type: String,
 		label: 'Experiment ID',
-		index: true
+		//index: true
 	},
 	permissions:{
-		type: [String],
+		type: Array,//[String],
 		label: 'User groups that can access this experiment'
+	},
+	'permissions.$': {
+		type: String
 	},
 	raw_counts: {
 		type: Number,
-		decimal: true,
+		//decimal: true,
 		label: 'Raw read counts'
 	},
 	tpm: {
 		type: Number,
-		decimal: true,
+		//decimal: true,
 		label: 'TPM normalized read counts'
 	}
 })
 
-Expression.attachSchema(ExpressionSchema)
+Transcriptomes.attachSchema(TranscriptomeSchema)
+
+export { ExperimentInfo, Transcriptomes }
 

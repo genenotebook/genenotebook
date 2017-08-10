@@ -16,9 +16,15 @@
 							</div>
 						</div>
 						<div class="form-group">
-							<label for="group" class="col-sm-2 control-label">Group:</label>
+							<label for="group" class="col-sm-2 control-label">Experiment:</label>
 							<div class="col-sm-6">
-								<input type="text" class="form-control" id="group" value="{{group}}">
+								<input type="text" class="form-control" id="experimentGroup" value="{{experimentGroup}}">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="group" class="col-sm-2 control-label">Replica group:</label>
+							<div class="col-sm-6">
+								<input type="text" class="form-control" id="replicaGroup" value="{{replicaGroup}}">
 							</div>
 						</div>
 						<div class="form-group">
@@ -28,9 +34,9 @@
 							</div>
 						</div>
 						<div class="form-group">
-							<label for="counts" class="col-sm-2 control-label">Total counts:</label>
+							<label for="counts" class="col-sm-2 control-label">Permissions:</label>
 							<div class="col-sm-6">
-								<input type="text" class="form-control" id="counts" value="{{totalCounts}}" disabled>
+								<input type="text" class="form-control" id="permissions" value="{{permissions}}" >
 							</div>
 						</div>
 					</form>
@@ -38,7 +44,8 @@
 					<button type="button" class="btn btn-primary btn-sm pull-right edit" id="{{ID}}">EDIT</button>
 					<p>
 						ID: {{ ID }}<br>
-						Group: {{ group }}<br>
+						Experiment: {{ experimentGroup }}<br>
+						Replica Group: {{ replicaGroup }}<br>
 						Description: {{ description }}<br>
 						Permissions: {{ permissions }}<br>
 					</p>
