@@ -1,5 +1,6 @@
-import { Meteor } from 'meteor/meteor';
+import { ValidatedMethod } from 'meteor/mdg:validated-method';
 
+import SimpleSchema from 'simpl-schema';
 import fs from 'fs';
 import readline from 'readline';
 import Fiber from 'fibers';
@@ -7,8 +8,33 @@ import Future from 'fibers/future';
 
 import { ReferenceInfo, References } from '/imports/api/genomes/reference_collection.js';
 
-Meteor.methods({
-	addReference(fileName, referenceName){
+const parameterSchema = new SimpleSchema({
+	fileName: { type: String },
+	referenceName: { 
+		type: String,
+		custom(){
+			if (!this.isSet){
+				return 'unset'
+			}
+			const existingName = ReferenceInfo.find({
+				referenceName: this.value
+			}).fetch().length
+			if ( existingName ){
+				return 'notUnique'
+			}
+
+			return undefined
+		} 
+	}
+})
+
+export const addReference = new ValidatedMethod({
+	name: 'addReference',
+	validate: parameterSchema.validator(),
+	applyOptions: {
+		noRetry: true
+	},
+	run({ fileName, referenceName }) {
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}
@@ -16,7 +42,7 @@ Meteor.methods({
 			throw new Meteor.Error('not-authorized');
 		}
 
-		const existingReference = References.find({reference: referenceName}).fetch().length
+		const existingReference = ReferenceInfo.find({referenceName: referenceName}).fetch().length
 		if (existingReference){
 			throw new Meteor.Error('Existing reference: ' + referenceName)
 		}

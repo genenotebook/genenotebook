@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+import { ValidatedMethod } from 'meteor/mdg:validated-method';
 
+import SimpleSchema from 'simpl-schema';
 import assert from 'assert';
 import Baby from 'babyparse';
 import fs from 'fs';
@@ -10,7 +12,7 @@ import querystring from 'querystring';
 
 import { Genes, GeneSchema, SubfeatureSchema } from '/imports/api/genes/gene_collection.js';
 import { References, ReferenceInfo } from '/imports/api/genomes/reference_collection.js';
-import Tracks from '/imports/api/genomes/track_collection.js';
+import { Tracks } from '/imports/api/genomes/track_collection.js';
 
 /**
  * Override the default querystring unescape function to be able to parse commas correctly in gff attributes
@@ -19,9 +21,17 @@ import Tracks from '/imports/api/genomes/track_collection.js';
  */
 querystring.unescape = uri => uri;
 
-
-Meteor.methods({
-	addGff(fileName, referenceName, trackName){
+export const adGff = new ValidatedMethod({
+	name: 'addGff',
+	validate: new SimpleSchema({
+		fileName: { type: String },
+		referenceName: { type: String },
+		trackName: { type: String }
+	}).validator(),
+	applyOptions: {
+		noRetry: true
+	},
+	run({ fileName, referenceName, trackName }){
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}
@@ -86,17 +96,28 @@ Meteor.methods({
 	}
 })
 
+
 const formatGff = (parsedResults, referenceName, trackName) => {
 	const temp = {}
 	parsedResults.forEach( (line) => {
 		assert.equal(line.length,9)
-
+		[
+			seqid,
+			source,
+			type,
+			start,
+			end,
+			score,
+			strand,
+			phase,
+			attributes
+		] = line
 		let sub = {
-			type: line[2],
-			start: line[3],
-			end: line[4],
-			score: line[5],
-			attributes: formatAttributes(line[8])
+			type: type,//line[2],
+			start: start,//line[3],
+			end: end,//line[4],
+			score: score,//line[5],
+			attributes: formatAttributes(attributes)//formatAttributes(line[8])
 		}
 
 		sub.ID = sub.attributes.ID;
@@ -108,15 +129,25 @@ const formatGff = (parsedResults, referenceName, trackName) => {
 		}
 
 		if (sub.type === 'gene'){
+			Object.assign(sub, {
+				seqid: seqid,
+				source: source,
+				strand: strand,
+				reference: referenceName,
+				track: trackName,
+				permissions: ['admin']
+			})
+			/*
 			sub.seqid = line[0]
 			sub.source = line[1]
 			sub.strand = line[6]
 			sub.reference = referenceName
 			sub.track = trackName
 			sub.permissions = ['admin']
+			*/
 			GeneSchema.validate(sub)
 		} else {
-			sub.phase = line[7]
+			sub.phase = phase
 			SubfeatureSchema.validate(sub)
 		}
 		temp[sub.ID] = sub

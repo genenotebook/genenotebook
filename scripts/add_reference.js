@@ -8,6 +8,7 @@ if (!module.parent){
 	const fs = require('fs');
 	const asteroid = require('asteroid');
 	const path = require('path');
+	const WebSocket = require('ws');
 
 	let fileName, reference;
 
@@ -29,30 +30,40 @@ if (!module.parent){
 
 	const referenceName = commander.referencename || fileName;
 
+	const options = {
+		fileName: fileName, 
+		referenceName: referenceName
+	}
 
-	console.log(commander.username,commander.password,fileName,referenceName)
-	
+	console.log(process.argv.join(' '))
+	console.log(options)
+
 	const Connection = asteroid.createClass()
 
 	const portal = new Connection({
-		endpoint: 'ws://localhost:3000/websocket'
+		endpoint: 'ws://localhost:3000/websocket',
+		SocketConstructor: WebSocket
 	})
 
 	portal.loginWithPassword({
 		username: commander.username,
 		password: commander.password
-	})
-
-	portal.call('addReference', fileName, referenceName)
+	}).then(result => {
+		portal.call('addReference', options)
 		.then(result => {
 			console.log(result)
 			portal.disconnect()
-			//process.exit(0)
 		})
 		.catch(error => {
 			console.log(error)
+			process.exit(1)
 			portal.disconnect()
-			//process.exit(1)
 		})	
+	}).catch(error => {
+		console.log(error)
+	})
+
+
+	
 }
 
