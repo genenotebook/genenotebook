@@ -50,31 +50,31 @@
           </li>
           <!-- end tracks -->
 
-          <!-- features -->
+          <!-- Attributes -->
           <li class="list-group-item">
             <div class="dropdown">
-              <button class="btn btn-default btn-sm dropdown-toggle pull-right" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="featuremenu-button">
+              <button class="btn btn-default btn-sm dropdown-toggle pull-right" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="attributemenu-button">
                 <i class="fa fa-plus" aria-hidden="true"></i>
               </button>
-              <ul class="dropdown-menu scrollable-menu pull-right" role="menu" aria-labelledby="featuremenu-button">
-                {{#each features}}
+              <ul class="dropdown-menu scrollable-menu pull-right" role="menu" aria-labelledby="attributemenu-button">
+                {{#each attributes}}
                   <li role="presentation" >
-                    <a role="menuitem" class="dropdown-item featuremenu-item">{{ ID }}</a>
+                    <a role="menuitem" class="dropdown-item attributemenu-item">{{ name }}</a>
                   </li>
                 {{/each}}
               </ul>
             </div>
-            <label>Features</label>
-            {{#each selectedFeatures}}
+            <label>Attributes</label>
+            {{#each selectedAttributes}}
               <div class="checkbox">
-                  <input type="checkbox" class="ternary-toggle feature-checkbox" id="{{ query }}">
+                  <input type="checkbox" class="ternary-toggle attribute-checkbox" id="{{ query }}">
                   <label for="{{ query }}">
-                    {{ ID }}
+                    {{ name }}
                   </label>
               </div>
             {{/each}}
           </li>
-          <!-- end features -->
+          <!-- end attributres -->
 
           <!--
           <li class="list-group-item">

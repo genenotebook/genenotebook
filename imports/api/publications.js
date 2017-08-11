@@ -3,11 +3,11 @@ import { publishComposite } from 'meteor/reywood:publish-composite';
 import { Roles } from 'meteor/alanning:roles';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
-import Attributes from '/imports/api/genes/attribute_collection.js';
-import Interpro from '/imports/api/genes/interpro_collection.js';
-import Orthogroups from '/imports/api/genes/orthogroup_collection.js';
-import EditHistory from '/imports/api/genes/edithistory_collection.js';
-import Tracks from '/imports/api/genomes/track_collection.js';
+import { Attributes } from '/imports/api/genes/attribute_collection.js';
+import { Interpro } from '/imports/api/genes/interpro_collection.js';
+import { Orthogroups } from '/imports/api/genes/orthogroup_collection.js';
+import { EditHistory } from '/imports/api/genes/edithistory_collection.js';
+import { Tracks } from '/imports/api/genomes/track_collection.js';
 import { References, ReferenceInfo } from '/imports/api/genomes/reference_collection.js';
 import { ExperimentInfo, Transcriptomes } from '/imports/api/transcriptomes/transcriptome_collection.js';
 
@@ -119,7 +119,7 @@ publishComposite('attributes', function(){
           return Attributes.find({
             $or: [
               {
-                reference: reference.referenceName
+                references: reference.referenceName
               },
               {
                 allReferences: true 

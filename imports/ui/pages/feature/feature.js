@@ -90,7 +90,7 @@ Template.feature.helpers({
   transcriptomeNumber: function(){
     const gene = this;
     const expression = Transcriptomes.find({geneId: gene.ID}).fetch()
-    
+    console.log(expression)
     return expression.length
   }
 });

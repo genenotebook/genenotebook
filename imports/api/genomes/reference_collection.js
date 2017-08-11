@@ -65,4 +65,4 @@ const ReferenceInfoSchema = new SimpleSchema({
 
 ReferenceInfo.attachSchema(ReferenceInfoSchema)
 
-export { References, ReferenceInfo };
+export { References, ReferenceSchema, ReferenceInfo, ReferenceInfoSchema };

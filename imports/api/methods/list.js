@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { Roles } from 'meteor/alanning:roles';
+
+import { Tracks } from '/imports/api/genomes/track_collection.js';
+
+
 Meteor.methods({
 	list: function(what){
 		if (! this.userId) {

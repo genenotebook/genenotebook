@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 
-import Attributes from '/imports/api/genes/attribute_collection.js';
-import Tracks from '/imports/api/genomes/track_collection.js';
+import { Attributes }from '/imports/api/genes/attribute_collection.js';
+import { Tracks } from '/imports/api/genomes/track_collection.js';
 import { References, ReferenceInfo } from '/imports/api/genomes/reference_collection.js';
 import { ExperimentInfo } from '/imports/api/transcriptomes/transcriptome_collection.js';
 

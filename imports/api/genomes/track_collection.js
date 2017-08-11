@@ -39,4 +39,4 @@ const trackSchema = new SimpleSchema({
 
 Tracks.attachSchema(trackSchema);
 
-export default Tracks
+export { Tracks, trackSchema };

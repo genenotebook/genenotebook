@@ -21,21 +21,21 @@
           <li role="presentation" class="active"><a href="#info">Info</a></li>
           <li role="presentation"><a href="#seq">Sequence</a></li>
           <li role="presentation"><a href="#genemodel">Genemodel <span class="badge"> {{ transcripts.length }} </span></a></li>
-          {{#if interproscan}}
+          {{ #if interproscan }}
             <li role="presentation">
               <a href="#interproscan">Interpro domains <span class="badge">{{ domainCount }}</span></a>
             </li>
-          {{/if}}
-          {{#if orthogroup}}
+          {{ /if }}
+          {{ #if orthogroup }}
             <li role="presentation">
               <a href="#orthogroup">Orthogroup <span class="badge">{{ orthogroupSize }}</span></a>
             </li>
-          {{/if}}
-          {{#if hasExpression}}
+          {{ /if }}
+          {{ #if hasTranscriptomes }}
             <li role="presentation">
               <a href="#expression">Expression <span class="badge"> {{ transcriptomeNumber }} </span></a>
             </li>
-          {{/if}}
+          {{ /if }}
         </ul>
       
         <!--
@@ -54,7 +54,7 @@
             {{>orthogroup}}
           {{/if}}
           
-          {{#if hasExpression}}
+          {{#if hasTranscriptomes}}
             {{>expression}}
           {{/if}}
           

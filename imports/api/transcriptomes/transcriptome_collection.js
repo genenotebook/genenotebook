@@ -3,7 +3,7 @@ import SimpleSchema from 'simpl-schema';
 
 const ExperimentInfo = new Mongo.Collection('experiments');
 
-const ExperimentsSchema = new SimpleSchema({
+const ExperimentInfoSchema = new SimpleSchema({
 	ID: {
 		type: String,
 		label: 'Short identifier',
@@ -30,7 +30,7 @@ const ExperimentsSchema = new SimpleSchema({
 	}
 })
 
-ExperimentInfo.attachSchema(ExperimentsSchema);
+ExperimentInfo.attachSchema(ExperimentInfoSchema);
 
 const Transcriptomes = new Mongo.Collection('transcriptomes');
 
@@ -66,5 +66,5 @@ const TranscriptomeSchema = new SimpleSchema({
 
 Transcriptomes.attachSchema(TranscriptomeSchema)
 
-export { ExperimentInfo, Transcriptomes }
+export { ExperimentInfo, ExperimentInfoSchema, Transcriptomes, TranscriptomeSchema }
 

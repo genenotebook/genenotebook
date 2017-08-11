@@ -5,4 +5,4 @@ import SimpleSchema from 'simpl-schema';
 
 const Attributes = new Mongo.Collection('attributes');
 
-export default Attributes;
+export { Attributes };

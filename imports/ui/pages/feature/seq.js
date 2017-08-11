@@ -30,19 +30,24 @@ Template.seq.helpers({
 		return transcripts
 	},
 	seq() {
-		const geneSequences = getGeneSequences(this);
-		
-		const transcriptIndex = Session.get('selectedTranscript');
+		try {
+			const geneSequences = getGeneSequences(this);
+			
+			const transcriptIndex = Session.get('selectedTranscript');
 
-		const transcriptSequence = geneSequences[transcriptIndex];
+			const transcriptSequence = geneSequences[transcriptIndex];
 
-		const seqType = Session.get('seqType')
+			const seqType = Session.get('seqType')
 
-		if (seqType === 'Protein'){
-			return transcriptSequence.pep
-		} else {
-			return transcriptSequence.seq
+			if (seqType === 'Protein'){
+				return transcriptSequence.pep
+			} else {
+				return transcriptSequence.seq
+			}
+		} catch(err) {
+			return '...loading...'
 		}
+		
 	}
 })
 

@@ -5,4 +5,4 @@ import SimpleSchema from 'simpl-schema';
 
 const Downloads = new Mongo.Collection('downloads');
 
-export default Downloads;
+export { Downloads }

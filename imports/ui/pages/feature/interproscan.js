@@ -5,7 +5,7 @@ import d3 from 'd3';
 import lodash from 'lodash';
 import { schemeSet3 } from 'd3-scale-chromatic';
 
-import InterPro from '/imports/api/genes/interpro_collection.js';
+import { InterPro } from '/imports/api/genes/interpro_collection.js';
 
 import './interproscan.html';
 import './interproscan.js';

@@ -5,4 +5,4 @@ import SimpleSchema from 'simpl-schema';
 
 const Interpro = new Mongo.Collection('interpro');
 
-export default Interpro;
+export { Interpro }

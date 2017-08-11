@@ -1,6 +1,12 @@
-import request from 'request';
 import { Meteor } from 'meteor/meteor';
+import { Roles } from 'meteor/alanning:roles';
+
+import request from 'request';
 import Future from 'fibers/future';
+
+import { getGeneSequences } from '/imports/api/util/util.js';
+
+import { Genes } from '/imports/api/genes/gene_collection.js'; 
 /**
  * Reverse complement a DNA string
  * @param  {[String]} seq [String representing DNA constisting of alphabet AaCcGgTtNn]
@@ -189,9 +195,13 @@ Meteor.methods({
 
     //this.unblock();
     const gene = Genes.findOne({ID: geneId})
-    const sequences = makeFasta(gene)
+    const sequences = getGeneSequences(gene)
     const results = sequences.map((sequence) => { 
-      const jobId = submitInterpro(sequence.ID, sequence.pep);
+
+      // interproscan does not like stop codons, just replace all with X
+      let pep = sequence.pep.split('*').join('X')
+
+      const jobId = submitInterpro(sequence.ID, pep);
 
       const fut = new Future();
       pollInterpro(jobId, (status) => {

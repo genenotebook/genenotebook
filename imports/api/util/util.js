@@ -121,12 +121,11 @@ const getGeneSequences = (gene) => {
     let transcriptPep = translate(transcriptSeq.toUpperCase());
 
     return {
-      transcriptId: transcript.ID,
+      ID: transcript.ID,
       seq: transcriptSeq,
       pep: transcriptPep
     }
   })
-
   return sequences
 }
 

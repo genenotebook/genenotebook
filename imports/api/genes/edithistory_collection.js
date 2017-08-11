@@ -5,4 +5,4 @@ import SimpleSchema from 'simpl-schema';
 
 const EditHistory = new Mongo.Collection('editHistory');
 
-export default EditHistory;
+export { EditHistory };

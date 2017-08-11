@@ -4,7 +4,7 @@ import { Template } from 'meteor/templating';
 import d3 from 'd3';
 import { schemeSet3 } from 'd3-scale-chromatic';
 
-import Orthogroups from '/imports/api/genes/orthogroup_collection.js';
+import { Orthogroups } from '/imports/api/genes/orthogroup_collection.js';
 
 import './orthogroup.html';
 import './orthogroup.scss';

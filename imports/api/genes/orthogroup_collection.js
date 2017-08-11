@@ -5,4 +5,4 @@ import SimpleSchema from 'simpl-schema';
 
 const Orthogroups = new Mongo.Collection('orthogroups');
 
-export default Orthogroups;
+export { Orthogroups }

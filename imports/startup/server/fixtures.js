@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
-import Attributes from '/imports/api/genes/attribute_collection.js';
+import { Attributes }from '/imports/api/genes/attribute_collection.js';
 
 Meteor.startup(function () {
   if ( Meteor.users.find().count() === 0 ) {

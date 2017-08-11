@@ -2,23 +2,20 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 
-import Tracks from '/imports/api/genomes/track_collection.js';
-import Attributes from '/imports/api/genes/attribute_collection.js';
+import { Tracks } from '/imports/api/genomes/track_collection.js';
+import { Attributes } from '/imports/api/genes/attribute_collection.js';
 
 import './filter.html';
 import './filter.scss';
 
-Meteor.subscribe('attributes');
-Meteor.subscribe('tracks');
-
-Session.setDefault('selectedFeatures',
+Session.setDefault('selectedAttributes',
   ['Note','Comment','Productname',
   'Pseudogene','orthogroup','paralogs',
   'singleton'])
 
 function updateCheckboxes(){
   const filter = Session.get('filter')
-  const featureCheckboxes = $('.feature-checkbox')
+  const featureCheckboxes = $('.attribute-checkbox')
   featureCheckboxes.each(function(index,checkbox){
     const parent = $(checkbox).parent()
     if ( filter.hasOwnProperty(checkbox.id) ){
@@ -68,24 +65,39 @@ function updateInputfields(){
 }
 
 Template.filter.helpers({
-    hasFilter: function(){
-        const filter = Session.get('filter');
-        return !_.isEmpty(filter);
-    },
-    features: function(){
-        const features = Attributes.find({show:true},{sort:{ID:1}});
-        return features
-    },
-    selectedFeatures: function(){
-        const selectedFeatures = Session.get('selectedFeatures')
-        return Attributes.find({ ID: { $in: selectedFeatures } },{sort:{ID:1}})
-    },
-    tracks:function(){
-        return Tracks.find({});
-    },
-    formatTrackName:function(trackName){
-        return trackName.split('.')[0];
-    }
+  hasFilter: function(){
+    const filter = Session.get('filter');
+    return !_.isEmpty(filter);
+  },
+  attributes: function(){
+    const attributes = Attributes.find({
+      show: true
+    },{
+      sort: {
+        name: 1
+      }
+    });
+    return attributes
+  },
+  selectedAttributes: function(){
+    const selectedAttributes = Session.get('selectedAttributes')
+    const attributes = Attributes.find({ 
+      name: { 
+        $in: selectedAttributes 
+      } 
+    },{
+      sort: {
+        name: 1
+      }
+    })
+    return attributes
+  },
+  tracks:function(){
+    return Tracks.find({});
+  },
+  formatTrackName:function(trackName){
+    return trackName.split('.')[0];
+  }
 })
 
 Template.filter.events({
@@ -164,14 +176,23 @@ Template.filter.events({
     Session.set('select-all',false);
     Session.set('checked',[]);
   },  
-  'click .featuremenu-item':function(event,template){
-      const feature = event.target.text;
-      const selectedFeatures = Session.get('selectedFeatures');
-      if (selectedFeatures.indexOf(feature) < 0){
-          selectedFeatures.push(feature);
-      }
-      Session.set('selectedFeatures',selectedFeatures);
+  'click .attributemenu-item':function(event,template){
+    const attribute = event.target.text;
+    console.log(`click ${attribute}`)
+    const selectedAttributes = Session.get('selectedAttributes');
+    if (selectedAttributes.indexOf(attribute) < 0){
+        selectedAttributes.push(attribute);
+    }
+    Session.set('selectedAttributes',selectedAttributes);
   }
+})
+
+Template.filter.onCreated(function(){
+  let template = this;
+  template.autorun(function(){
+    Meteor.subscribe('attributes');
+    Meteor.subscribe('tracks');
+  })
 })
 
 Template.filter.onRendered(function(){
