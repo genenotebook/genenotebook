@@ -10,22 +10,7 @@ import { ReferenceInfo, References } from '/imports/api/genomes/reference_collec
 
 const parameterSchema = new SimpleSchema({
 	fileName: { type: String },
-	referenceName: { 
-		type: String,
-		custom(){
-			if (!this.isSet){
-				return 'unset'
-			}
-			const existingName = ReferenceInfo.find({
-				referenceName: this.value
-			}).fetch().length
-			if ( existingName ){
-				return 'notUnique'
-			}
-
-			return undefined
-		} 
-	}
+	referenceName: { type: String }
 })
 
 export const addReference = new ValidatedMethod({

@@ -2,6 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 
+import { Tracks } from '/imports/api/genomes/track_collection.js';
+
+import { scanGeneAttributes } from '/imports/api/genes/scan_attributes.js';
+
 import './admin_attributes.html';
 
 Session.set('editAttributes',[])
@@ -20,12 +24,17 @@ Template.adminAttributes.helpers({
 
 Template.adminAttributes.events({
 	'click #refresh':function(){
-		Meteor.call('scanFeatures',function(err,res){
-			if (err){
-				Bert.alert('Attribute update failed','danger','growl-top-right');
-			} else {
-				Bert.alert('Attribute updated','success','growl-top-right');
-			}
+
+		let tracks = Tracks.find({}).fetch()
+
+		tracks.forEach(track => {
+			scanGeneAttributes.call({ trackName: track.trackName },(err,res) => {
+				if (err){
+					Bert.alert('Attribute update failed','danger','growl-top-right');
+				} else {
+					Bert.alert('Attribute updated','success','growl-top-right');
+				}
+			})
 		})
 	},
 	'click .edit':function(event){

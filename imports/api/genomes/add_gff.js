@@ -14,6 +14,8 @@ import { Genes, GeneSchema, SubfeatureSchema } from '/imports/api/genes/gene_col
 import { References, ReferenceInfo } from '/imports/api/genomes/reference_collection.js';
 import { Tracks } from '/imports/api/genomes/track_collection.js';
 
+import { scanGeneAttributes } from '/imports/api/genes/scan_attributes.js';
+
 /**
  * Override the default querystring unescape function to be able to parse commas correctly in gff attributes
  * @param  {[type]}
@@ -75,21 +77,21 @@ export const adGff = new ValidatedMethod({
 					}
 					geneCount += 1
 				})
-				console.log('validating done')
+				console.log('validating done');
 				
 				Tracks.insert({
 					trackName: trackName,
 					reference: referenceName,
 					geneCount: geneCount,
 					permissions: ['admin']
-				})
+				});
 
 				genes.forEach( (gene) => {
 					Genes.insert(gene)
 					console.log('inserted',gene.ID)
-				})
+				});
 				
-				Meteor.call('scanFeatures')
+				scanGeneAttributes.call({ trackName: trackName });
 			}
 		})
 		return true
@@ -101,7 +103,7 @@ const formatGff = (parsedResults, referenceName, trackName) => {
 	const temp = {}
 	parsedResults.forEach( (line) => {
 		assert.equal(line.length,9)
-		[
+		let [
 			seqid,
 			source,
 			type,

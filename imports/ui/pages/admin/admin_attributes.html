@@ -14,15 +14,15 @@
 					<button type="button" class="btn btn-danger btn-sm cancel">Cancel</button>
 				</div>
 				<div class="form-group">
-					<label for="ID" class="col-sm-2 control-label">ID:</label>
+					<label for="ID" class="col-sm-2 control-label">Name:</label>
 					<div class="col-sm-6">
-						<input type="text" class="form-control" id="ID" value="{{ ID }}" disabled>
+						<input type="text" class="form-control" id="name" value="{{ name }}" disabled>
 					</div>
 				</div>
 				<div class="form-group">
 					<label for="ID" class="col-sm-2 control-label">Query:</label>
 					<div class="col-sm-6">
-						<input type="text" class="form-control" id="ID" value="{{ query }}" disabled>
+						<input type="text" class="form-control" id="query" value="{{ query }}" disabled>
 					</div>
 				</div>
 				<div class="form-group">
@@ -51,11 +51,15 @@
 		{{ else }}
 			<button class="btn btn-default pull-right edit" id="{{ ID }}">Edit</button>
 			<p>
-			ID: {{ ID }} <br>
+			Name: {{ name }} <br>
 			Query: {{ query }} <br>
 			Display name: {{ name }} <br>
-			Visual: {{ show }} <br>
-			Permissions: ...
+			Show: {{ show }} <br>
+			Can edit: {{ canEdit }} <br>
+			Reserved: {{ reserved }} <br>
+			Tracks: {{ tracks }} <br>
+			References: {{ references }} <br>
+			All references: {{ allReferences }}
 			</p>
 		{{/if}}
 		</li>
