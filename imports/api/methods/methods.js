@@ -7,34 +7,24 @@ import { reverseComplement, translate, getGeneSequences } from '/imports/api/uti
 import hash from 'object-hash';
 
 
-/**
- * Keep track of what blast commands should use which databases
- * @type {Object}
- */
-const DB_TYPES = {	
-	'blastn':'nucl',
-	'tblastn':'nucl',
-	'tblastx':'nucl',
-	'blastp':'prot',
-	'blastx':'prot'
-}
 
 Meteor.methods({
 	formatFasta (query, sequenceType){
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}
-		
+		console.log('formatFasta')
+		console.log(query)
 		const genes = Genes.find(query).fetch();
 
 		const geneSequences = genes.map((gene) => {
+			console.log(gene.ID)
 			return getGeneSequences(gene)
 		})
 
 		const transcriptSequences = [].concat.apply([],geneSequences)
 
 		const fastaArray = transcriptSequences.map((transcript) => {
-			console.log(transcript)
 			let fasta = `>${transcript.transcriptId}\n`
 			if (sequenceType === 'protein') {
 				fasta += transcript.pep.match(/.{1,60}/g).join('\n');
@@ -62,114 +52,6 @@ Meteor.methods({
 		}
 		const count = Genes.find(query).count()
 		return count
-	},
-	/**
-	 * Spin up a child process to construct a blast database
-	 * @param  {[type]}
-	 * @return {[type]}
-	 */
-	makeBlastDb (trackName){
-		if (! this.userId) {
-			throw new Meteor.Error('not-authorized');
-		}
-		if (! Roles.userIsInRole(this.userId,'curator')){
-			throw new Meteor.Error('not-authorized');
-		}
-		this.unblock();
-		const dbtypes = ['nucl','prot'];
-		const fasta = makeFasta(trackName)
-
-		dbtypes.forEach( (dbtype) => {
-		//for (let dbtype of dbtypes) {
-			const outFile = `${trackName}.${dbtype}`
-			const child = spawn('makeblastdb',['-dbtype', dbtype, '-title', out, '-out', outFile]);
-			const pid = child.pid;
-			child.stdin.setEncoding('utf8');
-			child.stdout.setEncoding('utf8');
-			child.stderr.setEncoding('utf8');
-			child.stdin.write(fasta[dbtype]);
-			child.stdin.end();
-			
-			let out = ''
-			child.stdout.on('data', function (data) {
-			    out += data;
-			});
-			let err = ''
-			child.stderr.on('data',function(data){
-				err += data;
-			})
-
-			if (err){
-				console.log(`ERROR:\n${err}`)
-			}
-
-			child.on('close',function(code){
-				console.log(`makeblastdb exit code: ${code}`)
-				console.log(out)
-			})
-			Tracks.update({'trackName': trackName },{ '$set' : {[`blastdbs.${dbtype}`] : `${trackName}.${dbtype}` } } )
-		})
-	},
-	/**
-	 * Spin up a child process to run blast
-	 * @param  {[type]}
-	 * @param  {[type]}
-	 * @param  {[type]}
-	 * @return {[type]}
-	 */
-	blast (blastType,query,trackNames){
-		if (! this.userId) {
-			throw new Meteor.Error('not-authorized');
-		}
-		if (! Roles.userIsInRole(this.userId,'curator')){
-			throw new Meteor.Error('not-authorized');
-		}
-		this.unblock();
-		const fut = new Future();
-		
-		const dbType = DB_TYPES[blastType]
-		
-		const tracks = Tracks.find({'trackName':{$in:trackNames} },{fields:{'blastdbs':1}}).fetch();
-		
-		const dbs = tracks.map(function(track){return track.blastdbs[dbType]}).join(' ')
-		
-		console.log(dbs)
-
-		const child = spawn(blastType,['-db',dbs,'-outfmt','5','-num_alignments','20'])
-		
-		child.stdin.setEncoding('utf8')
-		child.stdout.setEncoding('utf8')
-		child.stderr.setEncoding('utf8')
-		
-		child.stdin.write(query)
-		
-		let out = ''
-		let err = ''
-		child.stdout.on('data',function(data){
-			out += data;
-		})
-
-		child.stderr.on('data',function(data){
-			err += data;
-		})
-
-		if (err){
-			console.log(err);
-		}
-
-		if (out){
-			console.log(out);
-		}
-
-		const o = child.on('close',function(code){
-			console.log('exit code: ' + code)
-			json_out = xml2js.parseString(out,function(err,res){
-				fut.return(res)
-			});
-		})
-
-		child.stdin.end()
-		return fut.wait()
 	},
 	removeFromViewing (geneId){
 		if (! this.userId) {

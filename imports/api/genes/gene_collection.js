@@ -7,7 +7,8 @@ const Genes = new Mongo.Collection('genes');
 const IntervalBaseSchema = new SimpleSchema({
   ID: {
     type: String,
-    //unique: true,
+    unique: true,
+    index: true,
     //denyUpdate: true,
     label: 'Unique gene ID'
   },
@@ -46,6 +47,7 @@ const IntervalBaseSchema = new SimpleSchema({
   attributes: {
     type: Object,
     blackbox: true,
+    index: true,
     label: 'Any attributes'
   },
   children: {

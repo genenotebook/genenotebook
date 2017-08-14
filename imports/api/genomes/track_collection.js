@@ -3,18 +3,6 @@ import SimpleSchema from 'simpl-schema';
 
 const Tracks = new Mongo.Collection('tracks');
 
-const blastDbSchema = new SimpleSchema({
-  nucl: {
-    type: String,
-    label: 'Nucleotide blast database name'
-  },
-  prot: {
-    type: String,
-    optional: true,
-    label: 'Peptide blast database name'
-  }
-})
-
 const trackSchema = new SimpleSchema({
 	trackName: {
 		type: String,
@@ -25,8 +13,18 @@ const trackSchema = new SimpleSchema({
     label: 'Reference sequence to which the annotation belongs'
 	},
   blastdbs: {
-    type: blastDbSchema,
+    type: Object,
     optional: true,
+  },
+  'blastdbs.nucl': {
+    type: String,
+    optional: true,
+    label: 'Nucleotide blast database name'
+  },
+  'blastdbs.prot': {
+    type: String,
+    optional: true,
+    label: 'Peptide blast database name'
   },
   permissions: {
     type: Array,//[String],

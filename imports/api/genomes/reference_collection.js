@@ -6,7 +6,7 @@ const References = new Mongo.Collection('references');
 const ReferenceSchema = new SimpleSchema({
 	header: {
 		type: String,
-		//index: true,
+		index: true,
 		label: 'Fasta style sequence header'
 	},
 	seq: {
@@ -15,17 +15,17 @@ const ReferenceSchema = new SimpleSchema({
 	},
 	referenceName: {
 		type: String,
-		//index: true,
+		index: true,
 		label: 'Reference name'
 	},
 	start: {
 		type: Number,
-		//index: true,
+		index: true,
 		label: 'Start position of sequence fragment on original sequence'
 	},
 	end: {
 		type: Number,
-		//index: true,
+		index: true,
 		label: 'End position of sequence fragment on original sequence'
 	},
 	permissions: {
@@ -44,7 +44,9 @@ const ReferenceInfo = new Mongo.Collection('referenceInfo')
 const ReferenceInfoSchema = new SimpleSchema({
 	referenceName: {
 		type: String,
-		label: 'Reference name'
+		label: 'Reference name',
+		index: true,
+		unique: true
 	},
 	permissions: {
 		type: Array,//[String],

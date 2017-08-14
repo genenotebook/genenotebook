@@ -8,6 +8,7 @@ import './genomes/add_gff.js';
 import './genes/interproscan.js'
 
 import './methods/methods.js';
+import './methods/blast.js';
 import './methods/list.js';
 
 //import this so that it starts running

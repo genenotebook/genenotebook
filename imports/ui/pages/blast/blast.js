@@ -5,6 +5,8 @@ import { Tracker } from 'meteor/tracker';
 
 import { Tracks } from '/imports/api/genomes/track_collection.js';
 
+import { blast } from '/imports/api/methods/blast.js';
+
 import './blast.html';
 import './blast.scss';
 
@@ -103,16 +105,24 @@ Template.blast.events({
 		Session.set('seqType',seqType)
 	},
 	'click #submit-blast':function(event){
-		const query = Session.get('blastInput');
-		const tracks = []
-		$('.track-select input[type="checkbox"]:checked').each(function(){tracks.push(this.id)})
-		console.log(tracks)
+		//const query = Session.get('blastInput');
+		//const tracks = []
+		//$('.track-select input[type="checkbox"]:checked').each(function(){tracks.push(this.id)})
+		//console.log(tracks)
 		const dbType = Session.get('dbType');
 		const seqType = Session.get('seqType');
-		const blastType = BLASTTYPES[seqType][dbType];
-		console.log(blastType)
-		Meteor.call('blast',blastType,query,tracks,function(error,result){
+		//const blastType = ;
+		//console.log(blastType)
+
+		const options = {
+			blastType: BLASTTYPES[seqType][dbType],
+			input: Session.get('blastInput'),
+			trackNames: $('.track-select input[type="checkbox"]:checked').map( (i, el) => el.id ).get()
+		}
+
+		blast.call(options, (error,result) => {
 			if (error) {
+				console.error(error)
 				Bert.alert('BLAST failed!','danger','growl-top-right');
 			} else {
 				Session.set('blastResult',result)

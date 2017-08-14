@@ -16,7 +16,7 @@ export const scanGeneAttributes = new ValidatedMethod({
 	applyOptions: {
 		noRetry: true
 	},
-	async run({ trackName }){
+	run({ trackName }){
 		console.log(trackName)
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
@@ -60,32 +60,32 @@ export const scanGeneAttributes = new ValidatedMethod({
 				}
 			).then(result => {
 				result.forEach(feature => {
-						let name = feature._id;
-						let references = feature.value.references;
+					let name = feature._id;
+					let references = feature.value.references;
 
-						Attributes.findAndModify({ 
-							query: { 
-								name: name 
-							}, 
-							update: {
-								$set: {
-									references: references
-								},
-								$addToSet: {
-									tracks: trackName
-								},
-								$setOnInsert: { 
-									name: name,
-									query: `attributes.${name}`,
-									show: true, 
-									canEdit: false, 
-									reserved: false 
-								} 
-							}, 
-							new: true, 
-							upsert: true 
-						}) 
-					})
+					Attributes.findAndModify({ 
+						query: { 
+							name: name 
+						}, 
+						update: {
+							$set: {
+								references: references
+							},
+							$addToSet: {
+								tracks: trackName
+							},
+							$setOnInsert: { 
+								name: name,
+								query: `attributes.${name}`,
+								show: true, 
+								canEdit: false, 
+								reserved: false 
+							} 
+						}, 
+						new: true, 
+						upsert: true 
+					}) 
+				})
 			}).catch(err => {
 				console.log(err)
 				throw new Meteor.Error(err)
