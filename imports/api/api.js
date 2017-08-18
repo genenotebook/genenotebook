@@ -11,5 +11,6 @@ import './methods/methods.js';
 import './methods/blast.js';
 import './methods/list.js';
 
-//import this so that it starts running
+//import the following so that jobs can start running
 import './jobqueue/process-interproscan.js';
+import './jobqueue/process-makeBlastDb.js';

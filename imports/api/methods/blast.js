@@ -1,13 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 
-import { spawn } from 'child_process';
+import { spawn } from 'child-process-promise';//'child_process';
 import SimpleSchema from 'simpl-schema';
+import xml2js from 'xml2js-es6-promise';
 
 import { Tracks } from '/imports/api/genomes/track_collection.js';
 import { Genes } from '/imports/api/genes/gene_collection.js';
 
-import { getGeneSequences } from '/imports/api/util/util.js';
+import { getGeneSequences, getMultipleGeneSequences } from '/imports/api/util/util.js';
 
 /**
  * Keep track of what blast commands should use which databases
@@ -39,74 +40,74 @@ export const makeBlastDb = new ValidatedMethod({
 
     console.log('makeBlastDb',trackName)
 
-    console.log(this.isSimulation)
-
     if ( !this.isSimulation ){
-      //this.unblock();
-      const dbtypes = {
-        nucleotide: 'nucl',
-        protein: 'prot'
-      }
 
+      this.unblock()
 
-      const genes = Genes.find({ track: trackName }).fetch().map(gene => getGeneSequences(gene))
+      console.log('fetching sequences')
+      //const _genes = Genes.find({ track: trackName }).fetch();
 
+      //getMultipleGeneSequences(_genes)
+
+      const genes = Genes.find({ track: trackName }).map(gene => getGeneSequences(gene))
+
+      return 
       let fasta = {
-        nucleotide: '',
-        protein: ''
+        nucl: '',
+        prot: ''
       }
 
+      
       genes.forEach(gene => {
         gene.forEach(transcript => {
           let header = `>${transcript.transcriptId}\n`
-          fasta.protein += `>${transcript.transcriptId}\n${transcript.pep}\n`
-          fasta.nucleotide += `>${transcript.transcriptId}\n${transcript.seq}\n`
+          fasta.prot += `>${transcript.transcriptId}\n${transcript.pep}\n`
+          fasta.nucl += `>${transcript.transcriptId}\n${transcript.seq}\n`
         })
       })
-
-      Object.keys(dbtypes).forEach( (dbtype) => {
-        const outFile = `${trackName}.${dbtype}`
-        const options = ['-dbtype', dbtypes[dbtype], '-title', trackName, '-out', outFile];
+      
+      console.log('making db')
+      //let promises = Object.keys(fasta).map( (dbtype) => {
+      let promises = ['nucl'].map( (dbtype) => {
+        let outFile = `${trackName}.${dbtype}`
+        let options = ['-dbtype', dbtype, '-title', trackName, '-out', outFile];
         console.log(options)
-        const child = spawn('makeblastdb',options);
-        
-        child.stdin.setEncoding('utf8');
-        child.stdout.setEncoding('utf8');
-        child.stderr.setEncoding('utf8');
-        
-        child.stdin.write(fasta[dbtype]);
-        
-        child.stdin.end();
-        
-        let out = ''
-        child.stdout.on('data', function (data) {
-            out += data;
-        });
-        let err = ''
-        child.stderr.on('data',function(data){
-          err += data;
-        })
-
-        if (err){
-          console.log(`ERROR:\n${err}`)
-        }
-
-        child.on('close',function(code){
-          console.log(`makeblastdb exit code: ${code}`)
-          console.log(out)
-        })
-
-        Tracks.findAndModify({
-          query: {
-            trackName: trackName 
-          },
-          update: { 
-            $set: {
-              [`blastdbs.${dbtype}`]: `${trackName}.${dbtype}` 
+        let promise = spawn('makeblastdb', options, { capture: ['stdout', 'stderr'] })
+          .progress( childProcess => {
+            let stdin = childProcess.stdin;
+            stdin.setEncoding('utf8')
+            console.log('start writing to stdin')
+            stdin.end(fasta[dbtype], ()=>{
+              console.log('closed stdin')
+            })
+          })
+          .then( result => {
+            let stdout = result.stdout.toString();
+            let stderr = result.stderr.toString();
+            if (stdout){
+              console.log(`makeblastdb stdout:${stdout}`)
             }
-          } 
-        })
+            if (stderr){
+              console.error(`makeblastdb stderr:${stderr}`)
+              throw new Meteor.Error('makeblastdb error')
+            }
+            Tracks.findAndModify({
+              query: {
+                trackName: trackName 
+              },
+              update: { 
+                $set: {
+                  [`blastdbs.${dbtype}`]: `${trackName}.${dbtype}` 
+                }
+              } 
+            })
+            return `${trackName}.${dbtype}` 
+          }).catch(error => {
+            console.error(error)
+          })
+          return promise
       })
+      return Promise.all(promises).catch(error => console.error(error))
     }
   }
 })
@@ -116,7 +117,8 @@ export const blast = new ValidatedMethod({
   validate: new SimpleSchema({
     blastType: { type: String },
     input: { type: String },
-    trackNames: { type: Array }
+    trackNames: { type: Array },
+    'trackNames.$': { type: String }
   }).validator(),
   applyOptions: {
     noRetry: true
@@ -141,7 +143,7 @@ export const blast = new ValidatedMethod({
         } 
       },{
         fields: {
-          'blastdbs': 1
+          blastdbs: 1
         }
       }).fetch();
 
@@ -149,71 +151,21 @@ export const blast = new ValidatedMethod({
         return track.blastdbs[dbType]
       }).join(' ')
 
-      console.log(dbs)
+      const options = ['-db',dbs,'-outfmt','5','-num_alignments','20']
+
+      return spawn(blastType, options, { capture: ['stdout', 'stderr'] })
+        .progress(childProcess => {
+          let stdin = childProcess.stdin;
+          stdin.setEncoding('utf8');
+          stdin.write(input);
+          stdin.end();
+        })
+        .then( result => {
+          return xml2js(result.stdout.toString())
+        }).then( result => {
+          console.log(result)
+          return result
+        })
     }
   }
 })
-/**
- * Spin up a child process to run blast
- * @param  {[type]}
- * @param  {[type]}
- * @param  {[type]}
- * @return {[type]}
- */
-/*
-blast (blastType,query,trackNames){
-  if (! this.userId) {
-    throw new Meteor.Error('not-authorized');
-  }
-  if (! Roles.userIsInRole(this.userId,'curator')){
-    throw new Meteor.Error('not-authorized');
-  }
-  this.unblock();
-  const fut = new Future();
-  
-  const dbType = DB_TYPES[blastType]
-  
-  const tracks = Tracks.find({'trackName':{$in:trackNames} },{fields:{'blastdbs':1}}).fetch();
-  
-  const dbs = tracks.map(function(track){return track.blastdbs[dbType]}).join(' ')
-  
-  console.log(dbs)
-
-  const child = spawn(blastType,['-db',dbs,'-outfmt','5','-num_alignments','20'])
-  
-  child.stdin.setEncoding('utf8')
-  child.stdout.setEncoding('utf8')
-  child.stderr.setEncoding('utf8')
-  
-  child.stdin.write(query)
-  
-  let out = ''
-  let err = ''
-  child.stdout.on('data',function(data){
-    out += data;
-  })
-
-  child.stderr.on('data',function(data){
-    err += data;
-  })
-
-  if (err){
-    console.log(err);
-  }
-
-  if (out){
-    console.log(out);
-  }
-
-  const o = child.on('close',function(code){
-    console.log('exit code: ' + code)
-    json_out = xml2js.parseString(out,function(err,res){
-      fut.return(res)
-    });
-  })
-
-  child.stdin.end()
-  return fut.wait()
-}
-
-*/

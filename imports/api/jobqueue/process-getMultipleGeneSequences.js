@@ -2,15 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import jobQueue from './jobqueue.js';
 
 const queue = jobQueue.processJobs(
-  'interproscan',
+  'getMultipleGeneSequences',
   {
-    concurrency: 4,
+    concurrency: 1,
     payload: 1
   },
   function(job, callback){
-    console.log(job.data.geneId)
-    //Meteor.call('interproscan',job.data.geneId)
+    
     job.done()
     callback()
   })
-

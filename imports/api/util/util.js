@@ -63,26 +63,62 @@ const translate = (seq) => {
 }
 
 /**
- * Get nucleotide and protein sequences of all transcripts for a gene (using CDS subfeatures)
+ * Get nucleotide and protein sequences of all transcripts for a multiple genes (using CDS subfeatures)
+ * @param  {[Array]<gene>} genes [Array of Object representing gene-models]
+ * @return {[Array]}     [Array with objects, where each object has a transcriptId, 
+ *                        nucleotide sequence and protein sequence field]
+ */
+const getMultipleGeneSequences = (genes) => {
+  const seqids = genes.map(gene => {
+    return gene.seqid
+  })
+  const uniqueSeqids = [...new Set(seqids)]
+
+  console.log(uniqueSeqids)
+
+  const refSeqs = uniqueSeqids.reduce((obj,seqid,i) => {
+    obj[seqid] = References.find({
+      header: seqid
+    },{
+      sort: { start: 1 }
+    }).map(ref => {
+      return ref.seq
+    }).join('')
+    return obj
+  },{}); //this part is import, initialize reduce with empty object
+  console.log(refSeqs)
+}
+
+
+/**
+ * Get nucleotide and protein sequences of all transcripts for a single gene (using CDS subfeatures)
  * @param  {[Object]} gene [Object representing a gene-model]
  * @return {[Array]}     [Array with objects, where each object has a transcriptId, 
  *                        nucleotide sequence and protein sequence field]
  */
 const getGeneSequences = (gene) => {
-  const transcripts = gene.subfeatures.filter( (subfeature) => { 
+  //console.log(`getGeneSequences ${gene.ID}`)
+  const transcripts = gene.subfeatures.filter( subfeature => { 
     return subfeature.type === 'mRNA' 
   })
 
+  let refStart = 10e99;
+
   //find all reference fragments overlapping the gene feature
-  const referenceArray = References.find({ 
+  const referenceSequence = References.find({ 
     header: gene.seqid, 
     $and: [ 
       { start: {$lte: gene.end} }, 
       { end: {$gte: gene.start} }
     ] 
-  }).fetch()
+  },{
+    sort: { start: 1 }
+  }).map (ref => {
+    refStart = Math.min(refStart,ref.start)
+    return ref.seq
+  }).join('')
 
-  let refStart = 10e99;
+  /*
   const referenceSequence = referenceArray.sort( (a,b) => {
     //sort on start coordinate
     return a.start - b.start
@@ -91,44 +127,41 @@ const getGeneSequences = (gene) => {
     refStart = Math.min(refStart,ref.start)
     return ref.seq
   }).join('')
+  */
 
-  const sequences = transcripts.map((transcript) => {
-    let cdsArray = gene.subfeatures.filter( (subfeature) => { 
+  const sequences = transcripts.map( transcript => {
+    let cdsArray = gene.subfeatures.filter( subfeature => { 
       return subfeature.parents.indexOf(transcript.ID) >= 0 && subfeature.type === 'CDS'
     }).sort( (a,b) => {
       //sort CDS subfeatures on start position
       return a.start - b.start
     })
 
-    let transcriptSeq = cdsArray.map( (cds, index) => {
+    let rawSeq = cdsArray.map( (cds, index) => {
       let start = cds.start - refStart - 1;
       let end = cds.end - refStart;
-      return referenceSequence.slice(start,end)
+      let cdsSequence = referenceSequence.slice(start,end)
+      return cdsSequence
     }).join('')
 
-    let phase;
-    if (this.strand === '-'){
-      transcriptSeq = reverseComplement(transcriptSeq)
-      phase = cdsArray[cdsArray.length -1].phase
-    } else {
-      phase = cdsArray[0].phase
-    }
- 
-    if ([1,2].indexOf(phase) >= 0){
-      transcriptSeq = transcriptSeq.slice(phase)
-    }
+    const forward = gene.strand === '+';
+    const phase = forward ? cdsArray[0].phase : cdsArray[cdsArray.length - 1].phase;
+    const transcriptSeq = forward ? rawSeq : reverseComplement(rawSeq);
 
-    let transcriptPep = translate(transcriptSeq.toUpperCase());
+    const isPhased = phase === 1 | phase === 2;
+    const codingSeq = isPhased ? transcriptSeq.slice(phase) : transcriptSeq;
+
+    const codingPep = translate(codingSeq.toUpperCase());
 
     return {
       ID: transcript.ID,
-      seq: transcriptSeq,
-      pep: transcriptPep
+      seq: codingSeq,
+      pep: codingPep
     }
   })
   return sequences
 }
 
-export { reverseComplement, translate, getGeneSequences };
+export { reverseComplement, translate, getGeneSequences, getMultipleGeneSequences };
 
 

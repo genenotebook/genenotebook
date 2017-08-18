@@ -2,6 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
+import { Job } from 'meteor/vsivsi:job-collection';
+ 
 import uniq from 'lodash/uniq';
 
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
@@ -116,10 +118,9 @@ Template.feature.events({
       throw new Meteor.Error('not-authorized');
     }
 
-    const job = new Job(jobQueue, 'interproscan',
-      {
-        geneId: this.ID
-      })
+    const jobOptions = { geneId: this.ID }
+
+    const job = new Job(jobQueue, 'interproscan', jobOptions)
 
     job.priority('normal').save()
   

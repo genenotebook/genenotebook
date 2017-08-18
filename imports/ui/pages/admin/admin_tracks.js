@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
+import { Job } from 'meteor/vsivsi:job-collection';
 
+import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 import { makeBlastDb } from '/imports/api/methods/blast.js';
 
 import './admin_tracks.html';
@@ -14,17 +16,25 @@ Template.adminTracks.helpers({
 
 Template.adminTracks.events({
 	'click .makeblastdb':function(){
-		const options = { 
-			trackName: this.trackName 
-		}
-		console.log(options)
-		makeBlastDb.call(options, (error, result) => {
-			console.error(error)
-			if (error){
-				Bert.alert('makeBlastDb failed!','danger','growl-top-right');
-			} else {
-				Bert.alert('makeBlastDb finished','success','growl-top-right')
+		const dbTypes = ['nucl','prot']
+
+		dbTypes.forEach(dbType => {
+			const jobOptions = { 
+				trackName: this.trackName,
+				dbType: dbType 
 			}
-		});
+
+			const job = new Job(jobQueue, 'makeBlastDb', jobOptions)
+
+			job.priority('normal').save();
+		})
 	}
+})
+
+Template.adminTracks.onCreated( function () {
+  let template = this;
+
+  template.autorun( function () {
+    template.subscribe('jobCollection');
+  })
 })
