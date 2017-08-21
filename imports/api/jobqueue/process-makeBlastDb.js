@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import jobQueue from './jobqueue.js';
 import  spawn  from 'spawn-promise';//child-process-promise';
 
-import { spawnSync } from 'child_process';
+//import { spawnSync } from 'child_process';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
 import { Tracks } from '/imports/api/genomes/track_collection.js';
@@ -34,7 +34,8 @@ jobQueue.processJobs(
       
       let transcriptFasta = getGeneSequences(gene).map(transcript => {
         let sequence = dbType === 'prot' ? transcript.pep : transcript.seq
-        return `>${transcript.ID}\n${sequence}`
+        //keep track of gene ID and transcript ID for later processing
+        return `>${gene.ID} ${transcript.ID}\n${sequence}`
       }).join('\n')
       return transcriptFasta
     }).join('\n')

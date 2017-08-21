@@ -1,0 +1,30 @@
+<template name="blastResult">
+  {{ #if isJob }}
+    {{ #if isCompleted }}
+      {{ #with results }}
+        <!-- show results -->
+        <div class="panel panel-default">
+          <div class="panel-heading">Blast results</div>
+            {{>blastResultPlot this}}
+          <div class="panel-body">
+          </div>
+            <ul class="list-group">
+            
+            {{#each hits }}
+              <li class="list-group-item">
+                {{>blasthit}}
+              </li>
+            {{/each}}
+
+            </ul>
+        </div>
+      {{ /with }}
+    {{ else }}
+      <!-- results are not ready yet -->
+      {{ >loading }}
+    {{ /if }}
+  {{ else }}
+  404
+    <!-- not a valid job id -->
+  {{ /if }}
+</template>

@@ -3,7 +3,7 @@ import { Template } from 'meteor/templating';
 import { Job } from 'meteor/vsivsi:job-collection';
 
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
-import { makeBlastDb } from '/imports/api/methods/blast.js';
+//import { makeBlastDb } from '/imports/api/methods/blast.js';
 
 import './admin_tracks.html';
 

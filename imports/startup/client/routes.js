@@ -9,6 +9,7 @@ import '../../ui/layouts/app-body.js';
 import '../../ui/pages/genelist/genelist.js';
 import '../../ui/pages/feature/feature.js';
 import '../../ui/pages/blast/blast.js';
+import '../../ui/pages/blast/blastResult.js';
 import '../../ui/pages/admin/admin.js';
 import '../../ui/pages/landingpage/landingpage.js';
 import '../../ui/pages/user-profile/user-profile.js';
@@ -20,27 +21,6 @@ import '../../ui/pages/main/login.js';
 import '../../ui/pages/main/register.js';
 
 import '../../ui/pages/app-not-found.js';
-
-// Import to override accounts templates
-//import '../../ui/accounts/accounts-templates.js';
-
-// Below here are the route definitions
- 
-/*
-
- Router.configure({
-  layoutTemplate: 'appBody',
-  notFoundTemplate: 'appNotFound',
-  loadingTemplate: 'appLoading',
-  deniedTemplate:'denied'
-});
-
-Router.route('/',{
-  name: 'landingpage',
-  template: 'landingpage'
-});
-
-*/
 
 const exposedRoutes = FlowRouter.group({})
 
@@ -121,6 +101,13 @@ loggedInRoutes.route('/blast', {
   name: 'blast',
   action() {
     BlazeLayout.render('appBody', { main: 'blast' })
+  }
+})
+
+loggedInRoutes.route('/blast/:_id', {
+  name: 'blastResult',
+  action() {
+    BlazeLayout.render('appBody', { main: 'blastResult' })
   }
 })
 

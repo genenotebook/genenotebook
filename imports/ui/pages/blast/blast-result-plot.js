@@ -8,6 +8,7 @@ import './blast-result-plot.html';
  
 Template.blastResultPlot.rendered = function(){
 	const barheight = 12;
+	console.log(this.data)
 	const queryLength = this.data.BlastOutput['BlastOutput_query-len'][0];
 	const iterations = this.data.BlastOutput.BlastOutput_iterations
 	const iteration = iterations[0].Iteration[0].Iteration_hits

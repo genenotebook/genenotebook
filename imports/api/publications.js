@@ -2,6 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { publishComposite } from 'meteor/reywood:publish-composite';
 import { Roles } from 'meteor/alanning:roles';
 
+import jobQueue from '/imports/api/jobqueue/jobqueue.js';
+
 import { Genes } from '/imports/api/genes/gene_collection.js';
 import { Attributes } from '/imports/api/genes/attribute_collection.js';
 import { Interpro } from '/imports/api/genes/interpro_collection.js';

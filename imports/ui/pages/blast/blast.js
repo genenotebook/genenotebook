@@ -2,10 +2,15 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+
+import { Job } from 'meteor/vsivsi:job-collection';
+
+import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 
 import { Tracks } from '/imports/api/genomes/track_collection.js';
 
-import { blast } from '/imports/api/methods/blast.js';
+//import { blast } from '/imports/api/methods/blast.js';
 
 import './blast.html';
 import './blast.scss';
@@ -38,7 +43,11 @@ function determineSeqType(seq){
 
 Template.blast.helpers({
 	tracks: function(){
-		return Tracks.find({'blastdbs':{$exists:true}})
+		return Tracks.find({
+			'blastdbs':{ 
+				$exists: true
+			}
+		})
 	},
 	input: function(){
 		const hasInput = Session.get('blastInput') ? true : false
@@ -67,16 +76,6 @@ Template.blast.helpers({
 	},
 	anyTrack: function(){
 		return Session.get('anyTrack')
-	},
-	blastResult:function(){
-		return Session.get('blastResult')
-	},
-	hits:function(){
-		const blast = Session.get('blastResult')
-		const iterations = blast.BlastOutput.BlastOutput_iterations
-		const iteration = iterations[0].Iteration[0].Iteration_hits
-		const hits = iteration[0].Hit
-		return hits
 	}
 })
 
@@ -105,14 +104,8 @@ Template.blast.events({
 		Session.set('seqType',seqType)
 	},
 	'click #submit-blast':function(event){
-		//const query = Session.get('blastInput');
-		//const tracks = []
-		//$('.track-select input[type="checkbox"]:checked').each(function(){tracks.push(this.id)})
-		//console.log(tracks)
 		const dbType = Session.get('dbType');
 		const seqType = Session.get('seqType');
-		//const blastType = ;
-		//console.log(blastType)
 
 		const options = {
 			blastType: BLASTTYPES[seqType][dbType],
@@ -120,6 +113,14 @@ Template.blast.events({
 			trackNames: $('.track-select input[type="checkbox"]:checked').map( (i, el) => el.id ).get()
 		}
 
+		const job = new Job(jobQueue, 'blast', options)
+
+		job.priority('normal').save( (error, result) => {
+			console.log(result)
+			FlowRouter.go(`/blast/${result}`)
+		})
+
+		/*
 		blast.call(options, (error,result) => {
 			if (error) {
 				console.error(error)
@@ -129,6 +130,7 @@ Template.blast.events({
 				Bert.alert('BLAST finished!','success','growl-top-right');
 			}
 		});
+		*/
 	}
 })
 
