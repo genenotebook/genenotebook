@@ -1,8 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import jobQueue from './jobqueue.js';
-import  spawn  from 'spawn-promise';//child-process-promise';
-
-//import { spawnSync } from 'child_process';
+import  spawn  from 'spawn-promise';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
 import { Tracks } from '/imports/api/genomes/track_collection.js';
@@ -13,19 +11,21 @@ import { getGeneSequences } from '/imports/api/util/util.js';
 jobQueue.processJobs(
   'makeBlastDb',
   {
-    concurrency: 1,
+    concurrency: 2,
     payload: 1
   },
   async function(job, callback){
     console.log('processing makeblastdb')
-    const { trackName, dbType } = job.data;
+    console.log(job.data)
+    const { trackName, dbType, geneSequenceJobId } = job.data;
+
+
     const trackId = trackName.split(/ |\./).join('_')
 
-    console.log(trackName,dbType)
     const geneNumber = Genes.find({ track: trackName }).count()
     const stepSize = Math.round(geneNumber / 10);
     console.log(`scanning ${geneNumber} genes`)
-
+    
     const fasta = Genes.find({ track: trackName }).map( (gene, index) => {
 
       if (index % stepSize === 0){
@@ -39,6 +39,7 @@ jobQueue.processJobs(
       }).join('\n')
       return transcriptFasta
     }).join('\n')
+    
 
     const outFile = `${trackId}.${dbType}`
     const options = ['-dbtype', dbType, '-title', trackId, '-out', outFile];

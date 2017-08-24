@@ -7,6 +7,7 @@ import Baby from 'babyparse';
 import fs from 'fs';
 import findIndex from 'lodash/findIndex';
 import isEqual from 'lodash/isEqual';
+import isEmpty from 'lodash/isEmpty';
 import mapValues from 'lodash/mapValues';
 import querystring from 'querystring';
 
@@ -23,7 +24,84 @@ import { scanGeneAttributes } from '/imports/api/genes/scan_attributes.js';
  */
 querystring.unescape = uri => uri;
 
-export const adGff = new ValidatedMethod({
+const Interval = class Interval{
+	constructor({ line, trackName, referenceName , referenceSequences }){
+		assert.equal(line.length,9)
+		const [
+			seqid,
+			source,
+			type,
+			start,
+			end,
+			score,
+			strand,
+			phase,
+			attributes
+		] = line
+		
+		this.type = type;
+		this.start = start;
+		this.end = end;
+		this.score = score;
+		this.attributes = formatAttributes(attributes);
+
+		this.ID = this.attributes.ID;
+		delete this.attributes.ID;
+
+		if (this.attributes.Parent !== undefined){
+			this.parents = this.attributes.Parent;
+			delete this.attributes.Parent;
+		}
+	
+		this.seq = referenceSequences[seqid].slice(start - 1, end)
+		if (this.type === 'gene'){
+				this.seqid = seqid;
+				this.source = source;
+				this.strand = strand;
+				this.reference = referenceName;
+				this.track = trackName;
+				this.permissions= ['admin'];
+			GeneSchema.validate(this)
+		} else {
+			this.phase = phase
+			SubfeatureSchema.validate(this)
+		}
+	}
+}
+
+const GeneModel = class GeneModel{
+	constructor(intervals){
+		console.log('constructing genemodel')
+		Object.values(intervals).forEach( interval => {
+			if (interval.parents !== undefined){
+				interval.parents.forEach( parentId => {
+					let parent = intervals[parentId]
+					if (parent.children === undefined){
+						intervals[parentId].children = []
+					}
+					intervals[parentId].children.push(interval.ID)
+				})
+			}
+		})
+		const genes = Object.values(intervals).filter( interval => {
+			return interval.type === 'gene';
+		})
+		assert.equal(genes.length, 1)
+		const gene = genes[0]
+
+		console.log(gene.ID)
+
+		Object.keys(gene).forEach(key => {
+			this[key] = gene[key]
+		})
+
+		this.subfeatures = Object.values(intervals).filter( interval => {
+			return interval.type !== 'gene';
+		})
+	}
+}
+
+export const addGff = new ValidatedMethod({
 	name: 'addGff',
 	validate: new SimpleSchema({
 		fileName: { type: String },
@@ -53,6 +131,12 @@ export const adGff = new ValidatedMethod({
 
 		const fileHandle = fs.readFileSync(fileName,{encoding:'binary'});
 
+		let intervals = {};
+		let geneCount = 0;
+
+		console.log(`Gathering reference sequences for ${referenceName}`)
+		const referenceSequences = getReferenceSequences(referenceName);
+
 		console.log('start reading')
 		Baby.parse(fileHandle, {
 			delimiter: '\t',
@@ -62,22 +146,35 @@ export const adGff = new ValidatedMethod({
 			error(error,file) {
 				console.log(error)
 			},
-			complete(results,file) {
-				console.log('reading done')
-				console.log('start formatting')
-				genes = formatGff(results.data, referenceName, trackName)
-				console.log('formatting done')
-				console.log('start validating')
-				let geneCount = 0
-				genes.forEach( (gene) => {
-					GeneSchema.validate(gene)
-					let existingGene = Genes.find({ID:gene.ID}).fetch().length
-					if (existingGene){
-						throw new Meteor.Error('Duplicate gene ID: ' + gene.ID)
-					}
-					geneCount += 1
+			step(line){
+				let interval = new Interval({
+					line: line.data[0], 
+					referenceName: referenceName, 
+					trackName: trackName,
+					referenceSequences: referenceSequences
 				})
-				console.log('validating done');
+				if (interval.parents === undefined){
+					assert.equal(interval.type, 'gene');
+					if ( !isEmpty(intervals) ) {
+						const gene = new GeneModel(intervals);
+						GeneSchema.validate(gene);
+						Genes.insert(gene);
+						geneCount += 1;
+						intervals = {}
+					}
+				}
+				intervals[interval.ID] = interval;
+			},
+			complete(results,file) {
+				
+				if ( !isEmpty(intervals) ) {
+					console.log('constructing final gene')
+					const gene = new GeneModel(intervals);
+					GeneSchema.validate(gene);
+					Genes.insert(gene);
+					geneCount += 1;
+					intervals = {}
+				}
 				
 				Tracks.insert({
 					trackName: trackName,
@@ -86,11 +183,6 @@ export const adGff = new ValidatedMethod({
 					permissions: ['admin']
 				});
 
-				genes.forEach( (gene) => {
-					Genes.insert(gene)
-					console.log('inserted',gene.ID)
-				});
-				
 				scanGeneAttributes.call({ trackName: trackName });
 			}
 		})
@@ -98,151 +190,31 @@ export const adGff = new ValidatedMethod({
 	}
 })
 
-
-const formatGff = (parsedResults, referenceName, trackName) => {
-	const temp = {}
-	parsedResults.forEach( (line) => {
-		assert.equal(line.length,9)
-		let [
-			seqid,
-			source,
-			type,
-			start,
-			end,
-			score,
-			strand,
-			phase,
-			attributes
-		] = line
-		let sub = {
-			type: type,//line[2],
-			start: start,//line[3],
-			end: end,//line[4],
-			score: score,//line[5],
-			attributes: formatAttributes(attributes)//formatAttributes(line[8])
+const getReferenceSequences = (referenceName) => {
+	const headers = References.find({
+		referenceName: referenceName
+	},{
+		fields: {
+			header: 1
 		}
-
-		sub.ID = sub.attributes.ID;
-		delete sub.attributes.ID;
-
-		if (sub.attributes.Parent !== undefined){
-			sub.parents = sub.attributes.Parent;
-			delete sub.attributes.Parent;
+	}).map(reference => reference.header).reduce((headers, header) => {
+		if (headers.indexOf(header) < 0){
+			headers.push(header)
 		}
+		return headers
+	},[])
 
-		if (sub.type === 'gene'){
-			Object.assign(sub, {
-				seqid: seqid,
-				source: source,
-				strand: strand,
-				reference: referenceName,
-				track: trackName,
-				permissions: ['admin']
-			})
-			/*
-			sub.seqid = line[0]
-			sub.source = line[1]
-			sub.strand = line[6]
-			sub.reference = referenceName
-			sub.track = trackName
-			sub.permissions = ['admin']
-			*/
-			GeneSchema.validate(sub)
-		} else {
-			sub.phase = phase
-			SubfeatureSchema.validate(sub)
-		}
-		temp[sub.ID] = sub
-	})
-
-	Object.keys(temp).forEach( (subId) => {
-		let sub = temp[subId]
-		if (sub.parents !== undefined){
-			for (parentId of sub.parents){
-				let parent = temp[parentId]
-				if (parent.children === undefined){
-					temp[parentId].children = []
-				}
-				temp[parentId].children.push(sub.ID)
+	const referenceSequences = headers.reduce((sequences,header) => {
+		let sequence = References.find({
+			referenceName: referenceName,
+			header: header
+		},{
+			sort: {
+				start: 1
 			}
-		}
-	})
-
-	const gff = []
-	Object.keys(temp).forEach( (subId) => {
-		let sub = temp[subId];
-		if (sub.type === 'gene'){
-			sub.subfeatures = []
-			let children = getChildren(subId,temp);
-			let child = children.next()
-			while (!child.done){
-				let notSelf = child.value !== sub;
-
-				let notPresent = findIndex(sub.subfeatures, (existingSub) => { 
-						return isEqual(sub,existingSub) 
-					}) < 0;
-
-				if (notSelf && notPresent){
-					sub.subfeatures.push(child.value)
-				}
-				child = children.next()
-			}
-			gff.push(sub)
-		}
-	})
-
-	return gff
-}
-
-function *getChildren(Id,Gff){
-	let sub = Gff[Id];
-	yield sub;
-	if (sub.children !== undefined){
-		for (childId of sub.children){
-			yield *getChildren(childId,Gff)
-		}
-	}
-}
-
-/**
- * This formats the attribute string into an object
- * Object keys are attribute identifiers
- * Object values are strings, arrays of string or arrays of objects
- * @param  {[type]}
- * @return {[type]}
- */
-const formatAttributes = (attributeString) => {
-	//split attribute string on semicolons for separate attributes and on equalsign for key/values
-	const rawAttributes = querystring.parse(attributeString,';','=')
-
-	//sometimes there is an empty key, remove this
-	delete rawAttributes[''];
-
-	const attributes = mapValues(rawAttributes, (rawAttribute, attributeName) => {
-		const attributeArray = rawAttribute.split(',').map( (attribute) => {
-			attribute = unescape(attribute);
-			attribute.replace(/^"(.+(?="$))"$/, '$1');
-			if (['Dbxref','Ontology_term'].indexOf(attributeName) >= 0){
-				//turn attribute into object, split on colon
-				attribute = querystring.parse(attribute,'',':')
-			}
-			return attribute
-		} )
-
-		let attributeField = attributeArray;
-		switch(attributeArray.length){
-			case 0:
-				throw new Meteor.Error(`Incorrect attribute field: ${attributeString}`);
-				break;
-			case 1:
-				if (['Dbxref','Ontology_term','Parent'].indexOf(attributeName) < 0){
-					attributeField = attributeArray[0];
-				} 
-				break;
-			default:
-				break;
-		}
-		return attributeField
-	})
-	return attributes
+		}).map( ref => ref.seq).join('')
+		sequences[header] = sequence;
+		return sequences
+	},{})
+	return referenceSequences
 }

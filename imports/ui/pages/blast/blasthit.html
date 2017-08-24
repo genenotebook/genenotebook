@@ -1,6 +1,6 @@
 <template name="blasthit">
 	<div class="blast-hit" id="{{hit.transcript}}">
-		<b><a href="#" class="blast-hit-link" id="{{hit.gene}}">{{hit.transcript}}</a></b> 
+		<b><a href="/gene/{{hit.gene}}" class="blast-hit-link" id="{{hit.gene}}">{{hit.transcript}}</a></b> 
 		<span class="label label-primary">E-value {{firstHsp.Hsp_evalue}}</span>
 		<span class="label label-default">{{ hspNum }} HSPs</span>
 		<ul class="list-group">

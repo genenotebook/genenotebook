@@ -2,7 +2,7 @@ const jobQueue = new JobCollection('jobQueue', { noCollectionSuffix: true });
 
 //immediately build a 'job cleaning job' so that the jobcollection does not fill up endlessly
 new Job(jobQueue, 'cleanup',{})
-  .repeat({ schedule: jobQueue.later.parse.text('every 5 minutes') })
+  .repeat({ schedule: jobQueue.later.parse.text('every 20 minutes') })
   .save({ cancelRepeats: true })
 
 const cleanup = jobQueue.processJobs(
@@ -13,7 +13,7 @@ const cleanup = jobQueue.processJobs(
   },
   (job,callback) => {
     let current = new Date()
-    current.setMinutes(current.getMinutes() - 5 )
+    current.setMinutes(current.getMinutes() - 20 )
     ids = jobQueue.find({
       status: {
         $in: Job.jobStatusRemovable

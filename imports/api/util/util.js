@@ -5,7 +5,7 @@ import { References } from '/imports/api/genomes/reference_collection.js';
  * @param  {[String]} seq [String representing DNA constisting of alphabet AaCcGgTtNn]
  * @return {[String]}     [String representing DNA constisting of alphabet AaCcGgTtNn, reverse complement of input]
  */
-const reverseComplement = (seq) => {
+export const reverseComplement = (seq) => {
   const comp = {  
     'A':'T','a':'t',
     'T':'A','t':'a',
@@ -26,7 +26,7 @@ const reverseComplement = (seq) => {
  * @param  {[String]} seq [String representing DNA constisting of alphabet ACGTN]
  * @return {[String]}     [String representing the amino acid complement of input string]
  */
-const translate = (seq) => {
+export const translate = (seq) => {
   const trans = {
     'ACC': 'T', 'ACA': 'T', 'ACG': 'T',
     'AGG': 'R', 'AGC': 'S', 'GTA': 'V',
@@ -96,39 +96,11 @@ const getMultipleGeneSequences = (genes) => {
  * @return {[Array]}     [Array with objects, where each object has a transcriptId, 
  *                        nucleotide sequence and protein sequence field]
  */
-const getGeneSequences = (gene) => {
+export const getGeneSequences = (gene) => {
   //console.log(`getGeneSequences ${gene.ID}`)
   const transcripts = gene.subfeatures.filter( subfeature => { 
     return subfeature.type === 'mRNA' 
   })
-
-  let refStart = 10e99;
-
-  //find all reference fragments overlapping the gene feature
-  const referenceSequence = References.find({ 
-    header: gene.seqid, 
-    $and: [ 
-      { start: {$lte: gene.end} }, 
-      { end: {$gte: gene.start} }
-    ] 
-  },{
-    sort: { start: 1 }
-  }).map (ref => {
-    refStart = Math.min(refStart,ref.start)
-    return ref.seq
-  }).join('')
-
-  /*
-  const referenceSequence = referenceArray.sort( (a,b) => {
-    //sort on start coordinate
-    return a.start - b.start
-  }).map( (ref) => {
-    //find starting position of first reference fragment
-    refStart = Math.min(refStart,ref.start)
-    return ref.seq
-  }).join('')
-  */
-
   const sequences = transcripts.map( transcript => {
     let cdsArray = gene.subfeatures.filter( subfeature => { 
       return subfeature.parents.indexOf(transcript.ID) >= 0 && subfeature.type === 'CDS'
@@ -138,10 +110,7 @@ const getGeneSequences = (gene) => {
     })
 
     let rawSeq = cdsArray.map( (cds, index) => {
-      let start = cds.start - refStart - 1;
-      let end = cds.end - refStart;
-      let cdsSequence = referenceSequence.slice(start,end)
-      return cdsSequence
+      return cds.seq
     }).join('')
 
     const forward = gene.strand === '+';
@@ -162,6 +131,6 @@ const getGeneSequences = (gene) => {
   return sequences
 }
 
-export { reverseComplement, translate, getGeneSequences, getMultipleGeneSequences };
+//export { reverseComplement, translate, getGeneSequences, getMultipleGeneSequences };
 
 

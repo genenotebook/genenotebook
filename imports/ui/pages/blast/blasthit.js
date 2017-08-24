@@ -59,12 +59,3 @@ Template.blasthit.helpers({
 		return queryTag
 	}
 })
-
-Template.blasthit.events({
-	'click .blast-hit-link':function(event){
-		event.preventDefault();
-		const gene = event.target.id;
-		console.log(gene)
-		Router.go('gene',{'_id':gene});
-	},
-})

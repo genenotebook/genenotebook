@@ -49,7 +49,7 @@ export const addReference = new ValidatedMethod({
 						let existingHeader = References.find({ 
 							reference: referenceName, 
 							header: seq.header
-						}).fetch().length
+						}).count()
 
 						if (existingHeader){
 							throw new Meteor.Error('Duplicate header: ' + seq.header)
@@ -73,7 +73,7 @@ export const addReference = new ValidatedMethod({
 				let existingHeader = References.find({ 
 					referenceName: referenceName, 
 					header: seq.header
-				}).fetch().length
+				}).count()
 
 				if (existingHeader){
 					throw new Meteor.Error('Duplicate header: ' + seq.header)

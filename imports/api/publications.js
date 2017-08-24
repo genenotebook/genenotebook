@@ -79,7 +79,7 @@ publishComposite('singleGene', function(geneId){
           }
         }
         ]
-      },
+      }/*,
       {
         find(gene){
           console.log('finding reference sequence')
@@ -94,7 +94,7 @@ publishComposite('singleGene', function(geneId){
             }
           })
         }
-      }
+      }*/
     ]
   }
 })

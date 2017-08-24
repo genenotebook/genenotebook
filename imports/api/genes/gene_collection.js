@@ -17,6 +17,10 @@ const IntervalBaseSchema = new SimpleSchema({
     allowedValues: ['gene','mRNA','CDS','exon','three_prime_UTR','five_prime_UTR'],
     label: 'Interval type'
   },
+  seq: {
+    type: String,
+    label: 'Reference sequence of this feature'
+  },
   start: {
     type: Number,
     label: 'Start coordinate'
