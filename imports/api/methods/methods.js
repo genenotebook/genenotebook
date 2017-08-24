@@ -9,33 +9,29 @@ import hash from 'object-hash';
 
 
 Meteor.methods({
+	/**
+	 * [formatFasta description]
+	 * @param  {[Object]} query        [Database query to select genes]
+	 * @param  {[String]} sequenceType [One of 'protein' or 'nucleotide']
+	 * @return {[Array]}               [Array of fasta formatted coding sequences]
+	 */
 	formatFasta (query, sequenceType){
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}
 		console.log('formatFasta')
 		console.log(query)
-		const genes = Genes.find(query).fetch();
 
-		const geneSequences = genes.map((gene) => {
-			console.log(gene.ID)
-			return getGeneSequences(gene)
-		})
+		const fasta = Genes.find(query).map( (gene, index) => {
+      const transcriptFasta = getGeneSequences(gene).map(transcript => {
+        const sequence = sequenceType === 'protein' ? transcript.pep : transcript.seq;
+        const wrappedSequence = sequence.match(/.{1,60}/g).join('\n');
+        return `>${transcript.ID}\n${wrappedSequence}\n`
+      }).join('')
+      return transcriptFasta
+    })
 
-		const transcriptSequences = [].concat.apply([],geneSequences)
-
-		const fastaArray = transcriptSequences.map((transcript) => {
-			let fasta = `>${transcript.transcriptId}\n`
-			if (sequenceType === 'protein') {
-				fasta += transcript.pep.match(/.{1,60}/g).join('\n');
-			} else if (sequenceType === 'nucleotide') {
-				fasta += transcript.seq.match(/.{1,60}/g).join('\n');
-			}
-			return fasta
-		})
-
-		const allFasta = fastaArray.join('\n')
-		return allFasta
+		return fasta
 	},
 	queryCount (search,query){
 		if (! this.userId) {
@@ -172,6 +168,11 @@ Meteor.methods({
 		}
 		Attributes.update({'_id':_id},{$set:fields})
 	},
+	/**
+	 * [formatGff3 description]
+	 * @param  {[Object]} query [description]
+	 * @return {[Array]}        [Array with gff3 formatted ]
+	 */
 	formatGff3 (query){
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
@@ -194,7 +195,7 @@ Meteor.methods({
 					sub.phase,
 					'ID='+sub.ID+';Parents='+sub.parents.join()
 				]
-				return subFields.join('\t')
+				return subFields.join('\t') + '\n';
 			})
 			let geneFields = [
 				gene.seqid,
@@ -207,14 +208,14 @@ Meteor.methods({
 				gene.phase,
 				'ID='+gene.ID
 			]
-			let geneLine = geneFields.join('\t')
+			let geneLine = geneFields.join('\t') + '\n';
 			
 			//unshift adds to the beginning of the array
 			subLines.unshift(geneLine);
 
-			return subLines.join('\n')
+			return subLines.join('')
 		})
-		return gff.join('\n')
+		return gff
 	},
 	initializeDownload (query,format){
 		queryHash = hash(query);

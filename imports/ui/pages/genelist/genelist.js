@@ -173,24 +173,25 @@ Template.genelist.events({
 
     let formatFunction;
     switch(format){
-      case 'gff':
+      case 'gff3':
         formatFunction = 'formatGff';
         break;
       case 'fasta':
         formatFunction = 'formatFasta';
         break;
       default:
-        throw new Meteor.Error('Unkown format');
+        throw new Meteor.Error(`Unkown format: ${format}`);
         break
     }
 
-    Meteor.call(formatFunction, query, 'nucleotide', (err,res) => {
+    Meteor.call(formatFunction, query, 'nucleotide', (err,formattedData) => {
       
       if (err){
+        console.error(err)
         Bert.alert('Preparing download failed','error','growl-bottom-right');
       } else {
         Bert.alert('Preparing download finished','success','growl-bottom-right');
-        const blob = new Blob([res],{type: 'text/plain;charset=utf-8'})
+        const blob = new Blob(formattedData,{type: 'text/plain;charset=utf-8'})
         const date = new Date()
         const dateString = date.toISOString()
 

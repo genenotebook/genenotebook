@@ -26,6 +26,7 @@ jobQueue.processJobs(
     const stepSize = Math.round(geneNumber / 10);
     console.log(`scanning ${geneNumber} genes`)
     
+    
     const fasta = Genes.find({ track: trackName }).map( (gene, index) => {
 
       if (index % stepSize === 0){
@@ -40,7 +41,6 @@ jobQueue.processJobs(
       return transcriptFasta
     }).join('\n')
     
-
     const outFile = `${trackId}.${dbType}`
     const options = ['-dbtype', dbType, '-title', trackId, '-out', outFile];
     console.log(options)
