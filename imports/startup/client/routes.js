@@ -1,5 +1,6 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+import { ReactLayout } from 'meteor/kadira:react-layout';
 import { Session } from 'meteor/session';
 //import { AccountsTemplates } from 'meteor/useraccounts:core';
 
@@ -21,6 +22,8 @@ import '../../ui/pages/main/login.js';
 import '../../ui/pages/main/register.js';
 
 import '../../ui/pages/app-not-found.js';
+
+//import '../../ui/pages/profile/userprofile.jsx';
 
 const exposedRoutes = FlowRouter.group({})
 
@@ -126,6 +129,12 @@ loggedInRoutes.route('/gene/:_id', {
   }
 })
 
+loggedInRoutes.route('/userprofile', {
+  name: 'userProfile',
+  action() {
+    BlazeLayout.render('appBody', { main: 'userProfile' })
+  }
+})
 /*
 
 Router.route('gene/:_id',{
