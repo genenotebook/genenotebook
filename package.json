@@ -1,7 +1,7 @@
 {
   "name": "genebook",
   "version": "0.1.1",
-  "repository": "https://github.com/holmrenser/bioportal",
+  "repository": "https://github.com/holmrenser/genebook",
   "description": "A portable website for browsing and querying genome sequences and annotations",
   "license": "AGPL-3.0",
   "dependencies": {

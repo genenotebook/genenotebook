@@ -1,6 +1,7 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { ReactLayout } from 'meteor/kadira:react-layout';
+import { Roles } from 'meteor/alanning:roles';
 import { Session } from 'meteor/session';
 //import { AccountsTemplates } from 'meteor/useraccounts:core';
 
@@ -44,6 +45,8 @@ const loggedInRoutes = FlowRouter.group({
 const adminRoutes = loggedInRoutes.group({
   triggersEnter: [
     () => {
+      console.log(Meteor.userId())
+      console.log(Roles.userIsInRole(Meteor.userId(), 'admin'))
       if (!Roles.userIsInRole(Meteor.user(),['admin'])){
         return FlowRouter.go('/')
       }
@@ -51,7 +54,7 @@ const adminRoutes = loggedInRoutes.group({
   ]
 })
 
-exposedRoutes.notFound = {
+FlowRouter.notFound = {
   action(){
     BlazeLayout.render('appBody', { main: 'appNotFound' }) 
   }
@@ -83,13 +86,6 @@ loggedInRoutes.route('/profile', {
   name: 'profile',
   action() {
     BlazeLayout.render('appBody', { main: 'userProfile' })
-  }
-})
-
-adminRoutes.route('/admin', {
-  name: 'admin',
-  action() {
-    BlazeLayout.render('appBody', { main: 'admin' })
   }
 })
 
@@ -129,9 +125,25 @@ loggedInRoutes.route('/gene/:_id', {
   }
 })
 
-loggedInRoutes.route('/userprofile', {
+loggedInRoutes.route('/user', {
   name: 'userProfile',
   action() {
+    console.log('user')
+    BlazeLayout.render('appBody', { main: 'userProfile' })
+  }
+})
+
+adminRoutes.route('/admin', {
+  name: 'admin',
+  action() {
+    BlazeLayout.render('appBody', { main: 'admin' })
+  }
+})
+
+adminRoutes.route('/user/:_id', {
+  //name: 'userProfileAdmin',
+  action() {
+    console.log('user/id')
     BlazeLayout.render('appBody', { main: 'userProfile' })
   }
 })

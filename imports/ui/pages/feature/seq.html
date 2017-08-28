@@ -1,26 +1,4 @@
 <template name="seq">
-  <section id="seq">
-    <hr>
-
-    <div class="btn-group sequence-toggle pull-right" role="group">
-      <button type="button" class="btn btn-default active">Nucleotide</button>
-      <button type="button" class="btn btn-default">Protein</button>
-    </div>
-
-    <div class="btn-group pull-right">
-      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        {{ selectedTranscript }} <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu">
-        {{#each transcripts}}
-          <li><a href="#" class="select-transcript-seq">{{ this.ID }}</a></li>
-        {{/each}}
-      </ul>
-    </div>
-
-    <h3>Sequence</h3>
-    <div class="well">
-      <p class="seq">>{{ selectedTranscript }} <br> {{ seq }}</p>
-    </div>
-  </section>
+  <hr>
+  <div>{{> React component=SeqContainer gene=this}}</div>
 </template>
