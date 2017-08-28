@@ -107,7 +107,7 @@ class _SeqContainer extends React.Component {
   }
 }
 
-export default SeqContainer = createContainer((props)=>{
+export default SeqContainer = createContainer( props => {
   return {
     gene: props.gene
   }

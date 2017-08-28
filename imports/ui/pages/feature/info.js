@@ -10,6 +10,15 @@ import { EditHistory } from '/imports/api/genes/edithistory_collection.js';
 import './info.html';
 import './info.scss';
 
+import Info from './info.jsx';
+
+Template.info.helpers({
+	Info(){
+		return Info;
+	}
+})
+/*
+
 Session.setDefault('reversions',[])
 Session.setDefault('removeAttributes',[])
 Session.setDefault('viewingHistory',false)
@@ -208,3 +217,4 @@ Template.info.events({
 		}
 	}
 })
+*/
