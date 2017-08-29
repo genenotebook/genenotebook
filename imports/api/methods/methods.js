@@ -1,7 +1,10 @@
 import { spawn } from 'child_process';
 import Future from 'fibers/future';
+
 import { Genes } from '/imports/api/genes/gene_collection.js';
 import { Attributes } from '/imports/api/genes/attribute_collection.js';
+import { EditHistory } from '/imports/api/genes/edithistory_collection.js';
+
 import { reverseComplement, translate, getGeneSequences } from '/imports/api/util/util.js';
 
 import hash from 'object-hash';

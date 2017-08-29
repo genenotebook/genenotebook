@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 import { Attributes }from '/imports/api/genes/attribute_collection.js';
 
-Meteor.startup(function () {
+Meteor.startup( () => {
   if ( Meteor.users.find().count() === 0 ) {
         console.log('Adding default admin user');
         const adminId = Accounts.createUser({
@@ -33,7 +33,7 @@ Meteor.startup(function () {
     //since some keys are dynamic it will not allways be present on any gene, 
     //but we do want to filter on this
     const permanentAttributes = ['viewing','editing','expression']
-    permanentAttributes.forEach(function(attributeName){
+    permanentAttributes.forEach( attributeName => {
         console.log(`Adding default filter option: ${attributeName}`)
         Attributes.findAndModify({
             query: { 
@@ -56,7 +56,7 @@ Meteor.startup(function () {
 
   // Start the myJobs queue running
   jobQueue.allow({
-    // Grant full permission to admin only
+    // Grant permission to admin only
     admin: function (userId, method, params) {
       return Roles.userIsInRole(userId,'admin')
     }
