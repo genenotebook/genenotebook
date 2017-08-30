@@ -3,6 +3,12 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
 
+import AdminUsers from './AdminUsers.jsx'
+
+const ADMIN_PAGES = {
+  users: <AdminUsers />
+}
+
 const Nav = (props) => {
   return (
     <ul className="nav nav-tabs">
@@ -41,6 +47,7 @@ class Admin extends React.Component {
         <h3> Admin panel</h3>
         <hr/>
         <Nav pages = { pages } currentPage = {this.state.currentPage} changePage = {this.changePage} />
+        {ADMIN_PAGES[this.state.currentPage]}
       </div>
       
     )
