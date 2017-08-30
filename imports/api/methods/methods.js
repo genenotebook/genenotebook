@@ -142,23 +142,67 @@ Meteor.methods({
 		}
 		Meteor.users.update({'_id':_id},{$set:fields})
 	},
-	updateGeneInfo (ID,update,revert){
-		if (! this.userId) {
-			throw new Meteor.Error('not-authorized');
-		}
-		if (! Roles.userIsInRole(this.userId,'curator')){
-			throw new Meteor.Error('not-authorized');
-		}
-		console.log(ID,update,revert)
-		
-		const revertString = JSON.stringify(revert);
+	updateGeneInfo (geneId,update,revert){
 		const userId = this.userId;
+		if (! userId) {
+			throw new Meteor.Error('not-authorized');
+		}
+		if (! Roles.userIsInRole(userId,'curator')){
+			throw new Meteor.Error('not-authorized');
+		}
+		console.log(`Updating gene ${geneId}`)
+		console.log('Update:',update)
+		console.log('Revert:',revert)
 
-		console.log(revertString)
+		let newAttributes = [];
 
-		Genes.update({ID:ID},update,function(err,res){
+		if (update.hasOwnProperty('$set')){
+			newAttributes = Object.keys(update['$set']).filter( key => {
+				return key.startsWith('attributes.')
+			}).map( key => {
+				return {
+					query: key,
+					name: key.replace('attributes.','')
+				}
+			})
+		}
+			
+		console.log('New attributes:', newAttributes)
+
+		const revertString = JSON.stringify(revert);
+
+		const gene = Genes.findOne({ID: geneId})
+
+		Genes.update({ ID: geneId }, update, (err,res) => {
 			if (!err){
-				EditHistory.insert({ ID: ID, date: new Date(), user: userId, revert: revertString})
+				EditHistory.insert({ 
+					ID: geneId, 
+					date: new Date(), 
+					user: userId, 
+					revert: revertString
+				})
+				newAttributes.forEach( newAttribute => {
+					Attributes.findAndModify({
+						query: {
+							name: newAttribute.name
+						},
+						update: {
+							$setOnInsert: {
+								name: newAttribute.name,
+								query: newAttribute.query,
+								show: true,
+								reserved: false,
+								canEdit: false
+							},
+							$push: {
+								references: gene.reference,
+								tracks: gene.track
+							}
+						},
+						upsert: true,
+						new: true
+					})
+				})
 			}
 		})
 	},
