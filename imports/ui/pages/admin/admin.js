@@ -8,6 +8,7 @@ import { ExperimentInfo } from '/imports/api/transcriptomes/transcriptome_collec
 
 
 import './admin.html';
+import Admin from './admin.jsx';
 
 import './admin_attributes.js';
 import './admin_experiments.js';
@@ -19,6 +20,14 @@ Meteor.subscribe('userList');
 Meteor.subscribe('tracks');
 Meteor.subscribe('experiments');
 Meteor.subscribe('attributes');
+
+Template.admin.helpers({
+	Admin(){
+		return Admin;
+	}
+})
+
+/*
 
 Template.admin.onCreated(function(){
 	this.currentTab = new ReactiveVar('adminUsers');
@@ -59,3 +68,4 @@ Template.admin.onCreated(function () {
 		template.subscribe('attributes');
 	})
 })
+*/

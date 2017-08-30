@@ -379,6 +379,10 @@ class _Info extends React.Component {
 }
 
 export default Info = createContainer( props => {
+  Meteor.subscribe('editHistory');
+  Meteor.subscribe('attributes');
+  Meteor.subscribe('singleGene',props.gene.ID)
+
   const editHistory = EditHistory.find({
       ID: props.gene.ID
     },{
@@ -386,6 +390,7 @@ export default Info = createContainer( props => {
         date: -1
       }
     }).fetch();
+  
   const attributeNames = Attributes.find({
     reserved: false
   },{

@@ -24,8 +24,6 @@ import '../../ui/pages/main/register.js';
 
 import '../../ui/pages/app-not-found.js';
 
-//import '../../ui/pages/profile/userprofile.jsx';
-
 const exposedRoutes = FlowRouter.group({})
 
 const loggedInRoutes = FlowRouter.group({
@@ -43,11 +41,10 @@ const loggedInRoutes = FlowRouter.group({
 })
 
 const adminRoutes = loggedInRoutes.group({
+  prefix: '/admin',
   triggersEnter: [
     () => {
-      console.log(Meteor.userId())
-      console.log(Roles.userIsInRole(Meteor.userId(), 'admin'))
-      if (!Roles.userIsInRole(Meteor.user(),['admin'])){
+      if (!Roles.userIsInRole(Meteor.userId(),['admin'])){
         return FlowRouter.go('/')
       }
     }
@@ -133,10 +130,28 @@ loggedInRoutes.route('/user', {
   }
 })
 
-adminRoutes.route('/admin', {
+adminRoutes.route('/', {
   name: 'admin',
   action() {
+    FlowRouter.redirect('/admin/users')
+    //console.log('adminroute')
+    //BlazeLayout.render('appBody', { main: 'admin' })
+  }
+})
+
+//all admin routes have /admin as prefix
+adminRoutes.route('/:_id', {
+  name: 'admin',
+  action() {
+    console.log('adminroute')
     BlazeLayout.render('appBody', { main: 'admin' })
+  }
+})
+
+adminRoutes.route('/users', {
+  name: 'userAdministration',
+  action(){
+    BlazeLayout.render('appBody')
   }
 })
 
