@@ -1,12 +1,21 @@
-import { Meteor } from 'meteor/meteor';
+//import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { Session } from 'meteor/session';
+//import { Session } from 'meteor/session';
 
-import { FlowRouter } from 'meteor/kadira:flow-router';
+//import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import './login.html';
 import './login.scss';
 
+import Login from './login.jsx';
+
+Template.login.helpers({
+	Login(){
+		return Login
+	}
+})
+
+/*
 Template.login.events({
 	'submit .form-signin':function(event,template){
 		event.preventDefault();
@@ -22,3 +31,4 @@ Template.login.events({
 		}
 	}
 })
+*/

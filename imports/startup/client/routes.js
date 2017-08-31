@@ -162,36 +162,3 @@ adminRoutes.route('/user/:_id', {
     BlazeLayout.render('appBody', { main: 'userProfile' })
   }
 })
-/*
-
-Router.route('gene/:_id',{
-  name:'gene',
-  template:'feature',
-  fastRender:true,
-  data() {
-    return {
-      geneId: this.params._id
-    }
-  },
-  onBeforeAction() {
-    var currentUser = Meteor.user();
-    if ( currentUser ){
-      if ( Roles.userIsInRole(currentUser, 'user') ){
-        this.next()
-      } else {
-        this.render('denied');
-      }
-    } else {
-      this.render('login');
-    }
-  },
-  onStop(){
-    Session.set('search',undefined)
-    delete Session.keys['search']
-    Meteor.call('removeFromViewing',this.params._id);
-    Meteor.call('unlockGene',this.params._id);
-    Session.set('showHistory',false)
-    Session.set('currentUserIsEditing',false)
-  }
-})
-*/

@@ -7,8 +7,6 @@ import React from 'react';
 class UserProfile extends React.Component {
   constructor(props) {
     super(props);
-    //this.resetPassword = this.resetPassword.bind(this);
-    //this.deleteAccount = this.deleteAccount.bind(this);
   }
   resetPassword = (event) => {
     event.preventDefault();
