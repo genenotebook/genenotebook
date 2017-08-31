@@ -31,19 +31,19 @@ class UserProfile extends React.Component {
         <div className="form-group">
           <label htmlFor="username" className="col-sm-4 control-label">Username</label>
           <div className="col-sm-4">
-            <input type="text" className="form-control" id="username" placeholder={user.username}/>
+            <input type="text" className="form-control" id="username" value={user.username}/>
           </div>
         </div>
         <div className="form-group">
           <label htmlFor="firstname" className="col-sm-4 control-label">First name</label>
           <div className="col-sm-4">
-            <input type="text" className="form-control" id="firstname" placeholder={user.profile.first_name}/>
+            <input type="text" className="form-control" id="firstname" value={user.profile.first_name}/>
           </div>
         </div>
         <div className="form-group">
           <label htmlFor="lastname" className="col-sm-4 control-label">Last name</label>
           <div className="col-sm-4">
-            <input type="text" className="form-control" id="lastname" placeholder={user.profile.last_name}/>
+            <input type="text" className="form-control" id="lastname" value={user.profile.last_name}/>
           </div>
         </div>
         {
@@ -54,7 +54,7 @@ class UserProfile extends React.Component {
               <div className="form-group" key={`email${index}`}>
                 <label htmlFor={`email${index}`} className="col-sm-4 control-label">{`Email address ${index}`}</label>
                 <div className="col-sm-4">
-                  <input type="text" className="form-control" id={`email${index}`} placeholder={email.address}/>
+                  <input type="text" className="form-control" id={`email${index}`} value={email.address}/>
                 </div>
               </div>
             )
@@ -83,8 +83,8 @@ class UserProfile extends React.Component {
 
 export default UserProfileContainer = createContainer(() => {
   const userId = FlowRouter.getParam('_id');
-  console.log(userId)
+  Meteor.subscribe('users')
    return {
-    user: Meteor.user()
+    user: userId ? Meteor.users.findOne({_id: userId}) : Meteor.user()
    }
 },UserProfile)

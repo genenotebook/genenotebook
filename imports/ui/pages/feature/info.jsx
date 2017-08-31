@@ -106,7 +106,7 @@ const AttributeInput = (props) => {
   )
 }
 
-class _Info extends React.Component {
+class Info extends React.Component {
   constructor(props){
     super(props)
     this.state = {
@@ -378,7 +378,7 @@ class _Info extends React.Component {
   }
 }
 
-export default Info = createContainer( props => {
+export default createContainer( props => {
   Meteor.subscribe('editHistory');
   Meteor.subscribe('attributes');
   Meteor.subscribe('singleGene',props.gene.ID)
@@ -390,7 +390,7 @@ export default Info = createContainer( props => {
         date: -1
       }
     }).fetch();
-  
+
   const attributeNames = Attributes.find({
     reserved: false
   },{
@@ -402,4 +402,4 @@ export default Info = createContainer( props => {
     editHistory: editHistory,
     attributeNames: attributeNames
   }
-}, _Info)
+}, Info)

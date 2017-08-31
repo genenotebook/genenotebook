@@ -10,10 +10,18 @@ class AdminUsers extends React.Component {
   render(){
     return (
       <div>
-        <ul>
+        <hr/>
+        <ul className='list-group'>
         {
           this.props.users.map(user => {
-            return <li key={user.username}>{user.username}</li>
+            console.log(user)
+            return (
+              <li className='list-group-item' key={user.username}>
+                <p>
+                  <a href={`/admin/user/${user._id}`}> {user.username} </a><small>{`${user.profile.first_name} ${user.profile.last_name}`}</small>
+                </p>
+              </li>
+            )
           })
         }
         </ul>

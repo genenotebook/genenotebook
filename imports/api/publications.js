@@ -134,7 +134,7 @@ publishComposite('attributes', function(){
   }
 })
 
-Meteor.publish(null, function () {
+Meteor.publish('users', function () {
   if (!this.userId){
     this.stop()
     //throw new Meteor.Error('Unauthorized')
