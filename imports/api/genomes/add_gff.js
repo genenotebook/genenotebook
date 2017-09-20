@@ -24,6 +24,10 @@ import { scanGeneAttributes } from '/imports/api/genes/scan_attributes.js';
  */
 querystring.unescape = uri => uri;
 
+/**
+ * [Interval description]
+ * @type {[type]}
+ */
 const Interval = class Interval{
 	constructor({ line, trackName, referenceName , referenceSequences }){
 		assert.equal(line.length,9)
@@ -45,7 +49,7 @@ const Interval = class Interval{
 		this.score = score;
 		this.attributes = formatAttributes(attributes);
 
-		this.ID = this.attributes.ID;
+		this.ID = this.attributes.ID[0];
 		delete this.attributes.ID;
 
 		if (this.attributes.Parent !== undefined){
@@ -69,6 +73,10 @@ const Interval = class Interval{
 	}
 }
 
+/**
+ * [GeneModel description]
+ * @type {[type]}
+ */
 const GeneModel = class GeneModel{
 	constructor(intervals){
 		console.log('constructing genemodel')
@@ -101,6 +109,15 @@ const GeneModel = class GeneModel{
 	}
 }
 
+/**
+ * [ValidatedMethod description]
+ * @param {[type]} options.name:     'addGff'     [description]
+ * @param {[type]} options.validate: new          SimpleSchema({		fileName: {            type:              String        [description]
+ * @param {[type]} referenceName:    {           type:                      String        }                 [description]
+ * @param {[type]} trackName:        {           type:                      String        }	}).validator() [description]
+ * @param {[type]} applyOptions:     {		noRetry: true	}                    [description]
+ * @param {[type]} run({            fileName,    referenceName,             trackName     }){		if          (!            this.userId)  {			throw new Meteor.Error('not-authorized');		}		if (! Roles.userIsInRole(this.userId,'curator')){			throw new Meteor.Error('not-authorized');		}		const existingTrack [description]
+ */
 export const addGff = new ValidatedMethod({
 	name: 'addGff',
 	validate: new SimpleSchema({
@@ -153,6 +170,9 @@ export const addGff = new ValidatedMethod({
 					trackName: trackName,
 					referenceSequences: referenceSequences
 				})
+
+				console.log(interval)
+
 				if (interval.parents === undefined){
 					assert.equal(interval.type, 'gene');
 					if ( !isEmpty(intervals) ) {
@@ -190,6 +210,11 @@ export const addGff = new ValidatedMethod({
 	}
 })
 
+/**
+ * [description]
+ * @param  {[type]} referenceName [description]
+ * @return {[type]}               [description]
+ */
 const getReferenceSequences = (referenceName) => {
 	const headers = References.find({
 		referenceName: referenceName
@@ -204,8 +229,8 @@ const getReferenceSequences = (referenceName) => {
 		return headers
 	},[])
 
-	const referenceSequences = headers.reduce((sequences,header) => {
-		let sequence = References.find({
+	const referenceSequences = headers.reduce((sequences, header) => {
+		const sequence = References.find({
 			referenceName: referenceName,
 			header: header
 		},{
@@ -217,4 +242,17 @@ const getReferenceSequences = (referenceName) => {
 		return sequences
 	},{})
 	return referenceSequences
+}
+
+/**
+ * [description]
+ * @param  {[type]} attributeString [description]
+ * @return {[type]}                 [description]
+ */
+const formatAttributes = (attributeString) => {
+	return attributeString.split(';').reduce((attributes, stringPart) => {
+		const [key, value] = stringPart.split('=')
+		attributes[key] = value.split(',').map(decodeURIComponent)
+		return attributes;
+	}, {})
 }

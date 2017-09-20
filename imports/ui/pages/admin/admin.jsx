@@ -14,9 +14,12 @@ const Nav = (props) => {
     <ul className="nav nav-tabs">
       {
         props.pages.map(page => {
+          const url = page.toLowerCase().replace(' ','_')
           return (
-            <li key={page} role="presentation" className={page.toLowerCase() === props.currentPage ? 'active' : null}>
-              <a href={`/admin/${page.toLowerCase()}`} name={page.toLowerCase()} onClick={props.changePage}>{ page }</a>
+            <li key={ page } role="presentation" className={ url === props.currentPage && 'active' }>
+              <a href={ `/admin/${url}` } name={ url } onClick={props.changePage}> 
+                { page } 
+              </a>
             </li>
           )
         })
@@ -41,7 +44,7 @@ class Admin extends React.Component {
 
   render(){
     console.log(this.state)
-    const pages = ['Users','Genomes','Tracks','Experiments','Attributes','Jobs']
+    const pages = ['Users','User Groups','Genomes','Tracks','Experiments','Attributes','Jobqueue']
     return (
       <div className="container">
         <h3> Admin panel</h3>

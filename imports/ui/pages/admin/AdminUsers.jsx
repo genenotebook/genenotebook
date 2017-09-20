@@ -18,7 +18,8 @@ class AdminUsers extends React.Component {
             return (
               <li className='list-group-item' key={user.username}>
                 <p>
-                  <a href={`/admin/user/${user._id}`}> {user.username} </a><small>{`${user.profile.first_name} ${user.profile.last_name}`}</small>
+                  <a href={`/admin/user/${user._id}`}> {user.username} </a>
+                  <small>{`${user.profile.first_name} ${user.profile.last_name}`}</small>
                 </p>
               </li>
             )
