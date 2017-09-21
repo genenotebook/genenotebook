@@ -7,12 +7,14 @@ import AdminUsers from './AdminUsers.jsx';
 import AdminGenomes from './AdminGenomes.jsx';
 import AdminTracks from './AdminTracks.jsx';
 import AdminAttributes from './AdminAttributes.jsx';
+import AdminTranscriptomes from './AdminTranscriptomes.jsx';
 
 const ADMIN_PAGES = {
   users: <AdminUsers />,
   genomes: <AdminGenomes />,
   tracks: <AdminTracks />,
-  attributes: <AdminAttributes />
+  attributes: <AdminAttributes />,
+  transcriptomes: <AdminTranscriptomes />
 }
 
 const Nav = (props) => {
@@ -50,7 +52,7 @@ class Admin extends React.Component {
 
   render(){
     console.log(this.state)
-    const pages = ['Users','User Groups','Genomes','Tracks','Experiments','Attributes','Jobqueue']
+    const pages = ['Users','User Groups','Genomes','Tracks','Transcriptomes','Attributes','Jobqueue']
     return (
       <div className="container">
         <h3> Admin panel</h3>
