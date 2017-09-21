@@ -3,10 +3,14 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
 
-import AdminUsers from './AdminUsers.jsx'
+import AdminUsers from './AdminUsers.jsx';
+import AdminGenomes from './AdminGenomes.jsx';
+import AdminTracks from './AdminTracks.jsx'
 
 const ADMIN_PAGES = {
-  users: <AdminUsers />
+  users: <AdminUsers />,
+  genomes: <AdminGenomes />,
+  tracks: <AdminTracks />
 }
 
 const Nav = (props) => {
