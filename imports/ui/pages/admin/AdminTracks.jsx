@@ -19,7 +19,7 @@ class AdminTracks extends React.Component {
           this.props.tracks.map(track => {
             return (
               <li className='list-group-item' key={track._id}>
-                <p>
+                <p>{/*ADD BLAST DB CREATION BUTTONS*/}
                   <a href={`/admin/track/${track.trackName}`}> {track.trackName} </a>
                   <small>{`Reference: ${track.reference}`}</small>
                 </p>

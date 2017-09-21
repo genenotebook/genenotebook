@@ -5,12 +5,14 @@ import React from 'react';
 
 import AdminUsers from './AdminUsers.jsx';
 import AdminGenomes from './AdminGenomes.jsx';
-import AdminTracks from './AdminTracks.jsx'
+import AdminTracks from './AdminTracks.jsx';
+import AdminAttributes from './AdminAttributes.jsx';
 
 const ADMIN_PAGES = {
   users: <AdminUsers />,
   genomes: <AdminGenomes />,
-  tracks: <AdminTracks />
+  tracks: <AdminTracks />,
+  attributes: <AdminAttributes />
 }
 
 const Nav = (props) => {

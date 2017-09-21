@@ -171,8 +171,6 @@ export const addGff = new ValidatedMethod({
 					referenceSequences: referenceSequences
 				})
 
-				console.log(interval)
-
 				if (interval.parents === undefined){
 					assert.equal(interval.type, 'gene');
 					if ( !isEmpty(intervals) ) {
