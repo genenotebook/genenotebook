@@ -8,7 +8,7 @@ export const updateUserInfo = new ValidatedMethod({
   name: 'updateUserInfo',
   validate: new SimpleSchema({
     userId: { type: String },
-    update: { type: Object }
+    update: { type: Object, blackbox: true }
   }).validator(),
   applyOptions: {
     noRetry: true
