@@ -7,6 +7,8 @@ import './genomes/add_reference.js';
 import './genomes/add_gff.js';
 import './genes/interproscan.js'
 import './blast/makeblastdb.js';
+import './blast/hasblastdb.js';
+import './blast/removeblastdb.js';
 import './users/users.js';
 
 import './methods/methods.js';

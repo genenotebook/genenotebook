@@ -17,7 +17,7 @@ jobQueue.processJobs(
   async function(job, callback){
     console.log('processing makeblastdb')
     console.log(job.data)
-    const { trackName, dbType, geneSequenceJobId } = job.data;
+    const { trackName, dbType } = job.data;
 
 
     const trackId = trackName.split(/ |\./).join('_')
