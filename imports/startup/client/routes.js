@@ -44,7 +44,11 @@ const adminRoutes = loggedInRoutes.group({
   prefix: '/admin',
   triggersEnter: [
     () => {
-      if (!Roles.userIsInRole(Meteor.userId(),['admin'])){
+      console.log('admin route check')
+      console.log(Meteor.userId())
+      const isAdmin = Roles.userIsInRole(Meteor.userId(),'admin');
+      console.log(isAdmin)
+      if (!isAdmin){
         return FlowRouter.go('/')
       }
     }

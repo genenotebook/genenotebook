@@ -36,7 +36,8 @@ export const makeBlastDb = new ValidatedMethod({
     if (!this.isSimulation){
       const jobId = new Job(jobQueue, 'makeBlastDb', {
         trackName: trackName,
-        dbType: dbType
+        dbType: dbType,
+        user: Meteor.userId()
       }).priority('normal').save()
 
       return jobId

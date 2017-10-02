@@ -8,13 +8,15 @@ import AdminGenomes from './AdminGenomes.jsx';
 import AdminTracks from './AdminTracks.jsx';
 import AdminAttributes from './AdminAttributes.jsx';
 import AdminTranscriptomes from './AdminTranscriptomes.jsx';
+import AdminJobqueue from './AdminJobqueue';
 
 const ADMIN_PAGES = {
   users: <AdminUsers />,
   genomes: <AdminGenomes />,
   tracks: <AdminTracks />,
   attributes: <AdminAttributes />,
-  transcriptomes: <AdminTranscriptomes />
+  transcriptomes: <AdminTranscriptomes />,
+  jobqueue: <AdminJobqueue />
 }
 
 const Nav = (props) => {

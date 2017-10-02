@@ -185,6 +185,7 @@ Meteor.publish({
       //throw new Meteor.Error('Unauthorized')
     }
     const roles = Roles.getRolesForUser(publication.userId);
+    console.log(`tracks publication for user ${publication.userId} with roles ${roles}`)
     return Tracks.find({
       permissions: {
         $in: roles

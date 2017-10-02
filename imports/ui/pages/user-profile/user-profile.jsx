@@ -83,12 +83,12 @@ class UserProfile extends React.Component {
 
   saveChanges = (event) => {
     event.preventDefault();
-    const update = diff(this.props.user,this.state);
-    console.log(update);
+    const updateQuery = diff(this.props.user,this.state);
+    console.log(updateQuery);
     console.log(this.props)
     updateUserInfo.call({
       userId: this.props.user._id,
-      update: update
+      update: updateQuery
     })
   }
 
