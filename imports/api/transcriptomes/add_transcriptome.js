@@ -5,7 +5,7 @@ import assert from 'assert';
 import Baby from 'babyparse';
 import fs from 'fs';
 
-import Tracks from '/imports/api/genomes/track_collection.js';
+import { Tracks } from '/imports/api/genomes/track_collection.js';
 import { Genes } from '/imports/api/genes/gene_collection.js';
 import { ExperimentInfo, Transcriptomes } from '/imports/api/transcriptomes/transcriptome_collection.js';
 

@@ -1,10 +1,5 @@
 <template name="userProfile">
 	<div class="container">
-		<button></button>
-		<h3> User profile</h3>
-		<hr>
-		{{currentUser.username}}
-		{{currentUser.profile.first_name}}
-		{{currentUser.profile.last_name}}
+		{{> React component=UserProfileContainer }}
 	</div>
 </template>

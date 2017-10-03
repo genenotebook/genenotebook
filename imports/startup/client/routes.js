@@ -1,5 +1,7 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+import { ReactLayout } from 'meteor/kadira:react-layout';
+import { Roles } from 'meteor/alanning:roles';
 import { Session } from 'meteor/session';
 //import { AccountsTemplates } from 'meteor/useraccounts:core';
 
@@ -39,16 +41,21 @@ const loggedInRoutes = FlowRouter.group({
 })
 
 const adminRoutes = loggedInRoutes.group({
+  prefix: '/admin',
   triggersEnter: [
     () => {
-      if (!Roles.userIsInRole(Meteor.user(),['admin'])){
+      console.log('admin route check')
+      console.log(Meteor.userId())
+      const isAdmin = Roles.userIsInRole(Meteor.userId(),'admin');
+      console.log(isAdmin)
+      if (!isAdmin){
         return FlowRouter.go('/')
       }
     }
   ]
 })
 
-exposedRoutes.notFound = {
+FlowRouter.notFound = {
   action(){
     BlazeLayout.render('appBody', { main: 'appNotFound' }) 
   }
@@ -80,13 +87,6 @@ loggedInRoutes.route('/profile', {
   name: 'profile',
   action() {
     BlazeLayout.render('appBody', { main: 'userProfile' })
-  }
-})
-
-adminRoutes.route('/admin', {
-  name: 'admin',
-  action() {
-    BlazeLayout.render('appBody', { main: 'admin' })
   }
 })
 
@@ -126,36 +126,43 @@ loggedInRoutes.route('/gene/:_id', {
   }
 })
 
-/*
-
-Router.route('gene/:_id',{
-  name:'gene',
-  template:'feature',
-  fastRender:true,
-  data() {
-    return {
-      geneId: this.params._id
-    }
-  },
-  onBeforeAction() {
-    var currentUser = Meteor.user();
-    if ( currentUser ){
-      if ( Roles.userIsInRole(currentUser, 'user') ){
-        this.next()
-      } else {
-        this.render('denied');
-      }
-    } else {
-      this.render('login');
-    }
-  },
-  onStop(){
-    Session.set('search',undefined)
-    delete Session.keys['search']
-    Meteor.call('removeFromViewing',this.params._id);
-    Meteor.call('unlockGene',this.params._id);
-    Session.set('showHistory',false)
-    Session.set('currentUserIsEditing',false)
+loggedInRoutes.route('/user', {
+  name: 'userProfile',
+  action() {
+    console.log('user')
+    BlazeLayout.render('appBody', { main: 'userProfile' })
   }
 })
-*/
+
+adminRoutes.route('/', {
+  name: 'admin',
+  action() {
+    FlowRouter.redirect('/admin/users')
+    //console.log('adminroute')
+    //BlazeLayout.render('appBody', { main: 'admin' })
+  }
+})
+
+//all admin routes have /admin as prefix
+adminRoutes.route('/:_id', {
+  name: 'admin',
+  action() {
+    console.log('adminroute')
+    BlazeLayout.render('appBody', { main: 'admin' })
+  }
+})
+
+adminRoutes.route('/users', {
+  name: 'userAdministration',
+  action(){
+    BlazeLayout.render('appBody')
+  }
+})
+
+adminRoutes.route('/user/:_id', {
+  //name: 'userProfileAdmin',
+  action() {
+    console.log('user/id')
+    BlazeLayout.render('appBody', { main: 'userProfile' })
+  }
+})

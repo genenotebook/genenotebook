@@ -10,6 +10,12 @@ import { Job } from 'meteor/vsivsi:job-collection'
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
 
+/**
+ * makeBlastDb validated method: submits makeblastdb job to jobqueue, call this from the client
+ * @param  {String} options.trackName Name of the annotation track
+ * @param  {String} options.dbType    Either nucl or prot
+ * @return {String}                   jobId of the makeblastdb job
+ */
 export const makeBlastDb = new ValidatedMethod({
   name: 'makeBlastDb',
   validate: new SimpleSchema({
@@ -30,7 +36,8 @@ export const makeBlastDb = new ValidatedMethod({
     if (!this.isSimulation){
       const jobId = new Job(jobQueue, 'makeBlastDb', {
         trackName: trackName,
-        dbType: dbType
+        dbType: dbType,
+        user: Meteor.userId()
       }).priority('normal').save()
 
       return jobId

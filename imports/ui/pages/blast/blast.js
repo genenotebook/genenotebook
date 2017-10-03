@@ -1,3 +1,11 @@
+import { Template } from 'meteor/templating';
+
+import SubmitBlast from './SubmitBlast.jsx';
+
+import './blast.html';
+import './blast.scss';
+
+/*
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
@@ -10,15 +18,20 @@ import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 
 import { Tracks } from '/imports/api/genomes/track_collection.js';
 
-//import { blast } from '/imports/api/methods/blast.js';
-
 import './blast.html';
 import './blast.scss';
 
 import './blasthit.js';
 import './blast-result-plot.js';
+*/
 
+Template.blast.helpers({
+	SubmitBlast(){
+		return SubmitBlast
+	}
+})
 
+/*
 Meteor.subscribe('tracks')
 
 const BLASTTYPES = {'Nucleotide':{'Nucleotide':'blastn','Protein':'blastx','Translated nucleotide':'tblastx'},
@@ -79,6 +92,7 @@ Template.blast.helpers({
 	}
 })
 
+
 Template.blast.events({
 	'input #blast_seq':function(event){
 		const input = event.currentTarget.value;
@@ -110,7 +124,8 @@ Template.blast.events({
 		const options = {
 			blastType: BLASTTYPES[seqType][dbType],
 			input: Session.get('blastInput'),
-			trackNames: $('.track-select input[type="checkbox"]:checked').map( (i, el) => el.id ).get()
+			trackNames: $('.track-select input[type="checkbox"]:checked').map( (i, el) => el.id ).get(),
+			user: Meteor.userId()
 		}
 
 		const job = new Job(jobQueue, 'blast', options)
@@ -130,7 +145,7 @@ Template.blast.events({
 				Bert.alert('BLAST finished!','success','growl-top-right');
 			}
 		});
-		*/
+		
 	}
 })
 
@@ -140,3 +155,4 @@ Template.blast.onCreated(function () {
 		template.subscribe('tracks');
 	})
 })
+*/

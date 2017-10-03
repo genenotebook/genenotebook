@@ -6,7 +6,40 @@ import SimpleSchema from 'simpl-schema';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
 import { Attributes } from '/imports/api/genes/attribute_collection.js';
+import { Tracks } from '/imports/api/genomes/track_collection.js';
 
+/**
+ * Map function for mongodb mapreduce
+ * @return {[type]} [description]
+ */
+const mapFunction = function(){
+	printjson('map function');
+	//Use 'var' instead of 'let'! This will be executed in mongodb, which does not know 'const/let'
+	var gene = this;
+	if (typeof gene.attributes !== 'undefined'){
+		emit(null, { attributeKeys: Object.keys(gene.attributes) })
+	}
+}
+
+/**
+ * Reduce function for mongodb mapreduce
+ * @param  {[type]} _key    [description]
+ * @param  {[type]} values [description]
+ * @return {[type]}        [description]
+ */
+const reduceFunction = function(_key, values){
+	printjson('reduce function')
+	//Use 'var' instead of 'let'! This will be executed in mongodb, which does not know 'const/let'
+	const attributeKeySet = new Set()
+	values.forEach(value => {
+		value.attributeKeys.forEach(attributeKey => {
+			attributeKeySet.add(attributeKey)
+		})
+	})
+	//Use 'var' instead of 'let'! This will be executed in mongodb, which does not know 'const/let'
+	const attributeKeys = Array.from(attributeKeySet)
+	return { attributeKeys: attributeKeys }
+}
 
 export const scanGeneAttributes = new ValidatedMethod({
 	name: 'scanAttributes',
@@ -17,7 +50,7 @@ export const scanGeneAttributes = new ValidatedMethod({
 		noRetry: true
 	},
 	run({ trackName }){
-		console.log(trackName)
+		console.log(`scanGeneAttributes: ${trackName}`)
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}
@@ -25,72 +58,56 @@ export const scanGeneAttributes = new ValidatedMethod({
 			throw new Meteor.Error('not-authorized');
 		}
 
+		const track = Tracks.findOne({trackName: trackName})
+
+		//check if the track exists
+		if (typeof track === 'undefined'){
+			throw new Meteor.Error(`Unknown track: ${trackName}`)
+		}
+
 		//check that it is running on the server
 		if ( !this.isSimulation ){
 			this.unblock();
-
+			const mapReduceOptions = { 
+					out: { inline: 1 },
+					query: { track: trackName }
+				}
 			//mapreduce to find all keys for all genes, this takes a while
-			const attributeScan = Genes.rawCollection().mapReduce(
-				function(){
-					//map function
-					let gene = this;
-					Object.keys(gene.attributes).forEach( (key) => {
-						emit(key,{ references: [ gene.reference ] })
-					})
-				},
-				function(key,values){
-					//reduce function
-					let referenceSet = new Set()
-					values.forEach( (value) => {
-						value.references.forEach( (ref) => {
-							referenceSet.add(ref)
+			console.log('mapreducing')
+			const attributeScan = Genes.rawCollection()
+				.mapReduce(mapFunction, reduceFunction, mapReduceOptions)
+				.then(results => {
+					console.log('mapreduce finished')
+					results.forEach( result => {
+						const attributeKeys = result.value.attributeKeys;
+						attributeKeys.forEach(attributeKey => {
+							Attributes.findAndModify({ 
+								query: { 
+									name: attributeKey 
+								}, 
+								update: {
+									$addToSet: {
+										tracks: trackName,
+										references: track.reference
+									},
+									$setOnInsert: { 
+										name: attributeKey,
+										query: `attributes.${attributeKey}`,
+										show: true, 
+										canEdit: false, 
+										reserved: false 
+									} 
+								}, 
+								new: true, 
+								upsert: true 
+							}) 
 						})
 					})
-					
-					let references = Array.from(referenceSet)
-					return { references: references }
-				},
-				{ 
-					out: { 
-						inline: 1 
-					},
-					query: {
-						track: trackName
-					}
-				}
-			).then(result => {
-				result.forEach(feature => {
-					let name = feature._id;
-					let references = feature.value.references;
-
-					Attributes.findAndModify({ 
-						query: { 
-							name: name 
-						}, 
-						update: {
-							$set: {
-								references: references
-							},
-							$addToSet: {
-								tracks: trackName
-							},
-							$setOnInsert: { 
-								name: name,
-								query: `attributes.${name}`,
-								show: true, 
-								canEdit: false, 
-								reserved: false 
-							} 
-						}, 
-						new: true, 
-						upsert: true 
-					}) 
 				})
-			}).catch(err => {
-				console.log(err)
-				throw new Meteor.Error(err)
-			})
-
+				.catch(err => {
+					console.log(err)
+					throw new Meteor.Error(err)
+				})
 			return true
 		}
 	}

@@ -62,8 +62,5 @@ if (!module.parent){
 	}).catch(error => {
 		console.log(error)
 	})
-
-
-	
 }
 
