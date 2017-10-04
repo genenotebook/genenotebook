@@ -6,6 +6,8 @@ import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 
 import './blastResult.html'
 
+import './blast-result-plot.js';
+
 const getJob = jobId => {
   return new Promise( (resolve,reject) => {
     jobQueue.getJob(jobId, (err,res) => {

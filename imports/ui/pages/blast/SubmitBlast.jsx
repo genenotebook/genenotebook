@@ -1,12 +1,20 @@
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
 import Select from 'react-select';
 import update from 'immutability-helper';
 
+import { submitBlastJob } from '/imports/api/blast/submitblastjob.js';
 import { Tracks } from '/imports/api/genomes/track_collection.js';
 
+
+/**
+ * Function to determine whether a given sequence string is DNA or protein
+ * @param  {String} seq Input sequence, unknown if DNA or protein
+ * @return {String}     Either 'Nucleotide' or 'Protein'
+ */
 function determineSeqType(seq){
   const dna = 'cgatCGAT'
   let fractionDna = 0
@@ -19,6 +27,11 @@ function determineSeqType(seq){
   return seqType
 }
 
+/**
+ * Textarea input field to input sequences for blasting
+ * @param  {Object} props [description]
+ * @return {SequenceInput}       [description]
+ */
 const SequenceInput = (props) => {
   return (
     <div>
@@ -58,12 +71,12 @@ const SequenceInput = (props) => {
 }
 
 const TrackSelect = (props) => {
-  console.log(props.selectedTracks)
   return (
     <div>
       <label> Select tracks: </label>
         {
           props.tracks.map(track => {
+            console.log(props.selectedTracks,track.trackName,props.selectedTracks.indexOf(track.trackName))
             return (
               <div className="checkbox track-select" key={track.trackName}>
                 <input 
@@ -77,15 +90,46 @@ const TrackSelect = (props) => {
                 <label htmlFor={ track.trackName }>{ track.trackName }</label>
               </div>
             )
-            /*<input
-              name={track.trackName}
-              key={track.trackName}
-              type='checkbox'
-              checked={props.selectedTracks.indexOf(track.trackName) > 0}
-              onChange={props.toggleTrackSelect}
-            />*/
           })
         }
+    </div>
+  )
+}
+
+const SubmitButtons = (props) => {
+  return (
+    <div className='btn-group'>
+      <div className="btn-group">
+        <button type="button" className="btn btn-default dropdown-toggle" data-toggle="dropdown">
+          <strong>{props.selectedDbType}</strong> database <span className="caret"></span>
+        </button>
+        <ul className="dropdown-menu">
+        {
+          props.dbTypes.map(dbType => {
+            return (
+              <li key={dbType}>
+                <a 
+                  className="db-select" 
+                  id={dbType}
+                  onClick={props.selectDbType}
+                >
+                  {dbType} database
+                </a>
+              </li>
+            )
+          })
+        }
+        </ul>
+      </div>
+      <div className='btn-group'>
+        <button 
+          type="button" 
+          className="btn btn-primary" 
+          id="submit-blast"
+          onClick={props.submit}>
+          <span className="glyphicon glyphicon-search" /> {props.blastType.toUpperCase()}
+        </button>
+      </div>
     </div>
   )
 }
@@ -95,10 +139,27 @@ class SubmitBlast extends React.Component {
     super(props)
     this.state = {
       input: undefined,
-      seqType: undefined,
+      seqType: 'Nucleotide',
+      dbType: 'Nucleotide',
       selectedTracks: []
     }
   }
+
+  /**
+  * Hard coded map of sequence types to blast database types that selects the appropriate blast program
+  * @type {Object}
+  */
+   BLASTTYPES = {
+    'Nucleotide': {
+        'Nucleotide': 'blastn',
+        'Protein': 'blastx',
+        'Translated nucleotide': 'tblastx'
+      },
+    'Protein': {
+      'Protein': 'blastp',
+      'Translated nucleotide': 'tblastn'
+    }
+  };
 
   enterSequence = event => {
     event.preventDefault();
@@ -113,13 +174,23 @@ class SubmitBlast extends React.Component {
   selectSeqType = event => {
     event.preventDefault();
     const seqType = event.target.id;
+    const dbType = Object.keys(this.BLASTTYPES[seqType])[0]
     this.setState({
-      seqType: seqType
+      seqType: seqType,
+      dbType: dbType
+    })
+  }
+
+  selectDbType = event => {
+    event.preventDefault();
+    const dbType = event.target.id;
+    console.log('selectDbType',dbType)
+    this.setState({
+      dbType: dbType
     })
   }
 
   toggleTrackSelect = event => {
-    event.preventDefault();
     const trackName = event.target.id;
     const index = this.state.selectedTracks.indexOf(trackName);
     console.log(index,trackName)
@@ -137,73 +208,76 @@ class SubmitBlast extends React.Component {
         }
       })
     }
-    console.log(newState)
+    console.log('toggleTrackSelect',newState)
     this.setState(newState)
   }
 
+  submit = event => {
+    event.preventDefault();
+    const blastType = this.BLASTTYPES[this.state.seqType][this.state.dbType];
+    submitBlastJob.call({
+      blastType: blastType,
+      input: this.state.input,
+      trackNames: this.state.selectedTracks
+    }, (err,res) => {
+      console.log(err)
+      FlowRouter.go(`/blast/${res}`)
+    })
+  }
+
   render(){
-    console.log(this.props)
     return (
       this.props.loading ? 
       <div>LOADING</div> :
       <form role="form" id="blast">
         <div className="panel panel-default">
           <div className="panel-heading">Blast search</div>
-            <div className="panel-body">
-              <SequenceInput 
-                value = {this.state.input}
-                seqType = {this.state.seqType}
-                enterSequence = {this.enterSequence}
-                selectSeqType = {this.selectSeqType}
-              />
-            </div>
-        <ul className="list-group">
-          <li className="list-group-item">
-            <TrackSelect 
-              tracks = {this.props.tracks}
-              selectedTracks = {this.state.selectedTracks}
-              toggleTrackSelect={this.toggleTrackSelect}
+          <div className="panel-body">
+            <SequenceInput 
+              value = {this.state.input}
+              seqType = {this.state.seqType}
+              enterSequence = {this.enterSequence}
+              selectSeqType = {this.selectSeqType}
             />
-          </li>
-          <li className="list-group-item">
-            Advanced options ...
-          </li>
-        </ul>
-        <div className="panel-footer">
+          </div>
+          <ul className="list-group">
+            <li className="list-group-item">
+              <TrackSelect 
+                tracks = {this.props.tracks}
+                selectedTracks = {this.state.selectedTracks}
+                toggleTrackSelect={this.toggleTrackSelect}
+              />
+            </li>
+            <li className="list-group-item">
+              Advanced options ...
+            </li>
+          </ul>
+          <div className="panel-footer">
             <div className="row">
               <label className="col-md-4">Search a ...</label>
-              <div className="col-md-6 btn-group">
-              {/*
-                {{#if input}}
-                  {{#if anyTrack}}
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                        <strong>{{dbtype}}</strong> database
-                        <span class="caret"></span>
-                      </button>
-                      <ul class="dropdown-menu">
-                        {{#each dbtypes}}
-                          <li><a href="#" class="db-select" id="{{this}}">{{this}} database</a></li>
-                        {{/each}}
-                      </ul>
-                    </div>
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-primary" id="submit-blast">
-                        <span class="glyphicon glyphicon-search"></span>
-                        {{blasttype}}
-                      </button>
-                    </div>
-                  {{else}}
-                    <button type="button" class="btn disabled">
-                    <span class="glyphicon glyphicon-question-sign"></span> Select a track
-                    </button>
-                  {{/if}}
-                {{else}}
-                  <button type="button" class="btn disabled">
-                  <span class="glyphicon glyphicon-question-sign"></span> Enter sequence
+              <div className="col-md-6">
+                {
+                  !this.state.input &&
+                  <button type="button" className="btn disabled">
+                    <span className="glyphicon glyphicon-question-sign"></span> Enter sequence
                   </button>
-                {{/if}}
-              */}
+                }
+                {
+                  this.state.input && this.state.selectedTracks.length == 0 &&
+                  <button type="button" className="btn disabled">
+                    <span className="glyphicon glyphicon-question-sign"></span> Select track
+                  </button>
+                }
+                {
+                  this.state.input && this.state.selectedTracks.length > 0 && 
+                  <SubmitButtons 
+                    selectedDbType = {this.state.dbType}
+                    dbTypes = {Object.keys(this.BLASTTYPES[this.state.seqType])}
+                    selectDbType = {this.selectDbType}
+                    blastType = {this.BLASTTYPES[this.state.seqType][this.state.dbType]}
+                    submit = {this.submit}
+                  />
+                }
               </div>
             </div>
           </div>

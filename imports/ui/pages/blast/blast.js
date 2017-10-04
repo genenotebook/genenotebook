@@ -5,25 +5,6 @@ import SubmitBlast from './SubmitBlast.jsx';
 import './blast.html';
 import './blast.scss';
 
-/*
-import { Meteor } from 'meteor/meteor';
-import { Template } from 'meteor/templating';
-import { Session } from 'meteor/session';
-import { Tracker } from 'meteor/tracker';
-import { FlowRouter } from 'meteor/kadira:flow-router';
-
-import { Job } from 'meteor/vsivsi:job-collection';
-
-import jobQueue from '/imports/api/jobqueue/jobqueue.js';
-
-import { Tracks } from '/imports/api/genomes/track_collection.js';
-
-import './blast.html';
-import './blast.scss';
-
-import './blasthit.js';
-import './blast-result-plot.js';
-*/
 
 Template.blast.helpers({
 	SubmitBlast(){

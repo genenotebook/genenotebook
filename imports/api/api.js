@@ -9,6 +9,7 @@ import './genes/interproscan.js'
 import './blast/makeblastdb.js';
 import './blast/hasblastdb.js';
 import './blast/removeblastdb.js';
+import './blast/submitblastjob.js';
 import './users/users.js';
 
 import './methods/methods.js';

@@ -10,7 +10,7 @@ import { Creatable as Select } from 'react-select';
 import '/node_modules/react-select/dist/react-select.css';
 import update from 'immutability-helper';
 import pick from 'lodash/pick';
-import isEqual from 'lodash/isequal';
+import { isEqual }from 'lodash';
 import { diff } from 'rus-diff';
 
 import './user-profile.scss';

@@ -31,7 +31,8 @@ jobQueue.processJobs(
     const {
       blastType,
       input,
-      trackNames
+      trackNames,
+      user
     } =  job.data
 
     const dbType = DB_TYPES[blastType]
@@ -56,7 +57,7 @@ jobQueue.processJobs(
       })
       .catch( error => {
         console.error(error)
-        job.fail(err)
+        job.fail(error)
       })
     job.done(blastResult)
     callback()
