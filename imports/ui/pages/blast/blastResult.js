@@ -4,9 +4,19 @@ import { ReacteDict } from 'meteor/reactive-dict';
 
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 
+import BlastResult from './BlastResult.jsx';
+
 import './blastResult.html'
 
 import './blast-result-plot.js';
+
+Template.blastResult.helpers({
+  BlastResult(){
+    return BlastResult
+  }
+})
+
+/*
 
 const getJob = jobId => {
   return new Promise( (resolve,reject) => {
@@ -72,3 +82,4 @@ Template.blastResult.onCreated( function(){
     })
   })
 })
+*/

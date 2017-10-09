@@ -1,8 +1,11 @@
 <template name="blastResult">
+  <div>
+    {{> React component=BlastResult}}
+  </div>
+  <!--
   {{ #if isJob }}
     {{ #if isCompleted }}
       {{ #with results }}
-        <!-- show results -->
         <div class="panel panel-default">
           <div class="panel-heading">Blast results</div>
             {{>blastResultPlot this}}
@@ -20,11 +23,10 @@
         </div>
       {{ /with }}
     {{ else }}
-      <!-- results are not ready yet -->
       {{ >loading }}
     {{ /if }}
   {{ else }}
   404
-    <!-- not a valid job id -->
   {{ /if }}
+-->
 </template>
