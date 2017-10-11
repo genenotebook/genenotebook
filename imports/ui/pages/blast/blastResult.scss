@@ -2,9 +2,9 @@ textarea {
 	font-family: Menlo,sans-serif;
 	font-size: 0.8em;
 }
-.well.blast-out-seq{
+.well.alignment-text{
 	overflow: auto;
-	white-space:nowrap;
+	word-wrap: normal;
 	font-family: Menlo,sans-serif;
 	font-size: 0.8em;
 }

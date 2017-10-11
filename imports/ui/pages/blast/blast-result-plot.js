@@ -5,7 +5,7 @@ import { interpolateGreys } from 'd3-scale-chromatic';
 
 import './blast-result-plot.html';
 
- 
+
 Template.blastResultPlot.rendered = function(){
 	const barheight = 12;
 	console.log(this.data)

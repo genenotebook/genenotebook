@@ -25,7 +25,7 @@ jobQueue.processJobs(
     concurrency: 1,
     payload: 1
   },
-  async (job, callback) => {
+  (job, callback) => {
     console.log(job.data)
 
     const {
@@ -51,15 +51,23 @@ jobQueue.processJobs(
 
     const options = ['-db',dbs,'-outfmt','5','-num_alignments','20']
 
-    const blastResult = await spawn(blastType, options, input)
+    console.log(`${blastType} ${options.join(' ')} ${input.substring(0,3)}...${input.substring(input.length - 3, input.length)}`)
+
+    spawn(blastType, options, input)
       .then( result => {
+        console.log('blast finished')
         return xml2js(result.toString())
       })
-      .catch( error => {
-        console.error(error)
-        job.fail(error)
+      .then( resultJson => {
+        job.done(resultJson)
+        callback()
       })
-    job.done(blastResult)
-    callback()
+      .catch( error => {
+        console.log(error)
+        job.fail(error.process)
+        callback()
+      })
+    //job.done(blastResult)
+    //callback()
   }
 )

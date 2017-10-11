@@ -2,31 +2,4 @@
   <div>
     {{> React component=BlastResult}}
   </div>
-  <!--
-  {{ #if isJob }}
-    {{ #if isCompleted }}
-      {{ #with results }}
-        <div class="panel panel-default">
-          <div class="panel-heading">Blast results</div>
-            {{>blastResultPlot this}}
-          <div class="panel-body">
-          </div>
-            <ul class="list-group">
-            
-            {{#each hits }}
-              <li class="list-group-item">
-                {{>blasthit}}
-              </li>
-            {{/each}}
-
-            </ul>
-        </div>
-      {{ /with }}
-    {{ else }}
-      {{ >loading }}
-    {{ /if }}
-  {{ else }}
-  404
-  {{ /if }}
--->
 </template>
