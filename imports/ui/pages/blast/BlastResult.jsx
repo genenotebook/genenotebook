@@ -53,7 +53,8 @@ const isLoading = (props) => {
 }
 
 const isWaiting = (props) => {
-  const isWaiting = props.job.status === 'waiting';
+  const waitingStates = ['waiting','ready']
+  const isWaiting = waitingStates.indexOf(props.job.status) > 0;//props.job.status === 'waiting';
   console.log(`check isWaiting ${isWaiting}`);
   return isWaiting;
 }
@@ -65,7 +66,7 @@ const isRunning = (props) => {
 }
 
 const isFinished = (props) => {
-  const isFinished = props.job.status === 'finished';
+  const isFinished = props.job.status === 'completed';
   console.log(`check isFinished: ${isFinished}`);
   return isFinished;
 }
@@ -82,6 +83,7 @@ class BlastResult extends React.Component {
   }
 
   render(){
+    console.log(this.props)
     return (
       <div className = 'panel panel-default'>
         <div className = 'panel-heading'>

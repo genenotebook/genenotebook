@@ -140,13 +140,13 @@ class SubmitBlast extends React.Component {
     this.state = {
       input: undefined,
       seqType: 'Nucleotide',
-      dbType: 'Nucleotide',
+      dbType: 'Protein',
       selectedTracks: []
     }
   }
 
   /**
-  * Hard coded map of sequence types to blast database types that selects the appropriate blast program
+  * Hard coded map of sequence types to blast database types to select the appropriate blast program
   * @type {Object}
   */
    BLASTTYPES = {
