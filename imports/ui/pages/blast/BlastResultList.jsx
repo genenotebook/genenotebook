@@ -2,7 +2,6 @@ import React from 'react';
 
 const AlignmentText = (props) => {
   const hsp = props.hsp;
-  console.log(hsp)
   const queryStart = hsp['Hsp_query-from'][0];
   const hspStart = hsp['Hsp_hit-from'][0];
 
@@ -33,7 +32,6 @@ const AlignmentText = (props) => {
 
 const HitLine = (props) => {
   const hit = props.hit;
-  console.log(hit)
   const [gene, transcript] = hit.Hit_def[0].split(' ')
   return (
     <div>
@@ -64,19 +62,17 @@ export default class BlastResultList extends React.Component {
   render(){
     const hits = this.props.blastResult.BlastOutput.BlastOutput_iterations[0].Iteration[0].Iteration_hits[0].Hit;
     return (
-      <div>
-        <ul className='list-group'>
-        {
-          hits.map(hit => {
-            return (
-              <li className='list-group-item' key={hit.Hit_id[0]}>
-                <HitLine hit={hit} />
-              </li>
-            )
-          })
-        }
-        </ul>
-      </div>
+      <ul className='list-group'>
+      {
+        hits.map(hit => {
+          return (
+            <li className='list-group-item' key={hit.Hit_id[0]}>
+              <HitLine hit={hit} />
+            </li>
+          )
+        })
+      }
+      </ul>
     )
   }
 }

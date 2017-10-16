@@ -82,11 +82,12 @@ class BlastResult extends React.Component {
   }
 
   render(){
-    console.log(this.state)
-    console.log(this.props.job)
     return (
-      <div>
-        <BlastResultPlot blastResult = {this.props.job.result} />
+      <div className = 'panel panel-default'>
+        <div className = 'panel-heading'>
+          <b>Blast results</b> <small> Job ID: {this.props.job._id}</small>
+        </div>
+        <BlastResultPlot blastResult = {this.props.job.result} queryLength = {this.props.job.data.input.length}/>
         <BlastResultList blastResult = {this.props.job.result} />
       </div>
     )
