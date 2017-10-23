@@ -1,13 +1,5 @@
-<template name="module_genemodel">
-	<section id="genemodel">
-		<hr>
-		<h3>Genemodel</h3>
-		{{ >genemodel }}
-	</section>
-</template>
-
-<template name="genemodel">
-	<div class="well genemodel" id="{{ ID }}">
-		<span class="label label-default"> {{ seqid }}</span>
+<template name="genemodel_container">
+	<div>
+		{{> React component=GenemodelContainer gene=this}}
 	</div>
 </template>

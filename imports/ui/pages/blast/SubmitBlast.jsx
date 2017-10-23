@@ -193,9 +193,12 @@ class SubmitBlast extends React.Component {
   toggleTrackSelect = event => {
     const trackName = event.target.id;
     const index = this.state.selectedTracks.indexOf(trackName);
-    console.log(index,trackName)
+    const operation = index < 0 ? { $push: [trackName] } : { $splice: [[index]] };
+    const newState = update(this.state, { selectedTracks: operation });
+
+    /*
     let newState;
-    if (index == -1){
+    if (index < 0){
       newState = update(this.state, {
         selectedTracks: {
           $push: [trackName]
@@ -208,7 +211,7 @@ class SubmitBlast extends React.Component {
         }
       })
     }
-    console.log('toggleTrackSelect',newState)
+    */
     this.setState(newState)
   }
 

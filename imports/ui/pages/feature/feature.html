@@ -37,14 +37,11 @@
             </li>
           {{ /if }}
         </ul>
-      
-        <!--
-        {{> Template.dynamic template=tab data=tabData }}
-        -->
+
         <div class="feature-info">
           {{>info}}
           {{>seq}}
-          {{>module_genemodel}}
+          {{>genemodel_container gene=this}}
           
 
           {{#if interproscan}}

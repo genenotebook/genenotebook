@@ -8,8 +8,6 @@ import BlastResult from './BlastResult.jsx';
 
 import './blastResult.html'
 
-import './blast-result-plot.js';
-
 Template.blastResult.helpers({
   BlastResult(){
     return BlastResult

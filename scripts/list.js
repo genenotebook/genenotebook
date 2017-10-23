@@ -3,6 +3,7 @@
 if (!module.parent){
 	const commander = require('commander');
 	const asteroid = require('asteroid');
+	const WebSocket = require('ws');
 
 	let what;
 	
@@ -26,7 +27,8 @@ if (!module.parent){
 	const Connection = asteroid.createClass()
 
 	const portal = new Connection({
-		endpoint: 'ws://localhost:3000/websocket'
+		endpoint: 'ws://localhost:3000/websocket',
+		SocketConstructor: WebSocket
 	})
 
 	portal.loginWithPassword({

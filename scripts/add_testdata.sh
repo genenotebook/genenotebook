@@ -1,10 +1,10 @@
 #!/usr/bin/sh
 
-echo "adding test reference" &&\
-node scripts/add_reference.js -u admin -p admin -r test data/testdata/testdata.fasta &&\
+#echo "adding test reference" &&\
+#node scripts/add_reference.js -u admin -p admin -r test data/testdata/testdata.fasta &&\
 
-echo "adding test annotation" &&\
-node scripts/add_annotation.js -u admin -p admin -r test -t test data/testdata/testdata.gff &&\
+#echo "adding test annotation" &&\
+#node scripts/add_annotation.js -u admin -p admin -r test -t test data/testdata/testdata.gff &&\
 
 
 echo "adding test transcriptome data" &&\

@@ -26,6 +26,8 @@ Meteor.methods({
 
 		const fileHandle = fs.readFileSync(config.fileName, { encoding: 'binary' });
 
+		console.log(`Start reading ${config.fileName}`)
+
 		Baby.parse(fileHandle, {
 			delimiter: '\t',
 			dynamicTyping: true,
@@ -36,25 +38,50 @@ Meteor.methods({
 				console.log(error)
 			},
 			complete(results,file) {
-				const missingGenes = results.data.filter((result) => {
-					let existingGene = Genes.find({ID: result.target_id}).fetch()
-					return existingGene.length < 1
-				}).map((result) => {
-					return gene.target_id
+				const missingGenes = new Set();
+				const tracks = new Set();
+
+				console.log('Reading finished, start validating')
+
+				results.data.forEach(result => {
+					const gene = Genes.findOne({ID: result.target_id});
+					if (gene === undefined){
+						missingGenes.add(result.target_id)
+					} else {
+						tracks.add(gene.track)
+					}
 				})
 
-				if (missingGenes.length > 0){
+				if (missingGenes.size > 0){
 					throw new Meteor.Error(`${missingGenes.length} genes could not be found`)
 				}
 
+				if (tracks.size > 1){
+					throw new Meteor.Error(`Gene IDs are linked to more than one track: ${Array.from(tracks)}`)
+				}
+
+				console.log('Validation finished, start inserting experiment info')
 				const experimentId = ExperimentInfo.insert({
-					ID: config.sampleName,
+					track: config.trackName,
+					sampleName: config.sampleName,
 					experimentGroup: config.experimentGroup,
 					replicaGroup: config.replicaGroup,
 					description: config.description,
 					permissions: ['admin'],
 				})
-				
+
+				/*
+				formattedResults = results.map(result => {
+					return {
+						geneId: result.target_id,
+						experimentId: experimentId,
+						permissions: ['admin'],
+						raw_counts: result.est_counts,
+						tpm: result.tpm
+					}
+				})
+				*/
+				console.log('Start inserting expression data')
 				results.data.forEach( (gene) => {
 					Transcriptomes.insert({
 						geneId: gene.target_id,
