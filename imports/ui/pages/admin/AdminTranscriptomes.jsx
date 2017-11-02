@@ -4,7 +4,6 @@ import React from 'react';
 import groupBy from 'lodash/groupby';
 import update from 'immutability-helper';
 import { Creatable as Select } from 'react-select';
-//import omit from 'lodash/omit';
 import { isEqual, omit } from 'lodash';
 
 import { ExperimentInfo } from '/imports/api/transcriptomes/transcriptome_collection.js';

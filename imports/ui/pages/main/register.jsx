@@ -1,5 +1,4 @@
 import { Accounts } from 'meteor/accounts-base';
-import { Bert } from 'meteor/themeteorchef:bert';
 import { createContainer } from 'meteor/react-meteor-data';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
@@ -109,7 +108,7 @@ class Register extends React.Component {
     console.log('submit')
     console.log(this.state)
     if (this.state.password !== this.state.passwordRepeat){
-      Bert.alert('Passwords do not match!', 'danger', 'growl-top-right')
+      alert('Passwords do not match!')
       this.setState({
         password: '',
         passwordRepeat: '',
@@ -127,7 +126,7 @@ class Register extends React.Component {
             password: '',
             passwordRepeat: ''
           })
-          Bert.alert(err.reason,'danger','growl-top-right')
+          alert(err.reason)
           if (err.reason === 'Username already exists.'){
             this.setState({
               validUsername: false

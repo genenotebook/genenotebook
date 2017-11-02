@@ -1,4 +1,12 @@
 <template name="expression">
+  <section id='expression'>
+    <hr>
+    <h3>Expression</h3>
+    <div>
+      {{> React component=ExpressionPlot gene=this}}
+    </div>
+  </section>
+  <!--
   <section id="expression">
     <hr>
         <select class="selectpicker pull-right" id="select-experiment" data-actions-box="true" data-live-search="true" multiple> 
@@ -8,7 +16,7 @@
         </select>
     <h3>Expression</h3>
     <div class="well experiments" id="{{ ID }}_expression">
-      <!-- this div is filled in with d3 -->
     </div>
   </section>
+-->
 </template>

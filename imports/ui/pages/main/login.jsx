@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { Bert } from 'meteor/themeteorchef:bert';
 import { createContainer } from 'meteor/react-meteor-data';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
@@ -21,7 +20,7 @@ class Login extends React.Component {
         password: ''
       })
       if (err) {
-        Bert.alert(err.reason,'danger','growl-top-right')
+        alert(err.reason)
       } else {
         FlowRouter.redirect(this.props.redirect)
       }

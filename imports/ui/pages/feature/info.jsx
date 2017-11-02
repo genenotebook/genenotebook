@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { createContainer } from 'meteor/react-meteor-data';
-import { Bert } from 'meteor/themeteorchef:bert';
 
 import React from 'react';
 import find from 'lodash/find';
@@ -146,9 +145,9 @@ class Info extends React.Component {
     if (this.state.newAttributeKey || this.state.newAttributeValue){
       if (!(this.state.newAttributeKey && this.state.newAttributeValue)){
         if (!this.state.newAttributeKey){
-          Bert.alert('New attribute key required!','danger','growl-top-right')
+          alert('New attribute key required')
         } else {
-          Bert.alert('New attribute value required!','danger','growl-top-right')
+          alert('New attribute value required!')
         }
         throw new Meteor.Error('Incorrect new attribute')
       } else {

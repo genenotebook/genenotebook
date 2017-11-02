@@ -1,15 +1,25 @@
-import { Meteor } from 'meteor/meteor';
+//import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { Session } from 'meteor/session';
+//import { Session } from 'meteor/session';
 
-import d3 from 'd3';
-import { schemeSet3 } from 'd3-scale-chromatic';
+//import d3 from 'd3';
+//import { schemeSet3 } from 'd3-scale-chromatic';
 
-import { ExperimentInfo, Transcriptomes } from '/imports/api/transcriptomes/transcriptome_collection.js';
+//import { ExperimentInfo, Transcriptomes } from '/imports/api/transcriptomes/transcriptome_collection.js';
+
+
 
 import './expression.html';
-import './expression.scss';
+//import './expression.scss';
 
+import ExpressionPlot from './ExpressionPlot.jsx';
+
+Template.expression.helpers({
+    ExpressionPlot(){
+        return ExpressionPlot
+    }
+})
+/*
 Session.setDefault('selection',[])
 
 function jitter(min, max) {
@@ -17,10 +27,6 @@ function jitter(min, max) {
 }
 
 Template.expression.helpers({
-    /**
-     * @this { expression template}
-     * @return {[object]}
-     */
     experiments(){
         const expression = Transcriptomes.find({geneId: this.ID}).fetch()
 
@@ -65,10 +71,7 @@ Template.expression.rendered = function(){
 	drawTranscriptomes.call(this);
 };
 
-/**
- * Use d3 to draw the expression plot
- * @return Null
- */
+
 function drawTranscriptomes(){
     const selection = Session.get('selection')
 
@@ -207,7 +210,7 @@ function drawTranscriptomes(){
             .attr('transform','translate(30,5)rotate(-65)')
             .style('text-anchor','end')
 }
-
+*/
 
 
 

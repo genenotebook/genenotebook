@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { createContainer } from 'meteor/react-meteor-data';
+import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
 
@@ -12,10 +12,8 @@ const XAxis = ({ scale, numTicks, transform, seqid }) => {
   const range = scale.range();
 
   const [start, end] = scale.domain();
-  
 
   const stepSize = Math.round((end - start) / numTicks);
-  console.log(`stepSize: ${stepSize}`)
 
   const ticks = [];
 
@@ -23,14 +21,12 @@ const XAxis = ({ scale, numTicks, transform, seqid }) => {
      ticks.push(start + (i * stepSize));
   }
 
-  console.log(ticks)
-
   return (
     <g className = 'x-axis' transform={transform}>
       <line x1={range[0]} x2={range[1]} y1='5' y2='5' stroke='black'/>
       <g>
         <line x1={range[0]} x2={range[0]} y1='0' y2='5' stroke='black'/>
-        <text x={range[0]} y='-10' dx='5' dy='5' textAnchor='left' fontSize='10'>{start}</text>
+        <text x={range[0]} y='-10' dy='5' textAnchor='left' fontSize='10'>{start}</text>
       </g>
       {
         ticks.map(tick => {
@@ -38,16 +34,16 @@ const XAxis = ({ scale, numTicks, transform, seqid }) => {
           return (
             <g key={tick}>
               <line x1={pos} x2={pos} y1='0' y2='5' stroke='black' />
-              <text x={pos} y='-10' dx='5' dy='5' textAnchor='middle' fontSize='10'>{ tick }</text>
+              <text x={pos} y='-10' dy='5' textAnchor='middle' fontSize='10'>{ tick }</text>
             </g>
           )
         })
       }
       <g>
         <line x1 = {range[1]} x2 = {range[1]} y1 = '0' y2 = '5' stroke='black'/>
-        <text x={range[1]} y='-10' dx='5' dy='5' textAnchor='end' fontSize='10'>{end}</text>
+        <text x={range[1]} y='-10' dy='5' textAnchor='end' fontSize='10'>{end}</text>
       </g>
-      <text x={range[0]} y='15' dx='5' dy='5' textAnchor='left' fontSize='11'>{seqid}</text>
+      <text x={range[0]} y='15' dy='5' textAnchor='left' fontSize='11'>{seqid}</text>
     </g>
   )
 }
@@ -153,8 +149,8 @@ class GenemodelContainer extends React.Component {
   }
 }
 
-export default createContainer(props => {
+export default withTracker(props => {
   return {
     gene:props.gene.gene
   }
-}, GenemodelContainer)
+})(GenemodelContainer)

@@ -47,7 +47,6 @@ publishComposite('singleGene', function(geneId){
 
   return {
     find(){
-      //console.log('finding genes')
       return Genes.find({
         ID: geneId,
         permissions: {
@@ -58,7 +57,6 @@ publishComposite('singleGene', function(geneId){
     children: [
       {
         find(gene){
-          //console.log('finding experiment data')
           return Transcriptomes.find({
             geneId: gene.ID,
             permissions: {
@@ -69,7 +67,6 @@ publishComposite('singleGene', function(geneId){
         children: [
         {
           find(transcriptome){
-            //console.log('finding experiment info')
             return ExperimentInfo.find({
               _id: transcriptome.experimentId,
               permissions: {
@@ -79,22 +76,7 @@ publishComposite('singleGene', function(geneId){
           }
         }
         ]
-      }/*,
-      {
-        find(gene){
-          console.log('finding reference sequence')
-          return References.find({
-            header: gene.seqid,
-            $and: [
-              { start: { $lte: gene.end } },
-              { end: { $gte: gene.start } }
-            ],
-            permissions: {
-              $in: roles
-            }
-          })
-        }
-      }*/
+      }
     ]
   }
 })
