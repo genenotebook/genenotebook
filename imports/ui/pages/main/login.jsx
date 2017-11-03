@@ -36,9 +36,9 @@ class Login extends React.Component {
   render(){
     return (
       <div>
-        <div className="row">
-          <div className="col-sm-6 col-md-4 col-md-offset-4">
-          <h1 className="text-center login-title">Sign in to continue</h1>
+        <div className="row justify-content-center">
+          <div className="col-3">
+            <h1 className="text-center login-title">Sign in to continue</h1>
             <div className="login">
               <form className="form-signin" onSubmit={this.handleSubmit}>
                 <input 

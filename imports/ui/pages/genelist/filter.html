@@ -1,4 +1,6 @@
 <template name="filter">
+  <div>{{> React component=GenelistFilterOptions }}</div>
+  <!--
 	<form role="form" id="genelist_filter" autocomplete="off">
       <div class="panel panel-default">
         <div class="panel-heading clearfix">
@@ -12,11 +14,6 @@
             {{/if}}
           <p></p>
         </div>
-        <!--
-        <div class="panel-body">
-          <p>Select a combination of filters below</p>
-        </div>
-        -->
         <ul class="filter list-group">
           <li class="list-group-item">
             <ul class="nav nav-tabs" id="feature-nav" data-spy="affix">
@@ -24,21 +21,21 @@
               <li role="presentation"><a href="#">Display options</a></li>
             </ul>
           </li>
-          <!-- gene id filter -->
+          
           <li class="list-group-item">
             <label for="gene_id_filter">Gene IDs</label>
             <textarea class="form-control" id="gene_id_filter" type="text"></textarea>
           </li>
-          <!-- end gene id filter -->
+          
 
-          <!-- orthogroup filter -->
+          
           <li class="list-group-item">
             <label for="orthogroup_filter">Orthogroup</label>
             <input type="text" class="form-control" id="orthogroup_filter">
           </li>
-          <!-- orthogroup filter -->
+          
 
-          <!-- tracks -->
+          
           <li class="list-group-item">
             <label>Tracks</label>
             {{#each tracks}}
@@ -48,9 +45,9 @@
               </div>
             {{/each}}
           </li>
-          <!-- end tracks -->
+          
 
-          <!-- Attributes -->
+          
           <li class="list-group-item">
             <div class="dropdown">
               <button class="btn btn-default btn-sm dropdown-toggle pull-right" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="attributemenu-button">
@@ -74,19 +71,8 @@
               </div>
             {{/each}}
           </li>
-          <!-- end attributres -->
-
-          <!--
-          <li class="list-group-item">
-            Another filter <span class="badge">...</span>
-            <div class="noUiSlider" id="slider"></div>
-          </li>
-          -->
-          
         </ul>
-          <div class="panel-footer">
-
-          </div>
         </div>
       </form>
+    -->
 </template>

@@ -6,9 +6,9 @@ import React from 'react';
 
 const UsernameInput = (props) => {
   return (
-    <div className={`input-group ${ !props.validUsername && 'has-error has-feedback'}`}>
+    <div className={`input-group ${ !props.validUsername && 'has-danger'}`}>
       <span className="input-group-addon">
-        <i className="glyphicon glyphicon-user"></i>
+        <i className="fa fa-user"></i>
       </span>
       <input 
         type="text" 
@@ -20,18 +20,15 @@ const UsernameInput = (props) => {
         onChange = {props.handleChange}
         value = {props.userName}
         required autoFocus />
-      { !props.validUsername &&
-        <span className="glyphicon glyphicon-remove form-control-feedback"></span>
-      }
     </div>
   )
 }
 
 const EmailInput = (props) => {
   return (
-    <div className={`input-group ${ !props.validEmail && 'has-error'}`}>
+    <div className={`input-group ${ !props.validEmail && 'has-danger'}`}>
       <span className="input-group-addon">
-        <i className="glyphicon glyphicon-envelope"></i>
+        <i className="fa fa-envelope"></i>
       </span>
       <input 
         type="email" 
@@ -41,9 +38,6 @@ const EmailInput = (props) => {
         onChange = {props.handleChange}
         value = {props.email}
         required />
-      { !props.validEmail &&
-        <span className="glyphicon glyphicon-remove form-control-feedback"></span>
-      }
     </div>
   )
 }
@@ -51,9 +45,9 @@ const EmailInput = (props) => {
 const PassWordInput = (props) => {
   return (
     <div>
-      <div className={`input-group password ${ !props.validPassword && 'has-error'}`}>
+      <div className={`input-group password ${ !props.validPassword && 'has-danger'}`}>
         <span className="input-group-addon">
-          <i className="glyphicon glyphicon-lock"></i>
+          <i className="fa fa-lock"></i>
         </span>
         <input 
           type="password" 
@@ -65,13 +59,10 @@ const PassWordInput = (props) => {
           onChange = {props.handleChange}
           value = {props.password}
           required />
-        { !props.validPassword &&
-          <span className="glyphicon glyphicon-remove form-control-feedback"></span>
-        }
       </div>
-      <div className={`input-group password-repeat ${ !props.validPassword && 'has-error'}`}>
+      <div className={`input-group password-repeat ${ !props.validPassword && 'has-danger'}`}>
         <span className="input-group-addon">
-          <i className="glyphicon glyphicon-lock"></i>
+          <i className="fa fa-lock"></i>
         </span>
         <input 
           type="password" 
@@ -81,9 +72,6 @@ const PassWordInput = (props) => {
           onChange = {props.handleChange}
           value = {props.passwordRepeat} 
           required />
-        { !props.validPassword &&
-          <span className="glyphicon glyphicon-remove form-control-feedback"></span>
-        }
       </div>
     </div>
   )
@@ -181,8 +169,8 @@ class Register extends React.Component {
 
   render(){
     return (
-      <div className="row">
-        <div className="col-sm-8 col-md-offset-2">
+      <div className="row justify-content-center">
+        <div className="col-3">
         <h1 className="text-center login-title">Create new Genebook account</h1>
           <div className="register">
             <form className="form-register" onSubmit={this.submit} >
@@ -200,7 +188,7 @@ class Register extends React.Component {
                 validPassword = {this.state.validPassword}
                 handleChange = {this.handleChange} />
               <button 
-                className="btn btn-lg btn-success btn-block" 
+                className={`btn btn-lg btn-block ${ this.filledInAllFields() ? 'btn-success' : 'btn-outline-success' }`} 
                 type="submit"
                 disabled = { !this.filledInAllFields() }>
                 {

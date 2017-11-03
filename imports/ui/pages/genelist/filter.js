@@ -1,12 +1,21 @@
 import { Meteor } from 'meteor/meteor';
-import { Template } from 'meteor/templating';
-import { Session } from 'meteor/session';
+//import { Template } from 'meteor/templating';
+//import { Session } from 'meteor/session';
 
-import { Tracks } from '/imports/api/genomes/track_collection.js';
-import { Attributes } from '/imports/api/genes/attribute_collection.js';
+//import { Tracks } from '/imports/api/genomes/track_collection.js';
+//import { Attributes } from '/imports/api/genes/attribute_collection.js';
+
+import GenelistFilterOptions from './GenelistFilterOptions.jsx'
 
 import './filter.html';
-import './filter.scss';
+
+Template.filter.helpers({
+  GenelistFilterOptions(){
+    return GenelistFilterOptions
+  }
+})
+
+/*
 
 Session.setDefault('selectedAttributes',
   ['Note','Comment','Productname',
@@ -196,19 +205,8 @@ Template.filter.onCreated(function(){
 })
 
 Template.filter.onRendered(function(){
-  /*
-  const input = document.getElementById('slider')
-  
-  noUiSlider.create(input,{
-    start: [20,80],
-    connect: true,
-    range: {
-      'min': [0],
-      'max': [100]
-    }
-  })
-  */
+
   updateCheckboxes()
   updateInputfields()
 })
-
+*/
