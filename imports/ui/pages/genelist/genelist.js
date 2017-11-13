@@ -1,17 +1,25 @@
-import { Meteor } from 'meteor/meteor';
+//import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { Session } from 'meteor/session';
+//import { Session } from 'meteor/session';
 
-import FileSaver from 'file-saver'
+//import FileSaver from 'file-saver'
 
-import { Genes } from '/imports/api/genes/gene_collection.js';
+//import { Genes } from '/imports/api/genes/gene_collection.js';
 
 import './genelist.html';
-import './genelist.scss';
-import './filter.js';
-import '/imports/ui/components/loading.js';
+//import './genelist.scss';
+//import './filter.js';
+//import '/imports/ui/components/loading.js';
 
+import GeneList from './GeneList.jsx';
 
+Template.genelist.helpers({
+  GeneList(){
+    return GeneList
+  }
+})
+
+/*
 var ITEMS_INCREMENT = 40;
 
 Session.setDefault('itemsLimit', ITEMS_INCREMENT);
@@ -156,7 +164,7 @@ Template.genelist.events({
 
 
     */
-
+    /*
     
     Bert.defaults.hideDelay = 999999;
     
@@ -244,7 +252,7 @@ function showMoreVisible() {
 // run the above func every time the user scrolls
 $(window).scroll(showMoreVisible)
 
-
+*/
  
 
 

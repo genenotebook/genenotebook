@@ -1,15 +1,16 @@
 <template name="genelist">
+  <div> {{> React component=GeneList }} </div>
+  <!--
   <div class="container-fluid">
   	<div class="genelist row">
-      <div class="col-3">
+      <div class="col-4">
         {{ >filter }}
       </div>
       <div class="col">
-        <!-- genelist -->
           <div class="row justify-content-between">
             
             <div class="dropdown">
-              <button type="button" class="btn btn-outline-secondary dropdown-toggle" id="dropdownSortMenu">
+              <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" id="dropdownSortMenu">
                 <i class="fa fa-sort-alpha-asc" aria-hidden="true"></i> Sort options
               </button>
               <div class="dropdown-menu" aria-labelledby="dropdownSortMenu">
@@ -20,7 +21,7 @@
             <div>
               <b>{{ queryCount }}</b> query results
             </div>
-            <div class="btn-group" role="group">
+            <div class="btn-group btn-group-sm" role="group">
                 {{ #if selection }}
                 <button type="button" class="btn btn-success" data-toggle="modal" data-target="#download-modal">
                   <i class="fa fa-download" aria-hidden="true"></i> Download 
@@ -44,15 +45,13 @@
               <ul class="genelist list-group">
               {{ #each genes }}
                 <li class="list-group-item">
-                  <button type="button" class="btn btm-sm btn-outline-secondary select-gene pull-right">
+                  <button type="button" class="btn btn-sm btn-outline-secondary select-gene pull-right">
                     <i class="fa fa-check {{isChecked}}" aria-hidden="true"></i>
                   </button>
                   <p>
                     <a class="genelink" href="/gene/{{ID}}">{{ ID }}</a>
                     <b> {{ attributes.Name }} </b>
                     {{ attributes.Note }}
-                  <!-- {{ >expression }} -->
-                  <!-- {{ >info }} -->
                   </p>
                 </li>
               {{ /each }}
@@ -70,11 +69,11 @@
             {{ /if }}
           {{ /if }}
         </div>
-        <!-- end genelist -->
+
       </div>
   	</div>
   </div>
-  <!-- download modal -->
+
   <div class="modal" id="download-modal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -118,5 +117,5 @@
       </div>
     </div> 
   </div>
-  <!-- end download modal -->
+-->
 </template>
