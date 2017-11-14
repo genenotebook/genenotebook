@@ -3,72 +3,46 @@ import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
 
-import GeneListSidePanel from './GeneListSidePanel.jsx'
+import { Genes } from '/imports/api/genes/gene_collection.js';
 
-const GeneListNavBar = props => {
+const GeneListComponent = ({gene}) => {
   return (
-    <div className="row justify-content-between">
-      
-      <div className="dropdown">
-        <button type="button" className="btn btn-sm btn-outline-secondary dropdown-toggle" id="dropdownSortMenu">
-          <i className="fa fa-sort-alpha-asc" aria-hidden="true"></i> Sort options
-        </button>
-        <div className="dropdown-menu" aria-labelledby="dropdownSortMenu">
-          <a className="dropdown-item">Gene ID</a>
-          <a className="dropdown-item">Annotation</a>
-        </div>
-      </div>
-      <div>
-        <b>{props.queryCount}</b> query results
-      </div>
-      
-      {
-        props.selection.length > 0 ?
-        <div className="btn-group btn-group-sm" role="group">
-          <button type="button" className="btn btn-success" data-toggle="modal" data-target="#download-modal">
-            <i className="fa fa-download" aria-hidden="true"></i> Download 
-          </button>
-          <button type="button" className="btn btn-warning" data-toggle="modal" data-target="#download-modal">
-            <i className="fa fa-external-link" aria-hidden="true"></i> Send 
-          </button>
-          <button type="button" className="btn btn-secondary select-all">
-            <i className="fa fa-check checked" aria-hidden="true"></i>
-          </button>
-        </div> :
-        <button type="button" className="btn btn-sm btn-outline-secondary select-all">
-          <i className="fa fa-check unchecked" aria-hidden="true"></i>
-        </button>
-      }
-      
-    </div>
+    <li className="list-group-item">
+      <button type="button" className="btn btn-sm btn-outline-secondary select-gene pull-right">
+        <i className="fa fa-check unchecked" aria-hidden="true"></i>
+      </button>
+      <p>
+        <a className="genelink" href={`/gene/${gene.ID}`}>{`${gene.ID}`}</a>
+        <b> {`${gene.attributes.Name}`} </b>
+        {`${gene.attributes.Note}`}
+      </p>  
+    </li>
   )
 }
 
-class GeneListWithOptions extends React.Component {
+class GeneList extends React.Component {
   constructor(props){
     super(props)
-    this.state = {
-      scrollLimit: 100
-    }
   }
+
   render(){
     return (
-      <div className="genelist row">
-        <div className="col-4">
-          <GeneListSidePanel />
-        </div>
-        <div className="col">
-          <GeneListNavBar queryCount={0} selection={[1]}/>
-        </div>
-      </div>
+      <ul className="genelist list-group">
+      {
+        this.props.genes.map(gene => {
+          return <GeneListComponent key={gene.ID} gene={gene}/>
+        })
+      }
+      </ul>
     )
   }
 }
 
 export default withTracker(props => {
+  console.log(props)
+  const geneSub = Meteor.subscribe('genes', props.scrollLimit, undefined, props.query)
   return {
-    genes: [],
-    tracks: [],
-    attributes: []
+    genes: Genes.find(props.query).fetch(),
+    loading: !geneSub.ready()
   }
-})(GeneListWithOptions)
+})(GeneList)

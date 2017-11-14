@@ -11,11 +11,11 @@ import './genelist.html';
 //import './filter.js';
 //import '/imports/ui/components/loading.js';
 
-import GeneList from './GeneList.jsx';
+import GeneListWithOptions from './GeneListWithOptions.jsx';
 
 Template.genelist.helpers({
-  GeneList(){
-    return GeneList
+  GeneListWithOptions(){
+    return GeneListWithOptions
   }
 })
 
