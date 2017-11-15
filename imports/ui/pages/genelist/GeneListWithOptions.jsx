@@ -10,18 +10,39 @@ export default class GeneListWithOptions extends React.Component {
     this.state = {
       scrollLimit: 100,
       query: {},
+      queryCount: 0,
       selectedGenes: []
     }
   }
 
-  increaseScrollLimit = () => {
-    this.setState({
-      scrollLimit: this.state.scrollLimit + 100
-    })
+  componentDidMount() {
+    window.addEventListener("scroll", this.handleScroll);
   }
 
-  updateQuery = event => {
+  componentWillUnmount() {
+    window.removeEventListener("scroll", this.handleScroll);
+  }
 
+  handleScroll = () => {
+    //http://blog.sodhanalibrary.com/2016/08/detect-when-user-scrolls-to-bottom-of.html
+    const windowHeight = "innerHeight" in window ? window.innerHeight : document.documentElement.offsetHeight;
+    const body = document.body;
+    const html = document.documentElement;
+    const docHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight,  html.scrollHeight, html.offsetHeight);
+    const windowBottom = windowHeight + window.pageYOffset;
+    if (windowBottom >= docHeight){
+      this.setState({
+        scrollLimit: this.state.scrollLimit + 100
+      })
+    }
+  }
+
+  updateQuery = newQuery => {
+    console.log(newQuery)
+    this.setState({
+      query: newQuery,
+      scrollLimit: 100
+    })
   }
 
   updateSelection = event => {
@@ -29,15 +50,16 @@ export default class GeneListWithOptions extends React.Component {
   }
 
   render(){
-    console.log(this.state)
     return (
       <div className="genelist row">
         <div className="col-4">
-          <GeneListSidePanel updateQuery={this.updateQuery} />
+          <GeneListSidePanel
+          query={this.state.query}
+          updateQuery={this.updateQuery} />
         </div>
         <div className="col">
           <GeneListNavBar 
-            queryCount={0} 
+            queryCount={this.state.queryCount} 
             selection={this.state.selectedGenes} />
           <GeneList 
             scrollLimit={this.state.scrollLimit} 

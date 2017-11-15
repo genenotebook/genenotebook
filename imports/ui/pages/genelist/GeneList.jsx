@@ -13,7 +13,9 @@ const GeneListComponent = ({gene}) => {
       </button>
       <p>
         <a className="genelink" href={`/gene/${gene.ID}`}>{`${gene.ID}`}</a>
-        <b> {`${gene.attributes.Name}`} </b>
+        {
+          gene.attributes.Name && <b> {`${gene.attributes.Name}`} </b>
+        }
         {`${gene.attributes.Note}`}
       </p>  
     </li>
@@ -33,15 +35,15 @@ class GeneList extends React.Component {
           return <GeneListComponent key={gene.ID} gene={gene}/>
         })
       }
-      </ul>
+     </ul>
     )
   }
 }
 
 export default withTracker(props => {
-  console.log(props)
   const geneSub = Meteor.subscribe('genes', props.scrollLimit, undefined, props.query)
   return {
+    query: props.query,
     genes: Genes.find(props.query).fetch(),
     loading: !geneSub.ready()
   }
