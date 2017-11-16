@@ -1,4 +1,4 @@
-const GeneListNavBar = props => {
+const GeneListNavBar = ({queryCount, selection, selectedAll, selectAll, openDownloadDialog }) => {
   return (
     <div className="row justify-content-between">
       
@@ -12,23 +12,23 @@ const GeneListNavBar = props => {
         </div>
       </div>
       <div>
-        <b>{props.queryCount}</b> query results
+        <b>{queryCount}</b> query results
       </div>
       
       {
-        props.selection.length > 0 ?
+        Array.from(selection).length > 0 || selectedAll ?
         <div className="btn-group btn-group-sm" role="group">
-          <button type="button" className="btn btn-success" data-toggle="modal" data-target="#download-modal">
+          <button type="button" className="btn btn-success" onClick={openDownloadDialog}>
             <i className="fa fa-download" aria-hidden="true"></i> Download 
           </button>
           <button type="button" className="btn btn-warning" data-toggle="modal" data-target="#download-modal">
             <i className="fa fa-external-link" aria-hidden="true"></i> Send 
           </button>
-          <button type="button" className="btn btn-secondary select-all">
+          <button type="button" className="btn btn-secondary select-all" onClick={()=>{selectAll(false)}}>
             <i className="fa fa-check checked" aria-hidden="true"></i>
           </button>
         </div> :
-        <button type="button" className="btn btn-sm btn-outline-secondary select-all">
+        <button type="button" className="btn btn-sm btn-outline-secondary select-all" onClick={()=>{selectAll(true)}}>
           <i className="fa fa-check unchecked" aria-hidden="true"></i>
         </button>
       }

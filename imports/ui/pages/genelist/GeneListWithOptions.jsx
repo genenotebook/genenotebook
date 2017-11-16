@@ -1,8 +1,10 @@
 import React from 'react';
+import { cloneDeep } from 'lodash';
 
 import GeneListSidePanel from './GeneListSidePanel.jsx';
 import GeneListNavBar from './GeneListNavBar.jsx';
 import GeneList from './GeneList.jsx';
+import DownloadDialogModal from './DownloadDialog.jsx';
 
 export default class GeneListWithOptions extends React.Component {
   constructor(props){
@@ -11,7 +13,9 @@ export default class GeneListWithOptions extends React.Component {
       scrollLimit: 100,
       query: {},
       queryCount: 0,
-      selectedGenes: []
+      selectedGenes: new Set(),
+      selectedAll: false,
+      showDownloadDialog: false
     }
   }
 
@@ -38,7 +42,6 @@ export default class GeneListWithOptions extends React.Component {
   }
 
   updateQuery = newQuery => {
-    console.log(newQuery)
     this.setState({
       query: newQuery,
       scrollLimit: 100
@@ -46,7 +49,33 @@ export default class GeneListWithOptions extends React.Component {
   }
 
   updateSelection = event => {
+    const geneId = event.target.id;
+    const selectedGenes = cloneDeep(this.state.selectedGenes);
+    if (!selectedGenes.has(geneId)){
+      selectedGenes.add(geneId)
+    } else {
+      selectedGenes.delete(geneId)
+    }
+    this.setState({
+      selectedGenes: selectedGenes
+    })
+  }
 
+  selectAll = selectAll => {
+    const newState = { selectedGenes: new Set() };
+    const selectedGenes = Array.from(this.state.selectedGenes)
+    if (selectedGenes.length > 0){
+      newState.selectedAll = false
+    } else {
+      newState.selectedAll = selectAll
+    }
+    this.setState(newState)
+  }
+
+  toggleDownloadDialog = () => {
+    this.setState({
+      showDownloadDialog: !this.state.showDownloadDialog
+    })
   }
 
   render(){
@@ -60,12 +89,18 @@ export default class GeneListWithOptions extends React.Component {
         <div className="col">
           <GeneListNavBar 
             queryCount={this.state.queryCount} 
-            selection={this.state.selectedGenes} />
+            selection={this.state.selectedGenes}
+            selectedAll={this.state.selectedAll}
+            selectAll={this.selectAll}
+            openDownloadDialog={this.toggleDownloadDialog} />
           <GeneList 
             scrollLimit={this.state.scrollLimit} 
             query={this.state.query} 
-            updateSelection={this.updateSelection} />
+            updateSelection={this.updateSelection}
+            selection={this.state.selectedGenes}
+            selectedAll={this.state.selectedAll} />
         </div>
+        <DownloadDialogModal show={this.state.showDownloadDialog} onClose={this.toggleDownloadDialog} />
       </div>
     )
   }

@@ -8,99 +8,57 @@ import { isEmpty, without, cloneDeep, mapObject } from 'lodash';
 import { Tracks } from '/imports/api/genomes/track_collection.js';
 import { Attributes } from '/imports/api/genes/attribute_collection.js';
 
-const ThreewayRadio = props => {
-  console.log(props)
-  const options = {
-    'yes': {
-      labelClass: 'btn btn-outline-success',
-      iconClass: 'fa fa-check' 
-    },
-    'no': {
-      labelClass: 'btn btn-outline-danger',
-      iconClass: 'fa fa-remove'
-    },
-    'either': {
-      labelClass: 'btn btn-outline-secondary active',
-      iconClass: 'fa fa-dot-circle-o'
-    }
-  };
-  return (
-    <div className="threeway-radio row justify-content-between" >
-      <label htmlFor={props.attribute}>{props.attribute} </label>
-      <div 
-        className="btn-group btn-group-sm float-right" 
-        id={props.attribute} 
-        data-toggle="buttons" >
-        {
-          Object.entries(options).map(opt => {
-            const [option, params] = opt;
-            const { labelClass, iconClass } = params;
-            return (
-              <label key={option} className={params.labelClass} >
-                <input
-                  key={option} 
-                  type="radio" 
-                  autoComplete="off" 
-                  id={props.attribute} 
-                  onChange={()=>{alert('click')}} 
-                  value={option} />
-                <i className={params.iconClass} aria-hidden="true" />
-              </label>
-            )
-          })
-        }
-      </div>
-    </div>
-  )
-}
+import AttributeSelect from './AttributeSelect.jsx';
+import TrackSelect from './TrackSelect.jsx';
+import GeneIdSelect from './GeneIdSelect.jsx';
 
 
 class GeneListSidePanel extends React.Component {
   constructor(props){
-    super(props)
-    this.state = {
-      selectedAttributes: new Set(['Name','Comment','expression'])
-    }
+    super(props);
   }
 
-  handleTrackSelect = event => {
+  updateTrackFilter = event => {
     const trackName = event.target.id;
     const checked = event.target.checked;
     const query = cloneDeep(this.props.query);
-    if ( checked && query.hasOwnProperty('track') ){
+    
+    if (!query.hasOwnProperty('track')){
+      query.track = {$in: []}
+    }
+
+    if (checked){
       query.track['$in'].push(trackName)
-    } else if (checked && !query.hasOwnProperty('track')) {
-      query.track = { $in: [trackName] };
-    } else if ( !checked && query.hasOwnProperty('track')) {
+    } else {
       query.track['$in'] = without(query.track['$in'], trackName)
-      if (query.track['$in'].length === 0) {
-        delete query.track
-      }
-    } else if (!checked && !query.hasOwnProperty('track')) {
-      //THIS SHOULD NEVER HAPPEN
-      alert('Something went wrong with track selection!')
+    }
+
+    if (query.track['$in'].length === 0){
+      delete query.track
+    }
+    
+    this.props.updateQuery(query)
+  }
+
+  updateAttributeFilter = (attribute, value) => {
+    const query = cloneDeep(this.props.query);
+    const directProps = ['viewing','editing'];
+    const attributeQuery = directProps.indexOf(attribute) > 0 ? attribute : `attributes.${attribute}`;
+    console.log(attribute,value)
+    if (value === 'either'){
+      delete query[attributeQuery]
+    } else if (value === 'yes') {
+      query[attributeQuery] = {$exists: true}
+    } else if (value === 'no') {
+      query[attributeQuery] = {$exists: false}
     }
     this.props.updateQuery(query)
   }
 
-  handleAttributeSelect = event => {
-    const attribute = event.target.id;
-    const selectedAttributes = cloneDeep(this.state.selectedAttributes)
-    if (selectedAttributes.has(attribute)){
-      selectedAttributes.delete(attribute)
-    } else {
-      selectedAttributes.add(attribute)
-    }
-    this.setState({
-      selectedAttributes: selectedAttributes
-    })
-  }
-
-  filterAttributes = event => {
-    const attribute = event.target.id;
-    const select = event.target.value;
+  updateGeneIdFilter = geneIds => {
     const query = cloneDeep(this.props.query);
-    console.log(attribute,select)
+    query.ID = {$in: geneIds}
+    this.props.updateQuery(query)
   }
 
   render(){
@@ -131,87 +89,29 @@ class GeneListSidePanel extends React.Component {
           <ul className="filter list-group">
 
             <li className="list-group-item">
-              <label htmlFor="gene_id_filter">Gene IDs</label>
-              <textarea className="form-control" id="gene_id_filter" type="text" rows="3" />
+              <GeneIdSelect updateGeneIdFilter={this.updateGeneIdFilter} />
             </li>
-            
 
-            
             <li className="list-group-item">
               <label htmlFor="orthogroup_filter">Orthogroup</label>
               <input type="text" className="form-control" id="orthogroup_filter" />
             </li>
-            
 
-            
             <li className="list-group-item">
-              <label>Tracks</label>
-              {
-                this.props.tracks.map(track => {
-                  return (
-                    <div key={track._id} className="form-check">
-                      <label className="form-check-label" htmlFor={track.trackName}>
-                        <input 
-                          type="checkbox" 
-                          className="track-checkbox" 
-                          id={track.trackName} 
-                          onClick={this.handleTrackSelect}/>
-                        &nbsp;{track.trackName}
-                      </label>
-                    </div>
-                  )
-                })
-              }
+              <TrackSelect 
+                tracks={this.props.tracks} 
+                updateTrackFilter={this.updateTrackFilter} />
             </li>
-            
 
-            
             <li className="list-group-item">
-              <div className="dropdown">
-                <button 
-                  className="btn btn-outline-secondary btn-sm dropdown-toggle pull-right" 
-                  type="button" 
-                  data-toggle="dropdown" 
-                  aria-haspopup="true" 
-                  aria-expanded="false" 
-                  id="attributemenu-button" >
-                  Select
-                </button>
-                <ul 
-                  className="dropdown-menu scrollable-menu pull-right" 
-                  role="menu" 
-                  aria-labelledby="attributemenu-button" >
-                  { 
-                    this.props.attributes.map(attribute => {
-                      const active = this.state.selectedAttributes.has(attribute.name) ? 'active' : ''
-                      return (
-                        <li key={attribute._id} role="presentation" >
-                          <a 
-                            role="menuitem" 
-                            className={`dropdown-item attributemenu-item ${active}`}
-                            id={attribute.name}
-                            onClick={this.handleAttributeSelect} >
-                            {attribute.name}
-                          </a>
-                        </li>
-                      )
-                    })
-                  }
-                </ul>
-              </div>
-              <label className="font-weight-bold">Attributes</label>
-              {
-                Array.from(this.state.selectedAttributes).map(attribute => {
-                  return <ThreewayRadio 
-                    key={attribute} 
-                    attribute={attribute}
-                    onClick={this.filterAttributes} />
-                })
-              }
+              <AttributeSelect 
+                attributes={this.props.attributes} 
+                updateAttributeFilter={this.updateAttributeFilter} />
             </li>
+
           </ul>
-          </div>
         </div>
+      </div>
     )
   }
 }
