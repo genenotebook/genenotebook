@@ -3,23 +3,46 @@ import classNames from 'classnames';
 
 import './DownloadDialog.scss';
 
+const AnnotationDownload = props => {
+  return (
+    <div></div>
+  )
+}
+
+const SequenceDownload = props => {
+  return (
+    <div></div>
+  )
+}
+
+const ExpressionDownload = props => {
+  return (
+    <div></div>
+  )
+}
+
+DATATYPE_COMPONENTS = {
+  'Annotations': <AnnotationDownload />,
+  'Sequences': <SequenceDownload />,
+  'Expression data': <ExpressionDownload />
+}
+
 export default class DownloadDialogModal extends React.Component {
   constructor(props){
     super(props)
     this.state = {
-      format: 'gff3'
+      dataType: 'Annotations'
     }
   }
 
-  selectFormat = event => {
+  selectDataType = event => {
     this.setState({
-      format: event.target.id
+      dataType: event.target.id
     })
   }
 
   render(){
     const { show, onClose } = this.props;
-    const formats = ['gff3', 'fasta']
     if (!show) {
       return null
     }
@@ -38,18 +61,18 @@ export default class DownloadDialogModal extends React.Component {
               <div className="modal-body">
                 <ul className="nav nav-tabs">
                 {
-                  formats.map(format => {
+                  Object.keys(DATATYPE_COMPONENTS).map(dataType => {
                     return (
-                      <li key={format} className="nav-item">
+                      <li key={dataType} className="nav-item">
                         <a 
                           className={
                             classNames('nav-link',{
-                              'active': this.state.format === format
+                              'active': this.state.dataTypes === dataType
                             })
                           }
-                          id={format}
-                          onClick={this.selectFormat} >
-                          {format}
+                          id={dataType}
+                          onClick={this.selectDataType} >
+                          {dataType}
                         </a>
                       </li>
                     )
@@ -57,6 +80,9 @@ export default class DownloadDialogModal extends React.Component {
                 }
                 </ul>
               </div>
+              {
+                DATATYPE_COMPONENTS[this.state.dataType]
+              }
               <div className="modal-footer">
                 <button type="button" className="btn btn-success">
                   Download
