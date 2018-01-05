@@ -1,6 +1,6 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
-import { ReactLayout } from 'meteor/kadira:react-layout';
+//import { ReactLayout } from 'meteor/kadira:react-layout';
 import { Roles } from 'meteor/alanning:roles';
 import { Session } from 'meteor/session';
 //import { AccountsTemplates } from 'meteor/useraccounts:core';

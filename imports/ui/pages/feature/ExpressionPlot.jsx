@@ -12,6 +12,8 @@ import Select from 'react-select';
 
 import { ExperimentInfo, Transcriptomes } from '/imports/api/transcriptomes/transcriptome_collection.js';
 
+import './ExpressionPlot.scss';
+
 /**
  * https://stackoverflow.com/a/46854785/6573438
  * @param  {Number} x Number to be rounded
@@ -195,8 +197,10 @@ class ExpressionPlot extends React.Component {
     }
     return (
       <div>
+        <hr />
+        <h3>Expression</h3>
         <SampleSelect samples={this.props.samples} />
-        <div className='well expression-plot'>
+        <div className='card expression-plot'>
           <ContainerDimensions>
           {
             ({width, height}) => {

@@ -1,3 +1,16 @@
+import { Template } from 'meteor/templating';
+
+import './feature.html';
+
+import Feature from './Feature.jsx';
+
+Template.feature.helpers({
+  Feature(){
+    return Feature
+  }
+})
+
+/*
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
@@ -140,7 +153,7 @@ Template.feature.onCreated( function () {
 Template.feature.onDestroyed(function(){
   console.log('destroyed feature template')
 })
-
+*/
 
 
  

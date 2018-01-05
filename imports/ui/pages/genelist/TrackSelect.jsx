@@ -1,3 +1,5 @@
+import React from 'react';
+
 const TrackSelect = ({ tracks, updateTrackFilter }) => {
   return (
     <div className='track-select'>

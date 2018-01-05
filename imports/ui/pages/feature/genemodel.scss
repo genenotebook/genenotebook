@@ -1,4 +1,5 @@
 .genemodel {
+	padding: 10px;
 	.axis line,
 	.axis path {
 		fill: none;
@@ -8,7 +9,7 @@
 	svg {
 		font-family:'Roboto Mono';
 		.tick.major {
-			font-size: 0.7em;
+			font-size: 1.2em;
 		}
 	}
 }

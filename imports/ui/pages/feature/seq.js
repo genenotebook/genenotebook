@@ -2,7 +2,7 @@ import { Template } from 'meteor/templating';
 
 import './seq.html';
 
-import SeqContainer from './seq.jsx';
+import SeqContainer from './Seq.jsx';
 
 Template.seq.helpers({
 	SeqContainer(){

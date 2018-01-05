@@ -9,23 +9,26 @@ export default class AttributeSelect extends React.Component {
     this.state = {
       selectedAttributes: new Set(['Name','Comment','Note'])
     }
-
-    handleAttributeSelect = event => {
-      const attribute = event.target.id;
-      const selectedAttributes = cloneDeep(this.state.selectedAttributes)
-      if (selectedAttributes.has(attribute)){
-        selectedAttributes.delete(attribute)
-      } else {
-        selectedAttributes.add(attribute)
-      }
-      this.setState({
-        selectedAttributes: selectedAttributes
-      })
-    }
   }
+
+  handleAttributeSelect = event => {
+    console.log(event.target)
+    const attribute = event.target.id;
+    const selectedAttributes = cloneDeep(this.state.selectedAttributes)
+    if (selectedAttributes.has(attribute)){
+      selectedAttributes.delete(attribute)
+    } else {
+      selectedAttributes.add(attribute)
+    }
+    this.setState({
+      selectedAttributes: selectedAttributes
+    })
+  }
+
   render(){
     const { attributes, updateAttributeFilter } = this.props;
     const { selectedAttributes } = this.state;
+    const handleAttributeSelect = this.handleAttributeSelect;
     return (
       <div className="attribute-select">
         <div className="dropdown">
@@ -38,27 +41,23 @@ export default class AttributeSelect extends React.Component {
             id="attributemenu-button" >
             Select
           </button>
-          <ul 
-            className="dropdown-menu scrollable-menu pull-right" 
-            role="menu" 
-            aria-labelledby="attributemenu-button" >
-            { 
-              attributes.map(attribute => {
-                const active = selectedAttributes.has(attribute.name) ? 'active' : ''
-                return (
-                  <li key={attribute._id} role="presentation" >
-                    <a 
-                      role="menuitem" 
-                      className={`dropdown-item attributemenu-item ${active}`}
-                      id={attribute.name}
-                      onClick={this.handleAttributeSelect} >
-                      {attribute.name}
-                    </a>
-                  </li>
-                )
-              })
-            }
-          </ul>
+          <div className="dropdown-menu" aria-labelledby="attributemenu-button">
+          {
+            attributes.map(attribute => {
+              const active = selectedAttributes.has(attribute.name) ? 'active' : '';
+              return (
+                <button 
+                  className={`dropdown-item ${active}`}
+                  id={attribute.name}
+                  type="button" 
+                  onClick={this.handleAttributeSelect}
+                  key={attribute.name} >
+                  { attribute.name }
+                </button>
+              )
+            })
+          }
+          </div>
         </div>
         <label className="font-weight-bold">Attributes</label>
         <div className="col">

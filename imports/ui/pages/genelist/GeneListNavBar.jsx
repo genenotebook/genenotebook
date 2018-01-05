@@ -1,3 +1,5 @@
+import React from 'react';
+
 const GeneListNavBar = ({queryCount, selection, selectedAll, selectAll, openDownloadDialog }) => {
   return (
     <div className="row justify-content-between">

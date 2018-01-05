@@ -6,26 +6,20 @@ import find from 'lodash/find';
 
 import { getGeneSequences } from '/imports/api/util/util.js';
 
-const Seq = (props) => {
-  return (
-    <div className="well">
-      <p className="seq">>{ props.header } <br/> { props.sequence }</p>
-    </div>
-  )
-}
+import './seq.scss';
 
 const Controls = (props) => {
   let seqTypes = ['seq','pep']
   return (
     <div>
-      <div className="btn-group sequence-toggle pull-right" role="group">
+      <div className="btn-group btn-group-sm sequence-toggle pull-right" role="group">
         {
           seqTypes.map(seqType => {
             return (
               <button
                 key={seqType}
                 type="button"
-                className={`btn btn-default ${seqType === props.seqType ? 'active' : null}`}
+                className={`btn btn-outline-secondary ${seqType === props.seqType ? 'active' : ''}`}
                 onClick={props.selectSeqType.bind(this,seqType)}
               >
                 {seqType === 'pep' ? 'Protein' : 'Nucleotide'}
@@ -35,8 +29,8 @@ const Controls = (props) => {
         }
       </div>
 
-      <div className="btn-group pull-right">
-        <button type="button" className="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <div className="btn-group btn-group-sm pull-right">
+        <button type="button" className="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           { props.selectedTranscript } <span className="caret"></span>
         </button>
         <ul className="dropdown-menu">
@@ -89,7 +83,8 @@ class _SeqContainer extends React.Component {
     const sequence = find(sequences, { ID: this.state.selectedTranscript })
 
     return (
-      <div>
+      <div id="sequence">
+        <hr />
         <Controls 
           selectedTranscript = { this.state.selectedTranscript } 
           selectTranscript = { this.selectTranscript }
@@ -98,10 +93,12 @@ class _SeqContainer extends React.Component {
           selectSeqType = { this.selectSeqType }
         />
         <h3>Sequence</h3>
-        <Seq 
-          header = { this.state.selectedTranscript }
-          sequence = { sequence[this.state.seqType] }
-        />
+        <div className="card seq-container">
+          <p className="seq"> 
+            >{ this.state.selectedTranscript } <br/> 
+            { sequence[this.state.seqType] }
+          </p>
+        </div>
       </div>
     )
   }

@@ -1,3 +1,5 @@
+import React from 'react';
+
 const ThreewayRadioButtons = ({attribute, onClick}) => {
   const options = {
     'yes': {

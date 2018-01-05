@@ -1,4 +1,4 @@
-import { Template } from 'meteor/templating';
+//import { Template } from 'meteor/templating';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
@@ -6,6 +6,8 @@ import React from 'react';
 import ContainerDimensions from 'react-container-dimensions'
 import { Popover, OverlayTrigger } from 'react-bootstrap';
 import { scaleLinear } from 'd3-scale';
+
+import './genemodel.scss'
 
 
 const XAxis = ({ scale, numTicks, transform, seqid }) => {
@@ -120,7 +122,7 @@ class GenemodelContainer extends React.Component {
        <section id='genemodel'>
         <hr/>
         <h3>Genemodel</h3>
-        <div className='well genemodel'>
+        <div className='card genemodel'>
           <ContainerDimensions>
             {
               ({width,height}) => {
@@ -151,6 +153,6 @@ class GenemodelContainer extends React.Component {
 
 export default withTracker(props => {
   return {
-    gene:props.gene.gene
+    gene:props.gene
   }
 })(GenemodelContainer)
