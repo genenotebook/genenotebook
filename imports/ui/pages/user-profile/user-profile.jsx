@@ -44,10 +44,9 @@ const UserProfileButtons = (props) => {
 const UserRoles = (props) => {
   return (
     <div className="form-group">
-      <label htmlFor="groups" className="col-sm-4 control-label">User roles</label>
+      <label htmlFor="groups" className="control-label">User roles</label>
       <Select
         name='user-role-select'
-        className='col-sm-8'
         value={props.userRoles}
         options={props.allRoles.map(role => { return {value: role, label: role} })}
         onChange={props.onChange}
@@ -147,74 +146,76 @@ class UserProfile extends React.Component {
       this.props.loading ?
       <div className='user-profile'>LOADING</div> :
 
-      <div className="user-profile">
-        <h3> User profile </h3>
-        <form className="form-horizontal user-profile well well-sm">
-          <div className="form-group">
-            <label htmlFor="username" className="col-sm-4 control-label">Username</label>
-            <div className="col-sm-8">
+      <div className="user-profile container">
+        <form className="user-profile card">
+          <div className="card-header">
+            <h3>User profile</h3>
+          </div>
+          <div className="card-body">
+            <div className="form-group">
+              <label htmlFor="username" className="control-label">Username</label>
               <input 
                 type="text" 
-                className="form-control" 
+                className="form-control form-control-sm" 
                 id="username"
                 onChange={this.handleChange} 
-                value={this.state.username}/>
+                value={this.state.username} />
+                <small id="emailHelp" class="form-text text-muted">
+                  Your username will be visible to other users and must be unique. <b>required</b>
+                </small>
             </div>
-          </div>
-          <div className="form-group">
-            <label htmlFor="firstname" className="col-sm-4 control-label">First name</label>
-            <div className="col-sm-8">
+            <div className="form-group">
+              <label htmlFor="firstname" className="control-label">First name</label>
               <input 
                 type="text" 
-                className="form-control" 
+                className="form-control form-control-sm" 
                 id="firstname" 
                 onChange={this.handleChange}
-                value={this.state.profile.first_name}/>
+                value={this.state.profile.first_name}
+                placeholder="First name" />
             </div>
-          </div>
-          <div className="form-group">
-            <label htmlFor="lastname" className="col-sm-4 control-label">Last name</label>
-            <div className="col-sm-8">
+            <div className="form-group">
+              <label htmlFor="lastname" className="control-label">Last name</label>
               <input 
                 type="text" 
-                className="form-control" 
+                className="form-control form-control-sm" 
                 id="lastname" 
                 onChange={this.handleChange}
-                value={this.state.profile.last_name}/>
+                value={this.state.profile.last_name}
+                placeholder="Last name" />
             </div>
-          </div>
-          {
-            this.state.emails.map( (email, i) => {
-              //start counting at 1
-              let index = i + 1;
-              return (
-                <div className="form-group" key={`email${index}`}>
-                  <label htmlFor={`email${index}`} className="col-sm-4 control-label">{`Email address ${index}`}</label>
-                  <div className="col-sm-8">
+            {
+              this.state.emails.map( (email, i) => {
+                //start counting at 1
+                let index = i + 1;
+                return (
+                  <div className="form-group" key={`email${index}`}>
+                    <label htmlFor={`email${index}`} className="control-label">{`Email address ${index}`}</label>
                     <input 
                       type="email" 
-                      className="form-control" 
+                      className="form-control form-control-sm" 
                       id={`email${index}`} 
                       onChange={this.handleChange}
-                      value={email.address}/>
+                      value={email.address} />
                   </div>
-                </div>
-              )
-            })
-          }
-          <UserRoles 
-            userRoles = {this.state.roles}
-            allRoles = {this.props.allRoles}
-            isAdmin = {Roles.userIsInRole(Meteor.userId()),'admin'} 
-            onChange = {this.updateRoles} />
-          <hr/>
-          <UserProfileButtons 
-            oldState = {this.props.user}
-            newState = {this.state}
-            cancelChanges = {this.cancelChanges}
-            saveChanges = {this.saveChanges}
-            resetPassword = {this.resetPassword}
-            deleteAccount = {this.deleteAccount}/>
+                )
+              })
+            }
+            <UserRoles 
+              userRoles = {this.state.roles}
+              allRoles = {this.props.allRoles}
+              isAdmin = {Roles.userIsInRole(Meteor.userId()),'admin'} 
+              onChange = {this.updateRoles} />
+          </div>
+          <div className="card-footer">
+            <UserProfileButtons 
+              oldState = {this.props.user}
+              newState = {this.state}
+              cancelChanges = {this.cancelChanges}
+              saveChanges = {this.saveChanges}
+              resetPassword = {this.resetPassword}
+              deleteAccount = {this.deleteAccount}/>
+          </div>
         </form>
       </div>
     )

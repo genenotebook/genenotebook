@@ -12,7 +12,7 @@ import Select from 'react-select';
 
 import { ExperimentInfo, Transcriptomes } from '/imports/api/transcriptomes/transcriptome_collection.js';
 
-import './ExpressionPlot.scss';
+import './expressionplot.scss';
 
 /**
  * https://stackoverflow.com/a/46854785/6573438
@@ -196,7 +196,7 @@ class ExpressionPlot extends React.Component {
       right: 10
     }
     return (
-      <div>
+      <div id="expression">
         <hr />
         <h3>Expression</h3>
         <SampleSelect samples={this.props.samples} />

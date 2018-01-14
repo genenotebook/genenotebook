@@ -1,4 +1,4 @@
-accounts-base@1.4.1
+accounts-base@1.4.2
 accounts-password@1.5.0
 accounts-ui@1.2.0
 accounts-ui-unstyled@1.3.0
@@ -82,7 +82,7 @@ ostrio:files@1.9.5
 peppelg:bootstrap-3-modal@1.0.4
 pfafman:filesaver@1.3.2
 practicalmeteor:mocha-core@1.0.1
-promise@0.10.0
+promise@0.10.1
 raix:eventemitter@0.1.3
 raix:handlebar-helpers@0.2.5
 random@1.0.10

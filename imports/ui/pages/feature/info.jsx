@@ -274,7 +274,7 @@ class Info extends React.Component {
     const currentVersion = this.props.editHistory[0]
 
     return (
-      <div>
+      <div id="info">
         <Controls
           showHistory = { this.state.showHistory }
           toggleHistory = { this.toggleHistory }

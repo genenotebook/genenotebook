@@ -1,8 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
+import { Job } from 'meteor/vsivsi:job-collection';
 
 import React from 'react';
 
+import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 import { Genes } from '/imports/api/genes/gene_collection.js'; 
 
 import Info from './Info.jsx';
@@ -17,6 +19,15 @@ class Feature extends React.Component {
 
   }
 
+  runInterproscan = event => {
+    console.log(`submitting ${this.props.gene.ID} to interpro`)
+    const jobOptions = { geneId: this.props.gene.ID }
+
+    const job = new Job(jobQueue, 'interproscan', jobOptions)
+
+    job.priority('normal').save()
+  }
+
   render(){
     return (
       this.props.loading ?
@@ -25,6 +36,11 @@ class Feature extends React.Component {
       <div className="card genebook-feature">
         <div className="card-header">
           <a className="navbar-brand" href="#">{this.props.gene.ID}</a>
+          <button 
+            type="button" 
+            className="btn btn-sm btn-danger pull-right" 
+            onClick={this.runInterproscan}
+            >Interproscan</button>
           <ul className="nav nav-tabs card-header-tabs">
             <li className="nav-item">
               <a className="nav-link active" href="#info">Info</a>

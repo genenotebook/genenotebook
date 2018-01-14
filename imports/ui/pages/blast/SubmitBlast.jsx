@@ -46,24 +46,20 @@ const SequenceInput = (props) => {
       />
       {
         props.value &&
-        <div className="btn-group">
-          <button type="button" className="btn btn-default disabled">This is a</button>
-          <button type="button" className="btn btn-default dropdown-toggle" data-toggle="dropdown">
-          <strong>{props.seqType}</strong> sequence
-          <span className="caret"></span>
+        <div className="btn-group pull-right">
+          <button type="button" className="btn btn-outline-secondary btn-sm disabled">This is a</button>
+          <button type="button" className="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown">
+            <strong>{props.seqType}</strong> sequence
+            <span className="caret"></span>
           </button>
-          <ul className="dropdown-menu">
-            <li>
-              <a className="seq-select" id="Protein" onClick={props.selectSeqType} >
-                Protein sequence
-              </a>
-            </li>
-            <li>
-              <a className="seq-select" id="Nucleotide" onClick={props.selectSeqType} >
-                Nucleotide sequence
-              </a>
-            </li>
-          </ul>
+          <div className="dropdown-menu">
+            <a className="dropdown-item" id="Protein" onClick={props.selectSeqType} href="#">
+              Protein sequence
+            </a>
+            <a className="dropdown-item" id="Nucleotide" onClick={props.selectSeqType} href="#">
+              Nucleotide sequence
+            </a>
+          </div> 
         </div>
       }
     </div>
@@ -78,16 +74,16 @@ const TrackSelect = (props) => {
           props.tracks.map(track => {
             console.log(props.selectedTracks,track.trackName,props.selectedTracks.indexOf(track.trackName))
             return (
-              <div className="checkbox track-select" key={track.trackName}>
+              <div className="form-check" key={track.trackName}>
                 <input 
                   type="checkbox" 
-                  className="track-checkbox" 
+                  className="form-check-input" 
                   id={ track.trackName } 
                   name="track-checkbox"
                   checked={props.selectedTracks.indexOf(track.trackName) >= 0}
                   onChange={props.toggleTrackSelect} 
                 />
-                <label htmlFor={ track.trackName }>{ track.trackName }</label>
+                <label className="form-check-label" htmlFor={ track.trackName }>{ track.trackName }</label>
               </div>
             )
           })
@@ -100,26 +96,20 @@ const SubmitButtons = (props) => {
   return (
     <div className='btn-group'>
       <div className="btn-group">
-        <button type="button" className="btn btn-default dropdown-toggle" data-toggle="dropdown">
+        <button type="button" className="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown">
           <strong>{props.selectedDbType}</strong> database <span className="caret"></span>
         </button>
-        <ul className="dropdown-menu">
+        <div className="dropdown-menu">
         {
           props.dbTypes.map(dbType => {
             return (
-              <li key={dbType}>
-                <a 
-                  className="db-select" 
-                  id={dbType}
-                  onClick={props.selectDbType}
-                >
+                <a key={dbType} className="dropdown-item db-select" id={dbType} onClick={props.selectDbType}>
                   {dbType} database
                 </a>
-              </li>
             )
           })
         }
-        </ul>
+        </div>
       </div>
       <div className='btn-group'>
         <button 
@@ -232,10 +222,10 @@ class SubmitBlast extends React.Component {
     return (
       this.props.loading ? 
       <div>LOADING</div> :
-      <form role="form" id="blast">
-        <div className="panel panel-default">
-          <div className="panel-heading">Blast search</div>
-          <div className="panel-body">
+      <form className="container" role="form" id="blast">
+        <div className="card">
+          <div className="card-header">Blast search</div>
+          <div className="card-body">
             <SequenceInput 
               value = {this.state.input}
               seqType = {this.state.seqType}
@@ -255,20 +245,20 @@ class SubmitBlast extends React.Component {
               Advanced options ...
             </li>
           </ul>
-          <div className="panel-footer">
+          <div className="card-footer">
             <div className="row">
               <label className="col-md-4">Search a ...</label>
               <div className="col-md-6">
                 {
                   !this.state.input &&
-                  <button type="button" className="btn disabled">
-                    <span className="glyphicon glyphicon-question-sign"></span> Enter sequence
+                  <button type="button" className="btn btn-outline-secondary disabled">
+                    <span className="fa fa-question-circle-o"></span> Enter sequence
                   </button>
                 }
                 {
                   this.state.input && this.state.selectedTracks.length == 0 &&
-                  <button type="button" className="btn disabled">
-                    <span className="glyphicon glyphicon-question-sign"></span> Select track
+                  <button type="button" className="btn btn-outline-secondary disabled">
+                    <span className="fa fa-question-circle-o"></span> Select track
                   </button>
                 }
                 {

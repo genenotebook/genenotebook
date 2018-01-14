@@ -21,20 +21,24 @@ const ADMIN_PAGES = {
 
 const Nav = (props) => {
   return (
-    <ul className="nav nav-tabs">
-      {
-        props.pages.map(page => {
-          const url = page.toLowerCase().replace(' ','_')
-          return (
-            <li key={ page } role="presentation" className={ url === props.currentPage && 'active' }>
-              <a href={ `/admin/${url}` } name={ url } onClick={props.changePage}> 
-                { page } 
-              </a>
-            </li>
-          )
-        })
-      }
-    </ul>
+    <div className="card-header">
+      <a className="navbar-brand" href="#">Admin panel</a>
+      <ul className="nav nav-tabs card-header-tabs">
+        {
+          props.pages.map(page => {
+            const url = page.toLowerCase().replace(' ','_')
+            const active = url === props.currentPage ? 'active' : '';
+            return (
+              <li key={ page } role="presentation" className="nav-item">
+                <a href={ `/admin/${url}` } className={`nav-link ${active}`} name={ url } onClick={props.changePage}> 
+                  { page } 
+                </a>
+              </li>
+            )
+          })
+        }
+      </ul>
+    </div>
   )
 }
 
@@ -57,10 +61,12 @@ class Admin extends React.Component {
     const pages = ['Users','User Groups','Genomes','Tracks','Transcriptomes','Attributes','Jobqueue']
     return (
       <div className="container">
-        <h3> Admin panel</h3>
-        <hr/>
-        <Nav pages = { pages } currentPage = {this.state.currentPage} changePage = {this.changePage} />
-        {ADMIN_PAGES[this.state.currentPage]}
+        <div className="card admin-panel">
+          <Nav pages = { pages } currentPage = {this.state.currentPage} changePage = {this.changePage} />
+          {
+            ADMIN_PAGES[this.state.currentPage]
+          }
+        </div>
       </div>
       
     )
