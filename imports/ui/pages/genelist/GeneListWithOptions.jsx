@@ -4,7 +4,7 @@ import { cloneDeep } from 'lodash';
 import GeneListSidePanel from './GeneListSidePanel.jsx';
 import GeneListNavBar from './GeneListNavBar.jsx';
 import GeneList from './GeneList.jsx';
-import DownloadDialogModal from './DownloadDialog.jsx';
+import DownloadDialogModal from './downloads/DownloadDialog.jsx';
 
 export default class GeneListWithOptions extends React.Component {
   constructor(props){
@@ -100,7 +100,12 @@ export default class GeneListWithOptions extends React.Component {
             selection={this.state.selectedGenes}
             selectedAll={this.state.selectedAll} />
         </div>
-        <DownloadDialogModal show={this.state.showDownloadDialog} onClose={this.toggleDownloadDialog} />
+        <DownloadDialogModal 
+          show={this.state.showDownloadDialog} 
+          onClose={this.toggleDownloadDialog} 
+          query={this.state.query}
+          selectedAll={this.state.selectedAll}
+          selectedGenes={this.state.selectedGenes} />
       </div>
     )
   }

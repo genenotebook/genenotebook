@@ -20,12 +20,10 @@ const AlignmentText = (props) => {
   const midLineSeq = hsp['Hsp_midline'][0]
   const subjectSeq = hsp['Hsp_hseq'][0]
   return (
-    <pre className='well alignment-text'>
-      <p>
-        {queryTag} {querySeq} <br/>
-        {midLinePadding} {midLineSeq} <br/>
-        {subjectTag} {subjectSeq}
-      </p>
+    <pre className='alignment-text'>
+      {queryTag} {querySeq} <br/>
+      {midLinePadding} {midLineSeq} <br/>
+      {subjectTag} {subjectSeq}
     </pre>
   )
 }

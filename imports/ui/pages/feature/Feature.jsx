@@ -15,8 +15,8 @@ import SeqContainer from './Seq.jsx';
 import ExpressionPlot from './ExpressionPlot.jsx';
 
 class Feature extends React.Component {
-  constuctor(props){
-
+  constructor(props){
+    super(props)
   }
 
   runInterproscan = event => {

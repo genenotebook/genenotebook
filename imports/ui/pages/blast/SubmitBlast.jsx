@@ -9,6 +9,8 @@ import update from 'immutability-helper';
 import { submitBlastJob } from '/imports/api/blast/submitblastjob.js';
 import { Tracks } from '/imports/api/genomes/track_collection.js';
 
+import './submitblast.scss';
+
 
 /**
  * Function to determine whether a given sequence string is DNA or protein
@@ -79,7 +81,6 @@ const TrackSelect = (props) => {
                   type="checkbox" 
                   className="form-check-input" 
                   id={ track.trackName } 
-                  name="track-checkbox"
                   checked={props.selectedTracks.indexOf(track.trackName) >= 0}
                   onChange={props.toggleTrackSelect} 
                 />
@@ -222,7 +223,7 @@ class SubmitBlast extends React.Component {
     return (
       this.props.loading ? 
       <div>LOADING</div> :
-      <form className="container" role="form" id="blast">
+      <form className="container form-group" role="form" id="blast">
         <div className="card">
           <div className="card-header">Blast search</div>
           <div className="card-body">
@@ -233,18 +234,18 @@ class SubmitBlast extends React.Component {
               selectSeqType = {this.selectSeqType}
             />
           </div>
-          <ul className="list-group">
-            <li className="list-group-item">
-              <TrackSelect 
-                tracks = {this.props.tracks}
-                selectedTracks = {this.state.selectedTracks}
-                toggleTrackSelect={this.toggleTrackSelect}
-              />
-            </li>
-            <li className="list-group-item">
-              Advanced options ...
-            </li>
-          </ul>
+            <ul className="list-group list-group-flush">
+              <li className="list-group-item">
+                <TrackSelect 
+                  tracks = {this.props.tracks}
+                  selectedTracks = {this.state.selectedTracks}
+                  toggleTrackSelect={this.toggleTrackSelect}
+                />
+              </li>
+              <li className="list-group-item">
+                Advanced options ...
+              </li>
+            </ul>
           <div className="card-footer">
             <div className="row">
               <label className="col-md-4">Search a ...</label>

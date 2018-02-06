@@ -1,13 +1,10 @@
 import React from 'react';
 import classNames from 'classnames';
 
+import AnnotationDownload from './AnnotationDownload.jsx';
+
 import './DownloadDialog.scss';
 
-const AnnotationDownload = props => {
-  return (
-    <div></div>
-  )
-}
 
 const SequenceDownload = props => {
   return (
@@ -19,12 +16,6 @@ const ExpressionDownload = props => {
   return (
     <div></div>
   )
-}
-
-DATATYPE_COMPONENTS = {
-  'Annotations': <AnnotationDownload />,
-  'Sequences': <SequenceDownload />,
-  'Expression data': <ExpressionDownload />
 }
 
 export default class DownloadDialogModal extends React.Component {
@@ -42,9 +33,17 @@ export default class DownloadDialogModal extends React.Component {
   }
 
   render(){
-    const { show, onClose } = this.props;
+    const { show, onClose, query, selectedAll, selectedGenes } = this.props;
     if (!show) {
       return null
+    }
+
+    const geneQuery = selectedAll ? query : { ID: Array.from(selectedGenes) };
+
+    const DATATYPE_COMPONENTS = {
+      'Annotations': <AnnotationDownload geneQuery={geneQuery} />,
+      'Sequences': <SequenceDownload geneQuery={geneQuery} />,
+      'Expression data': <ExpressionDownload geneQuery={geneQuery} />
     }
     return (
       <div>
@@ -62,16 +61,18 @@ export default class DownloadDialogModal extends React.Component {
                 <ul className="nav nav-tabs">
                 {
                   Object.keys(DATATYPE_COMPONENTS).map(dataType => {
+                    console.log(dataType, this.state.dataType)
                     return (
                       <li key={dataType} className="nav-item">
                         <a 
                           className={
-                            classNames('nav-link',{
-                              'active': this.state.dataTypes === dataType
+                            classNames('nav-link', {
+                              'active': this.state.dataType === dataType
                             })
                           }
                           id={dataType}
-                          onClick={this.selectDataType} >
+                          onClick={this.selectDataType}
+                          href="#" >
                           {dataType}
                         </a>
                       </li>
@@ -79,10 +80,11 @@ export default class DownloadDialogModal extends React.Component {
                   })
                 }
                 </ul>
-              </div>
+              
               {
                 DATATYPE_COMPONENTS[this.state.dataType]
               }
+              </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-success">
                   Download

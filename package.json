@@ -5,6 +5,7 @@
   "description": "A portable website for browsing and querying genome sequences and annotations",
   "license": "AGPL-3.0",
   "dependencies": {
+    "@babel/runtime": "^7.0.0-beta.39",
     "asteroid": "^2.0.3",
     "babel-runtime": "^6.26.0",
     "babyparse": "^0.4.6",

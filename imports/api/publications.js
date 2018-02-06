@@ -13,7 +13,7 @@ import { Tracks } from '/imports/api/genomes/track_collection.js';
 import { References, ReferenceInfo } from '/imports/api/genomes/reference_collection.js';
 import { ExperimentInfo, Transcriptomes } from '/imports/api/transcriptomes/transcriptome_collection.js';
 
-Meteor.publish('genes',function(limit, search, query) {
+Meteor.publish('genes', function(limit, search, query) {
   console.log('publishing gene list')
   console.log('limit',limit)
   console.log('search',search)
