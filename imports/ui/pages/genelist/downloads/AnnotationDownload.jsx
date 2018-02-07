@@ -47,9 +47,9 @@ class AnnotationDownload extends React.Component {
   render(){
     console.log(this.props)
     return (
-      <div>
-        <h3>Download preview</h3>
-        <div className="card download-preview">
+      <div className="card download-preview">
+        <div className="card-body">
+          <h4 className="card-title">Download preview</h4>
           {
             this.props.previewGenes.map(gene => {
               return formatGene(gene).map(gffLine => {

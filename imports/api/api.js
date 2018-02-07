@@ -9,7 +9,8 @@ import './genomes/add_reference.js';
 import './genomes/add_gff.js';
 import './genomes/updateTrackPermissions.js';
 
-import './genes/interproscan.js'
+import './genes/interproscan.js';
+import './genes/download_genes.js';
 
 import './blast/makeblastdb.js';
 import './blast/hasblastdb.js';

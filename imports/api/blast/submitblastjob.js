@@ -5,7 +5,7 @@ import { Roles } from 'meteor/alanning:roles';
 import SimpleSchema from 'simpl-schema';
 
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
-import { Job } from 'meteor/vsivsi:job-collection'
+import { Job } from 'meteor/vsivsi:job-collection';
 
 /**
  * submitBlastJob validated method: submits makeblastdb job to jobqueue, call this from the client

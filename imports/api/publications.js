@@ -135,7 +135,16 @@ Meteor.publish('users', function () {
 })
 
 Meteor.publish({
+  downloads (downloadId) {
+    const publication = this;
+    const roles = publication.userId ? Roles.getRolesForUser(publication.userId) : ['public'];
+    return Downloads.findOne({ID: downloadId, permission: {$in: roles} });
+  },
   jobQueue () {
+    const publication = this;
+    if (!publication.userId){
+      publication.stop()
+    }
     return jobQueue.find({});
   },
   referenceInfo () {

@@ -24,6 +24,11 @@ import '../../ui/pages/main/register.js';
 
 import '../../ui/pages/app-not-found.js';
 
+let previousRoute;
+FlowRouter.triggers.exit([(context, redirect) => {
+  previousRoute = context.path;
+}])
+
 const exposedRoutes = FlowRouter.group({})
 
 const loggedInRoutes = FlowRouter.group({
@@ -80,6 +85,13 @@ exposedRoutes.route('/register', {
   name: 'register',
   action() {
     BlazeLayout.render('appBody', { main: 'register' })
+  }
+})
+
+exposedRoutes.route('/download/:_id', {
+  name: 'download',
+  action() {
+    BlazeLayout.render('appBody', { main: 'download' })
   }
 })
 

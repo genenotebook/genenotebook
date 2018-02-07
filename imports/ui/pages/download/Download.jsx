@@ -3,14 +3,10 @@ import { withTracker } from 'meteor/react-meteor-data';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
-import { compose } from 'recompose';
 
-import jobQueue from '/imports/api/jobqueue/jobqueue.js';
+//import { Downloads } from '/imports/api/downloads/download_collection.js';
 
-import BlastResultPlot from './BlastResultPlot.jsx';
-import BlastResultList from './BlastResultList.jsx';
-
-import './blastResult.scss';
+import jobQueue from './jobqueue.js';
 
 /**
  * https://www.robinwieruch.de/gentle-introduction-higher-order-components/
@@ -47,74 +43,55 @@ const Running = () => {
   )
 }
 
-const notFound = () => {
-  return <div>
-    <p> Job not found </p>
-  </div>
-}
-
-const isLoading = props => {
+const isLoading = (props) => {
   console.log(`check isLoading: ${props.loading}`)
   return props.loading;
 }
 
-const isExistingJob = props => {
-  return !(typeof props.job !== 'undefined');
-}
-
-const isWaiting = props => {
+const isWaiting = (props) => {
   const waitingStates = ['waiting','ready']
   const isWaiting = waitingStates.indexOf(props.job.status) > 0;//props.job.status === 'waiting';
   console.log(`check isWaiting ${isWaiting}`);
   return isWaiting;
 }
 
-const isRunning = props => {
+const isRunning = (props) => {
   const isRunning = props.job.status === 'running';
   console.log(`check isRunning: ${isRunning}`);
   return isRunning;
 }
 
-const isFinished = props => {
+const isFinished = (props) => {
   const isFinished = props.job.status === 'completed';
   console.log(`check isFinished: ${isFinished}`);
   return isFinished;
 }
 
 const withConditionalRendering = compose(
-  withEither(isExistingJob, notFound),
   withEither(isLoading, Loading),
   withEither(isWaiting, Waiting),
   withEither(isRunning, Running)
 )
 
-class BlastResult extends React.Component {
+class Download extends React.Component {
   constructor(props){
     super(props)
+    console.log(props)
   }
 
   render(){
-    console.log(this.props)
     return (
-      <div className="container">
-        <div className='card'>
-          <div className='card-header'>
-            <b>Blast results</b> <small> Job ID: {this.props.job._id}</small>
-          </div>
-          <BlastResultPlot blastResult = {this.props.job.result} queryLength = {this.props.job.data.input.length}/>
-          <BlastResultList blastResult = {this.props.job.result} />
-        </div>
-      </div>
+      <div>Job is ready, should begin download</div>
     )
   }
 }
 
 export default withTracker(props => {
-  const subscription = Meteor.subscribe('jobQueue');
-  const jobId = FlowRouter.getParam('_id')
+  const downloadHash = FlowRouter.getParam('_id');
+  //const downloadSub = Meteor.subscribe('downloads', downloadId)
+  const jobSub = Meteor.subscribe('jobQueue');
   return {
-    loading: !subscription.ready(),
-    job: jobQueue.findOne({_id: jobId})
-
+    loading: !jobSub.ready(),
+    download: jobQueue.findOne({ data: { downloadHash: downloadHash } })
   }
-})(withConditionalRendering(BlastResult))
+})(Download);

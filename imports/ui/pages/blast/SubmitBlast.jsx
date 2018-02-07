@@ -215,7 +215,7 @@ class SubmitBlast extends React.Component {
       trackNames: this.state.selectedTracks
     }, (err,res) => {
       console.log(err)
-      FlowRouter.go(`/blast/${res}`)
+      FlowRouter.redirect(`/blast/${res}`)
     })
   }
 

@@ -5,6 +5,9 @@ import React from 'react';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
 
+//import GenemodelContainer from '../feature/Genemodel.jsx';
+//import ExpressionPlot from '../feature/ExpressionPlot.jsx';
+
 const GeneListComponent = ({gene, selection, selectedAll, updateSelection }) => {
   const active = selectedAll || selection.has(gene.ID) ? ' active' : '';
   return (
@@ -24,7 +27,7 @@ const GeneListComponent = ({gene, selection, selectedAll, updateSelection }) => 
         {
           gene.attributes.Note && `${gene.attributes.Note}`
         }
-      </p>  
+      </p>
     </li>
   )
 }
