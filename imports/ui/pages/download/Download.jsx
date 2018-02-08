@@ -3,10 +3,11 @@ import { withTracker } from 'meteor/react-meteor-data';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
+import { compose } from 'recompose';
 
 //import { Downloads } from '/imports/api/downloads/download_collection.js';
 
-import jobQueue from './jobqueue.js';
+import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 
 /**
  * https://www.robinwieruch.de/gentle-introduction-higher-order-components/
@@ -80,6 +81,9 @@ class Download extends React.Component {
   }
 
   render(){
+    const downloadUrl = Meteor.absoluteUrl(this.props.job.result.value)
+    console.log(downloadUrl)
+    window.open(downloadUrl, '', '', true)
     return (
       <div>Job is ready, should begin download</div>
     )
@@ -87,11 +91,12 @@ class Download extends React.Component {
 }
 
 export default withTracker(props => {
-  const downloadHash = FlowRouter.getParam('_id');
+  const queryHash = FlowRouter.getParam('_id');
   //const downloadSub = Meteor.subscribe('downloads', downloadId)
+  console.log(jobQueue.findOne({ 'data.queryHash': queryHash }))
   const jobSub = Meteor.subscribe('jobQueue');
   return {
     loading: !jobSub.ready(),
-    download: jobQueue.findOne({ data: { downloadHash: downloadHash } })
+    job: jobQueue.findOne({ 'data.queryHash': queryHash })
   }
-})(Download);
+})(withConditionalRendering(Download));

@@ -44,6 +44,7 @@ export const downloadGenes = new ValidatedMethod({
     const existingJob = jobQueue.findOne({ 'data.queryHash': queryHash });
 
     if (typeof existingJob === 'undefined'){
+      console.log('initiating new download job')
       const job = new Job(jobQueue, 'download', {
         queryString: queryString,
         queryHash: queryHash,

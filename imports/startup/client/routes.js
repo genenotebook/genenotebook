@@ -9,6 +9,7 @@ import { Session } from 'meteor/session';
 import '../../ui/layouts/app-body.js';
 
 import '../../ui/pages/genelist/genelist.js';
+import '../../ui/pages/download/download.js';
 import '../../ui/pages/feature/feature.js';
 import '../../ui/pages/blast/blast.js';
 import '../../ui/pages/blast/blastResult.js';
@@ -94,6 +95,8 @@ exposedRoutes.route('/download/:_id', {
     BlazeLayout.render('appBody', { main: 'download' })
   }
 })
+
+exposedRoutes.route('/download/file/(.*)',{});
 
 loggedInRoutes.route('/profile', {
   name: 'profile',

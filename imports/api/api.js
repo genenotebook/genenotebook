@@ -26,3 +26,4 @@ import './methods/list.js';
 import './jobqueue/process-interproscan.js';
 import './jobqueue/process-makeBlastDb.js';
 import './jobqueue/process-blast.js';
+import './jobqueue/process-download.js';
