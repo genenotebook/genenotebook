@@ -27,11 +27,11 @@ const GeneListNavBar = ({queryCount, selection, selectedAll, selectAll, openDown
             <i className="fa fa-external-link" aria-hidden="true"></i> Send 
           </button>
           <button type="button" className="btn btn-secondary select-all" onClick={()=>{selectAll(false)}}>
-            <i className="fa fa-check checked" aria-hidden="true"></i>
+            Unselect all <i className="fa fa-check checked" aria-hidden="true"></i>
           </button>
         </div> :
         <button type="button" className="btn btn-sm btn-outline-secondary select-all" onClick={()=>{selectAll(true)}}>
-          <i className="fa fa-check unchecked" aria-hidden="true"></i>
+          Select all <i className="fa fa-check unchecked" aria-hidden="true"></i>
         </button>
       }
       

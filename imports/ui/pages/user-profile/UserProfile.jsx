@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { createContainer } from 'meteor/react-meteor-data';
+import { withTracker } from 'meteor/react-meteor-data';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Roles } from 'meteor/alanning:roles';
 
@@ -160,7 +160,7 @@ class UserProfile extends React.Component {
                 id="username"
                 onChange={this.handleChange} 
                 value={this.state.username} />
-                <small id="emailHelp" class="form-text text-muted">
+                <small id="emailHelp" className="form-text text-muted">
                   Your username will be visible to other users and must be unique. <b>required</b>
                 </small>
             </div>
@@ -222,7 +222,7 @@ class UserProfile extends React.Component {
   }
 }
 
-export default UserProfileContainer = createContainer(() => {
+export default withTracker(props => {
   const subscription = Meteor.subscribe('users');
   const userId = FlowRouter.getParam('_id');
   const userProfile = userId ? Meteor.users.findOne({_id: userId}) : Meteor.user();
@@ -235,4 +235,4 @@ export default UserProfileContainer = createContainer(() => {
     loading: !subscription.ready(),
     allRoles: uniqueRoles
    }
-},UserProfile)
+})(UserProfile);

@@ -19,7 +19,7 @@ const ThreewayRadioButtons = ({attribute, onClick}) => {
     <div className="threeway-radio row justify-content-between" >
       <label htmlFor={attribute}>{attribute} </label>
       <div 
-        className="btn-group btn-group-sm float-right" 
+        className="btn-group btn-group-toggle btn-group-sm float-right" 
         id={attribute} 
         data-toggle="buttons" >
         {

@@ -1,20 +1,5 @@
-.select-gene, .select-all {
-	.glyphicon {
-		&.checked{
-		color:black;
-		}
-		&.unchecked{
-			color:lightgrey;
-		}
-	}
-}
-
-.bert-alert.prepare-download {
-	color:lighten(#000,30%);
-}
-
 .genelist {
-	min-width: 100%;
+  min-width: 100%;
     min-height: 100%;
     background-color: #fff;
     position: relative;
@@ -22,4 +7,10 @@
     bottom: 100%;
     left: 0;
     z-index: 1;
+    .genelist-item {
+      padding: .5rem .5rem;
+    }
+    p {
+      margin: 0;
+    }
 }

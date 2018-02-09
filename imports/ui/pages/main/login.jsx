@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { createContainer } from 'meteor/react-meteor-data';
+import { withTracker } from 'meteor/react-meteor-data';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
@@ -70,8 +70,8 @@ class Login extends React.Component {
   }
 }
 
-export default createContainer(() => {
+export default withTracker(props => {
   return {
     redirect: '/'
   }
-},Login)
+})(Login);

@@ -1,4 +1,4 @@
-import { createContainer } from 'meteor/react-meteor-data';
+import { withTracker } from 'meteor/react-meteor-data';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
@@ -73,9 +73,9 @@ class Admin extends React.Component {
   }
 }
 
-export default createContainer(() => {
+export default withTracker(props => {
   const page = FlowRouter.getParam('_id')
   return {
     currentPage: page
   }
-},Admin)
+})(Admin)

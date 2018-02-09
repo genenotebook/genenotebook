@@ -7,11 +7,13 @@ import { Genes } from '/imports/api/genes/gene_collection.js';
 
 //import GenemodelContainer from '../feature/Genemodel.jsx';
 //import ExpressionPlot from '../feature/ExpressionPlot.jsx';
+//
+import './genelist.scss';
 
 const GeneListComponent = ({gene, selection, selectedAll, updateSelection }) => {
   const active = selectedAll || selection.has(gene.ID) ? ' active' : '';
   return (
-    <li className="list-group-item">
+    <li className="list-group-item genelist-item">
       <button 
         type="button" 
         className={ "btn btn-sm btn-outline-secondary select-gene pull-right" + active }
@@ -22,10 +24,10 @@ const GeneListComponent = ({gene, selection, selectedAll, updateSelection }) => 
       <p>
         <a className="genelink" href={`/gene/${gene.ID}`}>{`${gene.ID}`}</a>
         {
-          gene.attributes.Name && <b> {`${gene.attributes.Name}`} </b>
+          gene.attributes.Name && <b> {` ${gene.attributes.Name}`} </b>
         }
         {
-          gene.attributes.Note && `${gene.attributes.Note}`
+          gene.attributes.Note && ` ${gene.attributes.Note}`
         }
       </p>
     </li>

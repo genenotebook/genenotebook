@@ -1,5 +1,5 @@
 import { Accounts } from 'meteor/accounts-base';
-import { createContainer } from 'meteor/react-meteor-data';
+import { withTracker } from 'meteor/react-meteor-data';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
@@ -203,6 +203,6 @@ class Register extends React.Component {
   }
 }
 
-export default createContainer(() => {
+export default withTracker(props => {
   return {}
-}, Register)
+})(Register);
