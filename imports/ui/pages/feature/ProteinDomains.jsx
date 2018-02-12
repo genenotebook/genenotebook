@@ -10,8 +10,13 @@ const ProteinDomainSourceGroup = ({source, domains, index}) => {
       {
         domains.map((domain, domainIndex) => {
           return (
-            <rect transform={`translate(0,${domainIndex * 10})`} key={domain.start}>
-            </rect>
+            <rect 
+              transform={`translate(0,${domainIndex * 10})`} 
+              x={domain.start}
+              width={domain.end - domain.start}
+              y='0'
+              height='8'
+              key={domain.start} />
           )
         })
       }
