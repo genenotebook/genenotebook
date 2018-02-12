@@ -10,7 +10,7 @@ import { Genes } from '/imports/api/genes/gene_collection.js';
 import Info from './Info.jsx';
 import GenemodelContainer from './Genemodel.jsx';
 import SeqContainer from './Seq.jsx';
-//import Interpro from './Interpro.jsx'; //TODO
+import ProteinDomains from './ProteinDomains.jsx'; //TODO
 //import Orthogroup from './Orthogroup.jsx'; //TODO
 import ExpressionPlot from './ExpressionPlot.jsx';
 
@@ -63,8 +63,9 @@ class Feature extends React.Component {
           <Info gene={this.props.gene} />
           <GenemodelContainer gene={this.props.gene} />
           <SeqContainer gene={this.props.gene} />
+          <ProteinDomains gene={this.props.gene} />
           {/*
-          <Interpro />
+          
           <Orthogroup />
           */}
           <ExpressionPlot gene={this.props.gene} />

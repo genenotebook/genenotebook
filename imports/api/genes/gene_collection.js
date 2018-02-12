@@ -83,6 +83,16 @@ const SubfeatureSchema = new SimpleSchema({
   },
   'parents.$': {
     type: String
+  },
+  protein_domains: {
+    type: Array,
+    label: 'Interproscan protein domains',
+    optional: true
+  },
+  'protein_domains.$': {
+    type: Object,
+    label: 'Interproscan protein domain',
+    blackbox: true
   }
 });
 
@@ -163,12 +173,6 @@ const GeneSchema = new SimpleSchema({
   },
   'permissions.$': {
     type: String
-  },
-  interproscan: {
-    type: Object,
-    blackbox: true,
-    optional: true,
-    label: 'Interproscan annotation'
   }
 });
 

@@ -31,6 +31,7 @@
     "meteor-babel-helpers": "0.0.3",
     "meteor-node-stubs": "^0.2.11",
     "object-hash": "^1.2.0",
+    "papaparse": "^4.3.7",
     "react": "^16.2.0",
     "react-alert": "^2.4.0",
     "react-bootstrap": "^0.31.5",

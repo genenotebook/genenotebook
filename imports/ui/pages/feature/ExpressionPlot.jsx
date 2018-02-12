@@ -5,7 +5,7 @@ import { withTracker } from 'meteor/react-meteor-data';
 import React from 'react';
 import { mean, sum, groupBy } from 'lodash';
 
-import ContainerDimensions from 'react-container-dimensions'
+import ContainerDimensions from 'react-container-dimensions';
 import { Popover, OverlayTrigger } from 'react-bootstrap';
 import { scaleLinear } from 'd3-scale';
 import Select from 'react-select';

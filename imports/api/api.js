@@ -10,6 +10,7 @@ import './genomes/add_gff.js';
 import './genomes/updateTrackPermissions.js';
 
 import './genes/interproscan.js';
+import './genes/add_interproscan.js';
 import './genes/download_genes.js';
 
 import './blast/makeblastdb.js';

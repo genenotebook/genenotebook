@@ -1,5 +1,4 @@
 import { Template } from 'meteor/templating';
-import { createContainer } from 'meteor/react-meteor-data';
 
 import React from 'react';
 import find from 'lodash/find';
@@ -54,7 +53,7 @@ const Controls = (props) => {
   )
 }
 
-class _SeqContainer extends React.Component {
+export default class SeqContainer extends React.Component {
   constructor(props){
     super(props)
     const transcripts = this.props.gene.subfeatures.filter(sub => {
@@ -103,10 +102,3 @@ class _SeqContainer extends React.Component {
     )
   }
 }
-
-export default SeqContainer = createContainer( props => {
-  return {
-    gene: props.gene
-  }
-}, _SeqContainer)
-
