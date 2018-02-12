@@ -47,7 +47,7 @@ const loggedInRoutes = FlowRouter.group({
       }
       const hasAccess = Roles.userIsInRole(userId, 'user');
       if (!hasAccess && context.path !== '/profile'){
-        redirect('/inactive-account');
+        //redirect('/inactive-account');
       }
     }
   ]

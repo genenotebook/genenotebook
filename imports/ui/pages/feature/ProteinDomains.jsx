@@ -3,14 +3,14 @@ import { scaleLinear } from 'd3-scale';
 import ContainerDimensions from 'react-container-dimensions';
 import { groupBy } from 'lodash';
 
-const ProteinDomainSourceGroup = ({domains, index}) => {
-  console.log(index,domains)
+const ProteinDomainSourceGroup = ({source, domains, index}) => {
+  console.log(index,source,domains)
   return (
-    <g>
+    <g transform={`translate(0,${index * domains.length * 10})`}>
       {
-        domains.map(domain => {
+        domains.map((domain, domainIndex) => {
           return (
-            <rect>
+            <rect transform={`translate(0,${domainIndex * 10})`} key={domain.start}>
             </rect>
           )
         })
@@ -40,8 +40,13 @@ export default class ProteinDomains extends React.Component {
               return (
                 <svg width={width} height='350'>
                   {
-                    Object.entries(domainsBySource).map((domains, index) => {
-                      return <ProteinDomainSourceGroup domains={domains} index={index}/>
+                    Object.entries(domainsBySource).map((domainGroup, index) => {
+                      const [source, domains] = domainGroup;
+                      return <ProteinDomainSourceGroup 
+                        key={source} 
+                        source={source} 
+                        domains={domains} 
+                        index={index} />
                     })
                   }
                 </svg>
