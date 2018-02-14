@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { createContainer } from 'meteor/react-meteor-data';
+import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
 import find from 'lodash/find';
@@ -17,7 +17,6 @@ const canEdit = () => {
 }
 
 const Controls = (props) => {
-  console.log('control props',props)
   return (
     <div>
       {
@@ -311,6 +310,13 @@ class Info extends React.Component {
                 <td>Source</td>
                 <td>{ gene.source }</td>
               </tr>
+              {
+                gene.orthogroup &&
+                <tr>
+                  <td>Orthogroup</td>
+                  <td>{ gene.orthogroup }</td>
+                </tr>
+              }
               { attributes &&
                 Object.keys(attributes).map(key => {
                   const value = attributes[key];
@@ -386,7 +392,7 @@ class Info extends React.Component {
   }
 }
 
-export default createContainer( props => {
+export default withTracker( props => {
   Meteor.subscribe('editHistory');
   Meteor.subscribe('attributes');
   //Meteor.subscribe('singleGene',props.gene.ID)
@@ -410,4 +416,4 @@ export default createContainer( props => {
     editHistory: editHistory,
     attributeNames: attributeNames
   }
-}, Info)
+})(Info);

@@ -131,6 +131,53 @@ export const getGeneSequences = (gene) => {
   return sequences
 }
 
-//export { reverseComplement, translate, getGeneSequences, getMultipleGeneSequences };
+export const parseNewick = (newickString) => {
+  //Adapted from Jason Davies https://github.com/jasondavies/newick.js
+  const ancestors = [];
+  const tokens = newickString.split(/\s*(;|\(|\)|,|:)\s*/);
+  const geneIds = []
+  let tree = {};
+  let subtree = {};
+  tokens.forEach((token, tokenIndex) => {
+    switch(token){
+      case '(': //new branchset
+        subtree = {};
+        tree.branchset = [subtree];
+        ancestors.push(tree);
+        tree = subtree;
+        break;
+      case ',': //another branch
+        subtree = {};
+        ancestors[ancestors.length - 1].branchset.push(subtree);
+        tree = subtree;
+        break;
+      case ')': //optional name next
+        tree = ancestors.pop();
+        break;
+      case ':': //optional length next
+        break;
+      default:
+        let previousToken = tokens[tokenIndex - 1];
+        if (
+          previousToken === '(' ||
+          previousToken === ')' ||
+          previousToken === ','
+        ){
+          tree.name = token;
+          const geneId = token.split('.').slice(0,-1).join('.');
+          if (geneId.length > 0){
+            geneIds.push(geneId)
+          }
+        } else if (previousToken === ':'){
+          tree.length = parseFloat(token);
+        }
+    }
+  })
+  return {
+    tree: tree,
+    geneIds: geneIds,
+    size: geneIds.length
+  };
+}
 
 

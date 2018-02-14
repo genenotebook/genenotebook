@@ -77,14 +77,21 @@ export const addInterproscan = new ValidatedMethod({
             }
             const dbxref = attributes['Dbxref'];
             if (typeof dbxref !== 'undefined'){
-              proteinDomain['dbxref'] = [];
+              proteinDomain['dbxref'] = dbxref;
+              let hasInterpro = false;
               dbxref.forEach(crossref => {
                 const [db, id] = crossref.split(':')
                 if (/InterPro/.test(db)){
-                  proteinDomain['dbxref'].push(crossref);
+                  hasInterpro = true
+                  proteinDomain['interpro'] = id;
                   interproIds.add(id)
                 }
               })
+              if (!hasInterpro) {
+                proteinDomain['interpro'] = 'Unintegrated signature';
+              }
+            } else {
+              proteinDomain['interpro'] = 'Unintegrated signature';
             }
 
             if (typeof attributes['signature_desc'] !== 'undefined'){

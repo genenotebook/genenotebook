@@ -11,6 +11,7 @@ import './genomes/updateTrackPermissions.js';
 
 import './genes/interproscan.js';
 import './genes/add_interproscan.js';
+import './genes/add_orthogroup_trees.js';
 import './genes/download_genes.js';
 
 import './blast/makeblastdb.js';

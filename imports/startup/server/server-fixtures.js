@@ -32,17 +32,33 @@ Meteor.startup( () => {
   //add the viewing, editing and expression option, 
   //since some keys are dynamic it will not allways be present on any gene, 
   //but we do want to filter on this
-  const permanentAttributes = ['viewing','editing']
-  permanentAttributes.forEach( attributeName => {
-    console.log(`Adding default filter option: ${attributeName}`)
+  const permanentAttributes = [
+    {
+      name: 'Viewing',
+      query: 'viewing'
+    },
+    {
+      name: 'Editing',
+      query: 'editing'
+    },
+    {
+      name: 'Orthogroup',
+      query: 'orthogroup'
+    },
+    {
+      name: 'Protein domains',
+      query: 'subfeatures.protein_domains'
+    }]
+  permanentAttributes.forEach( attribute => {
+    console.log(`Adding default filter option: ${attribute.name}`)
     Attributes.findAndModify({
       query: { 
-        name: attributeName 
+        name: attribute.name 
       },
       update: { 
         $setOnInsert: { 
-          name: attributeName, 
-          query: attributeName, 
+          name: attribute.name, 
+          query: attribute.query, 
           show: true, 
           canEdit: false, 
           reserved: true,

@@ -12,7 +12,6 @@ export default class AttributeSelect extends React.Component {
   }
 
   handleAttributeSelect = event => {
-    console.log(event.target)
     const attribute = event.target.id;
     const selectedAttributes = cloneDeep(this.state.selectedAttributes)
     if (selectedAttributes.has(attribute)){
@@ -48,7 +47,7 @@ export default class AttributeSelect extends React.Component {
               return (
                 <button 
                   className={`dropdown-item ${active}`}
-                  id={attribute.name}
+                  id={attribute.query}
                   type="button" 
                   onClick={this.handleAttributeSelect}
                   key={attribute.name} >

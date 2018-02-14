@@ -42,9 +42,9 @@ class GeneListSidePanel extends React.Component {
 
   updateAttributeFilter = (attribute, value) => {
     const query = cloneDeep(this.props.query);
-    const directProps = ['viewing','editing'];
+    const directProps = ['viewing','editing', 'orthogroup','subfeatures.protein_domains'];
     const attributeQuery = directProps.indexOf(attribute) > 0 ? attribute : `attributes.${attribute}`;
-    console.log(attribute,value)
+
     if (value === 'either'){
       delete query[attributeQuery]
     } else if (value === 'yes') {
@@ -52,6 +52,7 @@ class GeneListSidePanel extends React.Component {
     } else if (value === 'no') {
       query[attributeQuery] = {$exists: false}
     }
+    console.log(query)
     this.props.updateQuery(query)
   }
 

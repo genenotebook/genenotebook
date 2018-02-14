@@ -10,8 +10,8 @@ import { Genes } from '/imports/api/genes/gene_collection.js';
 import Info from './Info.jsx';
 import GenemodelContainer from './Genemodel.jsx';
 import SeqContainer from './Seq.jsx';
-import ProteinDomains from './ProteinDomains.jsx'; //TODO
-//import Orthogroup from './Orthogroup.jsx'; //TODO
+import ProteinDomains from './ProteinDomains.jsx'; 
+import Orthogroup from './Orthogroup.jsx'; 
 import ExpressionPlot from './ExpressionPlot.jsx';
 
 class Feature extends React.Component {
@@ -64,10 +64,7 @@ class Feature extends React.Component {
           <GenemodelContainer gene={this.props.gene} />
           <SeqContainer gene={this.props.gene} />
           <ProteinDomains gene={this.props.gene} />
-          {/*
-          
-          <Orthogroup />
-          */}
+          <Orthogroup gene={this.props.gene} />
           <ExpressionPlot gene={this.props.gene} />
         </div>
         <div className="card-footer text-muted">
@@ -81,7 +78,6 @@ class Feature extends React.Component {
 
 export default withTracker(props => {
   const geneId = FlowRouter.getParam('_id');
-  console.log(geneId);
   const geneSub = Meteor.subscribe('singleGene', geneId);
   return {
     loading: !geneSub.ready(),
