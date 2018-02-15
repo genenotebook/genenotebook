@@ -169,7 +169,7 @@ export const parseNewick = (newickString) => {
             geneIds.push(geneId)
           }
         } else if (previousToken === ':'){
-          tree.length = parseFloat(token);
+          tree.branchLength = parseFloat(token);
         }
     }
   })

@@ -64,7 +64,10 @@ class Feature extends React.Component {
           <GenemodelContainer gene={this.props.gene} />
           <SeqContainer gene={this.props.gene} />
           <ProteinDomains gene={this.props.gene} />
-          <Orthogroup gene={this.props.gene} />
+          {
+            this.props.gene.orthogroup &&
+            <Orthogroup gene={this.props.gene} />
+          }
           <ExpressionPlot gene={this.props.gene} />
         </div>
         <div className="card-footer text-muted">
