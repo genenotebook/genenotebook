@@ -85,7 +85,7 @@ const InterproGroup = ({interproId, sourceGroups, transform, scale}) => {
   const label = typeof interproId !== 'undefined' ? interproId : 'Unintegrated signature';
   return (
     <g transform={transform}>
-      <foreignObject width='100' height='30' x='0' y='-30'>
+      <foreignObject width='400' height='30' x='0' y='-30'>
         <a href="#" className="badge badge-dark">{label}</a>
       </foreignObject>
       {
@@ -110,15 +110,14 @@ export default class ProteinDomains extends React.Component {
   }
   render(){
     const sequences = getGeneSequences(this.props.gene);
-    const transcripts = this.props.gene.subfeatures.filter(sub => sub.type === 'mRNA');
-    const transcript = transcripts[0];
+    const transcripts = this.props.gene.subfeatures.filter(sub =>  sub.type == 'mRNA');
+    const transcript = transcripts.filter(transcript => transcript.ID.endsWith('1'))[0];
     const transcriptSequence = sequences.filter(seq => seq.ID === transcript.ID)[0]
     const transcriptSize = transcriptSequence.pep.length;
     
 
     
     const interproGroups = Object.entries(groupBy(transcript.protein_domains, 'interpro'));
-
     const totalGroups = interproGroups.length;
     let totalDomains = 0;
     const sortedDomains = interproGroups.map(domainGroup => {

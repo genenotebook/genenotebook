@@ -62,7 +62,7 @@ const VersionHistory = (props) => {
       <div className="alert alert-danger" role="alert">
         <i className="fa fa-exclamation-circle" aria-hidden="true"></i>
         You are watching version <b>{ props.currentVersionNumber } / { props.totalVersionNumber } </b> 
-        of this gene by { 'anonymous user'/*props.editBy*/ } at { props.editAt }.
+        of this gene by { props.editBy } at { props.editAt }.
         { 
           Roles.userIsInRole(Meteor.userId(),'admin') &&
           <a href="#" className="alert-link" onClick = {props.restoreVersion}>Click here to revert to this version.</a>
@@ -97,18 +97,7 @@ const AttributeInput = (props) => {
           onClick = {props.deleteAttribute.bind(this,props.name)}>
           <span className="fa fa-trash-o"/>
         </button>
-
       </div>
-      {/*
-      <span className="input-group-btn">
-        <button 
-          type = "button" 
-          className = "btn btn-danger btn-block" 
-          name = {props.name}
-          onClick = {props.deleteAttribute.bind(this,props.name)}>
-          <span className="glyphicon glyphicon-remove"/>
-        </button>
-      </span>*/}
     </div>
   )
 }
@@ -271,6 +260,18 @@ class Info extends React.Component {
     const attributes = this.state.newAttributes ? this.state.newAttributes : this.state.attributes;
 
     const currentVersion = this.props.editHistory[0]
+
+    const interproDomains = gene.subfeatures.filter(sub => {
+      return sub.type === 'mRNA' && typeof sub.protein_domains !== 'undefined'
+    }).map(sub => {
+      return sub.protein_domains.filter(domain => {
+        return typeof domain.dbxref !== 'undefined'
+      }).map(domain => {
+        return domain.dbxref.filter(dbxref => /^InterPro.*/.test(dbxref))
+      })
+    })
+
+    console.log(interproDomains)
 
     return (
       <div id="info">

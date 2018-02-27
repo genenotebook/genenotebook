@@ -10,7 +10,6 @@ import Header from './Header.jsx';
 class MainLayout extends React.Component {
   constructor(props){
     super(props)
-    console.log(this.props)
   }
   render(){
 

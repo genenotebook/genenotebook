@@ -70,7 +70,6 @@ FlowRouter.notFound = {
     mount(MainLayout, {
       content: <NotFound />
     })
-    //BlazeLayout.render('appBody', { main: 'appNotFound' }) 
   }
 }
 

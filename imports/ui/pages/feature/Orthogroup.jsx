@@ -34,7 +34,7 @@ const TreeNodes = ({nodes}) => {
     return (
       <g key={transcriptId}>
         <circle cy={node.x} cx={node.y} r='3' />
-        <foreignObject width='240' height='10' x={node.y + 10} y={node.x - 15}>
+        <foreignObject width='300' height='10' x={node.y + 10} y={node.x - 15}>
           <GeneLink transcriptId={transcriptId} geneId={geneId} />
         </foreignObject>
       </g>
@@ -50,7 +50,7 @@ const Tree = ({orthogroup}) => {
           ({width, height}) =>{
             const svgHeight = orthogroup.size * 20;
             const treeMap = cluster()
-              .size([svgHeight, width - 240])
+              .size([svgHeight, width - 300])
               .separation((node1,node2) => { return 1})
             const treeRoot = hierarchy(orthogroup.tree, node => node.branchset);
 

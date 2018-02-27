@@ -62,13 +62,17 @@ class GeneListSidePanel extends React.Component {
     this.props.updateQuery(query)
   }
 
+  clearFilter = () => {
+    this.props.updateQuery({})
+  }
+
   render(){
     return (
       <div>
         <div className="row justify-content-end">
           { 
             !isEmpty(this.props.query) &&
-            <button type="button" className="btn btn-danger btn-sm float-right">
+            <button type="button" className="btn btn-danger btn-sm float-right" onClick={this.clearFilter}>
               <span className="fa fa-remove-o" aria-hidden="true"></span> Clear filters
             </button>
           }

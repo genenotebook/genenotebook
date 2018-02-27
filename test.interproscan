@@ -1,0 +1,13 @@
+##sequence-region Medtr4g036675.1 1 332
+Medtr4g036675.1 .       polypeptide     1       332     .       +       .       ID=Medtr4g036675.1;md5=e9635c452dae3aace8898263c0005bcc
+Medtr4g036675.1 Gene3D  protein_match   250     327     1.2E-18 +       .       date=13-02-2018;Target=Medtr4g036675.1 250 327;ID=match$126963_250_327;Name=G3DSA:1.20.1180.10;statu$
+Medtr4g036675.1 Gene3D  protein_match   23      127     1.8E-21 +       .       date=13-02-2018;Target=Medtr4g036675.1 23 127;ID=match$126964_23_127;Name=G3DSA:2.160.10.10;status=T
+Medtr4g036675.1 Pfam    protein_match   66      100     4.7E-4  +       .       date=13-02-2018;Target=Medtr4g036675.1 66 100;ID=match$126965_66_100;signature_desc=Bacterial transf$
+Medtr4g036675.1 Pfam    protein_match   35      63      5.2E-5  +       .       date=13-02-2018;Target=Medtr4g036675.1 35 63;ID=match$126965_35_63;signature_desc=Bacterial transfer$
+Medtr4g036675.1 Pfam    protein_match   162     195     1.3E-6  +       .       date=13-02-2018;Target=Medtr4g036675.1 162 195;ID=match$126965_162_195;signature_desc=Bacterial tran$
+Medtr4g036675.1 Gene3D  protein_match   133     249     9.8E-25 +       .       date=13-02-2018;Target=Medtr4g036675.1 133 249;ID=match$126966_133_249;Name=G3DSA:2.160.10.10;status$
+Medtr4g036675.1 PANTHER protein_match   36      102     5.3E-117        +       .       date=13-02-2018;Target=Medtr4g036675.1 36 102;Ontology_term="GO:0008610","GO:0008780";ID=mat$
+Medtr4g036675.1 PANTHER protein_match   105     324     5.3E-117        +       .       date=13-02-2018;Target=Medtr4g036675.1 105 324;Ontology_term="GO:0008610","GO:0008780";ID=ma$
+Medtr4g036675.1 CDD     protein_match   39      323     2.37398E-115    +       .       date=13-02-2018;Target=Medtr4g036675.1 39 323;Ontology_term="GO:0008610","GO:0008780";ID=mat$
+Medtr4g036675.1 Pfam    protein_match   233     324     2.1E-22 +       .       date=13-02-2018;Target=Medtr4g036675.1 233 324;ID=match$126969_233_324;signature_desc=Udp N-acetylgl$
+Medtr4g036675.1 SUPERFAMILY     protein_match   28      245     1.93E-48        +       .       date=13-02-2018;Target=Medtr4g036675.1 28 245;ID=match$126970_28_245;Name=SSF51161;s$

@@ -22,7 +22,7 @@ const NotFound = (props) => {
 const GeneLink = props => {
   return (
     <a href={`/gene/${props.geneId}`} style={{fontSize: 10}}>
-      {props.transcriptId}
+      {props.transcriptId} {props.gene.attributes.Name}
     </a>
   )
 }
