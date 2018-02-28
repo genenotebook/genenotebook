@@ -45,7 +45,7 @@ const XAxis = ({ scale, numTicks, transform, seqid }) => {
         <line x1 = {range[1]} x2 = {range[1]} y1 = '0' y2 = '5' stroke='black'/>
         <text x={range[1]} y='-10' dy='5' textAnchor='end' fontSize='10'>{end}</text>
       </g>
-      <text x={range[0]} y='15' dy='5' textAnchor='left' fontSize='11'>{seqid}</text>
+      <text x={range[0]} y='-20' dy='5' textAnchor='left' fontSize='11'>{seqid}</text>
     </g>
   )
 }
@@ -119,34 +119,30 @@ class GenemodelContainer extends React.Component {
 
     const transcripts = gene.subfeatures.filter(subfeature => subfeature.type === 'mRNA');
     return (
-       <section id='genemodel'>
-        <hr/>
-        <h3>Genemodel</h3>
-        <div className='card genemodel'>
-          <ContainerDimensions>
-            {
-              ({width,height}) => {
-                const scale = scaleLinear().domain([start,end]).range([.05 * width, .90 * width])
-                return (
-                  <svg width={width} height={12 * transcripts.length + 40} className='genemodel-container'>
-                    <Genemodel gene={gene} transcripts={transcripts} width={width} scale={scale}/>
-                    <XAxis 
-                      scale={scale} 
-                      numTicks='4' 
-                      transform={`translate(0,${ 12 * transcripts.length + 15})`}
-                      seqid={gene.seqid}/>
-                    <defs>
-                      <marker id='arrowEnd' markerWidth='15' markerHeight='10' refX='0' refY='5' orient='auto'>
-                        <path d='M0,5 L15,5 L10,10 M10,0 L15,5' fill='none' stroke='black' strokeWidth='1'/>
-                      </marker>
-                    </defs>
-                  </svg>
-                )
-              }
+      <div className='card genemodel'>
+        <ContainerDimensions>
+          {
+            ({width,height}) => {
+              const scale = scaleLinear().domain([start,end]).range([.05 * width, .90 * width])
+              return (
+                <svg width={width} height={12 * transcripts.length + 40} className='genemodel-container'>
+                  <Genemodel gene={gene} transcripts={transcripts} width={width} scale={scale}/>
+                  <XAxis 
+                    scale={scale} 
+                    numTicks='4' 
+                    transform={`translate(0,${ 12 * transcripts.length + 15})`}
+                    seqid={gene.seqid}/>
+                  <defs>
+                    <marker id='arrowEnd' markerWidth='15' markerHeight='10' refX='0' refY='5' orient='auto'>
+                      <path d='M0,5 L15,5 L10,10 M10,0 L15,5' fill='none' stroke='black' strokeWidth='1'/>
+                    </marker>
+                  </defs>
+                </svg>
+              )
             }
-          </ContainerDimensions>
-        </div>
-      </section>
+          }
+        </ContainerDimensions>
+      </div>
     )
   }
 }

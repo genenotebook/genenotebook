@@ -1,4 +1,5 @@
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
+import { Meteor } from 'meteor/meteor';
 
 import SimpleSchema from 'simpl-schema';
 import fs from 'fs';
@@ -33,77 +34,72 @@ export const addReference = new ValidatedMethod({
 		}
 
 		const lineReader = readline.createInterface({
-			input: fs.createReadStream(fileName,'utf8')
+			input: fs.createReadStream(fileName, 'utf8')
 		})
 
-		let seq = {}
-		let fasta = []
+		const bulkOp = References.rawCollection().initializeUnorderedBulkOp();
+
+		let seq = '';
+		let header;
+		let start = 0;
+		let end = 0;
+		const chunkSize = 10000;
 		
 		const fut = new Future();
 		console.log('start parsing')
 		lineReader.on('line', (line) => {
 			if (line[0] === '>'){
-				if (seq.header !== undefined){
-					
-					new Fiber(function(){
-						let existingHeader = References.find({ 
-							reference: referenceName, 
-							header: seq.header
-						}).count()
-
-						if (existingHeader){
-							throw new Meteor.Error('Duplicate header: ' + seq.header)
-						}
-					}).run()
-					fasta.push(seq)
+				if (header !== undefined){
+					console.log(header)
+					if (seq.length > 0){
+						end += seq.length;
+						new Fiber(()=>{
+							References.insert({
+								header: header,
+								seq: seq,
+								start: start,
+								end: end,
+								referenceName: referenceName,
+								permissions: ['admin']
+							})
+						}).run()
+					}
 				}
-				seq = { 
-					referenceName: referenceName, 
-					header: line.split('>')[1].split(' ')[0],
-					seq: '' 
-				}
+				header = line.split('>')[1].split(' ')[0];
+				seq = '';
+				start = 0;
+				end = 0;
+				
 			} else {
-				seq.seq += line
+				seq += line;
+				if ( seq.length > chunkSize ){
+					end += chunkSize
+					new Fiber(()=>{
+						References.insert({
+							header: header,
+							seq: seq.substring(0,chunkSize),
+							start: start,
+							end: end,
+							referenceName: referenceName,
+							permissions: ['admin']
+						})
+					}).run()
+					seq = seq.substring(chunkSize);
+					start += chunkSize;
+				}
 			}
 		})
 
-		lineReader.on('close',() => {
-			//add the last sequence in the file
-			new Fiber(function(){
-				let existingHeader = References.find({ 
-					referenceName: referenceName, 
-					header: seq.header
-				}).count()
-
-				if (existingHeader){
-					throw new Meteor.Error('Duplicate header: ' + seq.header)
-				}
-			}).run()
-			fasta.push(seq)
-
-			console.log('finished parsing')
-			new Fiber(function(){
-				fasta.forEach( (seq) => {
-					console.log('inserting',seq.header)
-					let chunksize = 10000;
-					let splitSeq = seq.seq.match(new RegExp('.{1,'+ chunksize + '}','g'))
-
-					let start = 0;
-					let end = 0;
-
-					splitSeq.forEach( (seqPart) => {
-						end += seqPart.length
-						References.insert({
-							header: seq.header,
-							seq: seqPart,
-							referenceName: seq.referenceName,
-							start: start,
-							end: end,
-							permissions: ['admin']
-						})
-						start += seqPart.length;
-						;
-					} )
+		lineReader.on('close', () => {
+			end += seq.length;
+			new Fiber(()=>{
+				References.insert({
+					header: header,
+					seq: seq,
+					start: start,
+					end: end,
+					referenceName: referenceName,
+					permissions: ['admin']
 				})
 				ReferenceInfo.insert({
 					referenceName: referenceName,
@@ -111,8 +107,12 @@ export const addReference = new ValidatedMethod({
 					description: 'description',
 					organism: 'organism'
 				})
+				console.log('finished parsing')
+
 				fut.return(1)
 			}).run()
+			
+
 		})
 		return fut.wait()
 	}

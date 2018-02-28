@@ -61,7 +61,11 @@ class Feature extends React.Component {
         </div>
         <div className="card-body">
           <Info gene={this.props.gene} />
-          <GenemodelContainer gene={this.props.gene} />
+          <section id='genemodel'>
+            <hr/>
+            <h3>Genemodel</h3>
+            <GenemodelContainer gene={this.props.gene} />
+          </section>
           <SeqContainer gene={this.props.gene} />
           <ProteinDomains gene={this.props.gene} />
           {

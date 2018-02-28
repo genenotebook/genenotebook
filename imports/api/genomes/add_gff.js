@@ -46,7 +46,7 @@ const Interval = class Interval{
 		this.type = type;
 		this.start = start;
 		this.end = end;
-		this.score = score;
+		this.score = String(score);
 		this.attributes = formatAttributes(attributes);
 
 		this.ID = this.attributes.ID[0];

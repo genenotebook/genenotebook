@@ -5,7 +5,7 @@ import React from 'react';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
 
-//import GenemodelContainer from '../feature/Genemodel.jsx';
+import GenemodelContainer from '../feature/Genemodel.jsx';
 //import ExpressionPlot from '../feature/ExpressionPlot.jsx';
 //
 import './genelist.scss';
@@ -29,6 +29,7 @@ const GeneListComponent = ({gene, selection, selectedAll, updateSelection }) => 
         {
           gene.attributes.Note && ` ${gene.attributes.Note}`
         }
+        <GenemodelContainer gene={gene} />
       </p>
     </li>
   )

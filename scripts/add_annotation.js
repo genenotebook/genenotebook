@@ -45,7 +45,7 @@ if (!module.parent){
 	const Connection = asteroid.createClass()
 
 	const portal = new Connection({
-		endpoint: 'ws://localhost:3000/websocket',
+		endpoint: 'ws://localhost:2000/websocket',
 		SocketConstructor: WebSocket
 	})
 
