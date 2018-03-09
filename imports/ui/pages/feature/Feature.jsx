@@ -11,7 +11,9 @@ import Info from './Info.jsx';
 import GenemodelContainer from './Genemodel.jsx';
 import SeqContainer from './Seq.jsx';
 import ProteinDomains from './ProteinDomains.jsx'; 
-import Orthogroup from './Orthogroup.jsx'; 
+import Orthogroup from './Orthogroup.jsx';
+
+import SampleSelection from './SampleSelection.jsx'; 
 import ExpressionPlot from './ExpressionPlot.jsx';
 
 class Feature extends React.Component {
@@ -72,7 +74,13 @@ class Feature extends React.Component {
             this.props.gene.orthogroup &&
             <Orthogroup gene={this.props.gene} />
           }
-          <ExpressionPlot gene={this.props.gene} />
+          <section id='expression'>
+            <hr />
+            <h3>Expression</h3>
+            <SampleSelection>
+              <ExpressionPlot gene={this.props.gene} />
+            </SampleSelection>
+          </section>
         </div>
         <div className="card-footer text-muted">
           Gene info

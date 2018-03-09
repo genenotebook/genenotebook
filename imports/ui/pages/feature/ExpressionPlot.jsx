@@ -8,7 +8,7 @@ import { mean, sum, groupBy } from 'lodash';
 import ContainerDimensions from 'react-container-dimensions';
 import { Popover, OverlayTrigger } from 'react-bootstrap';
 import { scaleLinear } from 'd3-scale';
-import Select from 'react-select';
+
 
 import { ExperimentInfo, Transcriptomes } from '/imports/api/transcriptomes/transcriptome_collection.js';
 
@@ -23,17 +23,6 @@ import './expressionplot.scss';
 const round = (x, n) => {
   return parseFloat(Math.round(x * Math.pow(10, n)) / Math.pow(10, n)).toFixed(n)
 };
-
-class SampleSelect extends React.Component {
-  constructor(props){
-    super(props)
-  }
-  render(){
-    return (
-      <Select value='all'/>
-    )
-  }
-}
 
 const YAxis = ({ scale, numTicks }) => {
   const range = scale.range();
@@ -196,30 +185,25 @@ class ExpressionPlot extends React.Component {
       right: 10
     }
     return (
-      <div id="expression">
-        <hr />
-        <h3>Expression</h3>
-        <SampleSelect samples={this.props.samples} />
-        <div className='card expression-plot'>
-          <ContainerDimensions>
-          {
-            ({width, height}) => {
-              const yScale = scaleLinear()
-                .domain([0,yMax])
-                .range([250 - padding.top - padding.bottom ,0])
+      <div className='card expression-plot'>
+        <ContainerDimensions>
+        {
+          ({width, height}) => {
+            const yScale = scaleLinear()
+              .domain([0,yMax])
+              .range([250 - padding.top - padding.bottom ,0])
 
-              return (
-                <svg width={width} height='350'>
-                  <g transform={`translate(${padding.left},${padding.top})`}>
-                    <YAxis scale={yScale} numTicks='4' />
-                    <GroupedSamples groups={replicaGroups} yScale={yScale} transform='translate(20,0)'/>
-                  </g>
-                </svg>
-              )
-            }
+            return (
+              <svg width={width} height='350'>
+                <g transform={`translate(${padding.left},${padding.top})`}>
+                  <YAxis scale={yScale} numTicks='4' />
+                  <GroupedSamples groups={replicaGroups} yScale={yScale} transform='translate(20,0)'/>
+                </g>
+              </svg>
+            )
           }
-          </ContainerDimensions>
-        </div>
+        }
+        </ContainerDimensions>
       </div>
     )
   }
