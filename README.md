@@ -1,26 +1,22 @@
-# bioportal
+# Genebook
+## A collaborative notebook for genes and genomes
+----
+Full documentation is at http://genebook.readthedocs.io/
 ----
 ### Requirements:
 
-* node.js v4 (on mac: ```brew install node```)
-* mongodb v3.4 (on mac: ```brew install mongodb```)
+* node.js >= 8.9.4 (on mac: ```brew install node```, on linux: ```apt-get install nodejs```)
+* mongodb >= 3.4 (on mac: ```brew install mongodb```, on linux: ```apt-get install mongodb```)
 * meteor (```curl https://install.meteor.com/ | sh```) 
 
-Currently bioportal relies on the mongodb v3.4 aggregation framework, which does not ship with meteor. For now you will need to run your own instance of mongodb during development and connect to that.
 
-To run a small example:
-
-First get a mongodb instance up and running
-
-```
-mongod
-```
+To run a small example in development mode:
 
 Install dependencies and fire up meteor in development mode
 
 ```
 meteor npm install --save
-MONGO_URL=mongodb://localhost:27017/meteor meteor
+meteor
 ```
 
 Load test data
