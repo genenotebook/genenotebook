@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { createContainer } from 'meteor/react-meteor-data';
+import { withTracker } from 'meteor/react-meteor-data';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
@@ -281,10 +281,10 @@ class SubmitBlast extends React.Component {
   }
 }
 
-export default createContainer(()=>{
+export default withTracker(props => {
   const subscription = Meteor.subscribe('tracks');
   return {
     loading: !subscription.ready(),
     tracks: Tracks.find({}).fetch()
   }
-},SubmitBlast)
+})(SubmitBlast)

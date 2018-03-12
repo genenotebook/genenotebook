@@ -77,7 +77,7 @@ class Feature extends React.Component {
           <section id='expression'>
             <hr />
             <h3>Expression</h3>
-            <SampleSelection>
+            <SampleSelection gene={this.props.gene}>
               <ExpressionPlot gene={this.props.gene} />
             </SampleSelection>
           </section>

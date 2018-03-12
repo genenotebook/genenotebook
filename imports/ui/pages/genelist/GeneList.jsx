@@ -29,8 +29,8 @@ const GeneListComponent = ({gene, selection, selectedAll, updateSelection }) => 
         {
           gene.attributes.Note && ` ${gene.attributes.Note}`
         }
-        <GenemodelContainer gene={gene} />
       </p>
+        <GenemodelContainer gene={gene} />
     </li>
   )
 }

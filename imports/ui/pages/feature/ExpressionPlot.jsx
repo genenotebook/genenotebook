@@ -171,13 +171,13 @@ class ExpressionPlot extends React.Component {
   }
 
   render(){
-    const tpm = this.props.samples.map(sample => sample.tpm)
+    const tpm = this.props.values.map(value => value.tpm)
     tpm.push(1)
     const maxTpm = Math.max(...tpm)
     const precision = maxTpm > 10 ? 0 : maxTpm > 1 ? 1 : 2;
     const yMax = round(maxTpm + .1 * maxTpm, precision);
 
-    const replicaGroups = groupBy(this.props.samples, 'replicaGroup')
+    const replicaGroups = groupBy(this.props.values, 'replicaGroup')
     const padding = {
       top: 40,
       bottom: 10,
@@ -209,18 +209,29 @@ class ExpressionPlot extends React.Component {
   }
 }
 
-export default withTracker(props => {
-  const gene = props.gene
-  const ExperimentInfoSub = Meteor.subscribe('experimentInfo');
-  const samples = Transcriptomes.find({ geneId: gene.ID }).fetch();
-  samples.forEach(sample => {
-    const sampleInfo = ExperimentInfo.findOne({'_id': sample.experimentId})
-    Object.assign(sample, sampleInfo)
+export default withTracker(({ gene, samples, ...props }) => {
+  const sampleInfo = groupBy(samples, '_id')
+  const sampleIds = samples.map(sample => sample._id)
+  
+  const transcriptomeSub = Meteor.subscribe('geneExpression', gene.ID);
+
+  
+  const values = Transcriptomes.find({
+    geneId: gene.ID,
+    experimentId: {
+      $in: sampleIds
+    }
+  }).fetch()
+
+  values.forEach(value => {
+    console.log(value)
+    console.log(sampleInfo[value.experimentId])
+    Object.assign(value, sampleInfo[value.experimentId][0])
   })
 
   return {
     gene: gene,
-    samples: samples,
-    loading: !ExperimentInfoSub.ready()
+    values: values,
+    loading: !transcriptomeSub.ready()
   }
 })(ExpressionPlot)

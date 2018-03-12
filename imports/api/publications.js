@@ -39,6 +39,7 @@ Meteor.publish('genes', function(limit, search, query) {
   return Genes.find(query,{limit: limit})
 })
 
+/*
 publishComposite('singleGene', function(geneId){
   //console.log('publishing single gene')
   const publication = this;
@@ -83,6 +84,7 @@ publishComposite('singleGene', function(geneId){
     ]
   }
 })
+*/
 
 publishComposite('attributes', function(){
   const publication = this;
@@ -135,6 +137,44 @@ Meteor.publish('users', function () {
 })
 
 Meteor.publish({
+  singleGene (geneId) {
+    const publication = this;
+    if (!publication.userId){
+      publication.stop()
+    }
+    const roles = Roles.getRolesForUser(publication.userId);
+    return Genes.find({
+      ID: geneId,
+      permissions: {
+        $in: roles
+      }
+    })
+  },
+  geneExpression (geneId) {
+    const publication = this;
+    if (!publication.userId){
+      publication.stop()
+    }
+    const roles = Roles.getRolesForUser(publication.userId);
+    return Transcriptomes.find({
+      geneId: geneId,
+      permissions: {
+        $in: roles
+      }
+    })
+  },
+  experimentInfo (){
+    const publication = this;
+    if (!publication.userId){
+      publication.stop()
+    }
+    const roles = Roles.getRolesForUser(publication.userId);
+    return ExperimentInfo.find({
+      permissions: {
+        $in: roles
+      }
+    });
+  },
   downloads (downloadId) {
     const publication = this;
     const roles = publication.userId ? Roles.getRolesForUser(publication.userId) : ['public'];
@@ -164,13 +204,6 @@ Meteor.publish({
       this.stop()
     }
     return Orthogroups.find({ 'ID': ID });
-  },
-  experimentInfo (){
-    if (!this.userId){
-      this.stop()
-      //throw new Meteor.Error('Unauthorized')
-    }
-    return ExperimentInfo.find({});
   },
   tracks (){
     const publication = this;

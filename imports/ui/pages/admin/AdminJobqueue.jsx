@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { createContainer } from 'meteor/react-meteor-data';
+import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
 
@@ -103,10 +103,10 @@ class AdminJobqueue extends React.Component {
   }
 }
 
-export default createContainer(()=>{
+export default withTracker(props => {
   const subscription = Meteor.subscribe('jobQueue')
   return {
     jobs: jobQueue.find({}).fetch(),
     loading: !subscription.ready()
   }
-},AdminJobqueue)
+})(AdminJobqueue)

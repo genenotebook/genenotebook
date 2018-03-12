@@ -1,4 +1,4 @@
-import { createContainer } from 'meteor/react-meteor-data';
+import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
 
@@ -68,7 +68,7 @@ class AdminAttributes extends React.Component {
   }
 }
 
-export default createContainer(()=>{
+export default withTracker(props => {
   const attributeSubscription = Meteor.subscribe('attributes');
   const trackSubscription = Meteor.subscribe('tracks');
   return {
@@ -76,4 +76,4 @@ export default createContainer(()=>{
     tracks: Tracks.find({}).fetch(),
     loading: !attributeSubscription.ready() || !trackSubscription.ready()
   }
-},AdminAttributes)
+})(AdminAttributes)

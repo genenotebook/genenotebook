@@ -271,7 +271,7 @@ class Info extends React.Component {
       })
     })
 
-    console.log(interproDomains)
+    //console.log(interproDomains)
 
     return (
       <div id="info">

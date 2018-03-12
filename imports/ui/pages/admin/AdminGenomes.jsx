@@ -1,4 +1,4 @@
-import { createContainer } from 'meteor/react-meteor-data';
+import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
 
@@ -34,10 +34,10 @@ class AdminGenomes extends React.Component {
   }
 }
 
-export default createContainer(()=>{
+export default withTracker(props => {
   const subscription = Meteor.subscribe('referenceInfo')
   return {
     genomes: ReferenceInfo.find({}).fetch(),
     loading: !subscription.ready()
   }
-},AdminGenomes)
+})(AdminGenomes)

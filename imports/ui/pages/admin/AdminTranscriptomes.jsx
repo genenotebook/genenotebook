@@ -1,4 +1,4 @@
-import { createContainer } from 'meteor/react-meteor-data';
+import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
 import groupBy from 'lodash/groupby';
@@ -334,7 +334,7 @@ class AdminTranscriptomes extends React.Component {
   }
 }
 
-export default createContainer(()=>{
+export default withTracker(props => {
   const expInfoSub = Meteor.subscribe('experimentInfo');
   const trackSub = Meteor.subscribe('tracks');
   const userSub = Meteor.subscribe('users');
@@ -348,4 +348,4 @@ export default createContainer(()=>{
     loading: !expInfoSub.ready() || !trackSub.ready() || !userSub.ready(),
     allRoles: uniqueRoles
   }
-},AdminTranscriptomes)
+})(AdminTranscriptomes)

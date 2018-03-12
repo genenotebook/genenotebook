@@ -1,4 +1,4 @@
-import { createContainer } from 'meteor/react-meteor-data';
+import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
 import { Creatable as Select } from 'react-select';
@@ -146,7 +146,7 @@ class AdminTracks extends React.Component {
   }
 }
 
-export default createContainer(()=>{
+export default withTracker(props => {
   const trackSubscription = Meteor.subscribe('tracks')
   const userSubscription = Meteor.subscribe('users');
   const allRoles = Meteor.users.find({}).fetch().reduce((roles, user) => {
@@ -158,4 +158,4 @@ export default createContainer(()=>{
     loading: !trackSubscription.ready() || !userSubscription.ready(),
     allRoles: uniqueRoles
   }
-},AdminTracks)
+})(AdminTracks)

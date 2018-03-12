@@ -132,7 +132,7 @@ class UserProfile extends React.Component {
     }
   }
 
-  updateRoles = (newRoles) => {
+  updateRoles = newRoles => {
     const newState = update(this.state, {
       roles: {
         $set: newRoles.map( role => role.value)

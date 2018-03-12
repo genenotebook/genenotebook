@@ -1,4 +1,4 @@
-import { createContainer } from 'meteor/react-meteor-data';
+import { withTracker } from 'meteor/react-meteor-data';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
@@ -31,9 +31,9 @@ class AdminUsers extends React.Component {
   }
 }
 
-export default createContainer(()=>{
+export default withTracker(props => {
   Meteor.subscribe('users')
   return {
     users: Meteor.users.find({}).fetch()
   }
-},AdminUsers)
+})(AdminUsers)
