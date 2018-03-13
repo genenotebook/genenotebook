@@ -52,22 +52,18 @@ Meteor.startup( () => {
     }]
   permanentAttributes.forEach( attribute => {
     console.log(`Adding default filter option: ${attribute.name}`)
-    Attributes.findAndModify({
-      query: { 
-        name: attribute.name 
-      },
-      update: { 
-        $setOnInsert: { 
+    Attributes.update({
+      name: attribute.name
+    },
+    {
+      $setOnInsert: {
           name: attribute.name, 
           query: attribute.query, 
           show: true, 
           canEdit: false, 
           reserved: true,
           allReferences: true 
-        } 
-      }, 
-      new: true, 
-      upsert: true 
+      }
     })
   })
 

@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { publishComposite } from 'meteor/reywood:publish-composite';
 import { Roles } from 'meteor/alanning:roles';
 
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
@@ -13,130 +12,63 @@ import { Tracks } from '/imports/api/genomes/track_collection.js';
 import { References, ReferenceInfo } from '/imports/api/genomes/reference_collection.js';
 import { ExperimentInfo, Transcriptomes } from '/imports/api/transcriptomes/transcriptome_collection.js';
 
-Meteor.publish('genes', function(limit, search, query) {
-  console.log('publishing gene list')
-  console.log('limit',limit)
-  console.log('search',search)
-  console.log('query',query)
-  const publication = this;
-  if (!publication.userId){
-    publication.stop()
-  }
-
-  limit = limit || 40;
-  query = query || {};
-  if (search) {
-    query.$or = [{ 'ID': { $regex: search , $options: 'i' } },{ 'Name': { $regex: search , $options: 'i' } }];
-    if (!query.hasOwnProperty('Productname')){
-      query.$or.push({ 'Productname': { $regex: search , $options: 'i' } })
-    }
-  }
-
-  const roles = Roles.getRolesForUser(publication.userId);
-
-  query.permissions = { $in: roles }
-
-  return Genes.find(query,{limit: limit})
-})
-
-/*
-publishComposite('singleGene', function(geneId){
-  //console.log('publishing single gene')
-  const publication = this;
-  if (!publication.userId){
-    publication.stop()
-  }
-
-  const roles = Roles.getRolesForUser(publication.userId);
-
-  return {
-    find(){
-      return Genes.find({
-        ID: geneId,
-        permissions: {
-          $in: roles
-        }
-      })
-    },
-    children: [
-      {
-        find(gene){
-          return Transcriptomes.find({
-            geneId: gene.ID,
-            permissions: {
-              $in: roles
-            }
-          })
-        },
-        children: [
-        {
-          find(transcriptome){
-            return ExperimentInfo.find({
-              _id: transcriptome.experimentId,
-              permissions: {
-                $in: roles
-              }
-            })
-          }
-        }
-        ]
-      }
-    ]
-  }
-})
-*/
-
-publishComposite('attributes', function(){
-  const publication = this;
-  if (!publication.userId){
-    publication.stop()
-  }
-
-  const roles = Roles.getRolesForUser(publication.userId);
-
-  return {
-    find(){
-      return ReferenceInfo.find({
-        permissions: {
-          $in: roles
-        }
-      })
-    },
-    children: [
-      {
-        find(reference){
-          return Attributes.find({
-            $or: [
-              {
-                references: reference.referenceName
-              },
-              {
-                allReferences: true 
-              }
-            ]
-          })
-        }
-      }
-    ]
-  }
-})
-
-Meteor.publish('users', function () {
-  if (!this.userId){
-    this.stop()
-    //throw new Meteor.Error('Unauthorized')
-  }
-  if (Roles.userIsInRole(this.userId,'admin')){
-    return Meteor.users.find({});
-  } else if (Roles.userIsInRole(this.userId,['user','curator'])){
-    return Meteor.users.find({},{fields:{username:1}})
-  } else {
-    this.ready()
-    //throw new Meteor.Error('Unauthorized')
-  }
-})
-
 Meteor.publish({
+  genes(limit, search, query){
+    console.log('publishing gene list')
+    console.log('limit',limit)
+    console.log('search',search)
+    console.log('query',query)
+    const publication = this;
+    if (!publication.userId){
+      publication.stop()
+    }
+
+    limit = limit || 40;
+    query = query || {};
+    if (search) {
+      query.$or = [{ 'ID': { $regex: search , $options: 'i' } },{ 'Name': { $regex: search , $options: 'i' } }];
+      if (!query.hasOwnProperty('Productname')){
+        query.$or.push({ 'Productname': { $regex: search , $options: 'i' } })
+      }
+    }
+
+    const roles = Roles.getRolesForUser(publication.userId);
+
+    query.permissions = { $in: roles }
+
+    return Genes.find(query,{limit: limit})
+  },
+  users(){
+    const publication = this;
+    if (!publication.userId){
+      publication.stop()
+    }
+    if (Roles.userIsInRole(publication.userId, 'admin')){
+      return Meteor.users.find({});
+    } else if (Roles.userIsInRole(publication.userId,['user','curator'])){
+      return Meteor.users.find({},{fields:{username:1}})
+    } else {
+      publication.ready()
+    }
+  },
+  attributes(){
+    const publication = this;
+    if (!publication.userId){
+      publication.stop()
+    }
+    const roles = Roles.getRolesForUser(publication.userId);
+    const tracks = Tracks.find({
+      permissions: { $in: roles }
+    }).fetch().map(track => {
+      return track.trackName
+    })
+    return Attributes.find({
+      $or: [
+        { tracks: { $in: tracks } },
+        { allReferences: true }
+      ]
+    })
+  },
   singleGene (geneId) {
     const publication = this;
     if (!publication.userId){

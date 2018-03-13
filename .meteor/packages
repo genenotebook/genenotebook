@@ -8,7 +8,6 @@ meteor-base@1.3.0             # Packages every Meteor app needs to have
 mobile-experience@1.0.5       # Packages for a great mobile UX
 mongo@1.4.2                   # The database Meteor supports right now
 session                 # Client-side reactive dictionary for your app
-jquery@1.11.10                  # Helpful client-side library
 tracker@1.1.3                 # Meteor's client-side reactive programming library
 
 es5-shim@4.7.0                # ECMAScript 5 compatibility for older browsers.
@@ -31,14 +30,12 @@ shell-server@0.3.1
 check@1.3.0
 danimal:userpresence
 zuuk:stale-session
-fongandrew:find-and-modify
 ostrio:files
 dispatch:mocha-phantomjs
 jesperwe:bootstrap-select
 babel-runtime@1.2.0
 dynamic-import@0.3.0
 kadira:flow-router
-reywood:publish-composite
 vsivsi:job-collection
 react-template-helper
 
