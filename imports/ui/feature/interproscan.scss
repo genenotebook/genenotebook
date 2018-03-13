@@ -1,0 +1,31 @@
+.interproscan {
+	.axis line,
+	.axis path {
+		fill: none;
+		stroke: #000;
+		shape-rendering: crispEdges;
+	}
+	svg {
+		//border-style: double;
+		//border-color:black;
+		//box-shadow: 2px 3px 12px -2px rgba(0,0,0,0.66);
+		//@include margin(0em 0em 0em 0em);
+		//@include margin(0.5em 2em 0.5em 0em);
+		.tick.major {
+			font-size: 0.7em;
+		}
+		text {
+			&.interpro_link {
+				cursor: pointer;
+			}
+			font-family:Helvetica;
+			font-size:12px;
+		}
+		rect {
+			box-shadow: 2px 3px 12px -2px rgba(0,0,0,0.66);
+			stroke:black;
+			stroke-width:0.7;
+			cursor:pointer;
+		}
+	}
+}

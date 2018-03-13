@@ -8,26 +8,26 @@ import { mount } from 'react-mounter';
 
 // Import to load these templates
 
-import MainLayout from '/imports/ui/pages/main/MainLayout.jsx';
-import Login from '/imports/ui/pages/main/Login.jsx';
-import Register from '/imports/ui/pages/main/Register.jsx';
-import InactiveAccountWarning from '/imports/ui/pages/main/InactiveAccountWarning.jsx';
-import NotFound from '/imports/ui/pages/main/NotFound.jsx';
+import MainLayout from '/imports/ui/main/MainLayout.jsx';
+import Login from '/imports/ui/main/Login.jsx';
+import Register from '/imports/ui/main/Register.jsx';
+import InactiveAccountWarning from '/imports/ui/main/InactiveAccountWarning.jsx';
+import NotFound from '/imports/ui/main/NotFound.jsx';
 
-import Landingpage from '/imports/ui/pages/landingpage/Landingpage.jsx';
+import Landingpage from '/imports/ui/landingpage/Landingpage.jsx';
 
-import GeneListWithOptions from '/imports/ui/pages/genelist/GeneListWithOptions.jsx';
+import GeneListWithOptions from '/imports/ui/genelist/GeneListWithOptions.jsx';
 
-import Feature from '/imports/ui/pages/feature/Feature.jsx';
+import Feature from '/imports/ui/feature/Feature.jsx';
 
-import SubmitBlast from '/imports/ui/pages/blast/SubmitBlast.jsx';
-import BlastResult from '/imports/ui/pages/blast/BlastResult.jsx';
+import SubmitBlast from '/imports/ui/blast/SubmitBlast.jsx';
+import BlastResult from '/imports/ui/blast/BlastResult.jsx';
 
-import UserProfile from '/imports/ui/pages/user-profile/UserProfile.jsx';
+import UserProfile from '/imports/ui/user-profile/UserProfile.jsx';
 
-import Admin from '/imports/ui/pages/admin/Admin.jsx';
+import Admin from '/imports/ui/admin/Admin.jsx';
 
-import Download from '/imports/ui/pages/download/Download.jsx';
+import Download from '/imports/ui/download/Download.jsx';
 
 
 const exposedRoutes = FlowRouter.group({})

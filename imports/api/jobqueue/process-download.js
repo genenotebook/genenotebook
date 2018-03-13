@@ -41,7 +41,6 @@ const queue = jobQueue.processJobs(
     // close the stream
     compress.end();
 
-    //Meteor.call('interproscan',job.data.geneId)
     job.done(fileName)
     callback()
   })

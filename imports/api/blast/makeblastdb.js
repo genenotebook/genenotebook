@@ -19,8 +19,7 @@ import { Genes } from '/imports/api/genes/gene_collection.js';
 export const makeBlastDb = new ValidatedMethod({
   name: 'makeBlastDb',
   validate: new SimpleSchema({
-    trackName: { type: String },
-    dbType: { type: String }
+    trackName: { type: String }
   }).validator(),
   applyOptions: {
     noRetry: true
@@ -36,8 +35,7 @@ export const makeBlastDb = new ValidatedMethod({
     if (!this.isSimulation){
       const jobId = new Job(jobQueue, 'makeBlastDb', {
         trackName: trackName,
-        dbType: dbType,
-        user: Meteor.userId()
+        user: this.userId
       }).priority('normal').save()
 
       return jobId

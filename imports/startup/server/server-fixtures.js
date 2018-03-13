@@ -1,7 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 
+import fs from 'fs';
+
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
-import { Attributes }from '/imports/api/genes/attribute_collection.js';
+import { Attributes } from '/imports/api/genes/attribute_collection.js';
+import { Tracks } from '/imports/api/genomes/track_collection.js';
 
 Meteor.startup( () => {
   if ( Meteor.users.find().count() === 0 ) {
@@ -29,9 +32,7 @@ Meteor.startup( () => {
       });
     Roles.addUsersToRoles(guestId,['user','registered'])
   }
-  //add the viewing, editing and expression option, 
-  //since some keys are dynamic it will not allways be present on any gene, 
-  //but we do want to filter on this
+  //add some default attributes to filter on
   const permanentAttributes = [
     {
       name: 'Viewing',
@@ -69,6 +70,25 @@ Meteor.startup( () => {
       upsert: true 
     })
   })
+
+  Tracks.find({ 
+    blastdbs: { 
+      $exists: true
+    }
+  }).fetch().filter(track => {
+    const hasNucDb = fs.existsSync(track.blastdbs.nuc)
+    const hasProtDb = fs.existsSync(track.blastdbs.prot)
+    return !hasProtDb || !hasNucDb
+  }).map(track => {
+    Tracks.update({
+      _id: track._id
+    },{
+      $unset: {
+        blastdbs: true
+      }
+    })
+  })
+
 
   // Start the myJobs queue running
   jobQueue.allow({

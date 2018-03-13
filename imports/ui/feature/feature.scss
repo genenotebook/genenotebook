@@ -1,0 +1,29 @@
+.feature-panel{
+	height:85%;
+}
+
+.feature-info{
+	height:79%;
+	overflow-y: scroll;
+}
+
+p.seq {
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+	overflow: wrap;
+	white-space:wrap;
+	font-family: 'Roboto Mono', monospace;
+	font-size: 0.8em;
+}
+
+p.msa {
+	line-height:75%;
+}
+
+.well.alignment {
+	overflow: auto;
+	white-space:nowrap;
+	font-family: 'Roboto Mono', monospace;
+	font-size: 0.8em;
+}
+

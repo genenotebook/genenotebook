@@ -1,6 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+
+import spawn  from 'spawn-promise';
+import fs from 'fs';
+
 import jobQueue from './jobqueue.js';
-import  spawn  from 'spawn-promise';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
 import { Tracks } from '/imports/api/genomes/track_collection.js';
@@ -14,11 +17,10 @@ jobQueue.processJobs(
     concurrency: 2,
     payload: 1
   },
-  async function(job, callback){
+  function(job, callback){
     console.log('processing makeblastdb')
     console.log(job.data)
-    const { trackName, dbType } = job.data;
-
+    const { trackName } = job.data;
 
     const trackId = trackName.split(/ |\./).join('_')
 
@@ -26,49 +28,75 @@ jobQueue.processJobs(
     const stepSize = Math.round(geneNumber / 10);
     console.log(`scanning ${geneNumber} genes`)
     
+    const tempFiles = {
+      nucl: `tmp_${trackId}.nucl.fa`,
+      prot: `tmp_${trackId}.prot.fa`
+    }
+
+    const tempFileHandles = {
+      nucl: fs.createWriteStream(tempFiles.nucl),
+      prot: fs.createWriteStream(tempFiles.prot)
+    }
     
-    const fasta = Genes.find({ track: trackName }).map( (gene, index) => {
+    Genes.find({ track: trackName }).forEach( (gene, index) => {
 
       if (index % stepSize === 0){
         job.progress(index, geneNumber, { echo: true })
       }
       
-      let transcriptFasta = getGeneSequences(gene).map(transcript => {
-        let sequence = dbType === 'prot' ? transcript.pep : transcript.seq
+      getGeneSequences(gene).forEach(transcript => {
+        const header = `>${gene.ID} ${transcript.ID}\n`
+
+        tempFileHandles.prot.write(header)
+        tempFileHandles.prot.write(`${transcript.pep}\n`)
+
+        tempFileHandles.nucl.write(header)
+        tempFileHandles.nucl.write(`${transcript.seq}\n`)
+        //let sequence = dbType === 'prot' ? transcript.pep : transcript.seq
         //keep track of gene ID and transcript ID for later processing
-        return `>${gene.ID} ${transcript.ID}\n${sequence}`
-      }).join('\n')
-      return transcriptFasta
-    }).join('\n')
-    
-    const outFile = `${trackId}.${dbType}`
-    const options = ['-dbtype', dbType, '-title', trackId, '-out', outFile];
-    console.log(options)
-
-    const dbFile =  await spawn('makeblastdb', options, fasta)
-      .then( result => {
-        let stdout = result.toString();
-        if (stdout){
-          console.log(`makeblastdb stdout:${stdout}`)
-        }
-
-        Tracks.findAndModify({
-          query: {
-            trackName: trackName 
-          },
-          update: { 
-            $set: {
-              [`blastdbs.${dbType}`]: `${trackId}.${dbType}` 
-            }
-          } 
-        })
-        return `${trackId}.${dbType}` 
-      }).catch(error => {
-        console.error(error)
+        //return `>${gene.ID} ${transcript.ID}\n${sequence}`
       })
-    console.log(`${dbFile} done`)
+    })
+
+    tempFileHandles.nucl.end();
+    tempFileHandles.prot.end();
     
-    job.done(dbFile)
+    const dbFiles = Object.keys(tempFiles).map(async dbType => {
+      const tempFile = tempFiles[dbType];
+
+      const outFile = `${trackId}.${dbType}`
+      const options = [
+        '-dbtype', dbType, 
+        '-title', trackId,
+        '-in', tempFile, 
+        '-out', outFile
+        ];
+      console.log(options)
+      const dbFile =  await spawn('makeblastdb', options)
+        .then( result => {
+          let stdout = result.toString();
+          if (stdout){
+            console.log(`makeblastdb stdout:${stdout}`)
+          }
+
+          Tracks.findAndModify({
+            query: {
+              trackName: trackName 
+            },
+            update: { 
+              $set: {
+                [`blastdbs.${dbType}`]: `${trackId}.${dbType}` 
+              }
+            } 
+          })
+          return `${trackId}.${dbType}` 
+        }).catch(error => {
+          console.error(error)
+        })
+      console.log(`${dbFile} done`)
+      return dbFile
+    })
+    job.done(dbFiles)
     callback()
   }
 )

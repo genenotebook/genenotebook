@@ -1,0 +1,11 @@
+<template name="interproscan">
+	<section id="interproscan">
+		{{#each transcripts}}
+			<hr>
+			<h3>Interpro domains</h3>
+			<div class="interproscan well" id="{{this.ID}}">
+				<!-- this div is filled in with d3 -->
+			</div>
+		{{/each}}
+	</section>
+</template>
