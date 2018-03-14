@@ -7,7 +7,7 @@ import AdminUsers from './AdminUsers.jsx';
 import AdminGenomes from './AdminGenomes.jsx';
 import AdminTracks from './tracks/AdminTracks.jsx';
 import AdminAttributes from './AdminAttributes.jsx';
-import AdminTranscriptomes from './AdminTranscriptomes.jsx';
+import AdminTranscriptomes from './transcriptomes/AdminTranscriptomes.jsx';
 import AdminJobqueue from './AdminJobqueue';
 
 const ADMIN_PAGES = {

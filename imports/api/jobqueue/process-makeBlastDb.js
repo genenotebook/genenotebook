@@ -78,16 +78,12 @@ jobQueue.processJobs(
           if (stdout){
             console.log(`makeblastdb stdout:${stdout}`)
           }
-
-          Tracks.findAndModify({
-            query: {
-              trackName: trackName 
-            },
-            update: { 
-              $set: {
-                [`blastdbs.${dbType}`]: `${trackId}.${dbType}` 
-              }
-            } 
+          Tracks.update({
+            trackName: trackName
+          },{
+            $set: {
+              [`blastdbs.${dbType}`]:`${trackId}.${dbType}`
+            }
           })
           return `${trackId}.${dbType}` 
         }).catch(error => {

@@ -5,10 +5,7 @@ import SimpleSchema from 'simpl-schema';
 import assert from 'assert';
 import Baby from 'babyparse';
 import fs from 'fs';
-import findIndex from 'lodash/findIndex';
-import isEqual from 'lodash/isEqual';
-import isEmpty from 'lodash/isEmpty';
-import mapValues from 'lodash/mapValues';
+import { findIndex, isEqual, isEmpty, mapValues } from 'lodash';
 import querystring from 'querystring';
 
 import { Genes, GeneSchema, SubfeatureSchema } from '/imports/api/genes/gene_collection.js';
