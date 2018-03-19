@@ -72,7 +72,17 @@ const isFinished = props => {
   return isFinished;
 }
 
+const dataTracker = props => {
+  const subscription = Meteor.subscribe('jobQueue');
+  const jobId = FlowRouter.getParam('_id')
+  return {
+    loading: !subscription.ready(),
+    job: jobQueue.findOne({_id: jobId})
+  }
+}
+
 const withConditionalRendering = compose(
+  withTracker(dataTracker),
   withEither(isExistingJob, notFound),
   withEither(isLoading, Loading),
   withEither(isWaiting, Waiting),
@@ -100,12 +110,4 @@ class BlastResult extends React.Component {
   }
 }
 
-export default withTracker(props => {
-  const subscription = Meteor.subscribe('jobQueue');
-  const jobId = FlowRouter.getParam('_id')
-  return {
-    loading: !subscription.ready(),
-    job: jobQueue.findOne({_id: jobId})
-
-  }
-})(withConditionalRendering(BlastResult))
+export default withConditionalRendering(BlastResult)

@@ -13,6 +13,7 @@ import './genes/interproscan.js';
 import './genes/add_interproscan.js';
 import './genes/add_orthogroup_trees.js';
 import './genes/download_genes.js';
+import './genes/scan_attributes.js';
 
 import './blast/makeblastdb.js';
 import './blast/hasblastdb.js';

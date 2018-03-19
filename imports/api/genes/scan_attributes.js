@@ -42,7 +42,7 @@ const reduceFunction = function(_key, values){
 }
 
 export const scanGeneAttributes = new ValidatedMethod({
-	name: 'scanAttributes',
+	name: 'scanGeneAttributes',
 	validate: new SimpleSchema({
 		trackName: { type: String }
 	}).validator(),
@@ -81,26 +81,23 @@ export const scanGeneAttributes = new ValidatedMethod({
 					results.forEach( result => {
 						const attributeKeys = result.value.attributeKeys;
 						attributeKeys.forEach(attributeKey => {
-							Attributes.findAndModify({ 
-								query: { 
-									name: attributeKey 
-								}, 
-								update: {
-									$addToSet: {
-										tracks: trackName,
-										references: track.reference
-									},
-									$setOnInsert: { 
-										name: attributeKey,
-										query: `attributes.${attributeKey}`,
-										show: true, 
-										canEdit: false, 
-										reserved: false 
-									} 
-								}, 
-								new: true, 
-								upsert: true 
-							}) 
+							Attributes.update({ 
+								name: attributeKey 
+							},{
+								$addToSet: {
+									tracks: trackName,
+									references: track.reference
+								},
+								$setOnInsert: { 
+									name: attributeKey,
+									query: `attributes.${attributeKey}`,
+									show: true, 
+									canEdit: false, 
+									reserved: false 
+								}
+							},{
+								upsert: true
+							})
 						})
 					})
 				})

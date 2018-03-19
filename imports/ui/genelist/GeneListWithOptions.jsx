@@ -3,7 +3,7 @@ import { cloneDeep } from 'lodash';
 
 import GeneListSidePanel from './GeneListSidePanel.jsx';
 import GeneListNavBar from './GeneListNavBar.jsx';
-import GeneList from './GeneList.jsx';
+import GeneList from './GeneListTable.jsx';
 import DownloadDialogModal from './downloads/DownloadDialog.jsx';
 
 export default class GeneListWithOptions extends React.Component {
