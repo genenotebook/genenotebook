@@ -61,7 +61,6 @@ const Interval = class Interval{
 				this.strand = strand;
 				this.reference = referenceName;
 				this.track = trackName;
-				this.permissions= ['admin'];
 			GeneSchema.validate(this)
 		} else {
 			this.phase = phase

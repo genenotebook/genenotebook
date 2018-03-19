@@ -32,16 +32,25 @@ Meteor.publish({
       }
     }
 
+    //get user roles
     const roles = Roles.getRolesForUser(publication.userId);
 
+    //get accessable tracks that user can subscribe to
     const tracks = Tracks.find({
       permissions: {
         $in: roles
       }
     }).fetch().map(track => track.trackName)
 
-    query.track = {$in: tracks}
-    console.log(query)
+    //if a track is requested in the query it should be in the list of accessable tracks
+    if ( query.hasOwnProperty('track') ){
+      //array intersection in javascript: 
+      //https://stackoverflow.com/questions/1885557/simplest-code-for-array-intersection-in-javascript
+      const queryTracks = query['track']['$in'].filter(track => {
+        return tracks.indexOf(track) !== -1
+      })
+      query.track = { $in: queryTracks }
+    }
 
     return Genes.find(query,{ limit: limit })
   },
@@ -82,10 +91,15 @@ Meteor.publish({
       publication.stop()
     }
     const roles = Roles.getRolesForUser(publication.userId);
+    const tracks = Tracks.find({
+      permissions: { $in: roles }
+    }).fetch().map(track => {
+      return track.trackName
+    })
     return Genes.find({
       ID: geneId,
-      permissions: {
-        $in: roles
+      track: {
+        $in: tracks
       }
     })
   },
