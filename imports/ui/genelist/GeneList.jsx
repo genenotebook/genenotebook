@@ -62,7 +62,7 @@ class GeneList extends React.Component {
 export default withTracker(({ query, scrollLimit, selection, updateSelection, selectedAll }) => {
   const geneSub = Meteor.subscribe('genes', scrollLimit, undefined, query)
   const loading = geneSub.ready();
-
+  console.log(query)
   const genes = Genes.find(query).fetch();
   
   return { genes, loading, selection, updateSelection, selectedAll }

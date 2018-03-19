@@ -34,9 +34,16 @@ Meteor.publish({
 
     const roles = Roles.getRolesForUser(publication.userId);
 
-    query.permissions = { $in: roles }
+    const tracks = Tracks.find({
+      permissions: {
+        $in: roles
+      }
+    }).fetch().map(track => track.trackName)
 
-    return Genes.find(query,{limit: limit})
+    query.track = {$in: tracks}
+    console.log(query)
+
+    return Genes.find(query,{ limit: limit })
   },
   users(){
     const publication = this;

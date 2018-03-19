@@ -5,7 +5,7 @@ ADD . ./genebook
 
 RUN apt-get update -q && apt-get clean
 
-RUN apt-get install curl -y \
+RUN apt-get install g++ build-essential python curl -y \
  
   # Install Meteor
   && (curl https://install.meteor.com/ | sh) \
@@ -16,7 +16,8 @@ RUN apt-get install curl -y \
  
   # Install the version of Node.js we need.
   && cd /home/genebook/build/bundle \
-  && bash -c 'curl "https://nodejs.org/dist/$(<.node_version.txt>) /home/genebook/genebook/build/required-node-linux-x64.tar.gz' \
+  && bash -c 'curl "https://nodejs.org/dist/$(<.node_version.txt)/node-$(<.node_version.txt)-linux-x64.tar.gz" >\
+      /home/genebook/build/required-node-linux-x64.tar.gz' \
   && cd /usr/local && tar --strip-components 1 -xzf /home/genebook/build/required-node-linux-x64.tar.gz \
   && rm /home/genebook/build/required-node-linux-x64.tar.gz \
  
@@ -37,4 +38,4 @@ RUN npm install -g forever
 EXPOSE 80
 ENV PORT 80
 
-CMD ["forever", "--minUptime", "1000", "--spinSleepTime", "1000", "genebook/build/bundle/main.js"]
+CMD ["forever", "--minUptime", "1000", "--spinSleepTime", "1000", "build/bundle/main.js"]
