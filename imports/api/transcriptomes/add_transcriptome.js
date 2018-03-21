@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Roles } from 'meteor/alanning:roles';
 
 import assert from 'assert';
-import Baby from 'babyparse';
+import Papa from 'papaparse';
 import fs from 'fs';
 
 import { Tracks } from '/imports/api/genomes/track_collection.js';
@@ -28,7 +28,7 @@ Meteor.methods({
 
 		console.log(`Start reading ${config.fileName}`)
 
-		Baby.parse(fileHandle, {
+		Papa.parse(fileHandle, {
 			delimiter: '\t',
 			dynamicTyping: true,
 			skipEmptyLines: true,

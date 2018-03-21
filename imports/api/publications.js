@@ -13,7 +13,7 @@ import { References, ReferenceInfo } from '/imports/api/genomes/reference_collec
 import { ExperimentInfo, Transcriptomes } from '/imports/api/transcriptomes/transcriptome_collection.js';
 
 Meteor.publish({
-  genes(limit, search, query){
+  genes({limit, search, query}){
     console.log('publishing gene list')
     console.log('limit',limit)
     console.log('search',search)

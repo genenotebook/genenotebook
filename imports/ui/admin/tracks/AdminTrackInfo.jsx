@@ -3,7 +3,7 @@ import React from 'react';
 import TrackPermissionSelect from './TrackPermissionSelect.jsx';
 import BlastDatabaseButtons from './BlastDatabaseButtons.jsx';
 
-export default AdminTrackInfo = ({ track, allRoles }) => {
+const AdminTrackInfo = ({ track, allRoles }) => {
   return (
     <li className='list-group-item'>
       <a href={`/admin/track/${track.trackName}`}> {track.trackName} </a>
@@ -20,3 +20,5 @@ export default AdminTrackInfo = ({ track, allRoles }) => {
     </li>
   )
 }
+
+export default AdminTrackInfo

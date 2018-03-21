@@ -1,0 +1,23 @@
+{
+  "source": "./imports",
+  "destination": "./docs",
+  "includes": ["\\.(js|jsx)$"],
+  "plugins": [
+    {
+      "name": "esdoc-standard-plugin"
+    },
+    {"name": "esdoc-lint-plugin", "option": {"enable": false}},
+    {
+      "name": "esdoc-jsx-plugin", 
+      "option": {
+        "enable": true
+      }
+    },
+    {
+      "name": "esdoc-ecmascript-proposal-plugin", 
+      "option": {
+        "all": true
+      }
+    }
+  ]
+}

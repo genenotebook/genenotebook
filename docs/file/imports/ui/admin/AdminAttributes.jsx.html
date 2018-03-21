@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../../">
+  <title data-ice="title">imports/ui/admin/AdminAttributes.jsx | genebook</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="A portable website for browsing and querying genome sequences and annotations"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="genebook"><meta property="twitter:description" content="A portable website for browsing and querying genome sequences and annotations"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/holmrenser/genebook"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#api-blast">api/blast</a><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-hasBlastDb">hasBlastDb</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-makeBlastDb">makeBlastDb</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-removeBlastDb">removeBlastDb</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-submitBlastJob">submitBlastJob</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#api-downloads">api/downloads</a><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-Downloads">Downloads</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#api-genes">api/genes</a><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-addInterproscan">addInterproscan</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-addOrthogroupTrees">addOrthogroupTrees</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-Attributes">Attributes</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-Downloads">Downloads</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-downloadGenes">downloadGenes</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-EditHistory">EditHistory</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-GeneSchema">GeneSchema</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-Genes">Genes</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SubfeatureSchema">SubfeatureSchema</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-Interpro">Interpro</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-Orthogroups">Orthogroups</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-scanGeneAttributes">scanGeneAttributes</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#api-genomes">api/genomes</a><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-addGff">addGff</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-addReference">addReference</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ReferenceInfo">ReferenceInfo</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ReferenceInfoSchema">ReferenceInfoSchema</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ReferenceSchema">ReferenceSchema</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-References">References</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-Tracks">Tracks</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-trackSchema">trackSchema</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-updateTrackPermissions">updateTrackPermissions</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#api-transcriptomes">api/transcriptomes</a><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ExperimentInfo">ExperimentInfo</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ExperimentInfoSchema">ExperimentInfoSchema</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-TranscriptomeSchema">TranscriptomeSchema</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-Transcriptomes">Transcriptomes</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-updateSampleInfo">updateSampleInfo</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#api-users">api/users</a><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-updateUserInfo">updateUserInfo</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#api-util">api/util</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-formatAttributes">formatAttributes</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getGeneSequences">getGeneSequences</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-parseNewick">parseNewick</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-reverseComplement">reverseComplement</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-translate">translate</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#ui-admin">ui/admin</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-JobProgressBar">JobProgressBar</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#ui-admin-tracks">ui/admin/tracks</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/imports/ui/admin/tracks/TrackPermissionSelect.jsx~TrackPermissionSelect.html">TrackPermissionSelect</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-AdminTrackInfo">AdminTrackInfo</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-BlastDatabaseButtons">BlastDatabaseButtons</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-BlastDatabaseProgressBar">BlastDatabaseProgressBar</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#ui-admin-transcriptomes">ui/admin/transcriptomes</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/imports/ui/admin/transcriptomes/ExperimentGroup.jsx~ExperimentGroup.html">ExperimentGroup</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/imports/ui/admin/transcriptomes/SampleInfo.jsx~SampleInfo.html">SampleInfo</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/imports/ui/admin/transcriptomes/TrackExperiments.jsx~TrackExperiments.html">TrackExperiments</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#ui-blast">ui/blast</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/imports/ui/blast/BlastResultList.jsx~BlastResultList.html">BlastResultList</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/imports/ui/blast/BlastResultPlot.jsx~BlastResultPlot.html">BlastResultPlot</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#ui-feature">ui/feature</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/imports/ui/feature/ProteinDomains.jsx~ProteinDomains.html">ProteinDomains</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/imports/ui/feature/Seq.jsx~SeqContainer.html">SeqContainer</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#ui-genelist">ui/genelist</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/imports/ui/genelist/AttributeSelect.jsx~AttributeSelect.html">AttributeSelect</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/imports/ui/genelist/GeneTableCard.jsx~GeneTableCard.html">GeneTableCard</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/imports/ui/genelist/GeneTableOptions.jsx~GeneTableOptions.html">GeneTableOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-ThreewayRadioButtons">ThreewayRadioButtons</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-TrackSelect">TrackSelect</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#ui-genelist-downloads">ui/genelist/downloads</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/imports/ui/genelist/downloads/DownloadDialog.jsx~DownloadDialogModal.html">DownloadDialogModal</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#ui-landingpage">ui/landingpage</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/imports/ui/landingpage/Landingpage.jsx~Landingpage.html">Landingpage</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#ui-main">ui/main</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/imports/ui/main/MainLayout.jsx~MainLayout.html">MainLayout</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-InactiveAccountWarning">InactiveAccountWarning</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-NotFound">NotFound</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#ui-util">ui/util</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-Loading">Loading</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isLoading">isLoading</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-withEither">withEither</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">imports/ui/admin/AdminAttributes.jsx</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import { withTracker } from &apos;meteor/react-meteor-data&apos;;
+
+import React from &apos;react&apos;;
+
+import { Attributes } from &apos;/imports/api/genes/attribute_collection.js&apos;;
+import { Tracks } from &apos;/imports/api/genomes/track_collection.js&apos;;
+import { scanGeneAttributes } from &apos;/imports/api/genes/scan_attributes.js&apos;;
+
+class AdminAttributes extends React.Component {
+  constructor(props){
+    super(props)
+  }
+
+  scanAttributes = (event) =&gt; {
+    event.preventDefault();
+    console.log(&apos;clicked scanAttributes&apos;)
+    this.props.tracks.forEach(track =&gt; {
+      console.log(track)
+      scanGeneAttributes.call({trackName: track.trackName})
+    })
+  }
+
+  render(){
+    return (
+      this.props.loading ? 
+      &lt;div&gt; Loading &lt;/div&gt; :
+      &lt;div&gt;
+        &lt;hr/&gt;
+        &lt;button type=&apos;button&apos; className=&apos;btn btn-warning&apos; onClick={this.scanAttributes}&gt;
+          &lt;i className=&quot;fa fa-warning&quot; aria-hidden=&quot;true&quot;/&gt; Scan all genes for attributes
+        &lt;/button&gt;
+        &lt;hr/&gt;
+        &lt;ul className=&apos;list-group&apos;&gt;
+        {
+          this.props.attributes.map(attribute =&gt; {
+            return (
+              &lt;li className=&apos;list-group-item&apos; key={attribute._id}&gt;
+                &lt;p&gt;
+                  &lt;a href={`/admin/attribute/${attribute.name}`}&gt; {attribute.name} &lt;/a&gt;
+                &lt;/p&gt;
+                &lt;ul className=&apos;list-group&apos;&gt;
+                  &lt;li className=&apos;list-group-item&apos;&gt;
+                    &lt;small&gt;{`Show: ${attribute.show}`}&lt;/small&gt;
+                  &lt;/li&gt;
+                  &lt;li className=&apos;list-group-item&apos;&gt;
+                    &lt;small&gt;{`Can edit: ${attribute.canEdit}`}&lt;/small&gt;
+                  &lt;/li&gt;
+                  {
+                    attribute.allReferences &amp;&amp;
+                    &lt;li className=&apos;list-group-item&apos;&gt;
+                      &lt;small&gt;{`All references: ${attribute.allReferences}`}&lt;/small&gt;
+                    &lt;/li&gt;
+                  }
+                  {
+                    attribute.references &amp;&amp;
+                    &lt;li className=&apos;list-group-item&apos;&gt;
+                      &lt;small&gt;{`References: ${attribute.references}`}&lt;/small&gt;
+                    &lt;/li&gt;
+                  }
+                &lt;/ul&gt;
+              &lt;/li&gt;
+            )
+          })
+        }
+        &lt;/ul&gt;
+      &lt;/div&gt;
+    )
+  }
+}
+
+export default withTracker(props =&gt; {
+  const attributeSubscription = Meteor.subscribe(&apos;attributes&apos;);
+  const trackSubscription = Meteor.subscribe(&apos;tracks&apos;);
+  return {
+    attributes: Attributes.find({}).fetch(),
+    tracks: Tracks.find({}).fetch(),
+    loading: !attributeSubscription.ready() || !trackSubscription.ready()
+  }
+})(AdminAttributes)</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.4)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

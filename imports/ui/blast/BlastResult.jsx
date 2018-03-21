@@ -72,7 +72,13 @@ const isFinished = props => {
   return isFinished;
 }
 
-const dataTracker = props => {
+/**
+ * Meteor reactive data tracker to fetch blast job results based on url
+ * @function blastDataTracker
+ * @param  {Object} props input props passed to React component
+ * @return {Object}       Modified props based on Meteor reactive data
+ */
+const blastDataTracker = props => {
   const subscription = Meteor.subscribe('jobQueue');
   const jobId = FlowRouter.getParam('_id')
   return {
@@ -82,13 +88,20 @@ const dataTracker = props => {
 }
 
 const withConditionalRendering = compose(
-  withTracker(dataTracker),
+  withTracker(blastDataTracker),
   withEither(isExistingJob, notFound),
   withEither(isLoading, Loading),
   withEither(isWaiting, Waiting),
   withEither(isRunning, Running)
 )
 
+/**
+ * @module ui
+ * @submodule blast
+ * @class BlastResult
+ * @constructor
+ * @extends { React.Component }
+ */
 class BlastResult extends React.Component {
   constructor(props){
     super(props)

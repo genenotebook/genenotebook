@@ -75,8 +75,10 @@ class RemoveDbButton extends React.Component {
   }
 }
 
-export default BlastDatabaseButtons = ({ track }) => {
+const BlastDatabaseButtons = ({ track }) => {
   return track.hasOwnProperty('blastdbs') ?
     <RemoveDbButton track={track} /> :
     <MakeDbButton track={track} />
 }
+
+export default BlastDatabaseButtons

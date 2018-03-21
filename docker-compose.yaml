@@ -1,0 +1,15 @@
+version: '3'
+services:
+  genebook:
+    build: .
+    ports:
+      - "8000:80"
+    environment:
+      - MONGO_URL=mongodb://mongodb:27017
+      - ROOT_URL=http://localhost
+    depends_on:
+      - "mongodb"
+  mongodb:
+    image: "library/mongo"
+    ports:
+      - "8001:27017"

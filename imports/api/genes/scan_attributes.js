@@ -10,7 +10,6 @@ import { Tracks } from '/imports/api/genomes/track_collection.js';
 
 /**
  * Map function for mongodb mapreduce
- * @return {[type]} [description]
  */
 const mapFunction = function(){
 	printjson('map function');
@@ -23,9 +22,9 @@ const mapFunction = function(){
 
 /**
  * Reduce function for mongodb mapreduce
- * @param  {[type]} _key    [description]
- * @param  {[type]} values [description]
- * @return {[type]}        [description]
+ * @param  {String} _key    [description]
+ * @param  {Array	} values [description]
+ * @return {Object}        [description]
  */
 const reduceFunction = function(_key, values){
 	printjson('reduce function')

@@ -33,9 +33,7 @@ RUN apt-get install g++ build-essential python curl -y \
   #no longer need curl
   && apt-get --purge autoremove curl -y
 
-RUN npm install -g forever
-
 EXPOSE 80
 ENV PORT 80
 
-CMD ["forever", "--minUptime", "1000", "--spinSleepTime", "1000", "build/bundle/main.js"]
+CMD ["node", "build/bundle/main.js"]

@@ -13,10 +13,10 @@ import hash from 'object-hash';
 
 Meteor.methods({
 	/**
-	 * [formatFasta description]
-	 * @param  {[Object]} query        [Database query to select genes]
-	 * @param  {[String]} sequenceType [One of 'protein' or 'nucleotide']
-	 * @return {[Array]}               [Array of fasta formatted coding sequences]
+	 * formatFasta description
+	 * @param  {Object} query        Database query to select genes
+	 * @param  {String} sequenceType One of 'protein' or 'nucleotide'
+	 * @return {Array}               Array of fasta formatted coding sequences
 	 */
 	formatFasta (query, sequenceType){
 		if (! this.userId) {
@@ -69,9 +69,9 @@ Meteor.methods({
 		
 	},
 	/**
-	 * Block a gene from being edited, this should happen when someone is editing a gene to prevent simultaneous edits
-	 * @param  {[type]}
-	 * @return {[type]}
+	 * If a gene is being edited it is locked so other users can not edit it as well.
+	 * @param  {String} geneId Gene ID of the gene that should be locked for editing
+	 * @return {undefined}        No return value
 	 */
 	lockGene (geneId) {
 		if (! this.userId) {
@@ -90,8 +90,8 @@ Meteor.methods({
 	/**
 	 * This unlocks a gene from being blocked during editing. 
 	 * A gene should only be unlocked by the person that locked it
-	 * @param  {[type]}
-	 * @return {[type]}
+	 * @param  {String} geneId Gene ID of the gene that should be locked for editing
+	 * @return {undefined}        No return value
 	 */
 	unlockGene (geneId) {
 		if (! this.userId) {
@@ -215,11 +215,6 @@ Meteor.methods({
 		}
 		Attributes.update({'_id':_id},{$set:fields})
 	},
-	/**
-	 * [formatGff3 description]
-	 * @param  {[Object]} query [description]
-	 * @return {[Array]}        [Array with gff3 formatted ]
-	 */
 	formatGff3 (query){
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');

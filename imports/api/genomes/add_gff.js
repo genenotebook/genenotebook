@@ -3,7 +3,7 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method';
 
 import SimpleSchema from 'simpl-schema';
 import assert from 'assert';
-import Baby from 'babyparse';
+import Papa from 'papaparse';
 import fs from 'fs';
 import { findIndex, isEqual, isEmpty, mapValues } from 'lodash';
 import querystring from 'querystring';
@@ -13,17 +13,18 @@ import { References, ReferenceInfo } from '/imports/api/genomes/reference_collec
 import { Tracks } from '/imports/api/genomes/track_collection.js';
 
 import { scanGeneAttributes } from '/imports/api/genes/scan_attributes.js';
+import { formatGffAttributes } from '/imports/api/util/util.js';
 
 /**
  * Override the default querystring unescape function to be able to parse commas correctly in gff attributes
- * @param  {[type]}
- * @return {[type]}
+ * @param  {String}
+ * @return {String}
  */
 querystring.unescape = uri => uri;
 
 /**
- * [Interval description]
- * @type {[type]}
+ * Interval Class containing a single genomic interval. Every line in a gff3 file is an interval
+ * @type {Interval}
  */
 const Interval = class Interval{
 	constructor({ line, trackName, referenceName , referenceSequences }){
@@ -44,7 +45,7 @@ const Interval = class Interval{
 		this.start = start;
 		this.end = end;
 		this.score = String(score);
-		this.attributes = formatAttributes(attributes);
+		this.attributes = formatGffAttributes(attributes);
 
 		this.ID = this.attributes.ID[0];
 		delete this.attributes.ID;
@@ -70,8 +71,8 @@ const Interval = class Interval{
 }
 
 /**
- * [GeneModel description]
- * @type {[type]}
+ * Genemodel Class containing all intervals for a single gene.
+ * @type {GeneModel}
  */
 const GeneModel = class GeneModel{
 	constructor(intervals){
@@ -105,15 +106,7 @@ const GeneModel = class GeneModel{
 	}
 }
 
-/**
- * [ValidatedMethod description]
- * @param {[type]} options.name:     'addGff'     [description]
- * @param {[type]} options.validate: new          SimpleSchema({		fileName: {            type:              String        [description]
- * @param {[type]} referenceName:    {           type:                      String        }                 [description]
- * @param {[type]} trackName:        {           type:                      String        }	}).validator() [description]
- * @param {[type]} applyOptions:     {		noRetry: true	}                    [description]
- * @param {[type]} run({            fileName,    referenceName,             trackName     }){		if          (!            this.userId)  {			throw new Meteor.Error('not-authorized');		}		if (! Roles.userIsInRole(this.userId,'curator')){			throw new Meteor.Error('not-authorized');		}		const existingTrack [description]
- */
+
 export const addGff = new ValidatedMethod({
 	name: 'addGff',
 	validate: new SimpleSchema({
@@ -151,7 +144,7 @@ export const addGff = new ValidatedMethod({
 		const referenceSequences = getReferenceSequences(referenceName);
 
 		console.log('start reading')
-		Baby.parse(fileHandle, {
+		Papa.parse(fileHandle, {
 			delimiter: '\t',
 			dynamicTyping: true,
 			skipEmptyLines: true,
@@ -205,11 +198,11 @@ export const addGff = new ValidatedMethod({
 })
 
 /**
- * [description]
- * @param  {[type]} referenceName [description]
- * @return {[type]}               [description]
+ * Retrieve 
+ * @param  { String } referenceName Reference sequence name
+ * @return {Object}               Object with all sequences belonging to a reference. Keys are header and values are DNA sequence strings
  */
-const getReferenceSequences = (referenceName) => {
+const getReferenceSequences = referenceName => {
 	const headers = References.find({
 		referenceName: referenceName
 	},{
@@ -238,15 +231,3 @@ const getReferenceSequences = (referenceName) => {
 	return referenceSequences
 }
 
-/**
- * [description]
- * @param  {[type]} attributeString [description]
- * @return {[type]}                 [description]
- */
-const formatAttributes = (attributeString) => {
-	return attributeString.split(';').reduce((attributes, stringPart) => {
-		const [key, value] = stringPart.split('=')
-		attributes[key] = value.split(',').map(decodeURIComponent)
-		return attributes;
-	}, {})
-}

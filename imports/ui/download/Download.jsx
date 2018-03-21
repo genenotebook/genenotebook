@@ -5,28 +5,9 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import React from 'react';
 import { compose } from 'recompose';
 
-//import { Downloads } from '/imports/api/downloads/download_collection.js';
-
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 
-/**
- * https://www.robinwieruch.de/gentle-introduction-higher-order-components/
- * @param  {[type]}   conditionalRenderingFn [description]
- * @param  {Function} EitherComponent)       [description]
- * @return {[type]}                          [description]
- */
-const withEither = (conditionalRenderingFn, EitherComponent) => (Component) => (props) =>
-  conditionalRenderingFn(props)
-    ? <EitherComponent />
-    : <Component { ...props } />
-
-const Loading = () => {
-  return (
-    <div> 
-      <p> Loading...</p>
-    </div>
-  )
-}
+import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
 const Waiting = () => {
   return (
@@ -42,11 +23,6 @@ const Running = () => {
       <p> Running... </p>
     </div>
   )
-}
-
-const isLoading = (props) => {
-  console.log(`check isLoading: ${props.loading}`)
-  return props.loading;
 }
 
 const isWaiting = (props) => {

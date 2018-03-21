@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 
 import SimpleSchema from 'simpl-schema';
-//import Future from 'fibers/future';
 
 export const updateUserInfo = new ValidatedMethod({
   name: 'updateUserInfo',

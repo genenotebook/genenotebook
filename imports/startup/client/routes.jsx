@@ -16,7 +16,7 @@ import NotFound from '/imports/ui/main/NotFound.jsx';
 
 import Landingpage from '/imports/ui/landingpage/Landingpage.jsx';
 
-import GeneListWithOptions from '/imports/ui/genelist/GeneListWithOptions.jsx';
+import GeneTableCard from '/imports/ui/genelist/GeneTableCard.jsx';
 
 import Feature from '/imports/ui/feature/Feature.jsx';
 
@@ -127,7 +127,7 @@ loggedInRoutes.route('/genes', {
   name: 'genes',
   action() {
     mount(MainLayout, {
-      content: <GeneListWithOptions />
+      content: <GeneTableCard />
     })
   }
 })

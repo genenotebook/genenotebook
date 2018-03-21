@@ -9,8 +9,8 @@ import { getGeneSequences } from '/imports/api/util/util.js';
 import { Genes } from '/imports/api/genes/gene_collection.js'; 
 /**
  * Reverse complement a DNA string
- * @param  {[String]} seq [String representing DNA constisting of alphabet AaCcGgTtNn]
- * @return {[String]}     [String representing DNA constisting of alphabet AaCcGgTtNn, reverse complement of input]
+ * @param  {String} seq [String representing DNA constisting of alphabet AaCcGgTtNn]
+ * @return {String}     [String representing DNA constisting of alphabet AaCcGgTtNn, reverse complement of input]
  */
 const revcomp = (seq) => {
   const comp = {  
@@ -30,8 +30,8 @@ const revcomp = (seq) => {
 
 /**
  * Convert a DNA string into a amino acid string
- * @param  {[String]} seq [String representing DNA constisting of alphabet ACGTN]
- * @return {[String]}     [String representing the amino acid complement of input string]
+ * @param  {String} seq String representing DNA constisting of alphabet ACGTN
+ * @return {String}     [tring representing the amino acid complement of input string
  */
 const translate = (seq) => {
   const trans = {

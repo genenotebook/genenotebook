@@ -3,24 +3,11 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method';
 
 import SimpleSchema from 'simpl-schema';
 import Papa from 'papaparse';
-
-import { Genes } from '/imports/api/genes/gene_collection.js';
 import fs from 'fs';
 
-/**
- * [description]
- * @param  {[type]} attributeString [description]
- * @return {[type]}                 [description]
- */
-const formatAttributes = attributeString => {
-  return attributeString.split(';').reduce((attributes, stringPart) => {
-    const [key, value] = stringPart.split('=')
-    if (typeof key !== 'undefined' && typeof value !== 'undefined'){
-      attributes[key] = value.split('"').join('').split(',').map(decodeURIComponent)
-    }
-    return attributes;
-  }, {})
-}
+import { Genes } from '/imports/api/genes/gene_collection.js';
+import { formatGffAttributes } from '/imports/api/util/util.js';
+
 
 const debugFormatAttributes = attributeString => {
   arr = attributeString.split(';');
@@ -91,7 +78,7 @@ export const addInterproscan = new ValidatedMethod({
             if (typeof attributeString !== 'undefined'){
               let attributes;
               try {
-                attributes = formatAttributes(attributeString);
+                attributes = formatGffAttributes(attributeString);
               } catch(error) {
                 console.log(`Error line ${lineNumber}`)
                 console.log(data.join('\t'))

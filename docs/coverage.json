@@ -1,0 +1,828 @@
+{
+  "coverage": "7.67%",
+  "expectCount": 391,
+  "actualCount": 30,
+  "files": {
+    "imports/api/blast/hasblastdb.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
+    "imports/api/blast/makeblastdb.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
+    "imports/api/blast/removeblastdb.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
+    "imports/api/blast/submitblastjob.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
+    "imports/api/downloads/download_collection.js": {
+      "expectCount": 2,
+      "actualCount": 0,
+      "undocumentLines": [
+        8,
+        6
+      ]
+    },
+    "imports/api/genes/add_interproscan.js": {
+      "expectCount": 2,
+      "actualCount": 0,
+      "undocumentLines": [
+        12,
+        27
+      ]
+    },
+    "imports/api/genes/add_orthogroup_trees.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        13
+      ]
+    },
+    "imports/api/genes/attribute_collection.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        6
+      ]
+    },
+    "imports/api/genes/download_collection.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        6
+      ]
+    },
+    "imports/api/genes/download_genes.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        14
+      ]
+    },
+    "imports/api/genes/edithistory_collection.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        6
+      ]
+    },
+    "imports/api/genes/gene_collection.js": {
+      "expectCount": 4,
+      "actualCount": 0,
+      "undocumentLines": [
+        7,
+        4,
+        102,
+        69
+      ]
+    },
+    "imports/api/genes/interpro_collection.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        6
+      ]
+    },
+    "imports/api/genes/interproscan.js": {
+      "expectCount": 6,
+      "actualCount": 2,
+      "undocumentLines": [
+        72,
+        135,
+        157,
+        175
+      ]
+    },
+    "imports/api/genes/orthogroup_collection.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        6
+      ]
+    },
+    "imports/api/genes/scan_attributes.js": {
+      "expectCount": 3,
+      "actualCount": 2,
+      "undocumentLines": [
+        43
+      ]
+    },
+    "imports/api/genomes/add_gff.js": {
+      "expectCount": 22,
+      "actualCount": 3,
+      "undocumentLines": [
+        30,
+        44,
+        45,
+        46,
+        47,
+        48,
+        50,
+        54,
+        58,
+        60,
+        61,
+        62,
+        63,
+        64,
+        67,
+        78,
+        100,
+        103,
+        110
+      ]
+    },
+    "imports/api/genomes/add_reference.js": {
+      "expectCount": 2,
+      "actualCount": 0,
+      "undocumentLines": [
+        12,
+        17
+      ]
+    },
+    "imports/api/genomes/reference_collection.js": {
+      "expectCount": 4,
+      "actualCount": 0,
+      "undocumentLines": [
+        4,
+        6,
+        42,
+        44
+      ]
+    },
+    "imports/api/genomes/track_collection.js": {
+      "expectCount": 2,
+      "actualCount": 0,
+      "undocumentLines": [
+        4,
+        6
+      ]
+    },
+    "imports/api/genomes/updateTrackPermissions.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
+    "imports/api/jobqueue/jobqueue.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        8
+      ]
+    },
+    "imports/api/jobqueue/process-blast.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
+    "imports/api/jobqueue/process-download.js": {
+      "expectCount": 2,
+      "actualCount": 0,
+      "undocumentLines": [
+        9,
+        13
+      ]
+    },
+    "imports/api/jobqueue/process-interproscan.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        4
+      ]
+    },
+    "imports/api/transcriptomes/transcriptome_collection.js": {
+      "expectCount": 4,
+      "actualCount": 0,
+      "undocumentLines": [
+        4,
+        6,
+        38,
+        40
+      ]
+    },
+    "imports/api/transcriptomes/updateSampleInfo.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
+    "imports/api/users/users.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        6
+      ]
+    },
+    "imports/api/util/util.js": {
+      "expectCount": 6,
+      "actualCount": 5,
+      "undocumentLines": [
+        149
+      ]
+    },
+    "imports/startup/client/routes.jsx": {
+      "expectCount": 3,
+      "actualCount": 0,
+      "undocumentLines": [
+        33,
+        35,
+        56
+      ]
+    },
+    "imports/ui/admin/Admin.jsx": {
+      "expectCount": 7,
+      "actualCount": 0,
+      "undocumentLines": [
+        13,
+        22,
+        45,
+        46,
+        48,
+        53,
+        59
+      ]
+    },
+    "imports/ui/admin/AdminAttributes.jsx": {
+      "expectCount": 4,
+      "actualCount": 0,
+      "undocumentLines": [
+        9,
+        10,
+        14,
+        23
+      ]
+    },
+    "imports/ui/admin/AdminGenomes.jsx": {
+      "expectCount": 3,
+      "actualCount": 0,
+      "undocumentLines": [
+        7,
+        8,
+        11
+      ]
+    },
+    "imports/ui/admin/AdminJobqueue.jsx": {
+      "expectCount": 6,
+      "actualCount": 0,
+      "undocumentLines": [
+        8,
+        31,
+        56,
+        57,
+        61,
+        68
+      ]
+    },
+    "imports/ui/admin/AdminUsers.jsx": {
+      "expectCount": 3,
+      "actualCount": 0,
+      "undocumentLines": [
+        6,
+        7,
+        10
+      ]
+    },
+    "imports/ui/admin/tracks/AdminTrackInfo.jsx": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        6
+      ]
+    },
+    "imports/ui/admin/tracks/AdminTracks.jsx": {
+      "expectCount": 3,
+      "actualCount": 0,
+      "undocumentLines": [
+        9,
+        10,
+        14
+      ]
+    },
+    "imports/ui/admin/tracks/BlastDatabaseButtons.jsx": {
+      "expectCount": 10,
+      "actualCount": 0,
+      "undocumentLines": [
+        8,
+        9,
+        11,
+        16,
+        31,
+        46,
+        47,
+        51,
+        65,
+        78
+      ]
+    },
+    "imports/ui/admin/tracks/BlastDatabaseProgressBar.jsx": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        9
+      ]
+    },
+    "imports/ui/admin/tracks/TrackPermissionSelect.jsx": {
+      "expectCount": 4,
+      "actualCount": 0,
+      "undocumentLines": [
+        6,
+        7,
+        11,
+        23
+      ]
+    },
+    "imports/ui/admin/transcriptomes/AdminTranscriptomes.jsx": {
+      "expectCount": 5,
+      "actualCount": 0,
+      "undocumentLines": [
+        18,
+        19,
+        21,
+        26,
+        36
+      ]
+    },
+    "imports/ui/admin/transcriptomes/ExperimentGroup.jsx": {
+      "expectCount": 5,
+      "actualCount": 0,
+      "undocumentLines": [
+        7,
+        8,
+        10,
+        15,
+        24
+      ]
+    },
+    "imports/ui/admin/transcriptomes/SampleInfo.jsx": {
+      "expectCount": 13,
+      "actualCount": 0,
+      "undocumentLines": [
+        5,
+        6,
+        8,
+        11,
+        20,
+        33,
+        37,
+        112,
+        128,
+        129,
+        131,
+        136,
+        143
+      ]
+    },
+    "imports/ui/admin/transcriptomes/TrackExperiments.jsx": {
+      "expectCount": 5,
+      "actualCount": 0,
+      "undocumentLines": [
+        7,
+        8,
+        10,
+        15,
+        24
+      ]
+    },
+    "imports/ui/blast/BlastResult.jsx": {
+      "expectCount": 14,
+      "actualCount": 2,
+      "undocumentLines": [
+        17,
+        25,
+        33,
+        41,
+        47,
+        52,
+        56,
+        63,
+        69,
+        90,
+        106,
+        110
+      ]
+    },
+    "imports/ui/blast/BlastResultList.jsx": {
+      "expectCount": 5,
+      "actualCount": 0,
+      "undocumentLines": [
+        3,
+        31,
+        56,
+        57,
+        60
+      ]
+    },
+    "imports/ui/blast/BlastResultPlot.jsx": {
+      "expectCount": 7,
+      "actualCount": 0,
+      "undocumentLines": [
+        7,
+        25,
+        66,
+        103,
+        142,
+        143,
+        146
+      ]
+    },
+    "imports/ui/blast/SubmitBlast.jsx": {
+      "expectCount": 14,
+      "actualCount": 3,
+      "undocumentLines": [
+        71,
+        96,
+        128,
+        129,
+        131,
+        155,
+        165,
+        175,
+        184,
+        209,
+        222
+      ]
+    },
+    "imports/ui/download/Download.jsx": {
+      "expectCount": 9,
+      "actualCount": 0,
+      "undocumentLines": [
+        12,
+        20,
+        28,
+        35,
+        41,
+        47,
+        53,
+        54,
+        59
+      ]
+    },
+    "imports/ui/feature/ExpressionPlot.jsx": {
+      "expectCount": 9,
+      "actualCount": 1,
+      "undocumentLines": [
+        27,
+        65,
+        86,
+        133,
+        149,
+        168,
+        169,
+        173
+      ]
+    },
+    "imports/ui/feature/Feature.jsx": {
+      "expectCount": 9,
+      "actualCount": 0,
+      "undocumentLines": [
+        24,
+        32,
+        36,
+        41,
+        50,
+        56,
+        57,
+        61,
+        70
+      ]
+    },
+    "imports/ui/feature/GeneLink.jsx": {
+      "expectCount": 7,
+      "actualCount": 0,
+      "undocumentLines": [
+        9,
+        14,
+        18,
+        22,
+        30,
+        34,
+        38
+      ]
+    },
+    "imports/ui/feature/Genemodel.jsx": {
+      "expectCount": 6,
+      "actualCount": 0,
+      "undocumentLines": [
+        13,
+        54,
+        91,
+        109,
+        110,
+        113
+      ]
+    },
+    "imports/ui/feature/Info.jsx": {
+      "expectCount": 19,
+      "actualCount": 0,
+      "undocumentLines": [
+        15,
+        19,
+        57,
+        83,
+        105,
+        106,
+        108,
+        120,
+        124,
+        130,
+        179,
+        189,
+        193,
+        201,
+        212,
+        218,
+        225,
+        232,
+        258
+      ]
+    },
+    "imports/ui/feature/Orthogroup.jsx": {
+      "expectCount": 7,
+      "actualCount": 0,
+      "undocumentLines": [
+        12,
+        19,
+        29,
+        45,
+        76,
+        77,
+        80
+      ]
+    },
+    "imports/ui/feature/ProteinDomains.jsx": {
+      "expectCount": 6,
+      "actualCount": 0,
+      "undocumentLines": [
+        19,
+        59,
+        84,
+        107,
+        108,
+        111
+      ]
+    },
+    "imports/ui/feature/SampleSelection.jsx": {
+      "expectCount": 7,
+      "actualCount": 0,
+      "undocumentLines": [
+        11,
+        12,
+        14,
+        19,
+        34,
+        43,
+        58
+      ]
+    },
+    "imports/ui/feature/Seq.jsx": {
+      "expectCount": 7,
+      "actualCount": 0,
+      "undocumentLines": [
+        10,
+        56,
+        57,
+        65,
+        72,
+        76,
+        80
+      ]
+    },
+    "imports/ui/feature/interproscan.js": {
+      "expectCount": 3,
+      "actualCount": 0,
+      "undocumentLines": [
+        17,
+        34,
+        58
+      ]
+    },
+    "imports/ui/feature/orthogroup.js": {
+      "expectCount": 3,
+      "actualCount": 0,
+      "undocumentLines": [
+        14,
+        83,
+        139
+      ]
+    },
+    "imports/ui/genelist/AttributeSelect.jsx": {
+      "expectCount": 5,
+      "actualCount": 0,
+      "undocumentLines": [
+        6,
+        7,
+        9,
+        14,
+        27
+      ]
+    },
+    "imports/ui/genelist/GeneListSidePanel.jsx": {
+      "expectCount": 7,
+      "actualCount": 0,
+      "undocumentLines": [
+        16,
+        17,
+        21,
+        43,
+        59,
+        65,
+        69
+      ]
+    },
+    "imports/ui/genelist/GeneTable.jsx": {
+      "expectCount": 9,
+      "actualCount": 2,
+      "undocumentLines": [
+        37,
+        42,
+        52,
+        59,
+        91,
+        111,
+        115
+      ]
+    },
+    "imports/ui/genelist/GeneTableCard.jsx": {
+      "expectCount": 11,
+      "actualCount": 0,
+      "undocumentLines": [
+        9,
+        10,
+        12,
+        22,
+        26,
+        30,
+        44,
+        51,
+        64,
+        75,
+        81
+      ]
+    },
+    "imports/ui/genelist/GeneTableOptions.jsx": {
+      "expectCount": 14,
+      "actualCount": 0,
+      "undocumentLines": [
+        3,
+        24,
+        25,
+        27,
+        31,
+        38,
+        47,
+        67,
+        68,
+        70,
+        78,
+        85,
+        98,
+        106
+      ]
+    },
+    "imports/ui/genelist/ThreewayRadioButtons.jsx": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        3
+      ]
+    },
+    "imports/ui/genelist/TrackSelect.jsx": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        3
+      ]
+    },
+    "imports/ui/genelist/downloads/AnnotationDownload.jsx": {
+      "expectCount": 5,
+      "actualCount": 0,
+      "undocumentLines": [
+        8,
+        18,
+        42,
+        43,
+        47
+      ]
+    },
+    "imports/ui/genelist/downloads/DownloadDialog.jsx": {
+      "expectCount": 9,
+      "actualCount": 0,
+      "undocumentLines": [
+        13,
+        19,
+        25,
+        26,
+        28,
+        34,
+        40,
+        53,
+        60
+      ]
+    },
+    "imports/ui/landingpage/Landingpage.jsx": {
+      "expectCount": 3,
+      "actualCount": 0,
+      "undocumentLines": [
+        8,
+        9,
+        12
+      ]
+    },
+    "imports/ui/main/Header.jsx": {
+      "expectCount": 8,
+      "actualCount": 0,
+      "undocumentLines": [
+        9,
+        10,
+        14,
+        18,
+        66,
+        78,
+        79,
+        82
+      ]
+    },
+    "imports/ui/main/InactiveAccountWarning.jsx": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        5
+      ]
+    },
+    "imports/ui/main/Login.jsx": {
+      "expectCount": 6,
+      "actualCount": 0,
+      "undocumentLines": [
+        7,
+        8,
+        10,
+        16,
+        30,
+        36
+      ]
+    },
+    "imports/ui/main/MainLayout.jsx": {
+      "expectCount": 3,
+      "actualCount": 0,
+      "undocumentLines": [
+        10,
+        11,
+        14
+      ]
+    },
+    "imports/ui/main/NotFound.jsx": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        5
+      ]
+    },
+    "imports/ui/main/Register.jsx": {
+      "expectCount": 10,
+      "actualCount": 0,
+      "undocumentLines": [
+        7,
+        27,
+        45,
+        80,
+        81,
+        83,
+        94,
+        134,
+        161,
+        170
+      ]
+    },
+    "imports/ui/user-profile/UserProfile.jsx": {
+      "expectCount": 13,
+      "actualCount": 0,
+      "undocumentLines": [
+        19,
+        44,
+        60,
+        61,
+        64,
+        67,
+        71,
+        77,
+        83,
+        94,
+        99,
+        135,
+        144
+      ]
+    },
+    "imports/ui/util/uiUtil.jsx": {
+      "expectCount": 3,
+      "actualCount": 3,
+      "undocumentLines": []
+    }
+  }
+}
