@@ -4,17 +4,16 @@
   "includes": ["\\.(js|jsx)$"],
   "plugins": [
     {
-      "name": "esdoc-standard-plugin"
+      "name": "esdoc2-standard-plugin"
     },
-    {"name": "esdoc-lint-plugin", "option": {"enable": false}},
     {
-      "name": "esdoc-jsx-plugin", 
+      "name": "esdoc2-jsx-plugin", 
       "option": {
         "enable": true
       }
     },
     {
-      "name": "esdoc-ecmascript-proposal-plugin", 
+      "name": "esdoc2-ecmascript-proposal-plugin", 
       "option": {
         "all": true
       }
