@@ -1,85 +1,44 @@
+import { Meteor } from 'meteor/meteor';
+import { withTracker } from 'meteor/react-meteor-data';
+
 import React from 'react';
+import { compose } from 'recompose';
+import { cloneDeep } from 'lodash';
 
-const ColumnSelect = props => {
-  return (
-    <div className="dropdown">
-      <button type="button" className="btn btn-sm btn-outline-dark dropdown-toggle" id="dropdownSortMenu" data-toggle="dropdown">
-        Select columns
-      </button>
-      <div className="dropdown-menu" aria-labelledby="dropdownSortMenu">
-        <h6 className='dropdown-header'>Attributes</h6>
-        <a className="dropdown-item" selected>Name</a>
-        <a className="dropdown-item" selected>Product</a>
-        <a className="dropdown-item">Orthogroup</a>
-        <div className="dropdown-divider" />
-        <h6 className='dropdown-header'>Data visualizations</h6>
-        <a className="dropdown-item">Gene model</a>
-        <a className="dropdown-item">Protein domains</a>
-        <a className="dropdown-item">Expression</a>
-      </div>
-    </div>
-  )
-}
+import { Attributes } from '/imports/api/genes/attribute_collection.js';
 
-class QueryCount extends React.Component {
-  constructor(props){
-    super(props)
-    this.state = {
-      queryCount: '...'
-    }
-  }
-  componentWillReceiveProps = nextProps => {
-    //queryCount.call(nextprops.query, (err, res) => {
-    //  this.setState({
-    //    queryCount: res
-    //  })
-    //})
-  }
-  render(){
-    return (
-      <button type='button' className='btn btn-sm btn-warning' disabled>
-        <span className='badge badge-dark'>{this.state.queryCount}</span> query results
-      </button>
-    )
+import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
+
+import FilterOptions from './filteroptions/FilterOptions.jsx';
+import QueryCount from './QueryCount.jsx';
+import SelectionOptions from './SelectionOptions.jsx';
+
+const tableColumnDataTracker = props => {
+  const attributeSub = Meteor.subscribe('attributes');
+  const loading = !attributeSub.ready();
+  const attributes = Attributes.find().fetch();
+  return {
+    loading, 
+    attributes
   }
 }
 
-const SelectionOptions = ({ selectedGenes , selectedAll, toggleSelectAll, openDownloadDialog, }) => {
-  return (
-    Array.from(selectedGenes).length > 0 || selectedAll ?
-    <div className="btn-group btn-group-sm" role="group">
-      <button type="button" className="btn btn-success" onClick={openDownloadDialog}>
-        <i className="fa fa-download" aria-hidden="true"></i> Download 
-      </button>
-      <button type="button" className="btn btn-warning" data-toggle="modal" data-target="#download-modal">
-        <i className="fa fa-external-link" aria-hidden="true"></i> Send 
-      </button>
-      <button type="button" className="btn btn-dark select-all" onClick={toggleSelectAll}>
-        Unselect all <i className="fa fa-check checked" aria-hidden="true"></i>
-      </button>
-    </div> :
-    <button type="button" className="btn btn-sm btn-outline-dark select-all" onClick={toggleSelectAll}>
-      Select all <i className="fa fa-check unchecked" aria-hidden="true"></i>
-    </button>
-  )
-}
+const withConditionalRendering = compose(
+  withTracker(tableColumnDataTracker),
+  withEither(isLoading, Loading)
+)
 
-export default class GeneTableOptions extends React.Component {
+class GeneTableOptions extends React.Component {
   constructor(props){
     super(props)
     this.state = {
       scrollLimit: 100,
       query: {},
       selectedGenes: new Set(),
-      selectedAll: false
+      selectedAllGenes: false,
+      selectedColumns: new Set(['Name', 'Note']),
+      showDownloadDialog: false
     }
-  }
-
-  toggleSelectAll = () => {
-    this.setState({
-      selectedGenes: new Set(),
-      selectedAll: !this.state.selectedAll
-    })
   }
 
   updateSelection = event => {
@@ -95,11 +54,43 @@ export default class GeneTableOptions extends React.Component {
     })
   }
 
-  renderChild = props => {
-    const child = React.Children.only(this.props.children);
-    return React.cloneElement(child, {
-      updateSelection: this.updateSelection,
-      ...this.state
+  renderChildren = props => {
+    return React.Children.map(this.props.children, child => {
+      return React.cloneElement(child, {
+        updateSelection: this.updateSelection,
+        toggleDownloadDialog: this.toggleDownloadDialog,
+        ...this.state
+      })
+    })
+  }
+
+  toggleDownloadDialog = () => {
+    console.log('toggleDownloadDialog')
+    this.setState({
+      showDownloadDialog: !this.state.showDownloadDialog
+    })
+  }
+
+  toggleSelectAllGenes = () => {
+    //Set selectedAllGenes to false if a selection is made, 
+    //otherwise toggle current selectAllGenes state
+    const selectedAllGenes = this.state.selectedGenes.size > 0 ? false : !this.state.selectedAllGenes;
+    this.setState({
+      selectedGenes: new Set(),
+      selectedAllGenes: selectedAllGenes
+    })
+  }
+
+  toggleColumnSelect = event => {
+    const column = event.target.id;
+    const selectedColumns = cloneDeep(this.state.selectedColumns);
+    if (selectedColumns.has(column)){
+      selectedColumns.delete(column)
+    } else {
+      selectedColumns.add(column)
+    }
+    this.setState({
+      selectedColumns
     })
   }
 
@@ -107,63 +98,19 @@ export default class GeneTableOptions extends React.Component {
     return (
       <div className="card">
         <div className="card-header d-flex justify-content-between">
-          <ColumnSelect />
+          <FilterOptions toggleColumnSelect={this.toggleColumnSelect} {...this.props} {...this.state} />
           <QueryCount />
-          <SelectionOptions toggleSelectAll={this.toggleSelectAll} {...this.props} {...this.state} />
+          <SelectionOptions 
+            toggleSelectAllGenes={this.toggleSelectAllGenes} 
+            toggleDownloadDialog={this.toggleDownloadDialog}
+            {...this.props} {...this.state} />
         </div>
         {
-          this.renderChild()
+          this.renderChildren()
         }
       </div>
     )
   }
 }
-/*
-const GeneTableOptions = ({queryCount, selection, selectedAll, selectAll, openDownloadDialog }) => {
-  return (
-    <div className="card-header d-flex justify-content-between">
-      
-      <div className="dropdown">
-        <button type="button" className="btn btn-sm btn-outline-dark dropdown-toggle" id="dropdownSortMenu" data-toggle="dropdown">
-          Select columns
-        </button>
-        <div className="dropdown-menu" aria-labelledby="dropdownSortMenu">
-          <h6 className='dropdown-header'>Attributes</h6>
-          <a className="dropdown-item" selected>Name</a>
-          <a className="dropdown-item" selected>Product</a>
-          <a className="dropdown-item">Orthogroup</a>
-          <div className="dropdown-divider" />
-          <h6 className='dropdown-header'>Data visualizations</h6>
-          <a className="dropdown-item">Gene model</a>
-          <a className="dropdown-item">Protein domains</a>
-          <a className="dropdown-item">Expression</a>
-        </div>
-      </div>
-      <button type='button' className='btn btn-sm btn-warning' disabled>
-        <span className='badge badge-dark'>{queryCount}</span> query results
-      </button>
-      
-      {
-        Array.from(selection).length > 0 || selectedAll ?
-        <div className="btn-group btn-group-sm" role="group">
-          <button type="button" className="btn btn-success" onClick={openDownloadDialog}>
-            <i className="fa fa-download" aria-hidden="true"></i> Download 
-          </button>
-          <button type="button" className="btn btn-warning" data-toggle="modal" data-target="#download-modal">
-            <i className="fa fa-external-link" aria-hidden="true"></i> Send 
-          </button>
-          <button type="button" className="btn btn-dark select-all" onClick={()=>{selectAll(false)}}>
-            Unselect all <i className="fa fa-check checked" aria-hidden="true"></i>
-          </button>
-        </div> :
-        <button type="button" className="btn btn-sm btn-outline-dark select-all" onClick={()=>{selectAll(true)}}>
-          Select all <i className="fa fa-check unchecked" aria-hidden="true"></i>
-        </button>
-      }
-      
-    </div>
-  )
-}
 
-export default GeneTableOptions
-*/
+export default withConditionalRendering(GeneTableOptions);

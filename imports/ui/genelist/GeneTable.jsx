@@ -33,7 +33,6 @@ const dataTracker = ({ query, scrollLimit, selectedGenes, updateSelection, selec
   return { genes, loading, selectedGenes, updateSelection, selectedAll }
 }
 
-
 const hasNoResults = props => {
   return props.genes.length === 0
 }
@@ -47,16 +46,14 @@ const NoResults = props => {
   )
 }
 
-
-
 const withConditionalRendering = compose(
-    withTracker(dataTracker),
-    withEither(isLoading, Loading),
-    withEither(hasNoResults, NoResults)
-  )
+  withTracker(dataTracker),
+  withEither(isLoading, Loading),
+  withEither(hasNoResults, NoResults)
+)
 
-
-const GeneTableRow = ({gene, selected, updateSelection }) => {
+const GeneTableRow = ({gene, selectedColumns, selectedAllGenes, selectedGenes, updateSelection }) => {
+  const selected = selectedAllGenes || selectedGenes.has(gene.ID)
   const active = selected ? ' active' : '';
   return (
     <tr>
@@ -65,22 +62,30 @@ const GeneTableRow = ({gene, selected, updateSelection }) => {
           {gene.ID}
         </a>
       </td>
-      <td>{gene.attributes.Name}</td>
-      <td>{gene.attributes.Note}</td>
-      <td>
-      {/*
+      {
+        Array.from(selectedColumns).map(columnName => {
+          return (
+            <td key={columnName}>
+              {gene.attributes[columnName]}
+            </td>
+          )
+        })
+      }
+      {/*<td>
+      
         <SampleSelection gene={gene}>
           <ExpressionPlot gene={gene} />
         </SampleSelection>
-      */}
+      
       </td>
+      */}
       <td>
         <button 
           type="button" 
-          className={ "btn btn-sm btn-outline-secondary select-gene pull-right" + active }
+          className={ "btn btn-sm btn-outline-secondary pull-right" + active }
           id={gene.ID}
           onClick={updateSelection.bind(this)} >
-          <span className="fa fa-check" aria-hidden="true" />
+          <span id={gene.ID} className="fa fa-check" aria-hidden="true" />
         </button>
       </td>
     </tr>
@@ -88,16 +93,25 @@ const GeneTableRow = ({gene, selected, updateSelection }) => {
 }
 
 
-const GeneTableHeader = props => {
+const GeneTableHeader = ({ selectedColumns, ...props }) => {
   return (
     <thead>
       <tr>
         <th scope="col">Gene ID <span className="fa fa-sort" /></th>
-
+        {
+          Array.from(selectedColumns).map(column => {
+            return (
+              <th key={column} scope="col">
+                {column} <span className="fa fa-sort" />
+              </th>
+            )
+          })
+        }
+        {/*
         <th scope="col">Name</th>
         <th scope="col">Product</th>
         <th scope="col">Expression</th>
-
+        */}
         <th scope="col"><div className="pull-right">Select</div></th>
       </tr>
     </thead>
@@ -113,20 +127,15 @@ class GeneTable extends React.Component {
   }
 
   render(){
-    const { genes, loading, selectedGenes, updateSelection, selectedAll } = this.props;
+    const { genes, ...props } = this.props;
     return (
       <div className="table-responsive">
         <table className="genelist table table-hover table-sm">
-          <GeneTableHeader />
+          <GeneTableHeader {...props}/>
           <tbody>
           {
             this.props.genes.map(gene => {
-              const selected = selectedAll || selectedGenes.has(gene.ID)
-              return <GeneTableRow 
-                key={gene.ID} 
-                gene={gene} 
-                selected={selected}
-                updateSelection={updateSelection} />
+              return <GeneTableRow key={gene.ID} gene={gene} {...props} />
             })
           }
           </tbody>

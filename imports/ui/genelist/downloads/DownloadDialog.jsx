@@ -54,12 +54,12 @@ export default class DownloadDialogModal extends React.Component {
     this.setState({
       downloading: false
     })
-    this.props.onClose()
+    this.props.toggleDownloadDialog()
   }
 
   render(){
-    const { show, onClose, query, selectedAll, selectedGenes } = this.props;
-    if (!show) {
+    const { showDownloadDialog, toggleDownloadDialog, query, selectedAll, selectedGenes } = this.props;
+    if (!showDownloadDialog) {
       return null
     }
 

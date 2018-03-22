@@ -26,10 +26,27 @@ class LoggedInNavbar extends React.Component {
             <a className="nav-link" href="/blast" id="blast">Blast</a>
           </li>
         </ul>
-        <form className="form-inline my-2 my-lg-0 search" role="search">
+        <form className="form-inline my-0 my-lg-0 search" role="search">
+          <div className="input-group input-group-sm mb-0">
+            <input type="text" className="form-control" />
+            <div className="input-group-append">
+              <button type="button" className="btn btn-outline-success">Search</button>
+              <button type="button" className="btn btn-outline-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span className="sr-only">Toggle Dropdown</span>
+              </button>
+              <div className="dropdown-menu">
+                <a className="dropdown-item" href="#">Action</a>
+                <a className="dropdown-item" href="#">Another action</a>
+                <a className="dropdown-item" href="#">Something else here</a>
+                <div role="separator" className="dropdown-divider"></div>
+                <a className="dropdown-item" href="#">Separated link</a>
+              </div>
+            </div>
+          </div>
+          {/*
           <input type="text" name="search" className="form-control mr-sm-2" placeholder="Search" value="" />
           <button type="submit" className="btn btn-outline-success my-2 my-sm-0">Search</button>
-          {/*
+          
             <button className="btn btn-danger" id="clear-search">
               <span className="glyphicon glyphicon-remove-circle"></span>
             </button>
@@ -41,9 +58,9 @@ class LoggedInNavbar extends React.Component {
               <a className="nav-link" href="/admin"><span className="fa fa-cog" aria-hidden="true"></span> Admin settings</a>
             </li>
           }
-          <li>
-            <div className="btn-group">
-              <button type="button" className="btn btn-secondary btn-outline-dark dropdown-toggle" 
+          <li className="mb-0 my-1">
+            <div className="dropdown">
+              <button type="button" className="btn btn-sm btn-secondary btn-outline-dark dropdown-toggle " 
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span className="fa fa-user-o" aria-hidden="true"></span> username {/*{ currentUser.username }*/}
               </button>
@@ -65,7 +82,7 @@ class LoggedInNavbar extends React.Component {
 
 const LoggedOutNavbar = props => {
   return (
-    <div className="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
+    <div className="collapse navbar-collapse d-flex justify-content-between" id="navbarSupportedContent">
       <ul className="navbar-nav mr-auto">
         <a href="/login" className="btn btn-primary btn-large navbar-btn pull-right" id="signin">
           <i className="fa fa-sign-in" aria-hidden="true"></i> Sign in
