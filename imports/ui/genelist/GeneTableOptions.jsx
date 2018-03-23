@@ -94,11 +94,19 @@ class GeneTableOptions extends React.Component {
     })
   }
 
+  toggleTrackSelect = event => {
+    const track = event.target.id;
+    console.log(track)
+  }
+
   render(){
     return (
       <div className="card">
         <div className="card-header d-flex justify-content-between">
-          <FilterOptions toggleColumnSelect={this.toggleColumnSelect} {...this.props} {...this.state} />
+          <FilterOptions 
+            toggleColumnSelect={this.toggleColumnSelect}
+            toggleTrackSelect={this.toggleTrackSelect} 
+            {...this.props} {...this.state} />
           <QueryCount />
           <SelectionOptions 
             toggleSelectAllGenes={this.toggleSelectAllGenes} 

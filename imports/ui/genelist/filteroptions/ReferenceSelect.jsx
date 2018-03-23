@@ -6,7 +6,7 @@ import React from 'react';
 const ReferenceSelect = ({...props}) => {
   return ( 
     <div className='btn-group'>
-      <button type='button' className='btn btn-sm btn-outline-dark dropdown-toggle' >
+      <button type='button' className='btn btn-sm btn-outline-dark dropdown-toggle' data-toggle='dropdown'>
         References
       </button>
     </div>

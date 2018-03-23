@@ -8,12 +8,14 @@ import { Genes } from '/imports/api/genes/gene_collection.js';
 
 import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
+import GeneTableHeader from './GeneTableHeader.jsx';
+
 import GenemodelContainer from '../feature/Genemodel.jsx';
 import ExpressionPlot from '../feature/ExpressionPlot.jsx';
 import SampleSelection from '../feature/SampleSelection.jsx';
 
 /**
- * Reactive Meteor tracker for GeneTabel component
+ * Reactive Meteor tracker for GeneTable component
  * @param  {Object} options.query           [description]
  * @param  {Number} options.scrollLimit     [description]
  * @param  {Set} options.selectedGenes   [description]
@@ -93,30 +95,7 @@ const GeneTableRow = ({gene, selectedColumns, selectedAllGenes, selectedGenes, u
 }
 
 
-const GeneTableHeader = ({ selectedColumns, ...props }) => {
-  return (
-    <thead>
-      <tr>
-        <th scope="col">Gene ID <span className="fa fa-sort" /></th>
-        {
-          Array.from(selectedColumns).map(column => {
-            return (
-              <th key={column} scope="col">
-                {column} <span className="fa fa-sort" />
-              </th>
-            )
-          })
-        }
-        {/*
-        <th scope="col">Name</th>
-        <th scope="col">Product</th>
-        <th scope="col">Expression</th>
-        */}
-        <th scope="col"><div className="pull-right">Select</div></th>
-      </tr>
-    </thead>
-  )
-}
+
 
 /**
  * 

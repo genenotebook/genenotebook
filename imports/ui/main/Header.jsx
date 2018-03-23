@@ -59,7 +59,7 @@ class LoggedInNavbar extends React.Component {
             </li>
           }
           <li className="mb-0 my-1">
-            <div className="dropdown">
+            <div className="btn-group dropdown">
               <button type="button" className="btn btn-sm btn-secondary btn-outline-dark dropdown-toggle " 
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span className="fa fa-user-o" aria-hidden="true"></span> username {/*{ currentUser.username }*/}
@@ -67,7 +67,7 @@ class LoggedInNavbar extends React.Component {
               <div className="dropdown-menu dropdown-menu-right">
                 <a role="menuitem" href="/profile" className="dropdown-item featuremenu-item">Edit profile</a>
                 <a role="menuitem" className="dropdown-item featuremenu-item">My favourites</a>
-                <div className="dropdown-divider"></div>
+                <div className="dropdown-divider" />
                 <button type="button" className="btn btn-outline-danger btn-sm btn-block" id="signout" onClick={this.signOut}>
                   Sign out
                 </button>

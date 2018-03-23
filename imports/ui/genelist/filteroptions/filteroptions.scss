@@ -1,0 +1,6 @@
+a.dropdown-item.active {
+  background-color: #c6dbef !important;
+  &:before {
+    content:  "\2713 "
+  }
+}
