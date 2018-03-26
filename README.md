@@ -1,6 +1,6 @@
 # Genebook
 ## A collaborative notebook for genes and genomes
-[![Code coverage](docs/_code_documentation/badge.svg)]
+[Code coverage](docs/_code_documentation/badge.svg)
 ----
 Full documentation is at http://genebook.readthedocs.io/
 ----
