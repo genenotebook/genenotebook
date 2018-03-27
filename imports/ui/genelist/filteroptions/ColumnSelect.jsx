@@ -1,16 +1,18 @@
 import React from 'react';
 
+import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
+
 const ColumnSelect = ({attributes, selectedColumns, toggleColumnSelect, ...props}) => {
   console.log(props)
   return (
-    <div className='btn-group'>
-      <button type='button' className='btn btn-sm btn-outline-dark dropdown-toggle' data-toggle='dropdown'>
+    <Dropdown>
+      <DropdownButton className='btn btn-sm btn-outline-dark dropdown-toggle'>
         Columns&nbsp;
         <span className='badge badge-dark'>
           {`${selectedColumns.size}/${attributes.length}`}
         </span>
-      </button>
-      <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+      </DropdownButton>
+      <DropdownMenu>
         <h6 className="dropdown-header">Attributes</h6>
         {
           attributes.map(attribute => {
@@ -27,9 +29,11 @@ const ColumnSelect = ({attributes, selectedColumns, toggleColumnSelect, ...props
         }
         <div className="dropdown-divider" />
         <h6 className="dropdown-header">Data visualizations</h6>
-      </div>
-    </div>
+        <a className='dropdown-item'>Gene model</a>
+      </DropdownMenu>
+    </Dropdown>
   )
 }
+
 
 export default ColumnSelect;

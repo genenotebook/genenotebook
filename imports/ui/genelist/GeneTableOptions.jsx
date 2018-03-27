@@ -13,6 +13,11 @@ import FilterOptions from './filteroptions/FilterOptions.jsx';
 import QueryCount from './QueryCount.jsx';
 import SelectionOptions from './SelectionOptions.jsx';
 
+/**
+ * [description]
+ * @param  {[type]} props [description]
+ * @return {[type]}       [description]
+ */
 const tableColumnDataTracker = props => {
   const attributeSub = Meteor.subscribe('attributes');
   const loading = !attributeSub.ready();
@@ -23,11 +28,18 @@ const tableColumnDataTracker = props => {
   }
 }
 
+/**
+ * [withConditionalRendering description]
+ * @type {[type]}
+ */
 const withConditionalRendering = compose(
   withTracker(tableColumnDataTracker),
   withEither(isLoading, Loading)
 )
 
+/**
+ * 
+ */
 class GeneTableOptions extends React.Component {
   constructor(props){
     super(props)
@@ -94,9 +106,11 @@ class GeneTableOptions extends React.Component {
     })
   }
 
-  toggleTrackSelect = event => {
-    const track = event.target.id;
-    console.log(track)
+  updateQuery = query => {
+    console.log(query)
+    this.setState({
+      query
+    })
   }
 
   render(){
@@ -105,7 +119,7 @@ class GeneTableOptions extends React.Component {
         <div className="card-header d-flex justify-content-between">
           <FilterOptions 
             toggleColumnSelect={this.toggleColumnSelect}
-            toggleTrackSelect={this.toggleTrackSelect} 
+            updateQuery={this.updateQuery} 
             {...this.props} {...this.state} />
           <QueryCount />
           <SelectionOptions 

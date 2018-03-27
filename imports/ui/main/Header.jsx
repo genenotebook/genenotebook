@@ -4,6 +4,8 @@ import { Roles } from 'meteor/alanning:roles';
 
 import React from 'react';
 
+import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
+
 import './header.scss';
 
 class LoggedInNavbar extends React.Component {
@@ -29,28 +31,18 @@ class LoggedInNavbar extends React.Component {
         <form className="form-inline my-0 my-lg-0 search" role="search">
           <div className="input-group input-group-sm mb-0">
             <input type="text" className="form-control" />
-            <div className="input-group-append">
-              <button type="button" className="btn btn-outline-success">Search</button>
-              <button type="button" className="btn btn-outline-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span className="sr-only">Toggle Dropdown</span>
-              </button>
-              <div className="dropdown-menu">
-                <a className="dropdown-item" href="#">Action</a>
-                <a className="dropdown-item" href="#">Another action</a>
-                <a className="dropdown-item" href="#">Something else here</a>
-                <div role="separator" className="dropdown-divider"></div>
-                <a className="dropdown-item" href="#">Separated link</a>
-              </div>
+            <div className="input-group-append btn-group">
+              <button type="button" className="btn btn-sm btn-outline-success">Search</button>
+              <Dropdown>
+                <DropdownButton className='btn btn-sm btn-outline-success dropdown-toggle dropdown-toggle-split' />
+                <DropdownMenu>
+                  <a className="dropdown-item disabled" disabled>Genes</a>
+                  <a className="dropdown-item disabled" disabled>Genomes</a>
+                  <a className="dropdown-item disabled" disabled>Transcriptomes</a>
+                </DropdownMenu>
+              </Dropdown>
             </div>
           </div>
-          {/*
-          <input type="text" name="search" className="form-control mr-sm-2" placeholder="Search" value="" />
-          <button type="submit" className="btn btn-outline-success my-2 my-sm-0">Search</button>
-          
-            <button className="btn btn-danger" id="clear-search">
-              <span className="glyphicon glyphicon-remove-circle"></span>
-            </button>
-          */}
         </form>
         <ul className="nav navbar-nav navbar-right">
           {this.props.isAdmin &&
@@ -59,20 +51,19 @@ class LoggedInNavbar extends React.Component {
             </li>
           }
           <li className="mb-0 my-1">
-            <div className="btn-group dropdown">
-              <button type="button" className="btn btn-sm btn-secondary btn-outline-dark dropdown-toggle " 
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span className="fa fa-user-o" aria-hidden="true"></span> username {/*{ currentUser.username }*/}
-              </button>
-              <div className="dropdown-menu dropdown-menu-right">
+            <Dropdown>
+              <DropdownButton className="btn btn-sm btn-outline-dark dropdown-toggle">
+                <span className="fa fa-user-o" aria-hidden="true" />{ Meteor.userId() }
+              </DropdownButton>
+              <DropdownMenu>
                 <a role="menuitem" href="/profile" className="dropdown-item featuremenu-item">Edit profile</a>
-                <a role="menuitem" className="dropdown-item featuremenu-item">My favourites</a>
+                <a role="menuitem" className="dropdown-item featuremenu-item disabled" disabled>My favourites</a>
                 <div className="dropdown-divider" />
                 <button type="button" className="btn btn-outline-danger btn-sm btn-block" id="signout" onClick={this.signOut}>
                   Sign out
                 </button>
-              </div>
-            </div>
+              </DropdownMenu>
+            </Dropdown>
           </li>
         </ul>
       </div>

@@ -35,11 +35,20 @@ const dataTracker = ({ query, scrollLimit, selectedGenes, updateSelection, selec
   return { genes, loading, selectedGenes, updateSelection, selectedAll }
 }
 
+/**
+ * [description]
+ * @param  {[type]} props [description]
+ * @return {[type]}       [description]
+ */
 const hasNoResults = props => {
   return props.genes.length === 0
 }
 
-
+/**
+ * [description]
+ * @param  {[type]} props [description]
+ * @return {[type]}       [description]
+ */
 const NoResults = props => {
   return (
     <div>
@@ -48,12 +57,25 @@ const NoResults = props => {
   )
 }
 
+/**
+ * [withConditionalRendering description]
+ * @type {[type]}
+ */
 const withConditionalRendering = compose(
   withTracker(dataTracker),
   withEither(isLoading, Loading),
   withEither(hasNoResults, NoResults)
 )
 
+/**
+ * [description]
+ * @param  {[type]} options.gene             [description]
+ * @param  {[type]} options.selectedColumns  [description]
+ * @param  {[type]} options.selectedAllGenes [description]
+ * @param  {[type]} options.selectedGenes    [description]
+ * @param  {[type]} options.updateSelection  [description]
+ * @return {[type]}                          [description]
+ */
 const GeneTableRow = ({gene, selectedColumns, selectedAllGenes, selectedGenes, updateSelection }) => {
   const selected = selectedAllGenes || selectedGenes.has(gene.ID)
   const active = selected ? ' active' : '';
