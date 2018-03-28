@@ -1,5 +1,3 @@
-import { Template } from 'meteor/templating';
-
 import React from 'react';
 import find from 'lodash/find';
 

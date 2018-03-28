@@ -10,9 +10,11 @@ import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
 import GeneTableHeader from './GeneTableHeader.jsx';
 
-import GenemodelContainer from '../feature/Genemodel.jsx';
+import Genemodel from '../feature/Genemodel.jsx';
+import ProteinDomains from '../feature/ProteinDomains.jsx';
 import ExpressionPlot from '../feature/ExpressionPlot.jsx';
 import SampleSelection from '../feature/SampleSelection.jsx';
+import Info from '../feature/Info.jsx';
 
 /**
  * Reactive Meteor tracker for GeneTable component
@@ -95,14 +97,9 @@ const GeneTableRow = ({gene, selectedColumns, selectedAllGenes, selectedGenes, u
           )
         })
       }
-      {/*<td>
-      
-        <SampleSelection gene={gene}>
-          <ExpressionPlot gene={gene} />
-        </SampleSelection>
-      
+      <td>
+        <Genemodel gene={gene} />
       </td>
-      */}
       <td>
         <button 
           type="button" 

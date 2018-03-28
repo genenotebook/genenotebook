@@ -1,7 +1,7 @@
 import React from 'react';
 import { scaleLinear } from 'd3-scale';
-import ContainerDimensions from 'react-container-dimensions';
 import { groupBy } from 'lodash';
+import ReactResizeDetector from 'react-resize-detector';
 
 import { getGeneSequences } from '/imports/api/util/util.js';
 /*
@@ -107,15 +107,23 @@ const InterproGroup = ({interproId, sourceGroups, transform, scale}) => {
 export default class ProteinDomains extends React.Component {
   constructor(props){
     super(props)
+    this.state = {
+      width: 100
+    }
   }
+
+  onResize = width => {
+    this.setState({
+      width
+    })
+  }
+
   render(){
     const sequences = getGeneSequences(this.props.gene);
     const transcripts = this.props.gene.subfeatures.filter(sub =>  sub.type == 'mRNA');
     const transcript = transcripts.filter(transcript => transcript.ID.endsWith('1'))[0];
     const transcriptSequence = sequences.filter(seq => seq.ID === transcript.ID)[0]
     const transcriptSize = transcriptSequence.pep.length;
-    
-
     
     const interproGroups = Object.entries(groupBy(transcript.protein_domains, 'interpro'));
     const totalGroups = interproGroups.length;
@@ -127,59 +135,47 @@ export default class ProteinDomains extends React.Component {
       return sourceGroups
     })
 
-
-
     const margin = {
       top: 10,
       bottom: 10,
       left: 20,
       right: 20
     }
+
+    const svgWidth = this.state.width - margin.left - margin.right;
+    const svgHeight = (totalGroups * 30) + ( totalDomains * 10 ) + margin.top + margin.bottom + 40;
+    const scale = scaleLinear().domain([0, transcriptSize]).range([0, svgWidth])
+    let domainCount = 0;
     
     return (
-      <div id="protein-domains">
-        <hr />
-        <h3>Protein domains</h3>
-        <div className="card protein-domains-container">
-          <ContainerDimensions>
+      <div className="card protein-domains">
+        <svg 
+          width={svgWidth} 
+          height={svgHeight}
+          style={{
+            marginLeft: margin.left,
+            marginTop: margin.top
+          }} >
+          <XAxis scale={scale} numTicks={5} transform='translate(0,10)' seqid={transcript.ID}/>
+          <g className='domains' transform='translate(0,40)'>
           {
-            ({width, height}) => {
-              const svgWidth = width - margin.left - margin.right;
-              const svgHeight = (totalGroups * 30) + ( totalDomains * 10 ) + margin.top + margin.bottom + 40;
-              const scale = scaleLinear().domain([0, transcriptSize]).range([0, svgWidth])
-              let domainCount = 0;
-              return (
-                <svg 
-                  width={svgWidth} 
-                  height={svgHeight}
-                  style={{
-                    marginLeft: margin.left,
-                    marginTop: margin.top
-                  }} >
-                  <XAxis scale={scale} numTicks={5} transform='translate(0,10)' seqid={transcript.ID}/>
-                  <g className='domains' transform='translate(0,40)'>
-                  {
-                    interproGroups.map((domainGroup, index) => {
-                      const [interproId, domains] = domainGroup;
-                      const sourceGroups = groupBy(domains, 'name');
-                      const yTransform = ((index + 1) * 30) + (domainCount * 10);
-                      const transform = `translate(0,${yTransform})`;
-                      domainCount += Object.entries(sourceGroups).length;
-                      return <InterproGroup 
-                        key={interproId} 
-                        interproId={interproId} 
-                        sourceGroups={sourceGroups} 
-                        transform={transform}
-                        scale={scale} />
-                    })
-                  }
-                  </g>
-                </svg>
-              )
-            }
+            interproGroups.map((domainGroup, index) => {
+              const [interproId, domains] = domainGroup;
+              const sourceGroups = groupBy(domains, 'name');
+              const yTransform = ((index + 1) * 30) + (domainCount * 10);
+              const transform = `translate(0,${yTransform})`;
+              domainCount += Object.entries(sourceGroups).length;
+              return <InterproGroup 
+                key={interproId} 
+                interproId={interproId} 
+                sourceGroups={sourceGroups} 
+                transform={transform}
+                scale={scale} />
+            })
           }
-          </ContainerDimensions>
-        </div>
+          </g>
+        </svg>
+        <ReactResizeDetector handleWidth onResize={this.onResize} />
       </div>
     )
   }

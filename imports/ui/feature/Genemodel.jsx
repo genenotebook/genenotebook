@@ -3,7 +3,8 @@ import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
 
-import ContainerDimensions from 'react-container-dimensions'
+import ReactResizeDetector from 'react-resize-detector';
+
 import { Popover, OverlayTrigger } from 'react-bootstrap';
 import { scaleLinear } from 'd3-scale';
 
@@ -88,7 +89,7 @@ const Transcript = ({transcript, exons, scale, strand}) => {
   )
 }
 
-const Genemodel = ({gene, transcripts, width, scale}) => {
+const GenemodelGroup = ({gene, transcripts, width, scale}) => {
   return (
     <g className='genemodel'>
       {
@@ -106,10 +107,20 @@ const Genemodel = ({gene, transcripts, width, scale}) => {
 }
 
 
-class GenemodelContainer extends React.Component {
+class Genemodel extends React.Component {
   constructor(props){
     super(props)
+    this.state = {
+      width: 500
+    }
   }
+
+  onResize = width => {
+    this.setState({
+      width
+    })
+  }
+
   render(){
     const gene = this.props.gene;
     const geneLength = gene.end - gene.start;
@@ -118,30 +129,24 @@ class GenemodelContainer extends React.Component {
     const end = gene.end + padding;
 
     const transcripts = gene.subfeatures.filter(subfeature => subfeature.type === 'mRNA');
+
+    const scale = scaleLinear().domain([start,end]).range([.05 * this.state.width, .90 * this.state.width])
     return (
-      <div className='card genemodel'>
-        <ContainerDimensions>
-          {
-            ({width,height}) => {
-              const scale = scaleLinear().domain([start,end]).range([.05 * width, .90 * width])
-              return (
-                <svg width={width} height={12 * transcripts.length + 40} className='genemodel-container'>
-                  <Genemodel gene={gene} transcripts={transcripts} width={width} scale={scale}/>
-                  <XAxis 
-                    scale={scale} 
-                    numTicks='4' 
-                    transform={`translate(0,${ 12 * transcripts.length + 15})`}
-                    seqid={gene.seqid}/>
-                  <defs>
-                    <marker id='arrowEnd' markerWidth='15' markerHeight='10' refX='0' refY='5' orient='auto'>
-                      <path d='M0,5 L15,5 L10,10 M10,0 L15,5' fill='none' stroke='black' strokeWidth='1'/>
-                    </marker>
-                  </defs>
-                </svg>
-              )
-            }
-          }
-        </ContainerDimensions>
+      <div id="genemodel-card" className='card genemodel'>
+        <svg width={this.state.width} height={12 * transcripts.length + 40} className='genemodel-container'>
+          <GenemodelGroup gene={gene} transcripts={transcripts} width={this.state.width} scale={scale}/>
+          <XAxis 
+            scale={scale} 
+            numTicks='4' 
+            transform={`translate(0,${ 12 * transcripts.length + 15})`}
+            seqid={gene.seqid}/>
+          <defs>
+            <marker id='arrowEnd' markerWidth='15' markerHeight='10' refX='0' refY='5' orient='auto'>
+              <path d='M0,5 L15,5 L10,10 M10,0 L15,5' fill='none' stroke='black' strokeWidth='1'/>
+            </marker>
+          </defs>
+        </svg>
+        <ReactResizeDetector handleWidth onResize={this.onResize} resizableElementId='genemodel-card' />
       </div>
     )
   }
@@ -151,4 +156,4 @@ export default withTracker(props => {
   return {
     gene:props.gene
   }
-})(GenemodelContainer)
+})(Genemodel)

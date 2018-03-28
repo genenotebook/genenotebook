@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { Template } from 'meteor/templating';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
@@ -184,26 +183,20 @@ class ExpressionPlot extends React.Component {
       left: 50,
       right: 10
     }
-    return (
-      <div className='card expression-plot'>
-        <ContainerDimensions>
-        {
-          ({width, height}) => {
-            const yScale = scaleLinear()
+
+    const width = 200;
+    const yScale = scaleLinear()
               .domain([0,yMax])
               .range([250 - padding.top - padding.bottom ,0])
 
-            return (
-              <svg width={width} height='350'>
-                <g transform={`translate(${padding.left},${padding.top})`}>
-                  <YAxis scale={yScale} numTicks='4' />
-                  <GroupedSamples groups={replicaGroups} yScale={yScale} transform='translate(20,0)'/>
-                </g>
-              </svg>
-            )
-          }
-        }
-        </ContainerDimensions>
+    return (
+      <div className='card expression-plot'>
+        <svg width={width} height='350'>
+          <g transform={`translate(${padding.left},${padding.top})`}>
+            <YAxis scale={yScale} numTicks='4' />
+            <GroupedSamples groups={replicaGroups} yScale={yScale} transform='translate(20,0)'/>
+          </g>
+        </svg>
       </div>
     )
   }

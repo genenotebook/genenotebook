@@ -1,11 +1,12 @@
 {
-  "name": "genebook",
-  "version": "0.1.0-alpha",
-  "repository": "https://github.com/holmrenser/genebook",
+  "name": "genenotebook",
+  "version": "0.1.1-alpha",
+  "repository": "https://github.com/genenoteboke/genenotebook",
   "description": "A portable website for browsing and querying genome sequences and annotations",
   "license": "AGPL-3.0",
   "scripts": {
-    "docs": "esdoc .esdoc.json"
+    "docs": "esdoc .esdoc.json",
+    "build": "meteor build --directory --server-only build"
   },
   "devDependencies": {
     "@babel/runtime": "^7.0.0-beta.42",
@@ -59,6 +60,7 @@
     "react-container-dimensions": "^1.3.3",
     "react-dom": "^16.2.0",
     "react-mounter": "^1.2.0",
+    "react-resize-detector": "^2.3.0",
     "react-select": "^1.2.1",
     "recompose": "^0.26.0",
     "request": "^2.85.0",

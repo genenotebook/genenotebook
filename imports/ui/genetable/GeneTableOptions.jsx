@@ -21,7 +21,7 @@ import SelectionOptions from './SelectionOptions.jsx';
 const tableColumnDataTracker = props => {
   const attributeSub = Meteor.subscribe('attributes');
   const loading = !attributeSub.ready();
-  const attributes = Attributes.find().fetch();
+  const attributes = Attributes.find({show: true}).fetch();
   return {
     loading, 
     attributes

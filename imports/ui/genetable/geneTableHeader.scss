@@ -1,0 +1,33 @@
+.btn {
+  &.either {
+    color: #6c757d !important;
+    border-color: #6c757d !important;
+    &:hover,
+    &.active {
+      color: #fff !important;
+      background-color: #6c757d !important;
+    }
+  }
+  &.present {
+    color: #28a745 !important;
+    border-color: #28a745 !important;
+    &:hover,
+    &.active {
+      color: #fff !important;
+      background-color: #28a745 !important;
+    }
+  }
+  &.notPresent {
+    color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    &:hover,
+    &.active {
+      color: #fff !important;
+      background-color: #dc3545 !important;
+    }
+  }
+}
+
+.dropdown-menu-right {
+  margin-left: -10rem !important;
+}

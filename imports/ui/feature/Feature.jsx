@@ -104,7 +104,11 @@ class Feature extends React.Component {
               <GenemodelContainer gene={this.props.gene} />
             </section>
             <SeqContainer gene={this.props.gene} />
-            <ProteinDomains gene={this.props.gene} />
+            <section id='protein-domains'>
+              <hr />
+              <h3>Protein domains</h3>
+              <ProteinDomains gene={this.props.gene} />
+            </section>
             {
               this.props.gene.orthogroup &&
               <Orthogroup gene={this.props.gene} />

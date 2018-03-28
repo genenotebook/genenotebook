@@ -37,7 +37,6 @@ babel-runtime@1.2.0
 dynamic-import@0.3.0
 kadira:flow-router
 vsivsi:job-collection
-react-template-helper
 
 aldeed:collection2-core
 mdg:validated-method
