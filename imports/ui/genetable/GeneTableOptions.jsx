@@ -71,13 +71,13 @@ class GeneTableOptions extends React.Component {
       return React.cloneElement(child, {
         updateSelection: this.updateSelection,
         toggleDownloadDialog: this.toggleDownloadDialog,
+        updateQuery: this.updateQuery,
         ...this.state
       })
     })
   }
 
   toggleDownloadDialog = () => {
-    console.log('toggleDownloadDialog')
     this.setState({
       showDownloadDialog: !this.state.showDownloadDialog
     })

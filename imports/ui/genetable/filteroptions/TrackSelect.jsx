@@ -70,7 +70,6 @@ class TrackSelect extends React.Component {
     const selectedTracks = cloneDeep(this.state.selectedTracks);
     const query = cloneDeep(this.props.query);
     const track = event.target.id;
-    console.log(selectedTracks,track,selectedTracks.has(track))
     if (selectedTracks.has(track)){
       selectedTracks.delete(track)
     } else {
@@ -81,14 +80,11 @@ class TrackSelect extends React.Component {
       selectedTracks: selectedTracks
     })
 
-    console.log(selectedTracks,selectedTracks.size)
     if (selectedTracks.size < this.props.tracks.length){
       query.track = { $in: [...selectedTracks]}
     } else if (query.hasOwnProperty('track')){
       delete query.track;
     }
-
-    console.log(this.props)
 
     this.props.updateQuery(query);
   }
@@ -128,7 +124,6 @@ class TrackSelect extends React.Component {
           <h6 className="dropdown-header">Select annotation tracks</h6>
           {
             tracks.map(track => {
-              console.log(this.state.selectedTracks)
               const active = this.state.selectedTracks.has(track.trackName) ? ' active': '';
               return (
                 <a key={track.trackName} 

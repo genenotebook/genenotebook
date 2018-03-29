@@ -3,7 +3,6 @@ import React from 'react';
 import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
 
 const ColumnSelect = ({attributes, selectedColumns, toggleColumnSelect, ...props}) => {
-  console.log(props)
   return (
     <Dropdown>
       <DropdownButton className='btn btn-sm btn-outline-dark dropdown-toggle'>

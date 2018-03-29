@@ -47,10 +47,10 @@ class SampleSelection extends React.Component {
       })
     })
 
-
     return React.Children.map(this.props.children, child => {
       return React.cloneElement(child, {
-        samples: [].concat(...samples)
+        samples: [].concat(...samples),
+        gene: this.props.gene 
       })
     })
   }

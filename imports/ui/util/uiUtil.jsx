@@ -9,7 +9,7 @@ import React from 'react';
  */
 export const withEither = (conditionalRenderingFn, EitherComponent) => (Component) => (props) =>
   conditionalRenderingFn(props)
-    ? <EitherComponent />
+    ? <EitherComponent { ...props }/>
     : <Component { ...props } />
 
 

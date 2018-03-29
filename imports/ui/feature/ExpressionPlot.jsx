@@ -217,8 +217,6 @@ export default withTracker(({ gene, samples, ...props }) => {
   }).fetch()
 
   values.forEach(value => {
-    console.log(value)
-    console.log(sampleInfo[value.experimentId])
     Object.assign(value, sampleInfo[value.experimentId][0])
   })
 

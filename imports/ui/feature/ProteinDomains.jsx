@@ -82,7 +82,8 @@ const SourceGroup = ({source, domains, transform, scale}) => {
 }
 
 const InterproGroup = ({interproId, sourceGroups, transform, scale}) => {
-  const label = typeof interproId !== 'undefined' ? interproId : 'Unintegrated signature';
+  //const label = typeof interproId !== 'undefined' ? interproId : 'Unintegrated signature';
+  const label = interproId;
   return (
     <g transform={transform}>
       <foreignObject width='400' height='30' x='0' y='-30'>
@@ -146,7 +147,7 @@ export default class ProteinDomains extends React.Component {
     const svgHeight = (totalGroups * 30) + ( totalDomains * 10 ) + margin.top + margin.bottom + 40;
     const scale = scaleLinear().domain([0, transcriptSize]).range([0, svgWidth])
     let domainCount = 0;
-    
+    console.log(interproGroups)
     return (
       <div className="card protein-domains">
         <svg 

@@ -1,6 +1,6 @@
 import React from 'react';
-
 import Select from 'react-select';
+import { cloneDeep } from 'lodash';
 
 import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
 
@@ -13,7 +13,7 @@ const VALUE_QUERY_TYPES = [
   {label: 'Does not contain', value: 'notContains'}
 ]
 
-const PRESENCE_QUERY_TYPES = [
+const PRESENCE_QUERYS = [
   {label: 'Present', value: 'present'},
   {label: 'Not present', value: 'notPresent'},
   {label: 'Either', value: 'either'}
@@ -25,15 +25,28 @@ class HeaderElement extends React.Component {
     this.state = {
       valueQuery: '',
       valueQueryType: 'equals',
-      presenceQueryType: 'either'
+      presenceQuery: 'either'
     }
   }
 
-  selectPresenceQueryType = event => {
+  updatePresenceQuery = event => {
+    const { attribute, query, updateQuery, label, ...props } = this.props;
+    const newQuery = cloneDeep(query);
     const queryType = event.target.id;
     this.setState({
-      presenceQueryType: queryType
+      presenceQuery: queryType
     })
+
+    if (queryType === 'present'){
+      newQuery[`attributes.${label}`] = { $exists: true }
+    } else if (queryType === 'notPresent') {
+      newQuery[`attributes.${label}`] = { $exists: false }
+    } else if (newQuery.hasOwnProperty(`attributes.${label}`)){
+      delete newQuery[`attributes.${label}`]
+    }
+
+    updateQuery(newQuery)
+
   }
 
   selectValueQueryType = selection => {
@@ -53,7 +66,7 @@ class HeaderElement extends React.Component {
   render(){
     console.log(this.props)
     const {label, ...props} = this.props;
-    const hasQuery = this.state.valueQueryType !== 'equals' || this.state.presenceQueryType !== 'either';
+    const hasQuery = this.state.valueQueryType !== 'equals' || this.state.presenceQuery !== 'either';
     const buttonClass = hasQuery ? 'btn-success' : 'btn-outline-dark';
     const orientation = label === 'Gene ID' ? 'left' : 'right';
     return (
@@ -68,14 +81,14 @@ class HeaderElement extends React.Component {
               <h6 className="dropdown-header">Select query</h6>
               <div className="btn-group" role="group">
                 {
-                  PRESENCE_QUERY_TYPES.map(({label, value}) => {
-                    const active = value === this.state.presenceQueryType ? 'active' : '';
+                  PRESENCE_QUERYS.map(({label, value}) => {
+                    const active = value === this.state.presenceQuery ? 'active' : '';
                     return (
                       <button 
                         key={value} 
                         id={value} 
                         className={`btn btn-sm btn-outline-light ${value} ${active}`}
-                        onClick={this.selectPresenceQueryType}>
+                        onClick={this.updatePresenceQuery}>
                         {label}
                       </button>
                     )
@@ -84,10 +97,10 @@ class HeaderElement extends React.Component {
               </div>
               <div className="dropdown-divider" />
               <Select
-              className='form-control-sm px-0' 
-              value={this.state.valueQueryType}
-              options={VALUE_QUERY_TYPES}
-              onChange={this.selectValueQueryType} />
+                className='form-control-sm px-0' 
+                value={this.state.valueQueryType}
+                options={VALUE_QUERY_TYPES}
+                onChange={this.selectValueQueryType} />
               <textarea className="form-control" onChange={this.updateValueQuery} value={this.valueQuery}/>
               <div className="dropdown-divider" />
               <button type="button" className="btn btn-sm btn-outline-dark pull-right">
