@@ -15,14 +15,13 @@ const ColumnSelect = ({attributes, selectedColumns, toggleColumnSelect, ...props
         <h6 className="dropdown-header">Attributes</h6>
         {
           attributes.map(attribute => {
-            const active = selectedColumns.has(attribute.name) ? 'active' : ''
+            const checked = selectedColumns.has(attribute.name)
             return (
-              <a key={attribute.name} 
-                className={`dropdown-item ${active}`}
-                id={attribute.name}
-                onClick={toggleColumnSelect.bind(this)} >
-                {attribute.name}
-              </a>
+              <div key={attribute.name} className='form-check'>
+                <input type='checkbox' className='form-check-input' id={attribute.name}
+                checked={checked} onChange={toggleColumnSelect.bind(this)} />
+                <label className='form-check-label'>{attribute.name}</label>
+              </div>
             )
           })
         }
@@ -36,3 +35,11 @@ const ColumnSelect = ({attributes, selectedColumns, toggleColumnSelect, ...props
 
 
 export default ColumnSelect;
+
+ {/*
+  <a key={attribute.name} 
+    className={`dropdown-item ${active}`}
+    id={attribute.name}
+    onClick={toggleColumnSelect.bind(this)} >
+    {attribute.name}
+  </a>*/}

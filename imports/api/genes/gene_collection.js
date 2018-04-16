@@ -120,15 +120,6 @@ const GeneSchema = new SimpleSchema({
     type: Boolean,
     optional: true
   },
-  expression: {
-    type: Array,//[Object],
-    optional: true,
-    label: 'Transcriptome counts and TPM'
-  },
-  'expression.$': {
-    type: Object,
-    blackbox: true
-  },
   subfeatures: {
     type: Array,//[SubfeatureSchema],
     //blackbox: true,

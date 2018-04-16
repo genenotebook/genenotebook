@@ -48,13 +48,6 @@ const TranscriptomeSchema = new SimpleSchema({
 		label: 'Experiment ID',
 		//index: true
 	},
-	permissions:{
-		type: Array,//[String],
-		label: 'User groups that can access this experiment'
-	},
-	'permissions.$': {
-		type: String
-	},
 	raw_counts: {
 		type: Number,
 		//decimal: true,

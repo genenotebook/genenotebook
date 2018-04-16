@@ -1,6 +1,6 @@
 import React from 'react';
 import ContainerDimensions from 'react-container-dimensions'
-import { Popover, OverlayTrigger } from 'react-bootstrap';
+//import { Popover, OverlayTrigger } from 'react-bootstrap';
 import { scaleLinear } from 'd3-scale';
 import { interpolateGreys } from 'd3-scale-chromatic';
 

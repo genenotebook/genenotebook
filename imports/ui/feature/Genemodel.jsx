@@ -5,7 +5,7 @@ import React from 'react';
 
 import ReactResizeDetector from 'react-resize-detector';
 
-import { Popover, OverlayTrigger } from 'react-bootstrap';
+//import { Popover, OverlayTrigger } from 'react-bootstrap';
 import { scaleLinear } from 'd3-scale';
 
 import './genemodel.scss'
@@ -107,7 +107,7 @@ const GenemodelGroup = ({gene, transcripts, width, scale}) => {
 }
 
 
-class Genemodel extends React.Component {
+export default class Genemodel extends React.PureComponent {
   constructor(props){
     super(props)
     this.state = {
@@ -132,7 +132,7 @@ class Genemodel extends React.Component {
 
     const scale = scaleLinear().domain([start,end]).range([.05 * this.state.width, .90 * this.state.width])
     return (
-      <div id="genemodel-card" className='card genemodel'>
+      <div id="genemodel-card" className='card genemodel px-0 pb-0'>
         <svg width={this.state.width} height={12 * transcripts.length + 40} className='genemodel-container'>
           <GenemodelGroup gene={gene} transcripts={transcripts} width={this.state.width} scale={scale}/>
           <XAxis 
@@ -152,8 +152,10 @@ class Genemodel extends React.Component {
   }
 }
 
+/*
 export default withTracker(props => {
   return {
     gene:props.gene
   }
 })(Genemodel)
+*/

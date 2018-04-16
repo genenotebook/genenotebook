@@ -13,7 +13,7 @@ export default class GeneTableCard extends React.Component {
 
   render(){
     return (
-      <div className="container">
+      <div className="container-fluid px-0 mx-0">
         <GeneTableOptions >
           <GeneTable />
           <DownloadDialogModal />

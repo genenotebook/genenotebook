@@ -1,6 +1,5 @@
 import React from 'react';
 
-import ReferenceSelect from './ReferenceSelect.jsx';
 import TrackSelect from './TrackSelect.jsx';
 import ColumnSelect from './ColumnSelect.jsx';
 
@@ -12,7 +11,6 @@ const FilterOptions = ({ toggleColumnSelect, updateQuery, ...props }) => {
       <button className='btn btn-sm btn-outline-dark' disabled>
         Select:
       </button>
-      {/*<ReferenceSelect {...props} />*/}
       <TrackSelect updateQuery={updateQuery} {...props} />
       <ColumnSelect toggleColumnSelect={toggleColumnSelect} {...props} />
     </div>

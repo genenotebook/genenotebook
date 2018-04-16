@@ -11,7 +11,7 @@ import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
 import FilterOptions from './filteroptions/FilterOptions.jsx';
 import QueryCount from './QueryCount.jsx';
-import SelectionOptions from './SelectionOptions.jsx';
+import { SelectionOptions } from './SelectionOptions.jsx';
 
 /**
  * [description]
@@ -40,17 +40,23 @@ const withConditionalRendering = compose(
 /**
  * 
  */
-class GeneTableOptions extends React.Component {
+class GeneTableOptions extends React.PureComponent {
   constructor(props){
     super(props)
     this.state = {
-      scrollLimit: 100,
+      scrollLimit: 50,
       query: {},
       selectedGenes: new Set(),
       selectedAllGenes: false,
-      selectedColumns: new Set(['Name', 'Note']),
+      selectedColumns: new Set(['Gene ID', 'Name', 'Note']),
       showDownloadDialog: false
     }
+  }
+
+  updateScrollLimit = newScrollLimit => {
+    this.setState({
+      scrollLimit: newScrollLimit
+    })
   }
 
   updateSelection = event => {
@@ -72,7 +78,10 @@ class GeneTableOptions extends React.Component {
         updateSelection: this.updateSelection,
         toggleDownloadDialog: this.toggleDownloadDialog,
         updateQuery: this.updateQuery,
-        ...this.state
+        updateScrollLimit: this.updateScrollLimit,
+        toggleSelectAllGenes: this.toggleSelectAllGenes,
+        ...this.state,
+        ...this.props
       })
     })
   }
@@ -94,6 +103,7 @@ class GeneTableOptions extends React.Component {
   }
 
   toggleColumnSelect = event => {
+    //event.stopPropagation();
     const column = event.target.id;
     const selectedColumns = cloneDeep(this.state.selectedColumns);
     if (selectedColumns.has(column)){

@@ -35,20 +35,16 @@ Meteor.startup( () => {
   //add some default attributes to filter on
   const permanentAttributes = [
     {
-      name: 'Viewing',
-      query: 'viewing'
-    },
-    {
-      name: 'Editing',
-      query: 'editing'
-    },
-    {
       name: 'Orthogroup',
       query: 'orthogroup'
     },
     {
       name: 'Protein domains',
       query: 'subfeatures.protein_domains'
+    },
+    {
+      name: 'Gene ID',
+      query: 'ID'
     }]
   permanentAttributes.forEach( attribute => {
     console.log(`Adding default filter option: ${attribute.name}`)
@@ -64,6 +60,9 @@ Meteor.startup( () => {
           reserved: true,
           allReferences: true 
       }
+    },
+    {
+      upsert: true
     })
   })
 

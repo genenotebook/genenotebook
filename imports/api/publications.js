@@ -13,11 +13,11 @@ import { References, ReferenceInfo } from '/imports/api/genomes/reference_collec
 import { ExperimentInfo, Transcriptomes } from '/imports/api/transcriptomes/transcriptome_collection.js';
 
 Meteor.publish({
-  genes({limit, search, query}){
+  genes({query, limit, sort}){
     console.log('publishing gene list')
-    console.log('limit',limit)
-    console.log('search',search)
-    console.log('query',query)
+    console.log('limit', limit)
+    console.log('sort', sort)
+    console.log('query', query)
     const publication = this;
     if (!publication.userId){
       publication.stop()
@@ -25,13 +25,16 @@ Meteor.publish({
 
     limit = limit || 40;
     query = query || {};
+    sort = sort || {};
+
+    /*
     if (search) {
       query.$or = [{ 'ID': { $regex: search , $options: 'i' } },{ 'Name': { $regex: search , $options: 'i' } }];
       if (!query.hasOwnProperty('Productname')){
         query.$or.push({ 'Productname': { $regex: search , $options: 'i' } })
       }
     }
-
+    */
     //get user roles
     const roles = Roles.getRolesForUser(publication.userId);
 
@@ -40,7 +43,7 @@ Meteor.publish({
       permissions: {
         $in: roles
       }
-    }).fetch().map(track => track.trackName)
+    }).map(track => track.trackName)
 
     //if a track is requested in the query it should be in the list of accessable tracks
     if ( query.hasOwnProperty('track') ){
@@ -52,7 +55,7 @@ Meteor.publish({
       query.track = { $in: queryTracks }
     }
 
-    return Genes.find(query,{ limit: limit })
+    return Genes.find(query, {sort: sort, limit: limit})
   },
   users(){
     const publication = this;

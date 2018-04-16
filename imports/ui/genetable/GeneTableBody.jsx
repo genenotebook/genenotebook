@@ -3,10 +3,11 @@ import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
 import { compose } from 'recompose';
+import dot from 'dot-object';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
 
-import { withEither, isLoading } from '/imports/ui/util/uiUtil.jsx';
+import { withEither } from '/imports/ui/util/uiUtil.jsx';
 
 import Genemodel from '../feature/Genemodel.jsx';
 import ProteinDomains from '../feature/ProteinDomains.jsx';
@@ -27,7 +28,7 @@ import Info from '../feature/Info.jsx';
 const dataTracker = ({ query, scrollLimit, selectedGenes, updateSelection, selectedAll }) => {
   const geneSub = Meteor.subscribe('genes', {
     limit: scrollLimit, 
-    search: undefined, 
+    sort: {ID: 1}, 
     query: query
   })
   const loading = !geneSub.ready();
@@ -63,6 +64,10 @@ const NoResults = ({selectedColumns, ...props}) => {
       </tr>
     </tbody>
   )
+}
+
+const isLoading = ({genes, loading}) => {
+  return loading && genes.length === 0
 }
 
 const Loading = ({selectedColumns, ...props}) => {
@@ -105,28 +110,38 @@ const withConditionalRendering = compose(
  * @param  {[type]} options.updateSelection  [description]
  * @return {[type]}                          [description]
  */
-const GeneTableRow = ({gene, selectedColumns, selectedAllGenes, selectedGenes, updateSelection }) => {
+const GeneTableRow = ({gene, selectedColumns, selectedAllGenes, selectedGenes, updateSelection, attributes, ...props }) => {
   const selected = selectedAllGenes || selectedGenes.has(gene.ID)
   const active = selected ? ' active' : '';
+  const selectedAttributes = attributes.filter(attribute => {
+    return selectedColumns.has(attribute.name)
+  }).reduce((obj, attribute) => {
+    obj[attribute.name] = attribute
+    return obj
+  },{})
+
   return (
     <tr>
-      <td>
-        <a className='genelink' href={`/gene/${gene.ID}`}>
-          {gene.ID}
-        </a>
-      </td>
       {
-        Array.from(selectedColumns).map(columnName => {
+        [...selectedColumns].map(attributeName => {
+          const attribute = selectedAttributes[attributeName]
+          const attributeValue = dot.pick(attribute.query, gene)
           return (
-            <td key={columnName}>
-              {gene.attributes[columnName]}
+            <td key={attributeName} data-label={attributeName}>
+              { 
+                attribute.name === 'Gene ID' ?
+                <a className='genelink' href={`/gene/${gene.ID}`}>{gene.ID}</a> : 
+                attributeValue 
+              }
             </td>
           )
         })
       }
-      <td>
-        <ProteinDomains gene={gene} />
+      <td data-label='Gene model'>
+        <Genemodel gene={gene} />
       {/*
+
+        <ProteinDomains gene={gene} />
         <SampleSelection gene={gene} >
           <ExpressionPlot />
         </SampleSelection >
@@ -145,7 +160,7 @@ const GeneTableRow = ({gene, selectedColumns, selectedAllGenes, selectedGenes, u
   )
 }
 
-
+/*
 const GeneTableBody = ({genes, ...props}) => {
   return (
     <tbody>
@@ -157,5 +172,37 @@ const GeneTableBody = ({genes, ...props}) => {
     </tbody>
   )
 }
+*/
+class GeneTableBody extends React.PureComponent {
+  constructor(props){
+    super(props)
+  }
+  componentDidMount = () => {
+    window.addEventListener('scroll', this.onScroll, false);
+  }
+
+  componentWillUnmount = () => {
+    window.removeEventListener('scroll', this.onScroll, false);
+  }
+
+  onScroll = () => {
+    if ((window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 500)){
+      this.props.updateScrollLimit(this.props.scrollLimit + 50)
+    }
+  }
+  render(){
+    const { genes, ...props } = this.props;
+    return (
+      <tbody>
+        {
+          genes.map(gene => {
+            return <GeneTableRow key={gene.ID} gene={gene} {...props} />
+          })
+        }
+      </tbody>
+    )
+  }
+}
+
 
 export default withConditionalRendering(GeneTableBody)
