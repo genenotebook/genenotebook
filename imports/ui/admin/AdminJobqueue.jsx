@@ -28,12 +28,25 @@ const Status = (props) => {
   )
 }
 
-export const JobProgressBar = ({ job, loading }) => {
+const formatDate = date => {
+  let hours = date.getHours();
+  hours = hours < 10 ? `0${hours}` : hours;
+  let minutes = date.getMinutes();
+  minutes = minutes < 10 ? `0${minutes}` : minutes;
+  let month = date.getMonth() + 1;
+  month = month < 10 ? `0${month}` : month;
+  let day = date.getDate();
+  day = day < 10 ? `0${day}` : day;
+  const year = date.getFullYear();
+  return `${hours}:${minutes} ${month}/${day}/${year}`
+}
+
+export const JobProgressBar = ({ progress, loading, ...job }) => {
   if (loading){
     return null
   }
   //rounding can make a percentage of 100 while job is not finished, 99% looks better in that case
-  let percent = Math.round(job.progress.percent)
+  let percent = Math.round(progress.percent)
   if (percent === 100){
     percent -= 1
   }
@@ -66,52 +79,44 @@ class AdminJobqueue extends React.Component {
   }
 
   render(){
+    const { loading, jobs, ...props } = this.props;
     return (
-      this.props.loading ? 
+      loading ? 
       <div> Loading </div> :
-      <div>
-        <hr/>
-        <ul className='list-group'>
-        {
-          this.props.jobs.map(job => {
-            console.log(job)
-            return (
-              <li className='list-group-item' key={job._id}>
-                <p>
-                  <Status status={job.status} />
-                  &nbsp;{job.type}
-                  <small>
-                    &nbsp;job
-                    <a href={`/admin/job/${job._id}`}>
-                      &nbsp;{job._id}
-                    </a>
-                  </small>
-                  <button 
-                    type='button' 
-                    className='btn btn-default btn-sm pull-right'
-                    onClick={this.reRunJob}
-                    name={job._id}
-                  >Rerun</button>
-                </p>
-                <ul className='list-group'>
-                  <li className='list-group-item'>
-                    <small>{`Created: ${job.created}`}</small>
-                  </li>
-                  <li className='list-group-item'>
-                    <small>{`User: ${job.user}`}</small>
-                  </li>
-                  <li className='list-group-item'>
-                    <small>
-                      <JobProgressBar job = {job} />
-                    </small>
-                  </li>
-                </ul>
-              </li>
-            )
-          })
-        }
-        </ul>
-      </div>
+      <table className="genetable table table-hover table-sm">
+        <thead>
+          <tr>
+            {
+              ['Status','Type','Created','User','Progress','Actions'].map(label => {
+                return <th key={label} scope='col'>{label}</th>
+              })
+            }
+          </tr>
+        </thead>
+        <tbody>
+          {
+            jobs.map(job => {
+              return (
+                <tr key={job._id}>
+                  <td><Status {...job} /></td>
+                  <td>{job.type}</td>
+                  <td>{formatDate(job.created)}</td>
+                  <td>{job.user}</td>
+                  <td><JobProgressBar loading={loading} {...job} /></td>
+                  <td>
+                    <button 
+                      type='button' 
+                      className='btn btn-outline-dark btn-sm'
+                      onClick={this.reRunJob}
+                      name={job._id}
+                    >Rerun</button>
+                  </td>
+                </tr>
+              )
+            })
+          }
+        </tbody>
+      </table>
     )
   }
 }
