@@ -45,6 +45,14 @@ Meteor.startup( () => {
     {
       name: 'Gene ID',
       query: 'ID'
+    },
+    {
+      name: 'Name',
+      query: 'attributes.Name'
+    },
+    {
+      name: 'Note',
+      query: 'attributes.Note'
     }]
   permanentAttributes.forEach( attribute => {
     console.log(`Adding default filter option: ${attribute.name}`)

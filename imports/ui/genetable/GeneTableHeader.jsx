@@ -241,18 +241,21 @@ class HeaderElement extends React.Component {
 }
 
 const GeneTableHeader = ({ selectedColumns, attributes, ...props }) => {
+  console.log(attributes, selectedColumns)
   const selectedAttributes = attributes.filter(attribute => {
     return selectedColumns.has(attribute.name)
   }).reduce((obj, attribute) => {
     obj[attribute.name] = attribute
     return obj
   },{})
+  console.log(selectedAttributes)
   return (
     <thead>
       <tr>
         {
           [...selectedColumns].map(attributeName => {
             const attribute = selectedAttributes[attributeName]
+            console.log(attributeName, attribute)
             return (
               <HeaderElement key={attribute.name} label={attribute.name} attribute={attribute} {...props} />
             )

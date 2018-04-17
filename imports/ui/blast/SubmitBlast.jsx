@@ -6,6 +6,8 @@ import React from 'react';
 import Select from 'react-select';
 import update from 'immutability-helper';
 
+import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
+
 import { submitBlastJob } from '/imports/api/blast/submitblastjob.js';
 import { Tracks } from '/imports/api/genomes/track_collection.js';
 
@@ -50,18 +52,19 @@ const SequenceInput = (props) => {
         props.value &&
         <div className="btn-group pull-right">
           <button type="button" className="btn btn-outline-secondary btn-sm disabled">This is a</button>
-          <button type="button" className="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown">
-            <strong>{props.seqType}</strong> sequence
-            <span className="caret"></span>
-          </button>
-          <div className="dropdown-menu">
-            <a className="dropdown-item" id="Protein" onClick={props.selectSeqType} href="#">
-              Protein sequence
-            </a>
-            <a className="dropdown-item" id="Nucleotide" onClick={props.selectSeqType} href="#">
-              Nucleotide sequence
-            </a>
-          </div> 
+          <Dropdown>
+            <DropdownButton className="btn btn-secondary btn-sm dropdown-toggle">
+              <strong>{props.seqType}</strong> sequence
+            </DropdownButton>
+            <DropdownMenu>
+              <a className="dropdown-item" id="Protein" onClick={props.selectSeqType} href="#">
+                Protein sequence
+              </a>
+              <a className="dropdown-item" id="Nucleotide" onClick={props.selectSeqType} href="#">
+                Nucleotide sequence
+              </a>
+            </DropdownMenu>
+          </Dropdown>
         </div>
       }
     </div>
@@ -74,7 +77,6 @@ const TrackSelect = (props) => {
       <label> Select tracks: </label>
         {
           props.tracks.map(track => {
-            console.log(props.selectedTracks,track.trackName,props.selectedTracks.indexOf(track.trackName))
             return (
               <div className="form-check" key={track.trackName}>
                 <input 
@@ -97,20 +99,22 @@ const SubmitButtons = (props) => {
   return (
     <div className='btn-group'>
       <div className="btn-group">
-        <button type="button" className="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown">
-          <strong>{props.selectedDbType}</strong> database <span className="caret"></span>
-        </button>
-        <div className="dropdown-menu">
-        {
-          props.dbTypes.map(dbType => {
-            return (
-                <a key={dbType} className="dropdown-item db-select" id={dbType} onClick={props.selectDbType}>
-                  {dbType} database
-                </a>
-            )
-          })
-        }
-        </div>
+        <Dropdown>
+          <DropdownButton className="btn btn-outline-primary dropdown-toggle">
+            <strong>{props.selectedDbType}</strong> database
+          </DropdownButton>
+          <DropdownMenu>
+            {
+              props.dbTypes.map(dbType => {
+                return (
+                    <a key={dbType} className="dropdown-item db-select" id={dbType} onClick={props.selectDbType}>
+                      {dbType} database
+                    </a>
+                )
+              })
+            }
+          </DropdownMenu>
+        </Dropdown>
       </div>
       <div className='btn-group'>
         <button 
@@ -186,23 +190,6 @@ class SubmitBlast extends React.Component {
     const index = this.state.selectedTracks.indexOf(trackName);
     const operation = index < 0 ? { $push: [trackName] } : { $splice: [[index]] };
     const newState = update(this.state, { selectedTracks: operation });
-
-    /*
-    let newState;
-    if (index < 0){
-      newState = update(this.state, {
-        selectedTracks: {
-          $push: [trackName]
-        }
-      })
-    } else {
-      newState = update(this.state, {
-        selectedTracks: {
-          $splice: [[index]]
-        }
-      })
-    }
-    */
     this.setState(newState)
   }
 
