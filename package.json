@@ -6,7 +6,7 @@
   "license": "AGPL-3.0",
   "scripts": {
     "docs": "esdoc .esdoc.json",
-    "build": "meteor build --directory --server-only build"
+    "build": "meteor build --directory --server-only build && pushd build/bundle/programs/server && npm install && popd && tar cvzf genenotebook.tgz build"
   },
   "devDependencies": {
     "@babel/runtime": "^7.0.0-beta.44",

@@ -78,13 +78,7 @@ const HitPlotLine = (props) => {
           const gaps = hsp['Hsp_gaps'];
           const evalue = hsp['Hsp_evalue'];
           return (
-            <OverlayTrigger 
-              key={index} 
-              trigger={['hover','focus']} 
-              placement='top' 
-              overlay={PopoverHover({geneID, bitScore, alignmentLength, gaps, evalue})}>
               <rect 
-                 
                 x={props.xScale(x)} 
                 y='0' 
                 width={props.xScale(width)} 
@@ -92,7 +86,6 @@ const HitPlotLine = (props) => {
                 style={{
                   fill: interpolateGreys(bitScore / props.maxBitScore)
                 }} />
-            </OverlayTrigger>
           )
         })
       }

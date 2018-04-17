@@ -9,7 +9,6 @@ import React from 'react';
  * @return {Function}                            [description]
  */
 export const SelectionOptions = ({ selectedGenes , selectedAllGenes, toggleDownloadDialog }) => {
-  console.log(selectedGenes , selectedAllGenes, toggleDownloadDialog)
   return (
     Array.from(selectedGenes).length > 0 || selectedAllGenes ?
     <div className="btn-group btn-group-sm" role="group">

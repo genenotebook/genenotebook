@@ -6,3 +6,4 @@ node_modules
 !.meteor
 *sublime*
 production_settings.json
+genenotebook.tgz

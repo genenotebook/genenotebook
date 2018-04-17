@@ -103,13 +103,14 @@ class GeneTableOptions extends React.PureComponent {
   }
 
   toggleColumnSelect = event => {
-    //event.stopPropagation();
-    const column = event.target.id;
+    //const column = event.target.id;
+    const {checked, id, ...target} = event.target;
+    console.log(id, checked)
     const selectedColumns = cloneDeep(this.state.selectedColumns);
-    if (selectedColumns.has(column)){
-      selectedColumns.delete(column)
+    if (selectedColumns.has(id)){
+      selectedColumns.delete(id)
     } else {
-      selectedColumns.add(column)
+      selectedColumns.add(id)
     }
     this.setState({
       selectedColumns

@@ -114,11 +114,6 @@ class HeaderElement extends React.Component {
       const attributeQuery = query[attribute.query];
       const queryKey = Object.keys(attributeQuery)[0];
       const queryValue = Object.values(attributeQuery)[0];
-      /*const queryLabel = labelFromQuery({ queryKey, queryValue });
-      this.state = {
-        queryLabel,
-        queryValue
-      }*/
       this.state = stateFromQuery(attributeQuery);
     } else {
       this.state = {
@@ -145,7 +140,6 @@ class HeaderElement extends React.Component {
   }
 
   updateSort = event => {
-    event.preventDefault();
     console.log(event.target.id)
     const sortOrder = event.target.id === this.state.sort ? 'None' : event.target.id;
     console.log(sortOrder)
@@ -183,15 +177,15 @@ class HeaderElement extends React.Component {
   }
 
   render(){
-    const {label, query, attribute, ...props} = this.props;
+    const { query, attribute, ...props} = this.props;
     const hasQuery = query.hasOwnProperty(attribute.query);
     const buttonClass = hasQuery ? 'btn-success' : 'btn-outline-dark';
-    const orientation = label === 'Gene ID' ? 'left' : 'right';
+    const orientation = attribute.name === 'Gene ID' ? 'left' : 'right';
     return (
       <th scope='col'>
         <div className='btn-group'>
           <button className={`btn btn-sm ${buttonClass}`} type="button" disabled>
-            {label}
+            {attribute.name}
           </button>
           <Dropdown>
             <DropdownButton className={`btn btn-sm dropdown-toggle ${buttonClass}`}/>
@@ -247,7 +241,6 @@ class HeaderElement extends React.Component {
 }
 
 const GeneTableHeader = ({ selectedColumns, attributes, ...props }) => {
-  console.log(props)
   const selectedAttributes = attributes.filter(attribute => {
     return selectedColumns.has(attribute.name)
   }).reduce((obj, attribute) => {

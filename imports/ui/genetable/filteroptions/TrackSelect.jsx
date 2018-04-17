@@ -123,15 +123,14 @@ class TrackSelect extends React.Component {
         <DropdownMenu>
           <h6 className="dropdown-header">Select annotation tracks</h6>
           {
-            tracks.map(track => {
-              const active = this.state.selectedTracks.has(track.trackName) ? ' active': '';
+            tracks.map(({ trackName }) => {
+              const checked = this.state.selectedTracks.has(trackName);// ? ' active': '';
               return (
-                <a key={track.trackName} 
-                  className={`dropdown-item ${active}`}
-                  id={track.trackName}
-                  onClick={this.toggleTrackSelect} >
-                  {track.trackName}
-                </a>
+                <div key={`${trackName}${checked}`} className='form-check'>
+                  <input type='checkbox' className='form-check-input' id={trackName}
+                    checked={checked} onChange={this.toggleTrackSelect} />
+                  <label className='form-check-label'>{trackName}</label>
+                </div>
               )
             })
           }
@@ -158,3 +157,12 @@ class TrackSelect extends React.Component {
 }
 
 export default withConditionalRendering(TrackSelect);
+
+{/*
+<a key={track.trackName} 
+  className={`dropdown-item ${active}`}
+  id={track.trackName}
+  onClick={this.toggleTrackSelect} >
+  {track.trackName}
+</a>
+*/}

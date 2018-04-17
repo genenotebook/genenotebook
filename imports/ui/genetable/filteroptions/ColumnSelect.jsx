@@ -3,6 +3,7 @@ import React from 'react';
 import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
 
 const ColumnSelect = ({attributes, selectedColumns, toggleColumnSelect, ...props}) => {
+  console.log(selectedColumns)
   return (
     <Dropdown>
       <DropdownButton className='btn btn-sm btn-outline-dark dropdown-toggle'>
@@ -15,12 +16,13 @@ const ColumnSelect = ({attributes, selectedColumns, toggleColumnSelect, ...props
         <h6 className="dropdown-header">Attributes</h6>
         {
           attributes.map(attribute => {
-            const checked = selectedColumns.has(attribute.name)
+            const { name } = attribute;
+            const checked = selectedColumns.has(name)
             return (
-              <div key={attribute.name} className='form-check'>
-                <input type='checkbox' className='form-check-input' id={attribute.name}
-                checked={checked} onChange={toggleColumnSelect.bind(this)} />
-                <label className='form-check-label'>{attribute.name}</label>
+              <div key={`${name}${checked}`} className='form-check'>
+                <input type='checkbox' className='form-check-input' id={name}
+                  checked={checked} onChange={toggleColumnSelect} />
+                <label className='form-check-label'>{name}</label>
               </div>
             )
           })
@@ -33,13 +35,5 @@ const ColumnSelect = ({attributes, selectedColumns, toggleColumnSelect, ...props
   )
 }
 
-
 export default ColumnSelect;
 
- {/*
-  <a key={attribute.name} 
-    className={`dropdown-item ${active}`}
-    id={attribute.name}
-    onClick={toggleColumnSelect.bind(this)} >
-    {attribute.name}
-  </a>*/}

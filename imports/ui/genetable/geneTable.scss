@@ -1,4 +1,5 @@
 .genetable{
+  min-height: 30rem;
   @media only screen and (max-width: 760px){
     table, thead, tbody, th, td, tr { 
       /* Force table to not be like tables anymore */
@@ -32,7 +33,5 @@
       /* Label the data */
       content: attr(data-label);
     }
-    
-    td:before {  }
   }
 }
