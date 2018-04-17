@@ -118,7 +118,6 @@ class GeneTableOptions extends React.PureComponent {
   }
 
   updateQuery = query => {
-    console.log(query)
     this.setState({
       query
     })
@@ -132,7 +131,7 @@ class GeneTableOptions extends React.PureComponent {
             toggleColumnSelect={this.toggleColumnSelect}
             updateQuery={this.updateQuery} 
             {...this.props} {...this.state} />
-          <QueryCount />
+          <QueryCount query={this.state.query} />
           <SelectionOptions 
             toggleSelectAllGenes={this.toggleSelectAllGenes} 
             toggleDownloadDialog={this.toggleDownloadDialog}

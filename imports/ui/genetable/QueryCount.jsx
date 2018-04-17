@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { queryCount } from '/imports/api/methods/queryCount.js';
+
 export default class QueryCount extends React.Component {
   constructor(props){
     super(props)
@@ -7,17 +9,29 @@ export default class QueryCount extends React.Component {
       queryCount: '...'
     }
   }
-  componentWillReceiveProps = nextProps => {
-    //queryCount.call(nextprops.query, (err, res) => {
-    //  this.setState({
-    //    queryCount: res
-    //  })
-    //})
+
+  componentDidMount = () => {
+    const { query, ...props } = this.props;
+    queryCount.call({query}, (err, queryCount) => {
+      if (err) console.error(err)
+      this.setState({
+        queryCount
+      })
+    })
+  }
+
+  componentWillReceiveProps = ({ query, ...nextProps }) => {
+    queryCount.call({ query }, (err, res) => {
+      console.log(err,res)
+      this.setState({
+        queryCount: res
+      })
+    })
   }
   render(){
     return (
-      <button type='button' className='btn btn-sm btn-warning' disabled>
-        <span className='badge badge-dark'>{this.state.queryCount}</span> query results
+      <button type='button' className='btn btn-sm btn-outline-dark' disabled>
+        <span className='badge badge-light'>{this.state.queryCount}</span> query results
       </button>
     )
   }

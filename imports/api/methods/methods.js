@@ -36,22 +36,6 @@ Meteor.methods({
 
 		return fasta
 	},
-	queryCount (search,query){
-		if (! this.userId) {
-			throw new Meteor.Error('not-authorized');
-		}
-		if (! Roles.userIsInRole(this.userId,'curator')){
-			throw new Meteor.Error('not-authorized');
-		}
-		if (search) {
-			query.$or = [{ 'ID': { $regex: search , $options: 'i' } },{ 'Name': { $regex: search , $options: 'i' } }];
-			if (!query.hasOwnProperty('Productname')){
-				query.$or.push({ 'Productname': { $regex: search , $options: 'i' } })
-			}
-		}
-		const count = Genes.find(query).count()
-		return count
-	},
 	removeFromViewing (geneId){
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');

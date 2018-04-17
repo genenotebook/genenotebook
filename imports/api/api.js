@@ -22,7 +22,7 @@ import './blast/submitblastjob.js';
 import './users/users.js';
 
 import './methods/methods.js';
-//import './methods/blast.js';
+import './methods/queryCount.js';
 import './methods/list.js';
 
 //import the following so that jobs can start running
