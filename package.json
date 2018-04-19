@@ -6,8 +6,9 @@
   "license": "AGPL-3.0",
   "scripts": {
     "preinstall": "curl https://install.meteor.com/ | sh",
-    "docs": "esdoc .esdoc.json",
-    "build": "meteor build --directory --server-only build && pushd build/bundle/programs/server && npm install && popd && tar cvzf genenotebook.tgz build"
+    "docs": "documentation build --shallow imports/** -f html -o api-docs",
+    "postdocs": "cp api-docs/index.html docs/pages/api-docs.html && cp -r api-docs/assets docs/",
+    "bundle": "bundle.sh"
   },
   "devDependencies": {
     "@babel/runtime": "^7.0.0-beta.44",
@@ -24,6 +25,7 @@
     "d3-hierarchy": "^1.1.5",
     "d3-scale": "^1.0.7",
     "d3-scale-chromatic": "^1.2.0",
+    "documentation": "^6.2.0",
     "dot-object": "^1.7.0",
     "esdoc": "^1.0.4",
     "esdoc-accessor-plugin": "^1.0.0",

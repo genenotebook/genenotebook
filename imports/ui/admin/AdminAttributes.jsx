@@ -21,8 +21,9 @@ class AdminAttributes extends React.Component {
   }
 
   render(){
+    const { loading, attributes, ...props } = this.props;
     return (
-      this.props.loading ? 
+      loading ? 
       <div> Loading </div> :
       <div>
         <hr/>
@@ -30,6 +31,36 @@ class AdminAttributes extends React.Component {
           <i className="fa fa-warning" aria-hidden="true"/> Scan all genes for attributes
         </button>
         <hr/>
+        <table className="table table-hover table-sm">
+          <thead>
+          <tr>
+            {
+              ['Name','Query','Visible','Can edit','References','Actions'].map(label => {
+                return <th key={label} scope='col'>{label}</th>
+              })
+            }
+          </tr>
+        </thead>
+        <tbody>
+        {
+          attributes.map(attribute => {
+            return (
+              <tr key={attribute._id}>
+                <td>{attribute.name}</td>
+                <td>{attribute.query}</td>
+                <td>{attribute.show}</td>
+                <td>{attribute.canEdit}</td>
+                <td>{attribute.references ? attribute.references : attribute.allReferences}</td>
+                <td>
+                  <button type='button' className='btn btn-sm btn-outline-dark'>Edit</button>
+                </td>
+              </tr>
+            )
+          })
+        }
+        </tbody>
+        </table>
+        {/*
         <ul className='list-group'>
         {
           this.props.attributes.map(attribute => {
@@ -63,6 +94,7 @@ class AdminAttributes extends React.Component {
           })
         }
         </ul>
+      */}
       </div>
     )
   }

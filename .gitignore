@@ -1,9 +1,9 @@
 !data/test*
 data/*
-build
 node_modules
 !.gitignore
 !.meteor
 *sublime*
 production_settings.json
-genenotebook.tgz
+genenotebook_bundle
+genenotebook_bundle.tgz

@@ -83,7 +83,7 @@ class AdminJobqueue extends React.Component {
     return (
       loading ? 
       <div> Loading </div> :
-      <table className="genetable table table-hover table-sm">
+      <table className="table table-hover table-sm">
         <thead>
           <tr>
             {
