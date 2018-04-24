@@ -3,7 +3,6 @@
 #### Full documentation is at http://genenotebook.github.io/
 ----
 
-![GeneNoteBook example screenshot](docs/assets/images/genenotebook.png)
 ![GeneNoteBook example screenshot](https://github.com/genenotebook/genenotebook.github.io/blob/7ec82fd11ea57d06e26cbccdcd5b28598c0bf47e/assets/images/genenotebook.png)
 ### Requirements:
 
