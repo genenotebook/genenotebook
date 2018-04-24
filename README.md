@@ -4,6 +4,7 @@
 ----
 
 ![GeneNoteBook example screenshot](docs/assets/images/genenotebook.png)
+![GeneNoteBook example screenshot](https://github.com/genenotebook/genenotebook.github.io/blob/7ec82fd11ea57d06e26cbccdcd5b28598c0bf47e/assets/images/genenotebook.png)
 ### Requirements:
 
 * node.js >= 8.9.4 (on mac: ```brew install node```, on linux: ```apt-get install nodejs```)
