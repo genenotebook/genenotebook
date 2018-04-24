@@ -1,7 +1,9 @@
-# Genebook
+# GeneNoteBook
 ## A collaborative notebook for genes and genomes
-Full documentation is at http://genebook.github.io/
+#### Full documentation is at http://genenotebook.github.io/
 ----
+
+![GeneNoteBook example screenshot](docs/assets/images/genenotebook.png)
 ### Requirements:
 
 * node.js >= 8.9.4 (on mac: ```brew install node```, on linux: ```apt-get install nodejs```)
