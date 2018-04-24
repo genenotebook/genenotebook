@@ -1,13 +1,13 @@
 {
   "private": {
-    "blastDir":"BLAST_DIR",
-    "mongoUrl":"mongodb://localhost:27017/portal",
-    "rootUrl":"http://localhost:3000",
-    "mailUrl":"smtp://user:password@mailhost:port/",
-    "port":"3000"
+    "mongoUrl": "mongodb://localhost:27017/genenotebook",
+    "rootUrl": "http://localhost",
+    "port": 3000,
+    "nodeSettings": {
+      "--max-old-space-size": 8192
+    }
   },
   "public": {
-    "name":"genebook",
-    "contact":"YOUR@EMAIL.COM"
+    "name": "GeneNoteBook"
   }
 }

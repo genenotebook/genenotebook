@@ -8,7 +8,7 @@
     "preinstall": "curl https://install.meteor.com/ | sh",
     "docs": "documentation build --shallow imports/** -f html -o api-docs",
     "postdocs": "cp api-docs/index.html docs/pages/api-docs.html && cp -r api-docs/assets docs/",
-    "bundle": "bundle.sh"
+    "bundle": "./bundle.sh"
   },
   "devDependencies": {
     "@babel/runtime": "^7.0.0-beta.44",
