@@ -22,7 +22,7 @@ const queue = jobQueue.processJobs(
     const query = JSON.parse(queryString);
     const extension = DATATYPE_EXTENSIONS[dataType]
 
-    const fileName = `Genebook_download_${queryHash}.${extension}.gz`;
+    const fileName = `GeneNoteBook_download_${queryHash}.${extension}.gz`;
 
     const writeStream = fs.createWriteStream(fileName);
     const compress = zlib.createGzip();

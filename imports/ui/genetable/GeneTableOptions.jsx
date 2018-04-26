@@ -7,10 +7,11 @@ import { cloneDeep } from 'lodash';
 
 import { Attributes } from '/imports/api/genes/attribute_collection.js';
 
+import { queryCount } from '/imports/api/methods/queryCount.js';
+
 import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
 import FilterOptions from './filteroptions/FilterOptions.jsx';
-import QueryCount from './QueryCount.jsx';
 import { SelectionOptions } from './SelectionOptions.jsx';
 
 /**
@@ -46,11 +47,21 @@ class GeneTableOptions extends React.PureComponent {
     this.state = {
       scrollLimit: 50,
       query: {},
+      queryCount: '...',
       selectedGenes: new Set(),
       selectedAllGenes: false,
       selectedColumns: new Set(['Gene ID', 'Name', 'Note']),
       showDownloadDialog: false
     }
+  }
+
+  componentDidMount = () => {
+    const { query } = this.state;
+    queryCount.call({ query }, (err,res) => {
+      this.setState({
+        queryCount: res
+      })
+    })
   }
 
   updateScrollLimit = newScrollLimit => {
@@ -61,14 +72,15 @@ class GeneTableOptions extends React.PureComponent {
 
   updateSelection = event => {
     const geneId = event.target.id;
-    const selectedGenes = cloneDeep(this.state.selectedGenes);
-    if (!selectedGenes.has(geneId)){
-      selectedGenes.add(geneId)
-    } else {
-      selectedGenes.delete(geneId)
-    }
-    this.setState({
-      selectedGenes: selectedGenes
+    this.setState(({ selectedGenes }) => {
+      if (!selectedGenes.has(geneId)){
+        selectedGenes.add(geneId)
+      } else {
+        selectedGenes.delete(geneId)
+      }
+      return {
+        selectedGenes: cloneDeep(selectedGenes)
+      }
     })
   }
 
@@ -103,35 +115,39 @@ class GeneTableOptions extends React.PureComponent {
   }
 
   toggleColumnSelect = event => {
-    //const column = event.target.id;
     const {checked, id, ...target} = event.target;
-    console.log(id, checked)
-    const selectedColumns = cloneDeep(this.state.selectedColumns);
-    if (selectedColumns.has(id)){
-      selectedColumns.delete(id)
-    } else {
-      selectedColumns.add(id)
-    }
-    this.setState({
-      selectedColumns
+    this.setState(({ selectedColumns , ...oldState }) => {
+      if (selectedColumns.has(id)){
+        selectedColumns.delete(id)
+      } else {
+        selectedColumns.add(id)
+      }
+      return { 
+        selectedColumns: cloneDeep(selectedColumns) 
+      }
     })
   }
 
   updateQuery = query => {
-    this.setState({
-      query
+    queryCount.call({ query }, (err,res) => {
+      this.setState({
+        query: query,
+        queryCount: res
+      })
     })
   }
 
   render(){
     return (
       <div className="card">
-        <div className="card-header d-flex justify-content-between">
+        <div className="card-header d-flex justify-content-between px-1 py-1">
           <FilterOptions 
             toggleColumnSelect={this.toggleColumnSelect}
             updateQuery={this.updateQuery} 
             {...this.props} {...this.state} />
-          <QueryCount query={this.state.query} />
+          <button type='button' className='btn btn-sm btn-outline-dark px-2 py-0' disabled>
+            <span className='badge badge-light'>{this.state.queryCount}</span> query results
+          </button>
           <SelectionOptions 
             toggleSelectAllGenes={this.toggleSelectAllGenes} 
             toggleDownloadDialog={this.toggleDownloadDialog}

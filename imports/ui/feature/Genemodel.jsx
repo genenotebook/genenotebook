@@ -111,7 +111,7 @@ export default class Genemodel extends React.PureComponent {
   constructor(props){
     super(props)
     this.state = {
-      width: 500
+      width: 300
     }
   }
 
@@ -146,16 +146,8 @@ export default class Genemodel extends React.PureComponent {
             </marker>
           </defs>
         </svg>
-        <ReactResizeDetector handleWidth onResize={this.onResize} resizableElementId='genemodel-card' />
+        <ReactResizeDetector handleWidth onResize={this.onResize}  />
       </div>
     )
   }
 }
-
-/*
-export default withTracker(props => {
-  return {
-    gene:props.gene
-  }
-})(Genemodel)
-*/

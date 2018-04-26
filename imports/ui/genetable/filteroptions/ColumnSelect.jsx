@@ -5,7 +5,7 @@ import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdow
 const ColumnSelect = ({attributes, selectedColumns, toggleColumnSelect, ...props}) => {
   return (
     <Dropdown>
-      <DropdownButton className='btn btn-sm btn-outline-dark dropdown-toggle'>
+      <DropdownButton className='btn btn-sm btn-outline-dark dropdown-toggle px-2 py-0'>
         Columns&nbsp;
         <span className='badge badge-dark'>
           {`${selectedColumns.size}/${attributes.length}`}

@@ -10,11 +10,12 @@ export default class Landingpage extends React.Component {
     super(props)
   }
   render(){
+    console.log(Meteor.settings)
     return (
       <div className="container">
         <div className="jumbotron">
-          <h2 >Welcome to the </h2>
-          <h1 >Parasponia Genebook</h1>
+          <h2 >Welcome to </h2>
+          <h1 >{Meteor.settings.public.name}</h1>
           <p>
             This is the central resource for comparative genomics of <i>Parasponia andersonii</i> and <i>Trema orientalis</i>.<br/>
             It includes all Genebook functionality, and allows downloading of various data.

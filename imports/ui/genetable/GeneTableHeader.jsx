@@ -2,21 +2,17 @@ import React from 'react';
 import Select from 'react-select';
 import { cloneDeep, isEqual, isEmpty } from 'lodash';
 
+import ReactResizeDetector from 'react-resize-detector';
+
 import { SelectAll } from './SelectionOptions.jsx';
 import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
 
 import './geneTableHeader.scss';
-/*
-const QUERY_TYPES = [
-  {label: 'None', value: 'none'},
-  {label: 'Present', value: '$exists' },
-  {label: 'Not present', value: '$exists'},
-  {label: 'Equals', query: '$eq'},
-  {label: 'Does not equal', value: '$ne'},
-  {label: 'Contains', value: '$eq'},
-  {label: 'Does not contain', $ne: 'notContains'}
-]
-*/
+
+/**
+ * [QUERY_TYPES description]
+ * @type {Array}
+ */
 const QUERY_TYPES = ['None', 'Present', 'Not present', 'Equals', 
   'Does not equal', 'Contains', 'Does not contain'].map(query => {
   return {
@@ -25,6 +21,12 @@ const QUERY_TYPES = ['None', 'Present', 'Not present', 'Equals',
   }
 })
 
+/**
+ * [description]
+ * @param  {[type]} options.queryKey   [description]
+ * @param  {[type]} options.queryValue [description]
+ * @return {[type]}                    [description]
+ */
 const labelFromQuery = ({ queryKey, queryValue }) => {
   let label;
   switch(queryKey){
@@ -32,10 +34,10 @@ const labelFromQuery = ({ queryKey, queryValue }) => {
       label = queryValue ? 'Present' : 'Not present';
       break
     case '$eq':
-      label = 'Equals';//queryValue instanceof RegExp ? 'Contains' : 'Equals';
+      label = 'Equals';
       break
     case '$ne':
-      label = 'Does not equal';//queryValue instanceof RegExp ? 'Does not contain' : 'Does not equal';
+      label = 'Does not equal';
       break
     default:
       console.error(`Unknown query: {${queryType}:${queryValue}}`)
@@ -44,6 +46,11 @@ const labelFromQuery = ({ queryKey, queryValue }) => {
   return label
 }
 
+/**
+ * [description]
+ * @param  {[type]} query [description]
+ * @return {[type]}       [description]
+ */
 const stateFromQuery = query => {
   const queryKey = Object.keys(query)[0];
   const queryValue = Object.values(query)[0];
@@ -75,6 +82,12 @@ const stateFromQuery = query => {
   return state
 }
 
+/**
+ * [description]
+ * @param  {[type]} options.queryLabel [description]
+ * @param  {[type]} options.queryValue [description]
+ * @return {[type]}                    [description]
+ */
 const queryFromLabel = ({ queryLabel, queryValue }) => {
   let query;
   switch(queryLabel){
@@ -106,6 +119,9 @@ const queryFromLabel = ({ queryLabel, queryValue }) => {
   return query
 }
 
+/**
+ * 
+ */
 class HeaderElement extends React.Component {
   constructor(props){
     super(props)
@@ -140,9 +156,7 @@ class HeaderElement extends React.Component {
   }
 
   updateSort = event => {
-    console.log(event.target.id)
     const sortOrder = event.target.id === this.state.sort ? 'None' : event.target.id;
-    console.log(sortOrder)
     this.setState({
       sort: sortOrder
     })
@@ -184,11 +198,11 @@ class HeaderElement extends React.Component {
     return (
       <th scope='col'>
         <div className='btn-group'>
-          <button className={`btn btn-sm ${buttonClass}`} type="button" disabled>
+          <button className={`btn btn-sm px-2 py-0 ${buttonClass}`} type="button" disabled>
             {attribute.name}
           </button>
           <Dropdown>
-            <DropdownButton className={`btn btn-sm dropdown-toggle ${buttonClass}`}/>
+            <DropdownButton className={`btn btn-sm px-1 py-0 dropdown-toggle ${buttonClass}`}/>
             <DropdownMenu className={`dropdown-menu dropdown-menu-${orientation} px-2`}>
               <h6 className="dropdown-header">Sort:</h6>
               <div className="form-check">
@@ -240,33 +254,46 @@ class HeaderElement extends React.Component {
   }
 }
 
-const GeneTableHeader = ({ selectedColumns, attributes, ...props }) => {
-  console.log(attributes, selectedColumns)
+const resize = width => {
+  //console.log('Table header resize',width)
+}
+
+/**
+ * [description]
+ * @param  {[type]}    options.selectedColumns [description]
+ * @param  {[type]}    options.attributes      [description]
+ * @param  {...[type]} options.props           [description]
+ * @return {[type]}                            [description]
+ */
+const GeneTableHeader = ({ selectedColumns, attributes, selectedGenes, selectedAllGenes, toggleSelectAllGenes, ...props }) => {
   const selectedAttributes = attributes.filter(attribute => {
     return selectedColumns.has(attribute.name)
   }).reduce((obj, attribute) => {
     obj[attribute.name] = attribute
     return obj
   },{})
-  console.log(selectedAttributes)
+
+  const activeSelection = [...selectedGenes].length > 0 || selectedAllGenes ? 'active' : '';
   return (
     <thead>
       <tr>
         {
           [...selectedColumns].map(attributeName => {
             const attribute = selectedAttributes[attributeName]
-            console.log(attributeName, attribute)
             return (
               <HeaderElement key={attribute.name} label={attribute.name} attribute={attribute} {...props} />
             )
           })
         }
-        <th scope="col" style={{width:'3rem'}}>
-          <button className='btn btn-sm btn-outline-dark' disabled>Gene model</button>
+        <th scope="col">
+          <button className='btn btn-sm btn-outline-dark px-2 py-0' disabled>Gene model</button>
+          <ReactResizeDetector handleWidth onResize={resize} />
         </th>
         <th scope="col">
           <div className="pull-right">
-            <SelectAll {...props}/>
+            <button type="button" className="btn btn-outline-dark btn-sm px-1 py-0" onClick={toggleSelectAllGenes}>
+              <span className={`fa fa-check ${activeSelection}`} aria-hidden="true" />
+            </button>
           </div>
         </th>
       </tr>

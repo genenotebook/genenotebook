@@ -44,7 +44,18 @@ const isFinished = (props) => {
   return isFinished;
 }
 
+const downloadDataTracker = () => {
+  const queryHash = FlowRouter.getParam('_id');
+  console.log(jobQueue.findOne({ 'data.queryHash': queryHash }))
+  const jobSub = Meteor.subscribe('jobQueue');
+  return {
+    loading: !jobSub.ready(),
+    job: jobQueue.findOne({ 'data.queryHash': queryHash })
+  }
+}
+
 const withConditionalRendering = compose(
+  withTracker(downloadDataTracker),
   withEither(isLoading, Loading),
   withEither(isWaiting, Waiting),
   withEither(isRunning, Running)
@@ -57,7 +68,9 @@ class Download extends React.Component {
   }
 
   render(){
-    const downloadUrl = Meteor.absoluteUrl(this.props.job.result.value)
+    const { job } = this.props;
+    const fileName = job.result.value;
+    const downloadUrl = Meteor.absoluteUrl(`download/file/${fileName}`);
     console.log(downloadUrl)
     window.open(downloadUrl, '', '', true)
     return (
@@ -66,6 +79,9 @@ class Download extends React.Component {
   }
 }
 
+export default withConditionalRendering(Download)
+
+/*
 export default withTracker(props => {
   const queryHash = FlowRouter.getParam('_id');
   //const downloadSub = Meteor.subscribe('downloads', downloadId)
@@ -76,3 +92,4 @@ export default withTracker(props => {
     job: jobQueue.findOne({ 'data.queryHash': queryHash })
   }
 })(withConditionalRendering(Download));
+*/

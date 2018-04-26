@@ -45,7 +45,6 @@ class AnnotationDownload extends React.Component {
   }
 
   render(){
-    console.log(this.props)
     return (
       <div className="card download-preview">
         <div className="card-body">
@@ -66,12 +65,15 @@ class AnnotationDownload extends React.Component {
   }
 }
 
-export default withTracker(({ geneQuery }) => {
-  console.log(geneQuery)
-  const geneSub = Meteor.subscribe('genes', 3, false, geneQuery);
-  const previewGenes = Genes.find(geneQuery, {limit: 3}).fetch();
+export default withTracker(({ query }) => {
+  console.log(query)
+  const limit = 3;
+  const geneSub = Meteor.subscribe('genes', {query, limit});
+  const loading = !geneSub.ready();
+  const previewGenes = Genes.find(query, {limit: 3}).fetch();
   return {
-    loading: !geneSub.ready(),
-    previewGenes: previewGenes
+    loading,
+    previewGenes,
+    query
   }
 })(AnnotationDownload);

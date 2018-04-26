@@ -35,7 +35,7 @@ class LoggedInNavbar extends React.Component {
               <button type="button" className="btn btn-sm btn-outline-success">Search</button>
               <Dropdown>
                 <DropdownButton className='btn btn-sm btn-outline-success dropdown-toggle dropdown-toggle-split' />
-                <DropdownMenu>
+                <DropdownMenu className='dropdown-menu dropdown-menu-left px-2'>
                   <a className="dropdown-item disabled" disabled>Genes</a>
                   <a className="dropdown-item disabled" disabled>Genomes</a>
                   <a className="dropdown-item disabled" disabled>Transcriptomes</a>
@@ -53,9 +53,9 @@ class LoggedInNavbar extends React.Component {
           <li className="mb-0 my-1">
             <Dropdown>
               <DropdownButton className="btn btn-sm btn-outline-dark dropdown-toggle">
-                <span className="fa fa-user-o" aria-hidden="true" />{ Meteor.userId() }
+                <span className="fa fa-user-o" aria-hidden="true" />{/* Meteor.userId() */}
               </DropdownButton>
-              <DropdownMenu>
+              <DropdownMenu className='dropdown-menu header-menu px-2'>
                 <a role="menuitem" href="/profile" className="dropdown-item featuremenu-item">Edit profile</a>
                 <a role="menuitem" className="dropdown-item featuremenu-item disabled" disabled>My favourites</a>
                 <div className="dropdown-divider" />

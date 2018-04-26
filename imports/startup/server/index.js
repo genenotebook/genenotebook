@@ -4,6 +4,10 @@ import './server-fixtures.js';
 // Set up some configuration for account creation;
 import './useraccounts-configuration.js'; 
 
+// Start server side routing for downloads
+import './download-routes.js';
+
+
 // This file configures the Accounts package to define the UI of the reset password email.
 //import '../imports/startup/server/reset-password-email.js';
 
@@ -13,3 +17,4 @@ import './useraccounts-configuration.js';
 // This defines all the collections, publications and methods that the application provides
 // as an API to the client.
 import '/imports/api/api.js';
+

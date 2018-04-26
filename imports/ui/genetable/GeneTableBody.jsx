@@ -66,10 +66,22 @@ const NoResults = ({selectedColumns, ...props}) => {
   )
 }
 
+/**
+ * [description]
+ * @param  {[type]} options.genes   [description]
+ * @param  {[type]} options.loading [description]
+ * @return {[type]}                 [description]
+ */
 const isLoading = ({genes, loading}) => {
   return loading && genes.length === 0
 }
 
+/**
+ * [description]
+ * @param  {[type]}    options.selectedColumns [description]
+ * @param  {...[type]} options.props           [description]
+ * @return {[type]}                            [description]
+ */
 const Loading = ({selectedColumns, ...props}) => {
   const colSpan = selectedColumns.size + 3;
   return (
@@ -112,7 +124,7 @@ const withConditionalRendering = compose(
  */
 const GeneTableRow = ({gene, selectedColumns, selectedAllGenes, selectedGenes, updateSelection, attributes, ...props }) => {
   const selected = selectedAllGenes || selectedGenes.has(gene.ID)
-  const active = selected ? ' active' : '';
+  const active = selected ? 'active' : '';
   const selectedAttributes = attributes.filter(attribute => {
     return selectedColumns.has(attribute.name)
   }).reduce((obj, attribute) => {
@@ -150,10 +162,10 @@ const GeneTableRow = ({gene, selectedColumns, selectedAllGenes, selectedGenes, u
       <td>
         <button 
           type="button" 
-          className={ "btn btn-sm btn-outline-secondary pull-right" + active }
+          className="btn btn-sm btn-outline-dark pull-right px-1 py-0"
           id={gene.ID}
           onClick={updateSelection.bind(this)} >
-          <span id={gene.ID} className="fa fa-check" aria-hidden="true" />
+          <span id={gene.ID} className={`fa fa-check ${active}`} aria-hidden="true" />
         </button>
       </td>
     </tr>

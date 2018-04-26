@@ -114,7 +114,7 @@ class TrackSelect extends React.Component {
     const {tracks, ...props} = this.props;
     return ( 
       <Dropdown>
-        <DropdownButton className='btn btn-sm btn-outline-dark dropdown-toggle'>
+        <DropdownButton className='btn btn-sm btn-outline-dark dropdown-toggle px-2 py-0'>
           Tracks&nbsp;
           <span className='badge badge-dark'>
             {`${this.state.selectedTracks.size}/${tracks.length}`}
@@ -158,11 +158,3 @@ class TrackSelect extends React.Component {
 
 export default withConditionalRendering(TrackSelect);
 
-{/*
-<a key={track.trackName} 
-  className={`dropdown-item ${active}`}
-  id={track.trackName}
-  onClick={this.toggleTrackSelect} >
-  {track.trackName}
-</a>
-*/}

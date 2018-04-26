@@ -75,7 +75,7 @@ class Feature extends React.Component {
             <a className="navbar-brand" href="#">{this.props.gene.ID}</a>
             <button 
               type="button" 
-              className="btn btn-sm btn-danger pull-right" 
+              className="btn btn-sm btn-outline-danger pull-right" 
               onClick={this.runInterproscan}
               >Interproscan</button>
             <ul className="nav nav-tabs card-header-tabs">

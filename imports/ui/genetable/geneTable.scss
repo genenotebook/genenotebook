@@ -1,4 +1,12 @@
 .genetable{
+  word-break: break-word;
+  td[data-label="Gene ID"]{
+    word-break: normal;
+  }
+  .btn:disabled{
+    opacity: 1;
+  }
+
   min-height: 30rem;
   @media only screen and (max-width: 760px){
     table, thead, tbody, th, td, tr { 
@@ -32,6 +40,12 @@
       white-space: nowrap;
       /* Label the data */
       content: attr(data-label);
+    }
+  }
+  .fa-check {
+    color: white;
+    &.active {
+      color: black;
     }
   }
 }

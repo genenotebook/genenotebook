@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import AnnotationDownload from './AnnotationDownload.jsx';
 
 import { downloadGenes } from '/imports/api/genes/download_genes.js';
+import { queryCount } from '/imports/api/methods/queryCount.js';
 
 import './DownloadDialog.scss';
 
@@ -27,8 +28,42 @@ export default class DownloadDialogModal extends React.Component {
     super(props)
     this.state = {
       dataType: 'Annotations',
-      downloading: false
+      downloading: false,
+      queryCount: '...'
     }
+  }
+
+  componentDidMount = () => {
+    const query = DownloadDialogModal.queryFromProps(this.props);
+    queryCount.call({ query }, (err,res) => {
+      this.setState({
+        queryCount: res
+      })
+    })
+  }
+
+  componentWillReceiveProps = nextProps => {
+    const query = DownloadDialogModal.queryFromProps(nextProps)
+    queryCount.call({ query }, (err, res) => {
+      this.setState({
+        queryCount: res
+      })
+    })
+  }
+
+  static queryFromProps = ({ selectedAllGenes, selectedGenes, query, ...props }) => {
+    return selectedAllGenes ? query : { ID: { $in: [...selectedGenes] } }
+  }
+
+  updateQueryCount = ({ selectedAllGenes, selectedGenes, query, ...props }) => {
+    const downloadQuery = selectedAllGenes ? query : { ID: { $in: [...selectedGenes] } };
+
+    queryCount.call({ query: downloadQuery }, (err,res) => {
+      console.log
+      this.setState({
+        queryCount: res
+      })
+    })
   }
 
   selectDataType = event => {
@@ -41,10 +76,10 @@ export default class DownloadDialogModal extends React.Component {
     this.setState({
       downloading: true
     })
-    const geneQuery = this.props.selectedAll ? this.props.query : { ID: { $in: Array.from(this.props.selectedGenes) } };
+    const query = this.props.selectedAllGenes ? this.props.query : { ID: { $in: Array.from(this.props.selectedGenes) } };
 
     //download genes method should return download link url
-    downloadGenes.call({ query: geneQuery, dataType: this.state.dataType }, (err,res) => {
+    downloadGenes.call({ query: query, dataType: this.state.dataType }, (err,res) => {
       console.log(err,res)
       FlowRouter.redirect(`/download/${res}`)
     })
@@ -58,17 +93,17 @@ export default class DownloadDialogModal extends React.Component {
   }
 
   render(){
-    const { showDownloadDialog, toggleDownloadDialog, query, selectedAll, selectedGenes } = this.props;
+    const { showDownloadDialog, toggleDownloadDialog, query, selectedAllGenes, selectedGenes, ...props } = this.props;
     if (!showDownloadDialog) {
       return null
     }
 
-    const geneQuery = selectedAll ? query : { ID: { $in: Array.from(selectedGenes) } };
+    const downloadQuery = selectedAllGenes ? query : { ID: { $in: Array.from(selectedGenes) } };
 
     const DATATYPE_COMPONENTS = {
-      'Annotations': <AnnotationDownload geneQuery={geneQuery} />,
-      'Sequences': <SequenceDownload geneQuery={geneQuery} />,
-      'Expression data': <ExpressionDownload geneQuery={geneQuery} />
+      'Annotations': <AnnotationDownload query={downloadQuery} />,
+      'Sequences': <SequenceDownload query={downloadQuery} />,
+      'Expression data': <ExpressionDownload query={downloadQuery} />
     }
     return (
       <div>
@@ -87,7 +122,6 @@ export default class DownloadDialogModal extends React.Component {
                   <ul className="nav nav-tabs card-header-tabs">
                   {
                     Object.keys(DATATYPE_COMPONENTS).map(dataType => {
-                      console.log(dataType, this.state.dataType)
                       return (
                         <li key={dataType} className="nav-item">
                           <a 
@@ -108,7 +142,7 @@ export default class DownloadDialogModal extends React.Component {
                   </ul>
                 </div>
               <p className="card-body">
-                Downloading {this.state.dataType} data for 3 genes. <br/>
+                Downloading {this.state.dataType} data for {this.state.queryCount} genes. <br/>
                 Please select further options below.
               </p>
               {
