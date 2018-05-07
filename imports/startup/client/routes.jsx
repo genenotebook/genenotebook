@@ -29,14 +29,15 @@ import Admin from '/imports/ui/admin/Admin.jsx';
 
 import Download from '/imports/ui/download/Download.jsx';
 
-import { ServerRouterClient } from 'meteor/mhagmajer:server-router';
+import { serverRouterClient } from './download-routes.js';
 
+/*
 const serverRouterClient = new ServerRouterClient({
   routes: {
     download: 1
   }
 });
-
+*/
 
 const exposedRoutes = FlowRouter.group({})
 
@@ -120,10 +121,10 @@ exposedRoutes.route('/download/:_id', {
 })
 
 
-exposedRoutes.route('/download/file/:_filename',{
+exposedRoutes.route('/download/file/:filename',{
   action(params, queryParams){
     console.log('file download',this)
-    console.log(serverRouterClient)
+    console.log(params)
     serverRouterClient.redirect.download(params.filename)
   }
 });

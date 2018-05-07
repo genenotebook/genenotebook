@@ -9,6 +9,8 @@ import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 
 import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
+import { serverRouterClient } from '/imports/startup/client/download-routes.js';
+
 const Waiting = () => {
   return (
     <div>
@@ -70,9 +72,12 @@ class Download extends React.Component {
   render(){
     const { job } = this.props;
     const fileName = job.result.value;
+    /*
     const downloadUrl = Meteor.absoluteUrl(`download/file/${fileName}`);
     console.log(downloadUrl)
     window.open(downloadUrl, '', '', true)
+    */
+    serverRouterClient.redirect.download(fileName)
     return (
       <div>Job is ready, should begin download</div>
     )
