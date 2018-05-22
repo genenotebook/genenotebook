@@ -139,8 +139,8 @@ export const getGeneSequences = gene => {
 
     return {
       ID: transcript.ID,
-      seq: codingSeq,
-      pep: codingPep
+      nucl: codingSeq,
+      prot: codingPep
     }
   })
   return sequences

@@ -4,24 +4,16 @@ import React from 'react';
 import classNames from 'classnames';
 
 import AnnotationDownload from './AnnotationDownload.jsx';
+import AnnotationDownloadOptions from './AnnotationDownloadOptions.jsx';
+import SequenceDownload from './SequenceDownload.jsx';
+import SequenceDownloadOptions from './SequenceDownloadOptions.jsx';
+import ExpressionDownload from './ExpressionDownload.jsx';
+import ExpressionDownloadOptions from './ExpressionDownloadOptions.jsx';
 
 import { downloadGenes } from '/imports/api/genes/download_genes.js';
 import { queryCount } from '/imports/api/methods/queryCount.js';
 
 import './DownloadDialog.scss';
-
-
-const SequenceDownload = props => {
-  return (
-    <div></div>
-  )
-}
-
-const ExpressionDownload = props => {
-  return (
-    <div></div>
-  )
-}
 
 export default class DownloadDialogModal extends React.Component {
   constructor(props){
@@ -29,7 +21,8 @@ export default class DownloadDialogModal extends React.Component {
     this.state = {
       dataType: 'Annotations',
       downloading: false,
-      queryCount: '...'
+      queryCount: '...',
+      options: {}
     }
   }
 
@@ -76,10 +69,13 @@ export default class DownloadDialogModal extends React.Component {
     this.setState({
       downloading: true
     })
-    const query = this.props.selectedAllGenes ? this.props.query : { ID: { $in: Array.from(this.props.selectedGenes) } };
+    const query = this.props.selectedAllGenes ? 
+      this.props.query : { ID: { $in: Array.from(this.props.selectedGenes) } };
 
-    //download genes method should return download link url
-    downloadGenes.call({ query: query, dataType: this.state.dataType }, (err,res) => {
+    const { dataType, options } = this.state;
+
+    //download genes method returns download link url
+    downloadGenes.call({ query, dataType, options }, (err,res) => {
       console.log(err,res)
       FlowRouter.redirect(`/download/${res}`)
     })
@@ -92,19 +88,36 @@ export default class DownloadDialogModal extends React.Component {
     this.props.toggleDownloadDialog()
   }
 
+  updateOptions = options => {
+    this.setState({
+      options
+    })
+  }
+
   render(){
-    const { showDownloadDialog, toggleDownloadDialog, query, selectedAllGenes, selectedGenes, ...props } = this.props;
+    const { showDownloadDialog, toggleDownloadDialog, query, 
+      selectedAllGenes, selectedGenes, ...props } = this.props;
+
+    const { dataType, queryCount, downloading, options, ...state } = this.state;
     if (!showDownloadDialog) {
       return null
     }
 
-    const downloadQuery = selectedAllGenes ? query : { ID: { $in: Array.from(selectedGenes) } };
+    const downloadQuery = selectedAllGenes ? 
+      query : { ID: { $in: Array.from(selectedGenes) } };
 
     const DATATYPE_COMPONENTS = {
       'Annotations': <AnnotationDownload query={downloadQuery} />,
       'Sequences': <SequenceDownload query={downloadQuery} />,
       'Expression data': <ExpressionDownload query={downloadQuery} />
     }
+
+    const OPTION_COMPONENTS = {
+      'Annotations': <AnnotationDownloadOptions options={options} updateOptions={this.updateOptions} />,
+      'Sequences': <SequenceDownloadOptions options={options} updateOptions={this.updateOptions} />,
+      'Expression data': <ExpressionDownloadOptions options={options} updateOptions={this.updateOptions} />
+    }
+
     return (
       <div>
         <div className="backdrop" />
@@ -113,11 +126,15 @@ export default class DownloadDialogModal extends React.Component {
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">Download options</h5>
-                <button type="button" className="close" aria-label="Close" onClick={this.closeModal}>
+                <button 
+                  type="button" 
+                  className="close" 
+                  aria-label="Close" 
+                  onClick={this.closeModal}>
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
-              <div className="modal-body card text-center">
+              <div className="modal-body card">
                 <div className="card-header">
                   <ul className="nav nav-tabs card-header-tabs">
                   {
@@ -142,29 +159,27 @@ export default class DownloadDialogModal extends React.Component {
                   </ul>
                 </div>
               <p className="card-body">
-                Downloading {this.state.dataType} data for {this.state.queryCount} genes. <br/>
+                Downloading {dataType} data for {queryCount} genes. <br/>
                 Please select further options below.
               </p>
               {
-                DATATYPE_COMPONENTS[this.state.dataType]
+                DATATYPE_COMPONENTS[dataType]
               }
               <div className="card-body">
-              </div>
-                Annotation format
-                <div className="form-check">
-                  <input className="form-check-input" type="checkbox" value="" id="annotation-format" checked readOnly />
-                  <label className="form-check-label" htmlFor="annotation-format">
-                    gff3
-                  </label>
-                </div>
+              {
+                OPTION_COMPONENTS[dataType]
+              }
               </div>
               <div className="modal-footer">
                 {
-                  this.state.downloading ? 
+                  downloading ? 
                   <button type="button" className="btn btn-success" disabled>
                     <span className="fa fa-circle-o-notch fa-spin"/> Preparing download URL
                   </button> :
-                  <button type="button" className="btn btn-success" onClick={this.startDownload}>
+                  <button 
+                    type="button" 
+                    className="btn btn-success" 
+                    onClick={this.startDownload}>
                     Download
                   </button>
                 }
@@ -180,6 +195,7 @@ export default class DownloadDialogModal extends React.Component {
           </div>
         </div>
       </div>
+    </div>
     )
   }
 }

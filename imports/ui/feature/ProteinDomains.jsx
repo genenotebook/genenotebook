@@ -124,7 +124,7 @@ export default class ProteinDomains extends React.Component {
     const transcripts = this.props.gene.subfeatures.filter(sub =>  sub.type == 'mRNA');
     const transcript = transcripts.filter(transcript => transcript.ID.endsWith('1'))[0];
     const transcriptSequence = sequences.filter(seq => seq.ID === transcript.ID)[0]
-    const transcriptSize = transcriptSequence.pep.length;
+    const transcriptSize = transcriptSequence.prot.length;
     
     const interproGroups = Object.entries(groupBy(transcript.protein_domains, 'interpro'));
     const totalGroups = interproGroups.length;

@@ -18,14 +18,20 @@ export const downloadGenes = new ValidatedMethod({
       type: Object,
       blackbox: true 
     },
-    dataType: { type: String }
+    dataType: { 
+      type: String 
+    },
+    options: {
+      type: Object,
+      blackbox: true
+    }
   }).validator(),
   applyOptions: {
     noRetry: true
   },
-  run({ query, dataType }){
+  run({ query, dataType, options }){
     /**
-     * If the query has not been used before, create a file from it. 
+     * If the query has not been used before, create a new file from it. 
      * Otherwise use the cached file and increment the download count.
      * Return md5 hash of download query as download url
      */
@@ -33,9 +39,9 @@ export const downloadGenes = new ValidatedMethod({
     console.log(query);
     
     const queryString = JSON.stringify(query);
+    const optionString = JSON.stringify(options);
 
-    const queryHash = hash(`${queryString}${dataType}`);
-
+    const queryHash = hash(`${queryString}${dataType}${optionString}`);
 
     console.log(queryHash)
     if (! this.userId) {
@@ -46,9 +52,10 @@ export const downloadGenes = new ValidatedMethod({
     if (typeof existingJob === 'undefined'){
       console.log('initiating new download job')
       const job = new Job(jobQueue, 'download', {
-        queryString: queryString,
-        queryHash: queryHash,
-        dataType: dataType
+        queryString,
+        queryHash,
+        dataType,
+        options
       });
       job.priority('high').save();
     }

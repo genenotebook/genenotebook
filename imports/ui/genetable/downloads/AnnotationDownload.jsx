@@ -3,7 +3,7 @@ import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
 
-import { Genes } from '/imports/api/genes/gene_collection.js';
+import { previewDataTracker } from './previewDataTracker.js';
 
 const formatAttributes = interval => {
   const attributes = interval.attributes;
@@ -15,7 +15,7 @@ const formatAttributes = interval => {
   return attributeString
 }
 
-const formatGene = gene => {  
+const formatGff3 = gene => {  
   const gffLines = [`${gene.seqid}\t
     ${gene.source}\t
     ${gene.type}\t
@@ -32,48 +32,31 @@ const formatGene = gene => {
       ${subfeature.start}\t
       ${subfeature.end}\t
       ${subfeature.score}\t
-      ${subfeature.strand}\t
+      ${gene.strand}\t
       ${subfeature.phase}\t
       ${formatAttributes(subfeature)}\n`)
   })
   return gffLines
 }
 
-class AnnotationDownload extends React.Component {
-  constructor(props){
-    super(props)
-  }
-
-  render(){
-    return (
-      <div className="card download-preview">
-        <div className="card-body">
-          <h4 className="card-title">Download preview</h4>
-          {
-            this.props.previewGenes.map(gene => {
-              return formatGene(gene).map(gffLine => {
-                return <span key={gffLine}>
-                  {gffLine}
-                  <br/>
-                </span>
-              })
+const AnnotationDownload = ({ previewGenes }) => {
+  return (
+    <div className="card download-preview">
+      <div className="card-body">
+        <h4 className="card-title">Download preview</h4>
+        {
+          previewGenes.map(gene => {
+            return formatGff3(gene).map(gffLine => {
+              return <span key={gffLine}>
+                {gffLine}
+                <br/>
+              </span>
             })
-          }
-        </div>
+          })
+        }
       </div>
-    )
-  }
+    </div>
+  )
 }
 
-export default withTracker(({ query }) => {
-  console.log(query)
-  const limit = 3;
-  const geneSub = Meteor.subscribe('genes', {query, limit});
-  const loading = !geneSub.ready();
-  const previewGenes = Genes.find(query, {limit: 3}).fetch();
-  return {
-    loading,
-    previewGenes,
-    query
-  }
-})(AnnotationDownload);
+export default withTracker(previewDataTracker)(AnnotationDownload);

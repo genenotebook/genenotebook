@@ -6,7 +6,7 @@ import { getGeneSequences } from '/imports/api/util/util.js';
 import './seq.scss';
 
 const Controls = (props) => {
-  let seqTypes = ['seq','pep']
+  let seqTypes = ['nucl','prot']
   return (
     <div>
       <div className="btn-group btn-group-sm sequence-toggle pull-right" role="group">
@@ -19,7 +19,7 @@ const Controls = (props) => {
                 className={`btn btn-outline-secondary ${seqType === props.seqType ? 'active' : ''}`}
                 onClick={props.selectSeqType.bind(this,seqType)}
               >
-                {seqType === 'pep' ? 'Protein' : 'Nucleotide'}
+                {seqType === 'prot' ? 'Protein' : 'Nucleotide'}
               </button>
             )
           })
@@ -63,7 +63,7 @@ export default class SeqContainer extends React.Component {
     this.state = {
       selectedTranscript: transcripts[0],
       transcripts: transcripts,
-      seqType: 'seq'
+      seqType: 'nucl'
     }
   }
 
