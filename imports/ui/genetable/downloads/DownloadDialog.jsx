@@ -107,9 +107,9 @@ export default class DownloadDialogModal extends React.Component {
       query : { ID: { $in: Array.from(selectedGenes) } };
 
     const DATATYPE_COMPONENTS = {
-      'Annotations': <AnnotationDownload query={downloadQuery} />,
-      'Sequences': <SequenceDownload query={downloadQuery} />,
-      'Expression data': <ExpressionDownload query={downloadQuery} />
+      'Annotations': <AnnotationDownload query={downloadQuery} options={options}/>,
+      'Sequences': <SequenceDownload query={downloadQuery} options={options}/>,
+      'Expression data': <ExpressionDownload query={downloadQuery} options={options}/>
     }
 
     const OPTION_COMPONENTS = {

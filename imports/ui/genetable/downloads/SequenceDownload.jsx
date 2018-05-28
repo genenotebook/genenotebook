@@ -15,7 +15,8 @@ const formatFasta = gene => {
   return [].concat(...transcriptFasta)
 }
 
-const SequenceDownload = ({ previewGenes }) => {
+const SequenceDownload = ({ previewGenes, ...props }) => {
+  console.log(props)
   return (
     <div className="card download-preview">
       <div className="card-body">

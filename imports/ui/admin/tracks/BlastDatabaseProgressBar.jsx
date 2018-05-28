@@ -9,10 +9,10 @@ import { JobProgressBar } from '/imports/ui/admin/AdminJobqueue.jsx';
 const BlastDatabaseProgressBar = withTracker(({jobId}) => {
   const jobQueueSub = Meteor.subscribe('jobQueue');
   const loading = !jobQueueSub.ready();
-  const job = jobQueue.findOne({_id: jobId})
+  const job = jobQueue.findOne({_id: jobId});
   return {
-    job,
-    loading
+    loading,
+    ...job
   }
 })(JobProgressBar)
 

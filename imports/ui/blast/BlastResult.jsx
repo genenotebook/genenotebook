@@ -38,38 +38,49 @@ const Running = () => {
   )
 }
 
-const notFound = () => {
+const NotFound = () => {
   return <div>
     <p> Job not found </p>
   </div>
 }
 
-const isLoading = props => {
-  console.log(`check isLoading: ${props.loading}`)
-  return props.loading;
+const NoHits = () => {
+  return <div>
+    <p> No BLAST hits found </p>
+  </div>
 }
 
-const isExistingJob = props => {
-  return !(typeof props.job !== 'undefined');
+const isLoading = ({ loading }) => {
+  console.log(`check isLoading: ${loading}`)
+  return loading;
 }
 
-const isWaiting = props => {
+const isNotFound = ({ job }) => {
+  return typeof job === 'undefined';
+}
+
+const isWaiting = ({ job }) => {
   const waitingStates = ['waiting','ready']
-  const isWaiting = waitingStates.indexOf(props.job.status) > 0;//props.job.status === 'waiting';
+  const isWaiting = waitingStates.indexOf(job.status) > 0;
   console.log(`check isWaiting ${isWaiting}`);
   return isWaiting;
 }
 
-const isRunning = props => {
-  const isRunning = props.job.status === 'running';
+const isRunning = ({ job }) => {
+  const isRunning = job.status === 'running';
   console.log(`check isRunning: ${isRunning}`);
   return isRunning;
 }
 
-const isFinished = props => {
-  const isFinished = props.job.status === 'completed';
+const isFinished = ({ job }) => {
+  const isFinished = job.status === 'completed';
   console.log(`check isFinished: ${isFinished}`);
   return isFinished;
+}
+
+const noHits = ({ job }) => {
+  const hits = job.result.BlastOutput.BlastOutput_iterations[0].Iteration[0].Iteration_hits[0].Hit;
+  return typeof hits === 'undefined'
 }
 
 /**
@@ -78,7 +89,7 @@ const isFinished = props => {
  * @param  {Object} props input props passed to React component
  * @return {Object}       Modified props based on Meteor reactive data
  */
-const blastDataTracker = props => {
+const blastDataTracker = () => {
   const subscription = Meteor.subscribe('jobQueue');
   const jobId = FlowRouter.getParam('_id')
   return {
@@ -89,10 +100,11 @@ const blastDataTracker = props => {
 
 const withConditionalRendering = compose(
   withTracker(blastDataTracker),
-  withEither(isExistingJob, notFound),
+  withEither(isNotFound, NotFound),
   withEither(isLoading, Loading),
   withEither(isWaiting, Waiting),
-  withEither(isRunning, Running)
+  withEither(isRunning, Running),
+  withEither(noHits, NoHits)
 )
 
 /**
@@ -108,15 +120,15 @@ class BlastResult extends React.Component {
   }
 
   render(){
-    console.log(this.props)
+    const { job, ...props } = this.props;
     return (
       <div className="container">
         <div className='card'>
           <div className='card-header'>
-            <b>Blast results</b> <small> Job ID: {this.props.job._id}</small>
+            <b>Blast results</b> <small> Job ID: {job._id}</small>
           </div>
-          <BlastResultPlot blastResult = {this.props.job.result} queryLength = {this.props.job.data.input.length}/>
-          <BlastResultList blastResult = {this.props.job.result} />
+          <BlastResultPlot blastResult = {job.result} queryLength = {job.data.input.length}/>
+          <BlastResultList blastResult = {job.result} />
         </div>
       </div>
     )

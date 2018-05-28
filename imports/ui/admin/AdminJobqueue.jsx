@@ -45,6 +45,7 @@ export const JobProgressBar = ({ progress, loading, ...job }) => {
   if (loading){
     return null
   }
+
   //rounding can make a percentage of 100 while job is not finished, 99% looks better in that case
   let percent = Math.round(progress.percent)
   if (percent === 100){

@@ -45,16 +45,14 @@ jobQueue.processJobs(
       }
       
       getGeneSequences(gene).forEach(transcript => {
+        //keep track of gene ID and transcript ID for later processing
         const header = `>${gene.ID} ${transcript.ID}\n`
 
         tempFileHandles.prot.write(header)
-        tempFileHandles.prot.write(`${transcript.pep}\n`)
+        tempFileHandles.prot.write(`${transcript.prot}\n`)
 
         tempFileHandles.nucl.write(header)
-        tempFileHandles.nucl.write(`${transcript.seq}\n`)
-        //let sequence = dbType === 'prot' ? transcript.pep : transcript.seq
-        //keep track of gene ID and transcript ID for later processing
-        //return `>${gene.ID} ${transcript.ID}\n${sequence}`
+        tempFileHandles.nucl.write(`${transcript.nucl}\n`)
       })
     })
 

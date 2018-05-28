@@ -78,7 +78,8 @@ const HitPlotLine = (props) => {
           const gaps = hsp['Hsp_gaps'];
           const evalue = hsp['Hsp_evalue'];
           return (
-              <rect 
+              <rect
+                key={index} 
                 x={props.xScale(x)} 
                 y='0' 
                 width={props.xScale(width)} 
@@ -94,7 +95,6 @@ const HitPlotLine = (props) => {
 }
 
 const HitPlot = (props) => {
-  console.log(props.width)
   const padding = {
     top: 10,
     bottom: 10,
@@ -137,8 +137,9 @@ export default class BlastResultPlot extends React.Component {
     super(props)
   }
   render(){
-    const hits = this.props.blastResult.BlastOutput.BlastOutput_iterations[0].Iteration[0].Iteration_hits[0].Hit;
-    const queryLength = this.props.queryLength;
+    const { blastResult, queryLength, ...props } = this.props;
+    const hits = blastResult.BlastOutput.BlastOutput_iterations[0].Iteration[0].Iteration_hits[0].Hit;
+
     return (
       <div className='blast-result-plot'>
         <ContainerDimensions>
