@@ -29,9 +29,8 @@ fi
 MONGO_URL=$(jq -r .private.mongoUrl $SETTINGS)
 ROOT_URL=$(jq -r .private.rootUrl $SETTINGS)
 PORT=$(jq -r .private.port $SETTINGS)
-NODE_SETTINGS=$(jq -r '[.private.nodeSettings | to_entries[] | \
-				.key + "=" +  (.value | tostring)] | join(" ")' $SETTINGS)
-METEOR_SETTINGS=$(cat $0)
+NODE_SETTINGS=$(jq -r '[.private.nodeSettings | to_entries[] | .key + "=" +  (.value | tostring)] | join(" ")' $SETTINGS)
+METEOR_SETTINGS=$(cat $SETTINGS)
 
 (
 	export METEOR_SETTINGS=$METEOR_SETTINGS

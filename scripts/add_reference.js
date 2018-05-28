@@ -10,34 +10,37 @@ if (!module.parent){
 	const path = require('path');
 	const WebSocket = require('ws');
 
-	let fileName, reference;
+	let fileName;
 
 	commander
 		.arguments('<reference.fasta>')
 		.option('-u, --username <username>','The user to authenticate as [REQUIRED]')
 		.option('-p, --password <password>','The user\'s password [REQUIRED]')
-		.option('-r, --referencename <reference name>','Reference name')
+		.option('-s, --settings <settings file>', 'JSON file with GeneNoteBook settings, default is settings.json')
+		.option('-r, --referencename <reference name>','Reference name, default is fasta filename')
 		.action(function(file){
 			fileName = path.resolve(file);
 		})
 		.parse(process.argv)
 
-	if ( commander.username === undefined ||
-		commander.password === undefined ||
-		fileName === undefined ){
+	if ( typeof fileName === 'undefined' ||
+		typeof commander.username === 'undefined' ||
+		typeof commander.password === 'undefined' ){
 		commander.help()
 	}
 
 	const referenceName = commander.referencename || fileName;
 
-	const options = {
-		fileName: fileName, 
-		referenceName: referenceName
-	}
+	const options = { fileName, referenceName };
 
-	console.log(process.argv.join(' '))
-	console.log(options)
+	const settingsFile = commander.settings || 'settings.json';
+	const settingString = fs.readFileSync(settingsFile)
+	const settings = JSON.parse(settingString);
 
+	const endpoint = `ws://localhost:${settings.private.port}/websocket`
+	console.log(endpoint)
+
+	/*
 	const Connection = asteroid.createClass()
 
 	const portal = new Connection({
@@ -62,5 +65,6 @@ if (!module.parent){
 	}).catch(error => {
 		console.log(error)
 	})
+	*/
 }
 
