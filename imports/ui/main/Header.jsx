@@ -89,14 +89,16 @@ class Header extends React.Component {
   }
   render(){
     return (
-      <header className="navigation" role="banner">
-        <nav className="navbar navbar-expand bg-light navbar-light justify-content-between">
+      <header className="navigation border" role="banner">
+        <nav className="navbar navbar-expand bg-light navbar-light justify-content-between py-0">
           <button className="navbar-toggler navbar-toggler-right" 
             type="button" data-toggle="collapse" data-target="#navbarSupportedContent" 
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon"></span>
           </button>
-          <a className="navbar-brand" href="/">{/*{prefix}*/} Genebook</a>
+          <a className="navbar-brand" href="/">
+            <img src="logo.svg" alt="GeneNoteBook logo" className="navbar-logo rounded-circle" />
+          </a>
           {  
             this.props.loggedIn ?
             <LoggedInNavbar isAdmin={this.props.isAdmin}/> :

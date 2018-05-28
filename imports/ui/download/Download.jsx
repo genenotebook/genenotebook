@@ -14,34 +14,35 @@ import { serverRouterClient } from '/imports/startup/client/download-routes.js';
 const Waiting = () => {
   return (
     <div>
-      <p> Waiting...</p>
+      <p> Waiting for download job to start...</p>
     </div>
   )
 }
 
-const Running = () => {
+const Running = ({ job }) => {
+  const percent = Math.round(job.progress.percent);
   return (
     <div>
-      <p> Running... </p>
+      <p> Running... {percent}% </p>
     </div>
   )
 }
 
-const isWaiting = (props) => {
+const isWaiting = ({ job }) => {
   const waitingStates = ['waiting','ready']
-  const isWaiting = waitingStates.indexOf(props.job.status) > 0;//props.job.status === 'waiting';
+  const isWaiting = waitingStates.indexOf(job.status) > 0;
   console.log(`check isWaiting ${isWaiting}`);
   return isWaiting;
 }
 
-const isRunning = (props) => {
-  const isRunning = props.job.status === 'running';
+const isRunning = ({ job }) => {
+  const isRunning = job.status === 'running';
   console.log(`check isRunning: ${isRunning}`);
   return isRunning;
 }
 
-const isFinished = (props) => {
-  const isFinished = props.job.status === 'completed';
+const isFinished = ({ job }) => {
+  const isFinished = job.status === 'completed';
   console.log(`check isFinished: ${isFinished}`);
   return isFinished;
 }
@@ -53,9 +54,11 @@ const downloadExists = ({loading, job, ...props}) => {
 const downloadDataTracker = () => {
   const queryHash = FlowRouter.getParam('_id');
   const jobSub = Meteor.subscribe('jobQueue');
+  const loading = !jobSub.ready();
+  const job = jobQueue.findOne({ 'data.queryHash': queryHash });
   return {
-    loading: !jobSub.ready(),
-    job: jobQueue.findOne({ 'data.queryHash': queryHash })
+    loading,
+    job
   }
 }
 
@@ -66,22 +69,15 @@ const withConditionalRendering = compose(
   withEither(isRunning, Running)
 )
 
-class Download extends React.Component {
-  constructor(props){
-    super(props)
-    console.log(props)
-  }
+const Download = ({ job }) => {
+  const fileName = job.result.value;
 
-  render(){
-    const { job } = this.props;
-    const fileName = job.result.value;
-
-    serverRouterClient.redirect.download(fileName)
-    
-    return (
-      <div>Job is ready, should begin download</div>
-    )
-  }
+  serverRouterClient.redirect.download(fileName)
+  
+  return (
+    <div>Job is ready, should begin download</div>
+  )
 }
+
 
 export default withConditionalRendering(Download)

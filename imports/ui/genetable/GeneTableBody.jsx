@@ -151,9 +151,13 @@ const GeneTableRow = ({gene, selectedColumns, selectedAllGenes, selectedGenes, u
       }
       <td data-label='Gene model'>
         <Genemodel gene={gene} />
+        
       {/*
-
+        
         <ProteinDomains gene={gene} />
+        <SampleSelection gene={gene} >
+          <ExpressionPlot />
+        </SampleSelection >
         <SampleSelection gene={gene} >
           <ExpressionPlot />
         </SampleSelection >

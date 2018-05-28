@@ -61,12 +61,19 @@ const processDownload = (job, callback) => {
   compress.pipe(writeStream);
 
   // the finish event is emitted when all data has been flushed from the stream
-  compress.on('finish', () => {  
-      console.log('wrote all data to file');
+  compress.on('finish', async () => {  
+    console.log('wrote all data to file');
+    job.done(fileName)
+    callback()
   });
 
-  Genes.find(query).forEach(gene => {
-    console.log(gene.ID)
+  const querySize = Genes.find(query).count();
+  const stepSize = Math.round(querySize / 10);
+
+  Genes.find(query).forEach((gene, index) => {
+    if (index % stepSize === 0){
+      job.progress(index, querySize, { echo: true })
+    }
     const lines = formatGene({ gene, format, options });
     compress.write(`${lines}\n`)
   })
@@ -74,8 +81,6 @@ const processDownload = (job, callback) => {
   // close the stream
   compress.end();
 
-  job.done(fileName)
-  callback()
 }
 
 const options = {
