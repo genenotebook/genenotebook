@@ -3,9 +3,7 @@
 "use strict";
 
 if (!module.parent){
-	const assert = require('assert');
 	const commander = require('commander');
-	const Baby = require('babyparse');
 	const fs = require('fs');
 	const asteroid = require('asteroid');
 	const path = require('path');
@@ -15,10 +13,11 @@ if (!module.parent){
 
 	commander
 		.arguments('<genome_annotation.gff>')
-		.option('-u, --username <username>','The user to authenticate as [REQUIRED]')
-		.option('-p, --password <password>','The user\'s password [REQUIRED]')
-		.option('-r, --reference <reference genome>','Reference genome on which the annotation fits [REQUIRED]')
-		.option('-t, --trackname <annotation trackname>','Name of the annotation track')
+		.option('-u, --username <username>','User to authenticate as [REQUIRED]')
+		.option('-p, --password <password>','User password to authenticate with [REQUIRED]')
+		.option('-r, --reference <reference genome>','Reference genome to which the annotation belongs [REQUIRED]')
+		.option('-s, --settings <settings file>', 'JSON file with GeneNoteBook settings (default is settings.json)')
+		.option('-t, --trackname <annotation trackname>','Name of the annotation track (default is annotation gff filename)')
 		.action(function(file){
 			fileName = path.resolve(file);
 		})

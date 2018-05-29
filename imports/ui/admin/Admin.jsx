@@ -4,7 +4,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import React from 'react';
 
 import AdminUsers from './AdminUsers.jsx';
-import AdminGenomes from './AdminGenomes.jsx';
+import AdminGenomes from './genomes/AdminGenomes.jsx';
 import AdminTracks from './tracks/AdminTracks.jsx';
 import AdminAttributes from './AdminAttributes.jsx';
 import AdminTranscriptomes from './transcriptomes/AdminTranscriptomes.jsx';
@@ -60,7 +60,7 @@ class Admin extends React.Component {
     console.log(this.state)
     const pages = ['Users','User Groups','Genomes','Tracks','Transcriptomes','Attributes','Jobqueue']
     return (
-      <div className="container">
+      <div className="">
         <div className="card admin-panel">
           <Nav pages = { pages } currentPage = {this.state.currentPage} changePage = {this.changePage} />
           {

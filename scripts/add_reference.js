@@ -3,7 +3,6 @@
 "use strict";
 
 if (!module.parent){
-	const assert = require('assert');
 	const commander = require('commander');
 	const fs = require('fs');
 	const asteroid = require('asteroid');
@@ -38,33 +37,27 @@ if (!module.parent){
 	const settings = JSON.parse(settingString);
 
 	const endpoint = `ws://localhost:${settings.private.port}/websocket`
-	console.log(endpoint)
+	const SocketConstructor = WebSocket;
 
-	/*
 	const Connection = asteroid.createClass()
 
-	const portal = new Connection({
-		endpoint: 'ws://localhost:8000/websocket',
-		SocketConstructor: WebSocket
-	})
+	const geneNoteBook = new Connection({ endpoint, SocketConstructor })
 
-	portal.loginWithPassword({
-		username: commander.username,
-		password: commander.password
-	}).then(result => {
-		portal.call('addReference', options)
-		.then(result => {
-			console.log(result)
-			portal.disconnect()
+	const { username, password } = commander;
+
+	geneNoteBook.loginWithPassword({ username, password }).then(loginResult => {
+		geneNoteBook.call('addReference', options)
+		.then(addReferenceResult => {
+			console.log(addReferenceResult)
+			geneNoteBook.disconnect()
 		})
 		.catch(error => {
 			console.log(error)
 			process.exit(1)
-			portal.disconnect()
+			geneNoteBook.disconnect()
 		})	
 	}).catch(error => {
 		console.log(error)
 	})
-	*/
 }
 
