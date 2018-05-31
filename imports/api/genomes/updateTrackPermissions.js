@@ -35,10 +35,10 @@ export const updateTrackPermissions = new ValidatedMethod({
     }
 
     Tracks.update({
-      trackName: trackName
+      trackName
     },{
       $set: {
-        permissions: permissions
+        permissions
       }
     })
   

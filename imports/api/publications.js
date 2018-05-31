@@ -27,14 +27,6 @@ Meteor.publish({
     query = query || {};
     sort = sort || {};
 
-    /*
-    if (search) {
-      query.$or = [{ 'ID': { $regex: search , $options: 'i' } },{ 'Name': { $regex: search , $options: 'i' } }];
-      if (!query.hasOwnProperty('Productname')){
-        query.$or.push({ 'Productname': { $regex: search , $options: 'i' } })
-      }
-    }
-    */
     //get user roles
     const roles = Roles.getRolesForUser(publication.userId);
 
@@ -69,6 +61,19 @@ Meteor.publish({
     } else {
       publication.ready()
     }
+  },
+  roles(){
+    const publication = this;
+    
+    if (!publication.userId){
+      publication.stop()
+    };
+
+    if (!Roles.userIsInRole(publication.userId, 'admin')){
+      publication.stop()
+    };
+
+    return Meteor.roles.find({});
   },
   attributes(){
     const publication = this;

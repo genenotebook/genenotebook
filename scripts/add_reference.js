@@ -28,7 +28,7 @@ if (!module.parent){
 		commander.help()
 	}
 
-	const referenceName = commander.referencename || fileName;
+	const referenceName = commander.referencename || fileName.split('/').pop();
 
 	const options = { fileName, referenceName };
 

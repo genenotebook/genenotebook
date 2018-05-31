@@ -8,6 +8,7 @@ import './transcriptomes/updateSampleInfo.js';
 import './genomes/add_reference.js';
 import './genomes/add_gff.js';
 import './genomes/updateTrackPermissions.js';
+import './genomes/updateReferenceInfo.js';
 
 import './genes/interproscan.js';
 import './genes/add_interproscan.js';
