@@ -21,8 +21,8 @@ class GeneNumber extends React.Component {
   }
 
   componentDidMount = () => {
-    const { referenceName } = this.props;
-    const query = { reference: referenceName };
+    const { referenceId } = this.props;
+    const query = { reference: referenceId };
     queryCount.call({ query }, (err,res) => {
       this.setState({
         geneNumber: res

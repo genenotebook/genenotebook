@@ -4,45 +4,53 @@ if (!module.parent){
 	const commander = require('commander');
 	const asteroid = require('asteroid');
 	const WebSocket = require('ws');
+	const fs = require('fs');
 
 	let what;
 	
 	commander
-		.arguments('<what>')
+		.arguments('<what>','What to list: "tracks" or "references"')
 		.option('-u, --username <username>','The user to authenticate as [REQUIRED]')
 		.option('-p, --password <password>','The user\'s password [REQUIRED]')
-		.action(function(value){
-			what = value;
+		.option('-s, --settings [settings file]', 'JSON file with GeneNoteBook settings, default is settings.json')
+		.action(value => { what = value })
+		.on('--help', () => {
+			console.log('');
+			console.log('  Examples:') 
+			console.log('')
+			console.log('    $ node list.js -u admin -p admin -s example_settings.json references')
+			console.log('    $ node list.js --username admin --password admin --settings example_settings.json references')
+			console.log('')
 		})
 		.parse(process.argv)
 
-	if ( commander.username === undefined ||
-		commander.password === undefined ||
-		what === undefined ){
+	const { username, password } = commander;
+
+	if (!( username || password || what )){
 		commander.help()
 	}
-
-	console.log(commander.username,commander.password,what)
 	
+	const settingsFile = commander.settings || 'settings.json';
+	const settingString = fs.readFileSync(settingsFile)
+	const settings = JSON.parse(settingString);
+
+	const endpoint = `ws://localhost:${settings.private.port}/websocket`
+	const SocketConstructor = WebSocket;
+
 	const Connection = asteroid.createClass()
 
-	const portal = new Connection({
-		endpoint: 'ws://localhost:3000/websocket',
-		SocketConstructor: WebSocket
-	})
+	const geneNoteBook = new Connection({ endpoint, SocketConstructor })
 
-	portal.loginWithPassword({
-		username: commander.username,
-		password: commander.password
+	geneNoteBook.loginWithPassword({ username, password })
+	.then(loginResult => {
+		return geneNoteBook.call('list', what)
 	})
-
-	portal.call('list', what)
-		.then(result => {
-			console.log(result)
-			portal.disconnect()
-		})
-		.catch(error => {
-			console.log(error)
-			portal.disconnect()
-		})	
+	.then(listResults => {
+		listResults.forEach(result => console.log(result))
+		geneNoteBook.disconnect()
+	})
+	.catch(error => {
+		console.log(error)
+		geneNoteBook.disconnect()
+	})	
 }

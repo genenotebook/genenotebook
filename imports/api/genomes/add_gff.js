@@ -13,7 +13,7 @@ import { References, ReferenceInfo } from '/imports/api/genomes/reference_collec
 import { Tracks } from '/imports/api/genomes/track_collection.js';
 
 import { scanGeneAttributes } from '/imports/api/genes/scan_attributes.js';
-import { formatGffAttributes } from '/imports/api/util/util.js';
+import { formatAttributes } from '/imports/api/util/util.js';
 
 /**
  * Override the default querystring unescape function to be able to parse commas correctly in gff attributes
@@ -27,8 +27,8 @@ querystring.unescape = uri => uri;
  * @type {Interval}
  */
 const Interval = class Interval{
-	constructor({ line, trackName, referenceName , referenceSequences }){
-		assert.equal(line.length,9)
+	constructor({ gffLine, trackName, referenceId , referenceSequences }){
+		assert.equal(gffLine.length, 9)
 		const [
 			seqid,
 			source,
@@ -39,13 +39,13 @@ const Interval = class Interval{
 			strand,
 			phase,
 			attributes
-		] = line
+		] = gffLine
 		
 		this.type = type;
 		this.start = start;
 		this.end = end;
 		this.score = String(score);
-		this.attributes = formatGffAttributes(attributes);
+		this.attributes = formatAttributes(attributes);
 
 		this.ID = this.attributes.ID[0];
 		delete this.attributes.ID;
@@ -60,7 +60,7 @@ const Interval = class Interval{
 				this.seqid = seqid;
 				this.source = source;
 				this.strand = strand;
-				this.reference = referenceName;
+				this.reference = referenceId;
 				this.track = trackName;
 			GeneSchema.validate(this)
 		} else {
@@ -121,27 +121,29 @@ export const addGff = new ValidatedMethod({
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}
-		if (! Roles.userIsInRole(this.userId,'curator')){
+		if (! Roles.userIsInRole(this.userId, 'curator')){
 			throw new Meteor.Error('not-authorized');
 		}
 
-		const existingTrack = Tracks.find({ trackName: trackName }).fetch().length
+		const existingTrack = Tracks.find({ trackName }).fetch().length
 		if (existingTrack){
 			throw new Meteor.Error('Track exists: ' + trackName);
 		}
 
-		const existingReference = References.find({ referenceName: referenceName }).fetch().length
+		const existingReference = ReferenceInfo.findOne({ referenceName })
 		if (!existingReference){
 			throw new Meteor.Error('Invalid reference: ' + referenceName)
 		}
 
-		const fileHandle = fs.readFileSync(fileName,{encoding:'binary'});
+		const referenceId = existingReference._id;
+
+		const fileHandle = fs.readFileSync(fileName, { encoding: 'binary' });
 
 		let intervals = {};
 		let geneCount = 0;
 
 		console.log(`Gathering reference sequences for ${referenceName}`)
-		const referenceSequences = getReferenceSequences(referenceName);
+		const referenceSequences = getReferenceSequences(referenceId);
 
 		console.log('start reading')
 		Papa.parse(fileHandle, {
@@ -151,14 +153,11 @@ export const addGff = new ValidatedMethod({
 			comments: '#',
 			error(error,file) {
 				console.log(error)
+				throw new Meteor.Error(error)
 			},
 			step(line){
-				let interval = new Interval({
-					line: line.data[0], 
-					referenceName: referenceName, 
-					trackName: trackName,
-					referenceSequences: referenceSequences
-				})
+				const gffLine = line.data[0]
+				let interval = new Interval({ gffLine, referenceId, trackName, referenceSequences })
 
 				if (interval.parents === undefined){
 					assert.equal(interval.type, 'gene');
@@ -185,7 +184,7 @@ export const addGff = new ValidatedMethod({
 				
 				Tracks.insert({
 					trackName: trackName,
-					reference: referenceName,
+					reference: referenceId,
 					geneCount: geneCount,
 					permissions: ['admin']
 				});
@@ -197,11 +196,34 @@ export const addGff = new ValidatedMethod({
 	}
 })
 
+const getReferenceSequences = referenceId => {
+	console.log(referenceId)
+	const sequenceGroups = References.find({
+		referenceId
+	}).fetch().reduce((refs, refPart) => {
+		const { header, seq, start } = refPart;
+		if (!refs.hasOwnProperty(header)){
+			refs[header] = [];
+		}
+		refs[header].push({ seq, start })
+		return refs
+	},{})
+
+	const referenceSequences = mapValues(sequenceGroups, sequenceGroup => {
+		return sequenceGroup.sort((a, b) => { 
+			return a.start - b.start 
+		}).map(seqPart => seqPart.seq).join('')
+	})
+
+	return referenceSequences
+	console.log(referenceSequences)
+}
+
 /**
  * Retrieve 
  * @param  { String } referenceName Reference sequence name
  * @return {Object}               Object with all sequences belonging to a reference. Keys are header and values are DNA sequence strings
- */
+
 const getReferenceSequences = referenceName => {
 	const headers = References.find({
 		referenceName: referenceName
@@ -230,4 +252,5 @@ const getReferenceSequences = referenceName => {
 	},{})
 	return referenceSequences
 }
+ */
 

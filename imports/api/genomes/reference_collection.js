@@ -13,10 +13,10 @@ const ReferenceSchema = new SimpleSchema({
 		type: String,
 		label: 'Nucleotide sequence'
 	},
-	referenceName: {
+	referenceId: {
 		type: String,
 		index: true,
-		label: 'Reference name'
+		label: 'Reference ID of ReferenceInfo collection'
 	},
 	start: {
 		type: Number,
@@ -29,7 +29,7 @@ const ReferenceSchema = new SimpleSchema({
 		label: 'End position of sequence fragment on original sequence'
 	},
 	permissions: {
-		type: Array,//[String],
+		type: Array,
 		label: 'User groups that are allowed to see this reference'
 	},
 	'permissions.$' : {
@@ -49,7 +49,7 @@ const ReferenceInfoSchema = new SimpleSchema({
 		unique: true
 	},
 	permissions: {
-		type: Array,//[String],
+		type: Array,
 		label: 'User groups that are allowed to see this reference'
 	},
 	'permissions.$': {

@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Roles } from 'meteor/alanning:roles';
 
+import { ReferenceInfo } from '/imports/api/genomes/reference_collection.js';
 import { Tracks } from '/imports/api/genomes/track_collection.js';
 
 
@@ -18,11 +19,11 @@ Meteor.methods({
 				retval = Tracks.find({},{ fields: { _id: 0}}).fetch();
 				break;
 			case 'references':
-				retval = References.find(
+				retval = ReferenceInfo.find(
 					{},
-					{ fields: { _id: 0, reference: 1 }}
+					{ fields: { _id: 0, referenceName: 1 }}
 					).fetch().map(function(ret){
-						return ret.reference
+						return ret.referenceName
 					});
 				break;
 			default:

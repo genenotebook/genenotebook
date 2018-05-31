@@ -157,13 +157,6 @@ const GeneSchema = new SimpleSchema({
   track: {
     type: String,
     label: 'Track name'
-  },
-  permissions: {
-    type: Array,//[String],
-    label: 'Permission level'
-  },
-  'permissions.$': {
-    type: String
   }
 });
 

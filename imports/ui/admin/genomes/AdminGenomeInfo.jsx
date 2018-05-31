@@ -175,7 +175,6 @@ export default class AdminGenomeInfo extends React.Component {
   }
 
   toggleEdit = () => {
-    console.log(this.state)
     this.setState((state, props) => {
       return {
         isEditing: !state.isEditing
