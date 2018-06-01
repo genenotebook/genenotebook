@@ -37,7 +37,7 @@ else
 	fi
 fi
 
-meteor build --directory --server-only genenotebook_bundle &&\
+meteor build --directory genenotebook_bundle &&\
 mv genenotebook_bundle/bundle/* genenotebook_bundle &&\
 pushd genenotebook_bundle/programs/server &&\
 npm install &&\
@@ -45,4 +45,5 @@ popd &&\
 cp -r scripts genenotebook_bundle &&\
 cp $SETTINGS genenotebook_bundle/settings.json &&\
 cp genenotebook.sh genenotebook_bundle &&\
+cp -r testdata genenotebook_bundle &&\
 tar cvzf genenotebook_bundle.tgz genenotebook_bundle 

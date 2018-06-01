@@ -31,7 +31,7 @@ if (!module.parent){
 
 	const { username, password } = commander;
 
-	if (!( fileName || username || password )){
+	if (!( fileName && username && password )){
 		commander.help()
 	}
 

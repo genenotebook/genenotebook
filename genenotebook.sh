@@ -37,5 +37,5 @@ METEOR_SETTINGS=$(cat $SETTINGS)
 	export MONGO_URL=$MONGO_URL
 	export ROOT_URL=$ROOT_URL
 	export PORT=$PORT
-	$(node $NODE_SETTINGS main.js)
+	node $NODE_SETTINGS main.js
 )
