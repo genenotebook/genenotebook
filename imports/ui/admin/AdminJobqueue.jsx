@@ -89,7 +89,11 @@ class AdminJobqueue extends React.Component {
           <tr>
             {
               ['Status','Type','Created','User','Progress','Actions'].map(label => {
-                return <th key={label} scope='col'>{label}</th>
+                return <th key={label} scope='col'>
+                  <button type='button' className='btn btn-sm btn-outline-dark py-0 px-2' disabled>
+                    { label }
+                  </button>
+                </th>
               })
             }
           </tr>
@@ -107,7 +111,7 @@ class AdminJobqueue extends React.Component {
                   <td>
                     <button 
                       type='button' 
-                      className='btn btn-outline-dark btn-sm'
+                      className='btn btn-outline-dark btn-sm py-0 px-2'
                       onClick={this.reRunJob}
                       name={job._id}
                     >Rerun</button>

@@ -36,7 +36,11 @@ class AdminAttributes extends React.Component {
           <tr>
             {
               ['Name','Query','Visible','Can edit','References','Actions'].map(label => {
-                return <th key={label} scope='col'>{label}</th>
+                return <th key={label} scope='col'>
+                  <button type='button' className='btn btn-sm btn-outline-dark py-0 px-2' disabled>
+                    { label }
+                  </button>
+                </th>
               })
             }
           </tr>
@@ -52,7 +56,7 @@ class AdminAttributes extends React.Component {
                 <td>{attribute.canEdit}</td>
                 <td>{attribute.references ? attribute.references : attribute.allReferences}</td>
                 <td>
-                  <button type='button' className='btn btn-sm btn-outline-dark'>Edit</button>
+                  <button type='button' className='btn btn-sm btn-outline-dark py-0 px-2'>Edit</button>
                 </td>
               </tr>
             )

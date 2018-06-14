@@ -6,7 +6,6 @@
 if (!module.parent){
 	const assert = require('assert');
 	const commander = require('commander');
-	const Baby = require('babyparse');
 	const fs = require('fs');
 	const asteroid = require('asteroid');
 	const path = require('path');

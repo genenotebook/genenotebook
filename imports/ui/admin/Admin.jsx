@@ -10,10 +10,15 @@ import AdminAttributes from './AdminAttributes.jsx';
 import AdminTranscriptomes from './transcriptomes/AdminTranscriptomes.jsx';
 import AdminJobqueue from './AdminJobqueue';
 
+const UserGroups = props => {
+  return <div />
+}
+
 const ADMIN_PAGES = {
   users: <AdminUsers />,
+  user_groups: <UserGroups />,
   genomes: <AdminGenomes />,
-  tracks: <AdminTracks />,
+  annotation_tracks: <AdminTracks />,
   attributes: <AdminAttributes />,
   transcriptomes: <AdminTranscriptomes />,
   jobqueue: <AdminJobqueue />
@@ -58,7 +63,7 @@ class Admin extends React.Component {
 
   render(){
     console.log(this.state)
-    const pages = ['Users','User Groups','Genomes','Tracks','Transcriptomes','Attributes','Jobqueue']
+    const pages = ['Users','User Groups','Genomes','Annotation tracks','Transcriptomes','Attributes','Jobqueue']
     return (
       <div className="">
         <div className="card admin-panel">

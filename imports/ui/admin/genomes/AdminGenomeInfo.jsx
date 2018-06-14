@@ -1,45 +1,9 @@
-import { Meteor } from 'meteor/meteor';
-import { withTracker } from 'meteor/react-meteor-data';
-
 import React from 'react';
-import Select from 'react-select';
-import { compose } from 'recompose';
 import { isEqual } from 'lodash';
 
 import { updateReferenceInfo } from '/imports/api/genomes/updateReferenceInfo.js';
 
-import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
-
-const permissionSelectDataTracker = props => {
-  const roleSub = Meteor.subscribe('roles');
-  const loading = !roleSub.ready();
-  const roles = Meteor.roles.find({}).fetch();
-  return {
-    loading,
-    roles,
-    ...props
-  }
-}
-
-const withConditionalRendering = compose(
-  withTracker(permissionSelectDataTracker),
-  withEither(isLoading, Loading)
-)
-
-const PermissionSelect = ({ roles, permissions, updatePermissions, disabled, ...props }) => {
-  return (
-    <Select 
-      name='genome-permission-select'
-      value={permissions}
-      options={roles.map(role => { return {value: role.name, label: role.name} })}
-      onChange={updatePermissions}
-      multi={true}
-      disabled={disabled}
-      />
-  )
-}
-
-const PermissionSelectWithConditionalRendering = withConditionalRendering(PermissionSelect)
+import PermissionSelect from '/imports/ui/util/PermissionSelect.jsx';
 
 class EditGenomeInfo extends React.Component {
   constructor(props){
@@ -51,7 +15,6 @@ class EditGenomeInfo extends React.Component {
   updateField = event => {
     const field = event.target.id;
     const value = event.target.value;
-    console.log(field,value)
     this.setState({
       [field]: value
     })
@@ -116,7 +79,7 @@ class EditGenomeInfo extends React.Component {
           </div>
         </td>
         <td>
-          <PermissionSelectWithConditionalRendering 
+          <PermissionSelect 
             permissions={genome.permissions}
             updatePermissions={this.updatePermissions} 
             disabled={false} />
@@ -149,7 +112,7 @@ const GenomeInfoLine = ({ genome, toggleEdit }) => {
       <td>{genome.organism}</td>
       <td>{genome.description}</td>
       <td>
-        <PermissionSelectWithConditionalRendering 
+        <PermissionSelect 
           permissions={genome.permissions}
           disabled={true} />
       </td>
