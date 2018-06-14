@@ -3,20 +3,17 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
 
-import AdminUsers from './AdminUsers.jsx';
+import AdminUsers from './users/AdminUsers.jsx';
 import AdminGenomes from './genomes/AdminGenomes.jsx';
 import AdminTracks from './tracks/AdminTracks.jsx';
-import AdminAttributes from './AdminAttributes.jsx';
+import AdminAttributes from './attributes/AdminAttributes.jsx';
 import AdminTranscriptomes from './transcriptomes/AdminTranscriptomes.jsx';
-import AdminJobqueue from './AdminJobqueue';
-
-const UserGroups = props => {
-  return <div />
-}
+import AdminJobqueue from './jobqueue/AdminJobqueue.jsx';
+import AdminUserGroups from './user-groups/AdminUserGroups.jsx';
 
 const ADMIN_PAGES = {
   users: <AdminUsers />,
-  user_groups: <UserGroups />,
+  user_groups: <AdminUserGroups />,
   genomes: <AdminGenomes />,
   annotation_tracks: <AdminTracks />,
   attributes: <AdminAttributes />,

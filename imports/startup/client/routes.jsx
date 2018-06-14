@@ -31,14 +31,6 @@ import Download from '/imports/ui/download/Download.jsx';
 
 import { serverRouterClient } from './download-routes.js';
 
-/*
-const serverRouterClient = new ServerRouterClient({
-  routes: {
-    download: 1
-  }
-});
-*/
-
 const exposedRoutes = FlowRouter.group({})
 
 const loggedInRoutes = FlowRouter.group({
