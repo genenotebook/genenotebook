@@ -26,7 +26,7 @@ querystring.unescape = uri => uri;
  * Interval Class containing a single genomic interval. Every line in a gff3 file is an interval
  * @type {Interval}
  */
-const Interval = class Interval{
+const Interval = class Interval {
 	constructor({ gffLine, trackName, referenceId , referenceSequences }){
 		assert.equal(gffLine.length, 9)
 		const [ seqid, source, type, start, end,
@@ -67,7 +67,7 @@ const Interval = class Interval{
  * Genemodel Class containing all intervals for a single gene.
  * @type {GeneModel}
  */
-const GeneModel = class GeneModel{
+const GeneModel = class GeneModel {
 	constructor(intervals){
 		console.log('constructing genemodel')
 		Object.values(intervals).forEach( interval => {
@@ -138,6 +138,9 @@ export const addGff = new ValidatedMethod({
 		console.log(`Gathering reference sequences for ${referenceName}`)
 		const referenceSequences = getReferenceSequences(referenceId);
 
+		console.log('Initializing bulk operation');
+		const bulkOp = Genes.rawCollection().initializeUnorderedBulkOp();
+
 		console.log('start reading')
 		Papa.parse(fileHandle, {
 			delimiter: '\t',
@@ -176,7 +179,7 @@ export const addGff = new ValidatedMethod({
 				}
 				
 				Tracks.insert({
-					trackName: trackName,
+					name: trackName,
 					reference: referenceId,
 					geneCount: geneCount,
 					permissions: ['admin']

@@ -2,6 +2,7 @@ import React from 'react';
 import { isEqual } from 'lodash';
 
 import { updateReferenceInfo } from '/imports/api/genomes/updateReferenceInfo.js';
+import { removeGenome } from '/imports/api/genomes/removeGenome.js';
 
 import PermissionSelect from '/imports/ui/util/PermissionSelect.jsx';
 
@@ -105,28 +106,45 @@ class EditGenomeInfo extends React.Component {
   }
 }
 
-const GenomeInfoLine = ({ genome, toggleEdit }) => {
-  return (
-    <tr>
-      <td>{genome.referenceName}</td>
-      <td>{genome.organism}</td>
-      <td>{genome.description}</td>
-      <td>
-        <PermissionSelect 
-          permissions={genome.permissions}
-          disabled={true} />
-      </td>
-      <td>
-        <button 
-          type='button' 
-          className='btn btn-outline-dark btn-sm px-2 py-0'
-          onClick={toggleEdit}
-          name={genome._id}>
-          <i className="fa fa-pencil" /> Edit
-        </button>
-      </td>
-    </tr>
-  )
+class GenomeInfoLine extends React.Component {
+  removeGenome = event => {
+    const genomeId = event.target.name;
+    removeGenome.call({ genomeId })
+  }
+
+  render(){
+    const { genome, toggleEdit } = this.props;
+    return (
+      <tr>
+        <td>{genome.referenceName}</td>
+        <td>{genome.organism}</td>
+        <td>{genome.description}</td>
+        <td>
+          <PermissionSelect 
+            permissions={genome.permissions}
+            disabled={true} />
+        </td>
+        <td>
+          <div className='btn-group'>
+            <button 
+              type='button' 
+              className='btn btn-outline-dark btn-sm px-2 py-0'
+              onClick={toggleEdit}
+              name={genome._id}>
+              <i className="fa fa-pencil" /> Edit
+            </button>
+            <button 
+              type='button' 
+              className='btn btn-danger btn-sm px-2 py-0'
+              onClick={ this.removeGenome }
+              name={genome._id}>
+              <i className="fa fa-exclamation-circle" /> Delete
+            </button>
+          </div>
+        </td>
+      </tr>
+    )
+  }
 }
 
 export default class AdminGenomeInfo extends React.Component {

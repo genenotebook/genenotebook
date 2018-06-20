@@ -110,7 +110,7 @@ const GeneSchema = new SimpleSchema({
     optional: true
   },
   viewing: {
-    type: Array,//[String],
+    type: Array,
     optional: true
   },
   'viewing.$': {

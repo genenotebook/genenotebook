@@ -4,13 +4,13 @@ import SimpleSchema from 'simpl-schema';
 const Tracks = new Mongo.Collection('tracks');
 
 const trackSchema = new SimpleSchema({
-	trackName: {
+	name: {
 		type: String,
     label: 'Annotation track name'
 	},
 	reference: {
 		type: String,
-    label: 'Reference sequence to which the annotation belongs'
+    label: 'Reference _id to which the annotation belongs'
 	},
   blastdbs: {
     type: Object,
