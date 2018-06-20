@@ -180,7 +180,7 @@ export const addGff = new ValidatedMethod({
 				
 				Tracks.insert({
 					name: trackName,
-					reference: referenceId,
+					referenceId: referenceId,
 					geneCount: geneCount,
 					permissions: ['admin']
 				});

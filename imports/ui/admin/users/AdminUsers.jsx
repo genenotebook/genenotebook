@@ -6,12 +6,14 @@ import { compose } from 'recompose';
 
 import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 import PermissionSelect from '/imports/ui/util/PermissionSelect.jsx';
+import { formatDate } from '/imports/ui/util/uiUtil.jsx';
 
 const adminUsersDataTracker = () => {
   const userSub = Meteor.subscribe('users');
   const loading = !userSub.ready();
   const users = Meteor.users.find({}).fetch();
   return {
+    loading,
     users
   }
 }
@@ -31,7 +33,7 @@ const AdminUserInfo = ({ _id, username, emails, profile, createdAt, roles, ...us
     </td>
     <td>{first_name} {last_name}</td>
     <td>{ /*emails*/ }</td>
-    <td>{ /*createdAt.toString()*/ }</td>
+    <td>{ formatDate(createdAt) }</td>
     <td>
       <PermissionSelect permissions={roles} disabled={true} />
     </td>

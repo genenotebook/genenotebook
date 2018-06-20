@@ -1,6 +1,8 @@
 import React from 'react';
 import { isEqual } from 'lodash';
 
+import { removeAnnotationTrack } from '/imports/api/genomes/removeAnnotationTrack.js';
+
 import PermissionSelect from '/imports/ui/util/PermissionSelect.jsx';
 
 import TrackPermissionSelect from './TrackPermissionSelect.jsx';
@@ -51,23 +53,46 @@ class EditTrackInfo extends React.Component {
   }
 }
 
-const TrackInfoLine = ({ _id, trackName, reference, permissions, toggleEdit }) => {
-  return <tr>
-    <td>{trackName}</td>
-    <td>{reference}</td>
-    <td>
-      <PermissionSelect permissions={permissions} disabled={true} />
-    </td>
-    <td>
-      <button 
-        type='button' 
-        className='btn btn-outline-dark btn-sm px-2 py-0'
-        onClick={toggleEdit}
-        name={_id}>
-        <i className="fa fa-pencil" /> Edit
-      </button>
-    </td>
-  </tr>
+class TrackInfoLine extends React.Component {
+  removeAnnotationTrack = event => {
+    const trackId = event.target.name;
+    removeAnnotationTrack.call({ trackId });
+  }
+  render(){
+    const { _id, name, reference, permissions, toggleEdit, blastdbs } = this.props;
+    return <tr>
+      <td>{name}</td>
+      <td>{reference}</td>
+      <td>
+        {
+          typeof blastdbs === 'undefined' ?
+          <span className="badge badge-secondary"><i className="fa fa-ban" /> Absent</span> :
+          <span className="badge badge-success"><i className="fa fa-check" /> Present</span>
+        }
+      </td>
+      <td>
+        <PermissionSelect permissions={permissions} disabled={true} />
+      </td>
+      <td>
+        <div className='btn-group'>
+          <button 
+            type='button' 
+            className='btn btn-outline-dark btn-sm px-2 py-0'
+            onClick={toggleEdit}
+            name={_id}>
+            <i className="fa fa-pencil" /> Edit
+          </button>
+          <button 
+            type='button' 
+            className='btn btn-danger btn-sm px-2 py-0'
+            onClick={this.removeAnnotationTrack}
+            name={_id}>
+            <i className="fa fa-exclamation-circle" /> Remove
+          </button>
+        </div>
+      </td>
+    </tr>
+  }
 }
 
 class AdminTrackInfo extends React.Component {

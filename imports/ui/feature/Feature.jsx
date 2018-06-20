@@ -21,7 +21,7 @@ import Orthogroup from './Orthogroup.jsx';
 import SampleSelection from './SampleSelection.jsx'; 
 import ExpressionPlot from './ExpressionPlot.jsx';
 
-const Loading = props => {
+const Loading = () => {
   return (
     <div>
       Loading...
@@ -29,21 +29,22 @@ const Loading = props => {
   )
 }
 
-const isLoading = props => {
-  return props.loading
+const isLoading = ({ loading, ...props}) => {
+  return loading
 }
 
-const isNotFound = props => {
-  console.log(props)
-  return typeof props.gene === 'undefined'
+const isNotFound = ({ gene, ...props }) => {
+  return typeof gene === 'undefined'
 }
 
-const dataTracker = props => {
+const dataTracker = () => {
   const geneId = FlowRouter.getParam('_id');
   const geneSub = Meteor.subscribe('singleGene', geneId);
+  const loading = !geneSub.ready();
+  const gene = Genes.findOne({ ID: geneId });
   return {
-    loading: !geneSub.ready(),
-    gene: Genes.findOne({ID: geneId})
+    loading,
+    gene
   }
 }
 

@@ -37,6 +37,6 @@ export const removeGenome = new ValidatedMethod({
     })
 
     const nRemoved = References.remove({ referenceId: genomeId });
-    ReferenceInfo.remove({ _id: genomeId })
+    ReferenceInfo.remove({ _id: genomeId });
   }
 })

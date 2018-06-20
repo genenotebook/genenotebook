@@ -54,6 +54,11 @@ Meteor.publish({
     if (!publication.userId){
       publication.stop()
     }
+
+    if (!Roles.userIsInRole(publication.userId, 'admin')){
+      publication.stop()
+    };
+    /*
     if (Roles.userIsInRole(publication.userId, 'admin')){
       return Meteor.users.find({});
     } else if (Roles.userIsInRole(publication.userId,['user','curator'])){
@@ -61,6 +66,8 @@ Meteor.publish({
     } else {
       publication.ready()
     }
+    */
+    return Meteor.users.find({});
   },
   roles(){
     const publication = this;
@@ -102,7 +109,7 @@ Meteor.publish({
     const tracks = Tracks.find({
       permissions: { $in: roles }
     }).fetch().map(track => {
-      return track.trackName
+      return track.name
     })
     return Genes.find({
       ID: geneId,

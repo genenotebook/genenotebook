@@ -12,7 +12,7 @@ Meteor.startup( () => {
     console.log('Adding default admin user');
     const adminId = Accounts.createUser({
       username: 'admin',
-      email: 'admin@none.com',
+      email: 'admin@admin.com',
       password: 'admin',
       profile: {
         first_name: 'admin',
@@ -24,7 +24,7 @@ Meteor.startup( () => {
     console.log('Adding default guest user')
     const guestId = Accounts.createUser({
         username: 'guest',
-        email: 'guest@none.com',
+        email: 'guest@guest.com',
         password: 'guest',
         profile: {
             first_name: 'guest',
@@ -46,15 +46,8 @@ Meteor.startup( () => {
     {
       name: 'Gene ID',
       query: 'ID'
-    },
-    {
-      name: 'Name',
-      query: 'attributes.Name'
-    },
-    {
-      name: 'Note',
-      query: 'attributes.Note'
-    }]
+    }
+  ]
   permanentAttributes.forEach( attribute => {
     console.log(`Adding default filter option: ${attribute.name}`)
     Attributes.update({
@@ -94,7 +87,7 @@ Meteor.startup( () => {
   })
 
 
-  // Start the myJobs queue running
+  // Start the jobqueue
   jobQueue.allow({
     // Grant permission to admin only
     admin: function (userId, method, params) {

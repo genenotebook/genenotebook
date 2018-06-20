@@ -5,6 +5,8 @@ import React from 'react';
 
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 
+import { formatDate } from '/imports/ui/util/uiUtil.jsx';
+
 const Status = (props) => {
   let labelClass = 'badge ';
   switch(props.status){
@@ -26,19 +28,6 @@ const Status = (props) => {
   return (
     <span className={labelClass}> {props.status} </span>
   )
-}
-
-const formatDate = date => {
-  let hours = date.getHours();
-  hours = hours < 10 ? `0${hours}` : hours;
-  let minutes = date.getMinutes();
-  minutes = minutes < 10 ? `0${minutes}` : minutes;
-  let month = date.getMonth() + 1;
-  month = month < 10 ? `0${month}` : month;
-  let day = date.getDate();
-  day = day < 10 ? `0${day}` : day;
-  const year = date.getFullYear();
-  return `${hours}:${minutes} ${month}/${day}/${year}`
 }
 
 export const JobProgressBar = ({ progress, loading, ...job }) => {

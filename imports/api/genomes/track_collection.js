@@ -8,7 +8,7 @@ const trackSchema = new SimpleSchema({
 		type: String,
     label: 'Annotation track name'
 	},
-	reference: {
+	referenceId: {
 		type: String,
     label: 'Reference _id to which the annotation belongs'
 	},

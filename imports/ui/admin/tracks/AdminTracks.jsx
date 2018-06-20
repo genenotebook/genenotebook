@@ -40,7 +40,7 @@ class AdminTracks extends React.Component {
           <thead>
             <tr>
               {
-                ['Track name','Reference','Permissions','Actions'].map(label => {
+                ['Track name','Reference','Blast DBs','Permissions','Actions'].map(label => {
                   return <th key={label} id={label}>
                     <button className='btn btn-sm btn-outline-dark px-2 py-0' disabled>
                       {label}
