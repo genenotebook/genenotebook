@@ -11,7 +11,7 @@ session@1.1.7                 # Client-side reactive dictionary for your app
 tracker@1.2.0                 # Meteor's client-side reactive programming library
 
 es5-shim@4.8.0                # ECMAScript 5 compatibility for older browsers.
-ecmascript@0.11.0              # Enable ECMAScript2015+ syntax in app code
+ecmascript@0.11.1              # Enable ECMAScript2015+ syntax in app code
 
 accounts-password@1.5.1
 ecmascript-runtime@0.7.0

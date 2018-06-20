@@ -14,7 +14,7 @@ const IntervalBaseSchema = new SimpleSchema({
   },
   type: {
     type: String,
-    allowedValues: ['gene','mRNA','CDS','exon','three_prime_UTR','five_prime_UTR'],
+    allowedValues: ['gene','mRNA','tRNA','CDS','exon','three_prime_UTR','five_prime_UTR'],
     label: 'Interval type'
   },
   seq: {
@@ -74,11 +74,11 @@ const SubfeatureSchema = new SimpleSchema({
   },
   type: {
     type: String,
-    allowedValues: ['CDS','exon','mRNA','five_prime_UTR','three_prime_UTR'],
+    allowedValues: ['mRNA','tRNA','CDS','exon','five_prime_UTR','three_prime_UTR'],
     label: 'Subfeature types'
   },
   parents: {
-    type: Array,//[String],
+    type: Array,
     label: 'Parent subfeatures'
   },
   'parents.$': {

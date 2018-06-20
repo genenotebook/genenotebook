@@ -1,6 +1,7 @@
 !data/test*
 data/*
 node_modules
+#scripts/node_modules
 !.gitignore
 !.meteor
 *sublime*

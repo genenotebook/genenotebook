@@ -29,17 +29,8 @@ querystring.unescape = uri => uri;
 const Interval = class Interval{
 	constructor({ gffLine, trackName, referenceId , referenceSequences }){
 		assert.equal(gffLine.length, 9)
-		const [
-			seqid,
-			source,
-			type,
-			start,
-			end,
-			score,
-			strand,
-			phase,
-			attributes
-		] = gffLine
+		const [ seqid, source, type, start, end,
+			score, strand, phase, attributes ] = gffLine
 		
 		this.type = type;
 		this.start = start;
@@ -54,7 +45,9 @@ const Interval = class Interval{
 			this.parents = this.attributes.Parent;
 			delete this.attributes.Parent;
 		}
-	
+		
+		console.log(seqid,referenceSequences[seqid])
+
 		this.seq = referenceSequences[seqid].slice(start - 1, end)
 		if (this.type === 'gene'){
 				this.seqid = seqid;
@@ -198,59 +191,24 @@ export const addGff = new ValidatedMethod({
 
 const getReferenceSequences = referenceId => {
 	console.log(referenceId)
-	const sequenceGroups = References.find({
-		referenceId
-	}).fetch().reduce((refs, refPart) => {
-		const { header, seq, start } = refPart;
-		if (!refs.hasOwnProperty(header)){
-			refs[header] = [];
-		}
-		refs[header].push({ seq, start })
-		return refs
-	},{})
+	const sequenceGroups = References.find({ referenceId })
+		.fetch()
+		.reduce((refs, refPart) => {
+			const { header, seq, start } = refPart;
+			if (!refs.hasOwnProperty(header)){
+				refs[header] = [];
+			}
+			refs[header].push({ seq, start })
+			return refs
+		},{})
 
 	const referenceSequences = mapValues(sequenceGroups, sequenceGroup => {
-		return sequenceGroup.sort((a, b) => { 
-			return a.start - b.start 
-		}).map(seqPart => seqPart.seq).join('')
+		return sequenceGroup.sort((a, b) => a.start - b.start)
+			.map(seqPart => seqPart.seq)
+			.join('')
 	})
-
 	return referenceSequences
-	console.log(referenceSequences)
+	
 }
 
-/**
- * Retrieve 
- * @param  { String } referenceName Reference sequence name
- * @return {Object}               Object with all sequences belonging to a reference. Keys are header and values are DNA sequence strings
-
-const getReferenceSequences = referenceName => {
-	const headers = References.find({
-		referenceName: referenceName
-	},{
-		fields: {
-			header: 1
-		}
-	}).map(reference => reference.header).reduce((headers, header) => {
-		if (headers.indexOf(header) < 0){
-			headers.push(header)
-		}
-		return headers
-	},[])
-
-	const referenceSequences = headers.reduce((sequences, header) => {
-		const sequence = References.find({
-			referenceName: referenceName,
-			header: header
-		},{
-			sort: {
-				start: 1
-			}
-		}).map( ref => ref.seq).join('')
-		sequences[header] = sequence;
-		return sequences
-	},{})
-	return referenceSequences
-}
- */
 

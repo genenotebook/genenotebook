@@ -20,6 +20,7 @@
     "child-process": "^1.0.2",
     "child-process-promise": "^2.2.1",
     "classnames": "^2.2.6",
+    "commander": "^2.15.1",
     "core-js": "^2.5.7",
     "core-util-is": "^1.0.2",
     "d3": "^4.13.0",

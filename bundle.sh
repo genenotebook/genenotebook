@@ -42,8 +42,12 @@ mv genenotebook_bundle/bundle/* genenotebook_bundle &&\
 pushd genenotebook_bundle/programs/server &&\
 npm install &&\
 popd &&\
+pushd scripts &&\
+npm install &&\
+popd &&\
 cp -r scripts genenotebook_bundle &&\
 cp $SETTINGS genenotebook_bundle/settings.json &&\
 cp genenotebook.sh genenotebook_bundle &&\
+chmod +775 genenotebook_bundle/genenotebook.sh &&\
 cp -r testdata genenotebook_bundle &&\
 tar cvzf genenotebook_bundle.tgz genenotebook_bundle 
