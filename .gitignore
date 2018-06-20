@@ -1,7 +1,6 @@
 data/*
+api-docs
 node_modules
-#!.gitignore
-#!.meteor
 production_settings.json
 genenotebook_bundle
 genenotebook_bundle.tgz
