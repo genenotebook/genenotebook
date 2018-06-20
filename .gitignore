@@ -1,11 +1,7 @@
-!data/test*
 data/*
 node_modules
-#scripts/node_modules
-!.gitignore
-!.meteor
-*sublime*
+#!.gitignore
+#!.meteor
 production_settings.json
 genenotebook_bundle
 genenotebook_bundle.tgz
-api-docs
