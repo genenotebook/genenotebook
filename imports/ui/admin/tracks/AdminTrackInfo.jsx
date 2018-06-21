@@ -6,7 +6,7 @@ import { removeAnnotationTrack } from '/imports/api/genomes/removeAnnotationTrac
 import PermissionSelect from '/imports/ui/util/PermissionSelect.jsx';
 
 import TrackPermissionSelect from './TrackPermissionSelect.jsx';
-import BlastDatabaseButtons from './BlastDatabaseButtons.jsx';
+import { BlastDB } from './BlastDB.jsx';
 
 class EditTrackInfo extends React.Component {
   constructor(props){
@@ -64,11 +64,12 @@ class TrackInfoLine extends React.Component {
       <td>{name}</td>
       <td>{reference}</td>
       <td>
-        {
+        <BlastDB trackId={_id} blastdbs={blastdbs} isEditing={false} />
+        {/*
           typeof blastdbs === 'undefined' ?
           <span className="badge badge-secondary"><i className="fa fa-ban" /> Absent</span> :
           <span className="badge badge-success"><i className="fa fa-check" /> Present</span>
-        }
+        */}
       </td>
       <td>
         <PermissionSelect permissions={permissions} disabled={true} />
