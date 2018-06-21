@@ -38,7 +38,7 @@ jobQueue.processJobs(
     const dbType = DB_TYPES[blastType]
 
     const dbs = Tracks.find({
-      trackName: {
+      name: {
         $in: trackNames
       } 
     },{

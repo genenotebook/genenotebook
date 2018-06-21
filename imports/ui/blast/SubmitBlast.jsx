@@ -78,15 +78,15 @@ const TrackSelect = (props) => {
         {
           props.tracks.map(track => {
             return (
-              <div className="form-check" key={track.trackName}>
+              <div className="form-check" key={track.name}>
                 <input 
                   type="checkbox" 
                   className="form-check-input" 
-                  id={ track.trackName } 
-                  checked={props.selectedTracks.indexOf(track.trackName) >= 0}
+                  id={ track.name } 
+                  checked={props.selectedTracks.indexOf(track.name) >= 0}
                   onChange={props.toggleTrackSelect} 
                 />
-                <label className="form-check-label" htmlFor={ track.trackName }>{ track.trackName }</label>
+                <label className="form-check-label" htmlFor={ track.name }>{ track.name }</label>
               </div>
             )
           })
