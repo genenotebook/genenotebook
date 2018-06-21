@@ -16,7 +16,8 @@ class AdminAttributes extends React.Component {
     console.log('clicked scanAttributes')
     this.props.tracks.forEach(track => {
       console.log(track)
-      scanGeneAttributes.call({trackName: track.trackName})
+      const trackId = track._id;
+      scanGeneAttributes.call({ trackId })
     })
   }
 

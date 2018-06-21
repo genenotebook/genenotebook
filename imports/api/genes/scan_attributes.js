@@ -43,13 +43,13 @@ const reduceFunction = function(_key, values){
 export const scanGeneAttributes = new ValidatedMethod({
 	name: 'scanGeneAttributes',
 	validate: new SimpleSchema({
-		trackName: { type: String }
+		trackId: { type: String }
 	}).validator(),
 	applyOptions: {
 		noRetry: true
 	},
-	run({ trackName }){
-		console.log(`scanGeneAttributes: ${trackName}`)
+	run({ trackId }){
+		console.log(`scanGeneAttributes: ${trackId}`)
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}
@@ -57,11 +57,11 @@ export const scanGeneAttributes = new ValidatedMethod({
 			throw new Meteor.Error('not-authorized');
 		}
 
-		const track = Tracks.findOne({trackName: trackName})
+		const track = Tracks.findOne({ _id: trackId })
 
 		//check if the track exists
 		if (typeof track === 'undefined'){
-			throw new Meteor.Error(`Unknown track: ${trackName}`)
+			throw new Meteor.Error(`Unknown track: ${trackId}`)
 		}
 
 		//check that it is running on the server
@@ -69,7 +69,7 @@ export const scanGeneAttributes = new ValidatedMethod({
 			this.unblock();
 			const mapReduceOptions = { 
 					out: { inline: 1 },
-					query: { track: trackName }
+					query: { trackId }
 				}
 			//mapreduce to find all keys for all genes, this takes a while
 			console.log('mapreducing')
@@ -80,12 +80,13 @@ export const scanGeneAttributes = new ValidatedMethod({
 					results.forEach( result => {
 						const attributeKeys = result.value.attributeKeys;
 						attributeKeys.forEach(attributeKey => {
+							console.log(attributeKey)
 							Attributes.update({ 
 								name: attributeKey 
 							},{
 								$addToSet: {
-									tracks: trackName,
-									references: track.reference
+									tracks: trackId,
+									references: track.referenceId
 								},
 								$setOnInsert: { 
 									name: attributeKey,

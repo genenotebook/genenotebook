@@ -14,12 +14,12 @@ import { Tracks } from '/imports/api/genomes/track_collection.js';
 export const removeBlastDb = new ValidatedMethod({
   name: 'removeBlastDb',
   validate: new SimpleSchema({
-    trackName: { type: String }
+    trackId: { type: String }
   }).validator(),
   applyOptions: {
     noRetry: true
   },
-  run({ trackName}){
+  run({ trackId}){
     if (! this.userId) {
       throw new Meteor.Error('not-authorized');
     }
@@ -27,13 +27,13 @@ export const removeBlastDb = new ValidatedMethod({
       throw new Meteor.Error('not-authorized');
     }
 
-    console.log(`remove ${trackName}`)
+    console.log(`remove ${trackId}`)
 
     if (!this.isSimulation){
-      const track = Tracks.findOne({trackName: trackName})
+      const track = Tracks.findOne({ _id: trackId })
       console.log(track)
       Tracks.update({
-        trackName: trackName
+        _id: trackId
       },{
         $unset: {
           'blastdbs': 1

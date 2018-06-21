@@ -91,7 +91,7 @@ Meteor.publish({
     const tracks = Tracks.find({
       permissions: { $in: roles }
     }).fetch().map(track => {
-      return track.trackName
+      return track._id
     })
     return Attributes.find({
       $or: [
