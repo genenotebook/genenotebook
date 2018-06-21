@@ -109,11 +109,11 @@ Meteor.publish({
     const tracks = Tracks.find({
       permissions: { $in: roles }
     }).fetch().map(track => {
-      return track.name
+      return track._id
     })
     return Genes.find({
       ID: geneId,
-      track: {
+      trackId: {
         $in: tracks
       }
     })

@@ -154,9 +154,9 @@ const GeneSchema = new SimpleSchema({
     allowedValues: ['+', '-'],
     label: 'Strand'
   },
-  track: {
+  trackId: {
     type: String,
-    label: 'Track name'
+    label: 'Annotation track DB identifier (_id in tracks collection)'
   }
 });
 

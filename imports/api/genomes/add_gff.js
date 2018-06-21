@@ -27,7 +27,7 @@ querystring.unescape = uri => uri;
  * @type {Interval}
  */
 const Interval = class Interval {
-	constructor({ gffLine, trackName, referenceId , referenceSequences }){
+	constructor({ gffLine, trackId, referenceId , referenceSequences }){
 		assert.equal(gffLine.length, 9)
 		const [ seqid, source, type, start, end,
 			score, strand, phase, attributes ] = gffLine
@@ -54,7 +54,7 @@ const Interval = class Interval {
 				this.source = source;
 				this.strand = strand;
 				this.reference = referenceId;
-				this.track = trackName;
+				this.trackId = trackId;
 			GeneSchema.validate(this)
 		} else {
 			this.phase = phase
@@ -130,6 +130,12 @@ export const addGff = new ValidatedMethod({
 
 		const referenceId = existingReference._id;
 
+		const trackId = Tracks.insert({
+			name: trackName,
+			referenceId: referenceId,
+			permissions: ['admin']
+		});
+
 		const fileHandle = fs.readFileSync(fileName, { encoding: 'binary' });
 
 		let intervals = {};
@@ -153,7 +159,7 @@ export const addGff = new ValidatedMethod({
 			},
 			step(line){
 				const gffLine = line.data[0]
-				let interval = new Interval({ gffLine, referenceId, trackName, referenceSequences })
+				let interval = new Interval({ gffLine, referenceId, trackId, referenceSequences })
 
 				if (interval.parents === undefined){
 					assert.equal(interval.type, 'gene');
@@ -178,14 +184,15 @@ export const addGff = new ValidatedMethod({
 					intervals = {}
 				}
 				
-				Tracks.insert({
-					name: trackName,
-					referenceId: referenceId,
-					geneCount: geneCount,
-					permissions: ['admin']
-				});
+				Tracks.update({ 
+					_id: trackId 
+				},{
+					$set: {
+						geneCount
+					}
+				})
 
-				scanGeneAttributes.call({ trackName: trackName });
+				scanGeneAttributes.call({ trackId });
 			}
 		})
 		return true

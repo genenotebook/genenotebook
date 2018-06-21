@@ -27,12 +27,21 @@ class EditTrackInfo extends React.Component {
   }
 
   render(){
-    const { toggleEdit } = this.props;
+    const { _id, name, reference, permissions, blastdbs, toggleEdit } = this.props;
     const hasChanges = !isEqual(this.props, this.state);
     return <tr>
-      <td></td>
-      <td></td>
-      <td></td>
+      <td>
+        {name}
+      </td>
+      <td>
+        {reference}
+      </td>
+      <td>
+        <BlastDB trackId={_id} blastdbs={blastdbs} isEditing={true} />
+      </td>
+      <td>
+        <PermissionSelect permissions={permissions} disabled={false} />
+      </td>
       <td>
         <div className='btn-group'>
           <button
@@ -65,11 +74,6 @@ class TrackInfoLine extends React.Component {
       <td>{reference}</td>
       <td>
         <BlastDB trackId={_id} blastdbs={blastdbs} isEditing={false} />
-        {/*
-          typeof blastdbs === 'undefined' ?
-          <span className="badge badge-secondary"><i className="fa fa-ban" /> Absent</span> :
-          <span className="badge badge-success"><i className="fa fa-check" /> Present</span>
-        */}
       </td>
       <td>
         <PermissionSelect permissions={permissions} disabled={true} />

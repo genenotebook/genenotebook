@@ -20,11 +20,11 @@ jobQueue.processJobs(
   function(job, callback){
     console.log('processing makeblastdb')
     console.log(job.data)
-    const { trackName } = job.data;
+    const { trackId } = job.data;
 
-    const trackId = trackName.split(/ |\./).join('_')
+    //const trackId = trackName.split(/ |\./).join('_')
 
-    const geneNumber = Genes.find({ track: trackName }).count()
+    const geneNumber = Genes.find({ trackId }).count()
     const stepSize = Math.round(geneNumber / 10);
     console.log(`scanning ${geneNumber} genes`)
     
@@ -38,7 +38,7 @@ jobQueue.processJobs(
       prot: fs.createWriteStream(tempFiles.prot)
     }
     
-    Genes.find({ track: trackName }).forEach( (gene, index) => {
+    Genes.find({ trackId }).forEach( (gene, index) => {
 
       if (index % stepSize === 0){
         job.progress(index, geneNumber, { echo: true })
@@ -77,7 +77,7 @@ jobQueue.processJobs(
             console.log(`makeblastdb stdout:${stdout}`)
           }
           Tracks.update({
-            trackName: trackName
+            _id: trackId
           },{
             $set: {
               [`blastdbs.${dbType}`]:`${trackId}.${dbType}`

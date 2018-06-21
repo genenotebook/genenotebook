@@ -50,7 +50,7 @@ class GeneTableOptions extends React.PureComponent {
       queryCount: '...',
       selectedGenes: new Set(),
       selectedAllGenes: false,
-      selectedColumns: new Set(['Gene ID', 'Name', 'Note']),
+      selectedColumns: new Set(['Gene ID']),
       showDownloadDialog: false
     }
   }
