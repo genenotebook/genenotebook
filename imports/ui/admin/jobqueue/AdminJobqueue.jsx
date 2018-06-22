@@ -35,17 +35,18 @@ export const JobProgressBar = ({ progress, loading, ...job }) => {
     return null
   }
 
-  //rounding can make a percentage of 100 while job is not finished, 99% looks better in that case
-  let percent = Math.round(progress.percent)
-  if (percent === 100){
-    percent -= 1
-  }
+  const { completed, total, percent } = progress;
+  
+  const barColor = completed === 1 && total === 1 ? 'success' : 'default';
+
+  console.log(completed, total, barColor)
+
   return (
     <div className = 'progress'>
       <div 
-        className = 'progress-bar progress-bar-default'
+        className = {`progress-bar bg-${barColor}`}
         role = 'progressbar'
-        aria-valuenow = {percent}
+        aria-valuenow = { Math.round(percent) }
         aria-valuemin='0'
         aria-valuemax='100'
         style={{width:`${percent}%`}}
@@ -95,7 +96,7 @@ class AdminJobqueue extends React.Component {
                   <td><Status {...job} /></td>
                   <td>{job.type}</td>
                   <td>{formatDate(job.created)}</td>
-                  <td>{job.user}</td>
+                  <td>{job.data.userId}</td>
                   <td><JobProgressBar loading={loading} {...job} /></td>
                   <td>
                     <button 
