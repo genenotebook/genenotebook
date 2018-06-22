@@ -9,7 +9,7 @@ import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 import { Job } from 'meteor/vsivsi:job-collection';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
-import { Downloads } from '/imports/api/downloads/download_collection.js';
+//import { Downloads } from '/imports/api/downloads/download_collection.js';
 
 export const downloadGenes = new ValidatedMethod({
   name: 'downloadGenes',

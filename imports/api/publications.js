@@ -58,15 +58,7 @@ Meteor.publish({
     if (!Roles.userIsInRole(publication.userId, 'admin')){
       publication.stop()
     };
-    /*
-    if (Roles.userIsInRole(publication.userId, 'admin')){
-      return Meteor.users.find({});
-    } else if (Roles.userIsInRole(publication.userId,['user','curator'])){
-      return Meteor.users.find({},{fields:{username:1}})
-    } else {
-      publication.ready()
-    }
-    */
+
     return Meteor.users.find({});
   },
   roles(){
@@ -190,21 +182,14 @@ Meteor.publish({
   interpro (){
     if (!this.userId){
       this.stop()
-      //throw new Meteor.Error('Unauthorized')
     }
     return Interpro.find({});
   },
   editHistory (){
     if (!this.userId){
       this.stop()
-      //throw new Meteor.Error('Unauthorized')
     }
     return EditHistory.find({});
   }
 })
 
-/*
-Meteor.publish('browser',function(track,seqid,start,end){
-  return Genes.find({ 'seqid': seqid, 'start': { $gte: start }, 'end': { $lte: end } });
-})
-*/
