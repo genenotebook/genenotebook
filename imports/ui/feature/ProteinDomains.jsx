@@ -2,19 +2,10 @@ import React from 'react';
 import { scaleLinear } from 'd3-scale';
 import { groupBy } from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';
+import randomColor from 'randomcolor';
 
 import { getGeneSequences } from '/imports/api/util/util.js';
-/*
-Medtr1g004960
-Medtr1g004980
-Medtr1g004990
-Medtr1g006490
-Medtr1g006590
-Medtr1g006600
-Medtr1g006605
-Medtr1g006660
-Medtr1g006690
- */
+
 
 const XAxis = ({ scale, numTicks, transform, seqid }) => {
   const range = scale.range();
@@ -61,6 +52,7 @@ const SourceGroup = ({source, domains, transform, scale}) => {
     <g transform={transform}>
       {
         domains.map((domain, domainIndex) => {
+          const fill = domain.interpro === 'Unintegrated signature' ? 'grey' : randomColor({seed: domain.interpro});
           return <rect 
             x={scale(domain.start)}
             width={scale(domain.end) - scale(domain.start)}
@@ -70,7 +62,7 @@ const SourceGroup = ({source, domains, transform, scale}) => {
             ry='4'
             key={`${domain.name}${domainIndex}`} 
             style={{
-              fill: 'white',
+              fill: fill,
               stroke:'black',
               strokeWidth: 1,
               fillOpacity: .5
@@ -83,11 +75,22 @@ const SourceGroup = ({source, domains, transform, scale}) => {
 
 const InterproGroup = ({interproId, sourceGroups, transform, scale}) => {
   //const label = typeof interproId !== 'undefined' ? interproId : 'Unintegrated signature';
-  const label = interproId;
+  //const label = interproId;
+  const descriptions = new Set();
+  Object.entries(sourceGroups).forEach((domainGroup, sourceIndex) => {
+    const [source, domains] = domainGroup;
+    domains.forEach(domain => {
+      if (typeof domain.signature_desc !== 'undefined'){
+        descriptions.add(domain.signature_desc)
+      }
+    })
+  })
+  const description = [...descriptions][0];
   return (
     <g transform={transform}>
       <foreignObject width='400' height='30' x='0' y='-30'>
-        <a href="#" className="badge badge-dark">{label}</a>
+        <a href="#" className="badge badge-dark">{interproId}</a>
+        <p>{description}</p>
       </foreignObject>
       {
         Object.entries(sourceGroups).map((domainGroup, sourceIndex) => {
@@ -105,12 +108,33 @@ const InterproGroup = ({interproId, sourceGroups, transform, scale}) => {
   )
 }
 
+const sortGroups = (groupA, groupB) => {
+  const [nameA, intervalsA] = groupA;
+  const [nameB, intervalsB] = groupB;
+  if (nameA === 'Unintegrated signature') {
+    return 1
+  }
+  if (nameB === 'Unintegrated signature'){
+    return -1
+  }
+  const startA = Math.min(...intervalsA.map(interval => interval.start));
+  const startB = Math.min(...intervalsB.map(interval => interval.start));
+
+  console.log(startA, startB, startA - startB)
+
+  return startA - startB
+}
+
 export default class ProteinDomains extends React.Component {
   constructor(props){
     super(props)
     this.state = {
-      width: 100
+      width: 300
     }
+  }
+
+  static defaultProps = {
+    resizable: true
   }
 
   onResize = width => {
@@ -120,13 +144,17 @@ export default class ProteinDomains extends React.Component {
   }
 
   render(){
-    const sequences = getGeneSequences(this.props.gene);
+    const { gene, resizable } = this.props;
+    //get sequence to determine length
+    const sequences = getGeneSequences(gene);
+    //interproscan results should be on transcripts
     const transcripts = this.props.gene.subfeatures.filter(sub =>  sub.type == 'mRNA');
+    //for now we only look at the primary transcript
     const transcript = transcripts.filter(transcript => transcript.ID.endsWith('1'))[0];
     const transcriptSequence = sequences.filter(seq => seq.ID === transcript.ID)[0]
     const transcriptSize = transcriptSequence.prot.length;
     
-    const interproGroups = Object.entries(groupBy(transcript.protein_domains, 'interpro'));
+    const interproGroups = Object.entries(groupBy(transcript.protein_domains, 'interpro')).sort(sortGroups);
     const totalGroups = interproGroups.length;
     let totalDomains = 0;
     const sortedDomains = interproGroups.map(domainGroup => {
@@ -149,7 +177,7 @@ export default class ProteinDomains extends React.Component {
     let domainCount = 0;
     console.log(interproGroups)
     return (
-      <div className="card protein-domains">
+      <div className="card protein-domains px-0">
         <svg 
           width={svgWidth} 
           height={svgHeight}
@@ -161,6 +189,7 @@ export default class ProteinDomains extends React.Component {
           <g className='domains' transform='translate(0,40)'>
           {
             interproGroups.map((domainGroup, index) => {
+              console.log(domainGroup)
               const [interproId, domains] = domainGroup;
               const sourceGroups = groupBy(domains, 'name');
               const yTransform = ((index + 1) * 30) + (domainCount * 10);
@@ -176,7 +205,9 @@ export default class ProteinDomains extends React.Component {
           }
           </g>
         </svg>
-        <ReactResizeDetector handleWidth onResize={this.onResize} />
+        { 
+          resizable && <ReactResizeDetector handleWidth onResize={this.onResize} />
+        }
       </div>
     )
   }

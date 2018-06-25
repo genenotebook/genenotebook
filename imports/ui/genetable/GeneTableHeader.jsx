@@ -265,7 +265,9 @@ const resize = width => {
  * @param  {...[type]} options.props           [description]
  * @return {[type]}                            [description]
  */
-const GeneTableHeader = ({ selectedColumns, attributes, selectedGenes, selectedAllGenes, toggleSelectAllGenes, ...props }) => {
+const GeneTableHeader = ({ selectedColumns, attributes, selectedGenes, 
+  selectedAllGenes, toggleSelectAllGenes, selectedVisualization, ...props }) => {
+
   const selectedAttributes = attributes.filter(attribute => {
     return selectedColumns.has(attribute.name)
   }).reduce((obj, attribute) => {
@@ -286,7 +288,7 @@ const GeneTableHeader = ({ selectedColumns, attributes, selectedGenes, selectedA
           })
         }
         <th scope="col">
-          <button className='btn btn-sm btn-outline-dark px-2 py-0' disabled>Gene model</button>
+          <button className='btn btn-sm btn-outline-dark px-2 py-0' disabled>{ selectedVisualization }</button>
           <ReactResizeDetector handleWidth onResize={resize} />
         </th>
         <th scope="col">

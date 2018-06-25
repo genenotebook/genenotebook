@@ -15,6 +15,17 @@ import ExpressionPlot from '../feature/ExpressionPlot.jsx';
 import SampleSelection from '../feature/SampleSelection.jsx';
 import Info from '../feature/Info.jsx';
 
+const ExpressionViz = ({ gene }) => {
+  return <SampleSelection gene={gene}>
+    <ExpressionPlot />
+  </SampleSelection>
+} 
+
+const VISUALIZATIONS = {
+  'Gene model': Genemodel,
+  'Protein domains': ProteinDomains,
+  'ExpressionPlot': ExpressionViz
+}
 
 /**
  * Reactive Meteor tracker for GeneTable component
@@ -122,7 +133,8 @@ const withConditionalRendering = compose(
  * @param  {[type]} options.updateSelection  [description]
  * @return {[type]}                          [description]
  */
-const GeneTableRow = ({gene, selectedColumns, selectedAllGenes, selectedGenes, updateSelection, attributes, ...props }) => {
+const GeneTableRow = ({gene, selectedColumns, selectedAllGenes, selectedGenes, 
+  updateSelection, attributes, selectedVisualization, ...props }) => {
   const selected = selectedAllGenes || selectedGenes.has(gene.ID)
   const active = selected ? 'active' : '';
   const selectedAttributes = attributes.filter(attribute => {
@@ -131,6 +143,8 @@ const GeneTableRow = ({gene, selectedColumns, selectedAllGenes, selectedGenes, u
     obj[attribute.name] = attribute
     return obj
   },{})
+
+  const DataVisualization = VISUALIZATIONS[selectedVisualization];
 
   return (
     <tr>
@@ -149,19 +163,8 @@ const GeneTableRow = ({gene, selectedColumns, selectedAllGenes, selectedGenes, u
           )
         })
       }
-      <td data-label='Gene model'>
-        <Genemodel gene={gene} />
-        
-      {/*
-        
-        <ProteinDomains gene={gene} />
-        <SampleSelection gene={gene} >
-          <ExpressionPlot />
-        </SampleSelection >
-        <SampleSelection gene={gene} >
-          <ExpressionPlot />
-        </SampleSelection >
-      */}
+      <td data-label={selectedVisualization}>
+        <DataVisualization gene={gene} resizable={false} />
       </td>
       <td>
         <button 
@@ -176,19 +179,7 @@ const GeneTableRow = ({gene, selectedColumns, selectedAllGenes, selectedGenes, u
   )
 }
 
-/*
-const GeneTableBody = ({genes, ...props}) => {
-  return (
-    <tbody>
-      {
-        genes.map(gene => {
-          return <GeneTableRow key={gene.ID} gene={gene} {...props} />
-        })
-      }
-    </tbody>
-  )
-}
-*/
+
 class GeneTableBody extends React.PureComponent {
   constructor(props){
     super(props)

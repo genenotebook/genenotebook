@@ -5,14 +5,14 @@ import ColumnSelect from './ColumnSelect.jsx';
 
 import './filteroptions.scss';
 
-const FilterOptions = ({ toggleColumnSelect, updateQuery, ...props }) => {
+const FilterOptions = ({ ...props }) => {
   return (
     <div className='btn-group' role='group'>
       <button className='btn btn-sm btn-outline-dark px-2 py-0' disabled>
         Select:
       </button>
-      <TrackSelect updateQuery={updateQuery} {...props} />
-      <ColumnSelect toggleColumnSelect={toggleColumnSelect} {...props} />
+      <TrackSelect {...props} />
+      <ColumnSelect {...props} />
     </div>
   )
 }

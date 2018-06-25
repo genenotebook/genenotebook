@@ -14,6 +14,8 @@ import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 import FilterOptions from './filteroptions/FilterOptions.jsx';
 import { SelectionOptions } from './SelectionOptions.jsx';
 
+export const VISUALIZATIONS =['Gene model', 'Protein domains', 'Gene expression'];
+
 /**
  * [description]
  * @param  {[type]} props [description]
@@ -38,9 +40,7 @@ const withConditionalRendering = compose(
   withEither(isLoading, Loading)
 )
 
-/**
- * 
- */
+
 class GeneTableOptions extends React.PureComponent {
   constructor(props){
     super(props)
@@ -50,7 +50,8 @@ class GeneTableOptions extends React.PureComponent {
       queryCount: '...',
       selectedGenes: new Set(),
       selectedAllGenes: false,
-      selectedColumns: new Set(['Gene ID']),
+      selectedColumns: new Set(['Gene ID', 'Note']),
+      selectedVisualization: VISUALIZATIONS[0],
       showDownloadDialog: false
     }
   }
@@ -88,10 +89,10 @@ class GeneTableOptions extends React.PureComponent {
     return React.Children.map(this.props.children, child => {
       return React.cloneElement(child, {
         updateSelection: this.updateSelection,
-        toggleDownloadDialog: this.toggleDownloadDialog,
         updateQuery: this.updateQuery,
         updateScrollLimit: this.updateScrollLimit,
         toggleSelectAllGenes: this.toggleSelectAllGenes,
+        toggleDownloadDialog: this.toggleDownloadDialog,
         ...this.state,
         ...this.props
       })
@@ -128,6 +129,11 @@ class GeneTableOptions extends React.PureComponent {
     })
   }
 
+  toggleVisualization = event => {
+    const selectedVisualization = event.target.id;
+    this.setState({ selectedVisualization });
+  }
+
   updateQuery = query => {
     queryCount.call({ query }, (err,res) => {
       this.setState({
@@ -143,6 +149,7 @@ class GeneTableOptions extends React.PureComponent {
         <div className="card-header d-flex justify-content-between px-1 py-1">
           <FilterOptions 
             toggleColumnSelect={this.toggleColumnSelect}
+            toggleVisualization={this.toggleVisualization}
             updateQuery={this.updateQuery} 
             {...this.props} {...this.state} />
           <button type='button' className='btn btn-sm btn-outline-dark px-2 py-0' disabled>

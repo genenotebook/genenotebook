@@ -45,19 +45,20 @@ if (!module.parent){
     SocketConstructor: WebSocket
   })
 
-  portal.loginWithPassword({
+  const loginOptions = {
     username: commander.username,
     password: commander.password
+  }
+
+  portal.loginWithPassword(loginOptions).then(loginResult => {
+    return portal.call('addInterproscan', options)
   }).then(result => {
-    portal.call('addInterproscan', options)
-    .then(result => {
-      console.log(result)
-      portal.disconnect()
-    })
-    .catch(error => {
-      console.log(error)
-      portal.disconnect()
-    })
+    console.log(result)
+    portal.disconnect()
+  }).catch(error => {
+    console.log(error)
+    portal.disconnect()
   })
+
 }
 

@@ -6,7 +6,10 @@ import Papa from 'papaparse';
 import fs from 'fs';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
-import { formatGffAttributes } from '/imports/api/util/util.js';
+import { Interpro } from '/imports/api/genes/interpro_collection.js'; 
+
+import { formatAttributes } from '/imports/api/util/util.js';
+
 
 
 const debugFormatAttributes = attributeString => {
@@ -78,7 +81,7 @@ export const addInterproscan = new ValidatedMethod({
             if (typeof attributeString !== 'undefined'){
               let attributes;
               try {
-                attributes = formatGffAttributes(attributeString);
+                attributes = formatAttributes(attributeString);
               } catch(error) {
                 console.log(`Error line ${lineNumber}`)
                 console.log(data.join('\t'))
@@ -134,7 +137,8 @@ export const addInterproscan = new ValidatedMethod({
       },
       complete(results,file) {
         console.log('Finished')
-        //console.log(interproIds)
+        console.log(interproIds)
+        //
       }
     })
   }

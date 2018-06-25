@@ -111,8 +111,12 @@ export default class Genemodel extends React.PureComponent {
   constructor(props){
     super(props)
     this.state = {
-      width: 300
+      width: 250
     }
+  }
+
+  static defaultProps = {
+    resizable: true
   }
 
   onResize = width => {
@@ -122,7 +126,7 @@ export default class Genemodel extends React.PureComponent {
   }
 
   render(){
-    const gene = this.props.gene;
+    const { gene, resizable } = this.props;
     const geneLength = gene.end - gene.start;
     const padding = Math.round(.1 * geneLength);
     const start = Math.max(0, gene.start - padding)
@@ -146,7 +150,9 @@ export default class Genemodel extends React.PureComponent {
             </marker>
           </defs>
         </svg>
-        <ReactResizeDetector handleWidth onResize={this.onResize}  />
+        { 
+          resizable && <ReactResizeDetector handleWidth onResize={this.onResize}  />
+        }
       </div>
     )
   }
