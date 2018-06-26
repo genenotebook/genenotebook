@@ -130,9 +130,9 @@ const GeneSchema = new SimpleSchema({
     type: Object,
     blackbox: true
   },
-  reference: { 
+  referenceId: { 
     type: String,
-    label: 'Reference genome'
+    label: 'Reference genome DB identifier (_id in ReferenceInfo collection)'
   },
   seqid: {
     type: String,
@@ -154,7 +154,7 @@ const GeneSchema = new SimpleSchema({
   },
   trackId: {
     type: String,
-    label: 'Annotation track DB identifier (_id in tracks collection)'
+    label: 'Annotation track DB identifier (_id in Tracks collection)'
   }
 });
 

@@ -32,6 +32,11 @@ const trackSchema = new SimpleSchema({
   },
   'permissions.$': {
     type: String
+  },
+  geneCount: {
+    type: Number,
+    label: 'Number of genes in this annotation track',
+    optional: true
   }
 });
 

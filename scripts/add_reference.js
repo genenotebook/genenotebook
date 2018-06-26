@@ -53,7 +53,8 @@ if (!module.parent){
 		return geneNoteBook.call('addReference', { fileName, referenceName })
 	})
 	.then(addReferenceResult => {
-		console.log(addReferenceResult)
+		const { ok, writeErrors, writeConcernErrors, nInserted } = addReferenceResult;
+		console.log(`Succesfully added ${nInserted} reference sequences`)
 		geneNoteBook.disconnect()
 	})
 	.catch(error => {

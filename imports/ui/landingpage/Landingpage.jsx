@@ -11,7 +11,6 @@ import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
 import './landingpage.scss';
 
-//const GeneNumber = ({ referenceName, ...genome }) => {
 class GeneNumber extends React.Component {
   constructor(props){
     super(props)
@@ -44,7 +43,7 @@ const Stats = ({ genomes }) => {
       genomes.map(genome => {
         return <li key={genome._id} className='list-group-item'>
           <div className="d-inline-block mr-1">
-            { genome.referenceName }
+            { genome.name }
           </div>
           <div className="d-inline-block ml-1">
             <GeneNumber {...genome} />
@@ -59,7 +58,6 @@ const statsDataTracker = () => {
   const genomeSub = Meteor.subscribe('referenceInfo');
   const loading = !genomeSub.ready();
   const genomes = ReferenceInfo.find({}).fetch();
-  console.log(loading, genomes)
   return {
     loading,
     genomes
@@ -74,7 +72,6 @@ const withConditionalRendering = compose(
 const StatsWithDataTracker = withConditionalRendering(Stats);
 
 const Landingpage = () => {
-  console.log(Meteor.settings)
   return (
     <div className="container">
       <div className="jumbotron my-2 pb-1 pt-4 bg-light border">

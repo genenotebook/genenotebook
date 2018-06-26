@@ -5,8 +5,8 @@ import './publications.js';
 import './transcriptomes/add_transcriptome.js';
 import './transcriptomes/updateSampleInfo.js';
 
-import './genomes/add_reference.js';
-import './genomes/add_gff.js';
+import './genomes/addReference.js';
+import './genomes/addAnnotationTrack.js';
 import './genomes/updateTrackPermissions.js';
 import './genomes/updateReferenceInfo.js';
 import './genomes/removeAnnotationTrack.js';

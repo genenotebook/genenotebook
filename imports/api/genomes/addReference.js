@@ -165,6 +165,8 @@ export const addReference = new ValidatedMethod({
 			throw new Meteor.Error(`Existing reference: ${referenceName}`)
 		}
 
+		console.log(`Adding ${fileName} as reference: ${referenceName}`)
+
 		return fastaFileToMongoDb({ fileName, referenceName })
 			.catch(error => {
 				console.log(error);

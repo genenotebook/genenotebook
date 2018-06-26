@@ -55,10 +55,11 @@ if (!module.parent){
 
 	geneNoteBook.loginWithPassword({ username, password })
 	.then(loginResult => {
-		return geneNoteBook.call('addGff', { fileName, referenceName, trackName})
+		return geneNoteBook.call('addAnnotationTrack', { fileName, referenceName, trackName})
 	})
 	.then(addGffResult => {
-		console.log(addGffResult)
+		const { ok, writeErrors, writeConcernErrors, nInserted } = addGffResult;
+		console.log(`Successfully inserted ${nInserted} genes`);
 		geneNoteBook.disconnect()
 	})
 	.catch(error => {
