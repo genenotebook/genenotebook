@@ -8,7 +8,7 @@
   }
 
   min-height: 30rem;
-  @media only screen and (max-width: 760px){
+  @media only screen and (max-width: 200px){
     table, thead, tbody, th, td, tr { 
       /* Force table to not be like tables anymore */
       display: block; 

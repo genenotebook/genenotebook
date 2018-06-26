@@ -139,7 +139,7 @@ const GroupedSamplePlot = ({ samples, yScale, transform }) => {
       <g transform={`translate(0,${range[0]})`}>
         <line x1='-20' x2='20' y1='0' y2='0' stroke='black'/>
         <line x1='0' x2='0' y1='0' y2='10' stroke='black'/>
-        <text x='5' y='25' textAnchor='left' transform='rotate(30)' fontSize='10'>{groupName}</text>
+        <text x='5' y='25' textAnchor='left' transform='rotate(15)' fontSize='10'>{groupName}</text>
       </g>
     </g>
   )
@@ -170,13 +170,14 @@ class ExpressionPlot extends React.Component {
   }
 
   render(){
-    const tpm = this.props.values.map(value => value.tpm)
+    const { values } = this.props;
+    const tpm = values.map(value => value.tpm)
     tpm.push(1)
     const maxTpm = Math.max(...tpm)
     const precision = maxTpm > 10 ? 0 : maxTpm > 1 ? 1 : 2;
     const yMax = round(maxTpm + .1 * maxTpm, precision);
 
-    const replicaGroups = groupBy(this.props.values, 'replicaGroup')
+    const replicaGroups = groupBy(values, 'replicaGroup')
     const padding = {
       top: 40,
       bottom: 10,
@@ -184,14 +185,14 @@ class ExpressionPlot extends React.Component {
       right: 10
     }
 
-    const width = 200;
+    const width = 250;
     const yScale = scaleLinear()
-              .domain([0,yMax])
-              .range([250 - padding.top - padding.bottom ,0])
+      .domain([0, yMax])
+      .range([150 - padding.top - padding.bottom, 0])
 
     return (
       <div className='card expression-plot'>
-        <svg width={width} height='350'>
+        <svg width={width} height='200'>
           <g transform={`translate(${padding.left},${padding.top})`}>
             <YAxis scale={yScale} numTicks='4' />
             <GroupedSamples groups={replicaGroups} yScale={yScale} transform='translate(20,0)'/>
@@ -203,26 +204,25 @@ class ExpressionPlot extends React.Component {
 }
 
 export default withTracker(({ gene, samples, ...props }) => {
-  const sampleInfo = groupBy(samples, '_id')
-  const sampleIds = samples.map(sample => sample._id)
-  
   const transcriptomeSub = Meteor.subscribe('geneExpression', gene.ID);
+  const loading = !transcriptomeSub.ready();
 
+  const sampleInfo = groupBy(samples, '_id');
+  const sampleIds = samples.map(sample => sample._id);
   
   const values = Transcriptomes.find({
     geneId: gene.ID,
     experimentId: {
       $in: sampleIds
     }
-  }).fetch()
-
-  values.forEach(value => {
+  }).fetch().map(value => {
     Object.assign(value, sampleInfo[value.experimentId][0])
-  })
+    return value
+  });
 
   return {
-    gene: gene,
-    values: values,
-    loading: !transcriptomeSub.ready()
+    gene,
+    values,
+    loading
   }
 })(ExpressionPlot)

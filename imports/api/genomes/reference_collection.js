@@ -42,7 +42,7 @@ References.attachSchema(ReferenceSchema)
 const ReferenceInfo = new Mongo.Collection('referenceInfo')
 
 const ReferenceInfoSchema = new SimpleSchema({
-	referenceName: {
+	name: {
 		type: String,
 		label: 'Reference name',
 		index: true,

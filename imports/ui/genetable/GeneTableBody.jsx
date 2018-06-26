@@ -163,8 +163,12 @@ const GeneTableRow = ({gene, selectedColumns, selectedAllGenes, selectedGenes,
           )
         })
       }
-      <td data-label={selectedVisualization}>
-        <DataVisualization gene={gene} resizable={false} />
+      <td data-label={selectedVisualization} style={{width: '20rem'}}>
+        <DataVisualization gene={gene} resizable={true} />
+        {/*<SampleSelection gene={gene}>
+          <ExpressionPlot />
+        </SampleSelection>*/}
+        
       </td>
       <td>
         <button 

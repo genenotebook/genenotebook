@@ -116,10 +116,15 @@ Meteor.publish({
       publication.stop()
     }
     const roles = Roles.getRolesForUser(publication.userId);
+    const permissions = { $in: roles };
+    const experimentIds = ExperimentInfo.find({ permissions })
+      .fetch()
+      .map(experiment => experiment._id);
+    
     return Transcriptomes.find({
       geneId: geneId,
-      permissions: {
-        $in: roles
+      experimentId : {
+        $in: experimentIds
       }
     })
   },
@@ -129,11 +134,8 @@ Meteor.publish({
       publication.stop()
     }
     const roles = Roles.getRolesForUser(publication.userId);
-    return ExperimentInfo.find({
-      permissions: {
-        $in: roles
-      }
-    });
+    const permissions = { $in: roles };
+    return ExperimentInfo.find({ permissions });
   },
   downloads (downloadId) {
     const publication = this;
@@ -153,17 +155,14 @@ Meteor.publish({
       publication.stop()
     }
     const roles = Roles.getRolesForUser(publication.userId);
-    return ReferenceInfo.find({
-      permissions: {
-        $in: roles
-      }
-    })
+    const permissions = { $in: roles };
+    return ReferenceInfo.find({ permissions })
   },
   orthogroups (ID) {
     if (!this.userId){
       this.stop()
     }
-    return Orthogroups.find({ 'ID': ID });
+    return Orthogroups.find({ ID });
   },
   tracks (){
     const publication = this;

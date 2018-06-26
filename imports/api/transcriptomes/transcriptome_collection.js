@@ -16,7 +16,7 @@ const ExperimentInfoSchema = new SimpleSchema({
 		type: String,
 		label: 'Identifier to group together samples from the same replica'
 	},
-	track: {
+	trackId: {
 		type: String,
 		label: 'Annotation track to which the transcriptome is mapped'
 	},

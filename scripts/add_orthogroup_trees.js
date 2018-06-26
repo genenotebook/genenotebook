@@ -11,7 +11,7 @@ if (!module.parent){
   let folder;
 
   commander
-    .arguments('<interproscan_annotation.gff>')
+    .arguments('<folder with newick formatted orthofinder tree files>')
     .option('-u, --username <username>','The user to authenticate as [REQUIRED]')
     .option('-p, --password <password>','The user\'s password [REQUIRED]')
     .action(function(file){

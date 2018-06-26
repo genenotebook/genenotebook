@@ -45,8 +45,6 @@ const Interval = class Interval {
 			this.parents = this.attributes.Parent;
 			delete this.attributes.Parent;
 		}
-		
-		console.log(seqid,referenceSequences[seqid])
 
 		this.seq = referenceSequences[seqid].slice(start - 1, end)
 		if (this.type === 'gene'){
@@ -69,7 +67,6 @@ const Interval = class Interval {
  */
 const GeneModel = class GeneModel {
 	constructor(intervals){
-		console.log('constructing genemodel')
 		Object.values(intervals).forEach( interval => {
 			if (interval.parents !== undefined){
 				interval.parents.forEach( parentId => {
@@ -86,8 +83,6 @@ const GeneModel = class GeneModel {
 		})
 		assert.equal(genes.length, 1)
 		const gene = genes[0]
-
-		console.log(gene.ID)
 
 		Object.keys(gene).forEach(key => {
 			this[key] = gene[key]
@@ -114,9 +109,11 @@ export const addGff = new ValidatedMethod({
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}
-		if (! Roles.userIsInRole(this.userId, 'curator')){
+		if (! Roles.userIsInRole(this.userId, 'admin')){
 			throw new Meteor.Error('not-authorized');
 		}
+
+		console.log(`Adding annotation file "${fileName}" to reference "${referenceName}" as "${trackName}"`)
 
 		const existingTrack = Tracks.find({ trackName }).fetch().length
 		if (existingTrack){

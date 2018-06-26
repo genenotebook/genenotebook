@@ -76,6 +76,7 @@ const SourceGroup = ({source, domains, transform, scale}) => {
 const InterproGroup = ({interproId, sourceGroups, transform, scale}) => {
   //const label = typeof interproId !== 'undefined' ? interproId : 'Unintegrated signature';
   //const label = interproId;
+  const [xMin, xMax] = scale.range();
   const descriptions = new Set();
   Object.entries(sourceGroups).forEach((domainGroup, sourceIndex) => {
     const [source, domains] = domainGroup;
@@ -88,9 +89,14 @@ const InterproGroup = ({interproId, sourceGroups, transform, scale}) => {
   const description = [...descriptions][0];
   return (
     <g transform={transform}>
-      <foreignObject width='400' height='30' x='0' y='-30'>
-        <a href="#" className="badge badge-dark">{interproId}</a>
-        <p>{description}</p>
+      <foreignObject width={xMax} height='25' x='0' y='-22'>
+        <p style={{fontSize: '1rem', fontFamily: 'monospace', overflow: 'hidden', 
+          whitespace: 'nowrap', height: 25, textOverflow: 'ellipsis', wordBreak: 'break-all' }}>
+          <a href="#" className="btn btn-outline-dark px-2 py-0" style={{fontSize: '.7rem'}}>
+            {interproId}
+          </a>
+          &nbsp;{description}
+        </p>
       </foreignObject>
       {
         Object.entries(sourceGroups).map((domainGroup, sourceIndex) => {

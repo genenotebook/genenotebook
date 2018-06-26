@@ -12,12 +12,11 @@ class SampleSelection extends React.Component {
   constructor(props){
     super(props)
     this.state = {
-      options: [],
-      selection: []
+      options: [{value:'loading',label:'loading...'}],
+      selection: ['loading']
     }
   }
   componentWillReceiveProps = nextProps => {
-    console.log(nextProps)
     const options = Object.keys(nextProps.replicaGroups).map(replicaGroup => {
       return {
         value: replicaGroup,
@@ -41,21 +40,25 @@ class SampleSelection extends React.Component {
   }
 
   renderChildren = () => {
-    const samples = this.state.selection.map(replicaGroupId => {
-      return this.props.replicaGroups[replicaGroupId].map(sample => {
+    const { selection } = this.state;
+    const { replicaGroups, gene } = this.props;
+    const _samples = selection.map(replicaGroupId => {
+      return replicaGroups[replicaGroupId].map(sample => {
         return sample
       })
     })
+    const samples = [].concat(..._samples);
 
     return React.Children.map(this.props.children, child => {
       return React.cloneElement(child, {
-        samples: [].concat(...samples),
-        gene: this.props.gene 
+        samples,
+        gene 
       })
     })
   }
 
   render(){
+    const { loading } = this.props;
     return (
       <div>
         <Select 
@@ -65,23 +68,23 @@ class SampleSelection extends React.Component {
           onChange={this.updateSelection} 
         />
         {
-          this.renderChildren()
+          !loading && this.renderChildren()
         }
       </div>
     )
   }
 }
 
-export default withTracker(props => {
+export default withTracker(({ gene, children }) => {
+  const { trackId } = gene;
   const experimentSub = Meteor.subscribe('experimentInfo');
-  const experiments = ExperimentInfo.find({
-    track: props.gene.track
-  }).fetch();
+  const loading = !experimentSub.ready()
+  const experiments = ExperimentInfo.find({ trackId }).fetch();
   const replicaGroups = groupBy(experiments, 'replicaGroup');
   return {
-    loading: !experimentSub.ready(),
-    experiments: experiments,
-    children: props.children,
-    replicaGroups: replicaGroups
+    loading,
+    experiments,
+    children,
+    replicaGroups
   }
 })(SampleSelection);

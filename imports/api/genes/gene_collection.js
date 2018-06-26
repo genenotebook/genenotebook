@@ -122,7 +122,7 @@ const GeneSchema = new SimpleSchema({
   },
   subfeatures: {
     type: Array,//[SubfeatureSchema],
-    //blackbox: true,
+
     optional: true,
     label: 'Array of subfeatures'
   },
@@ -132,12 +132,10 @@ const GeneSchema = new SimpleSchema({
   },
   reference: { 
     type: String,
-    //denyUpdate: true,
     label: 'Reference genome'
   },
   seqid: {
     type: String,
-    //denyUpdate: true,
     label: 'ID of the sequence on which the gene is, e.g. chr1'
   },
   source: {

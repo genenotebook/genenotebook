@@ -4,13 +4,15 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import SimpleSchema from 'simpl-schema';
 import Papa from 'papaparse';
 import fs from 'fs';
+import * as _request from 'request-promise-native';
+const request = _request.default;
+
+import { chunk } from 'lodash';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
 import { Interpro } from '/imports/api/genes/interpro_collection.js'; 
 
 import { formatAttributes } from '/imports/api/util/util.js';
-
-
 
 const debugFormatAttributes = attributeString => {
   arr = attributeString.split(';');
@@ -43,7 +45,7 @@ export const addInterproscan = new ValidatedMethod({
 
     const fileHandle = fs.readFileSync(fileName, { encoding:'binary' });
 
-    const interproIds = new Set();
+    const allInterproIds = new Set();
 
     Papa.parse(fileHandle, {
       delimiter: '\t',
@@ -52,6 +54,7 @@ export const addInterproscan = new ValidatedMethod({
       //comments: '#',
       error(error,file) {
         console.log(error)
+        throw new Meteor.Error(error)
       },
       step(line, parser){
         lineNumber += 1;
@@ -76,18 +79,19 @@ export const addInterproscan = new ValidatedMethod({
             phase,
             attributeString
           ] = data;
+          const interproIds = new Set();
 
           if (type === 'protein_match'){
             if (typeof attributeString !== 'undefined'){
               let attributes;
               try {
                 attributes = formatAttributes(attributeString);
-              } catch(error) {
+              } catch (error) {
                 console.log(`Error line ${lineNumber}`)
                 console.log(data.join('\t'))
                 console.log(attributeString)
                 console.log(debugFormatAttributes(attributeString))
-                throw error
+                throw new Meteor.Error(error)
               }
 
               const name = attributes['Name'][0];
@@ -107,7 +111,8 @@ export const addInterproscan = new ValidatedMethod({
                   if (/InterPro/.test(db)){
                     hasInterpro = true
                     proteinDomain['interpro'] = id;
-                    interproIds.add(id)
+                    allInterproIds.add(id);
+                    interproIds.add(id);
                   }
                 })
                 if (!hasInterpro) {
@@ -124,7 +129,8 @@ export const addInterproscan = new ValidatedMethod({
                 'subfeatures.ID': seqId
               },{ 
                 $addToSet: { 
-                  'subfeatures.$.protein_domains': proteinDomain
+                  'subfeatures.$.protein_domains': proteinDomain,
+                  'attributes.interproIds': [...interproIds]
                 }
               })
             } else {
@@ -136,9 +142,37 @@ export const addInterproscan = new ValidatedMethod({
 
       },
       complete(results,file) {
+        const date = new Date();
         console.log('Finished')
-        console.log(interproIds)
-        //
+        console.log(allInterproIds)
+        const requests = chunk([...allInterproIds],10).map(ids => {
+          console.log(ids);
+          return request(`http://www.ebi.ac.uk/Tools/dbfetch/dbfetch/interpro/${ids.join(',')}/tab`)
+        })
+        Promise.all(requests).then(results => {
+          results.forEach(result => {
+            const lines = result.split('\n');
+            const dbVersion = lines[0].split()[1];
+            lines.forEach((line, lineIndex) => {
+              if ( line[0] !== '#' ) {
+                const [interproId, interproType, shortName, name] = line.split('\t');
+                Interpro.update({
+                  interproId
+                },{
+                  $set :{
+                    interproId, interproType, shortName, name, dbVersion, date
+                  }
+                },
+                {
+                  upsert: true
+                })
+              }
+            })
+          })
+        }).catch(error => {
+          console.log(error)
+          throw new Meteor.Error(error)
+        })
       }
     })
   }

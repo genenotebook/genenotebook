@@ -19,8 +19,8 @@ Meteor.methods({
 			throw new Meteor.Error('not-authorized');
 		}
 
-		const existingTrack = Tracks.find({ trackName: config.trackName }).fetch().length
-		if (!existingTrack){
+		const track = Tracks.findOne({ name: config.trackName });
+		if (!track){
 			throw new Meteor.Error(`Track does not exist: ${config.trackName}`);
 		}
 
@@ -62,7 +62,7 @@ Meteor.methods({
 
 				console.log('Validation finished, start inserting experiment info')
 				const experimentId = ExperimentInfo.insert({
-					track: config.trackName,
+					trackId: track._id,
 					sampleName: config.sampleName,
 					experimentGroup: config.experimentGroup,
 					replicaGroup: config.replicaGroup,

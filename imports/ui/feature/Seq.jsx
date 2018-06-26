@@ -12,11 +12,12 @@ const Controls = (props) => {
       <div className="btn-group btn-group-sm sequence-toggle pull-right" role="group">
         {
           seqTypes.map(seqType => {
+            const active = seqType === props.seqType ? 'active' : '';
             return (
               <button
                 key={seqType}
                 type="button"
-                className={`btn btn-outline-secondary ${seqType === props.seqType ? 'active' : ''}`}
+                className={`btn btn-outline-dark px-2 py-0 ${active}`}
                 onClick={props.selectSeqType.bind(this,seqType)}
               >
                 {seqType === 'prot' ? 'Protein' : 'Nucleotide'}
@@ -27,7 +28,7 @@ const Controls = (props) => {
       </div>
 
       <div className="btn-group btn-group-sm pull-right">
-        <button type="button" className="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <button type="button" className="btn btn-outline-dark dropdown-toggle px-2 py-0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           { props.selectedTranscript } <span className="caret"></span>
         </button>
         <ul className="dropdown-menu">

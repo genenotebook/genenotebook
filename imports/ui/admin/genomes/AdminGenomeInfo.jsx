@@ -50,7 +50,7 @@ class EditGenomeInfo extends React.Component {
               className="form-control" 
               id="referenceName" 
               aria-describedby="referenceName" 
-              value={ genome.referenceName }
+              value={ genome.name }
               onChange={ this.updateField } />
             <small id="referenceNameHelp" className="form-text text-muted">
               Reference names must be unique
@@ -116,7 +116,7 @@ class GenomeInfoLine extends React.Component {
     const { genome, toggleEdit } = this.props;
     return (
       <tr>
-        <td>{genome.referenceName}</td>
+        <td>{genome.name}</td>
         <td>{genome.organism}</td>
         <td>{genome.description}</td>
         <td>

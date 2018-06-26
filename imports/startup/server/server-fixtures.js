@@ -36,6 +36,10 @@ Meteor.startup( () => {
   //add some default attributes to filter on
   const permanentAttributes = [
     {
+      name: 'Note',
+      query: 'attributes.Note'
+    },
+    {
       name: 'Orthogroup',
       query: 'orthogroup'
     },
