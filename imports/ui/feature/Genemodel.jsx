@@ -82,7 +82,7 @@ const Transcript = ({ transcript, exons, scale, strand, genomeId }) => {
           const fill = exon.type === 'CDS' ? baseColor : contrastColor;
           return (
             <rect 
-              key={exon.ID} 
+              key={`${exon.type}..${exon.start}..${exon.end}`} 
               x={scale(exon.start)} 
               width={scale(exon.end) - scale(exon.start)} 
               y={exon.type === 'CDS' ? 0 : 4} 

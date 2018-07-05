@@ -5,7 +5,7 @@ import SimpleSchema from 'simpl-schema';
 import assert from 'assert';
 import Papa from 'papaparse';
 import fs from 'fs';
-import { findIndex, isEqual, isEmpty, mapValues } from 'lodash';
+import { findIndex, isEqual, isEmpty, mapValues, partition } from 'lodash';
 import querystring from 'querystring';
 
 import { Genes, GeneSchema, SubfeatureSchema } from '/imports/api/genes/gene_collection.js';
@@ -72,8 +72,35 @@ const Interval = class Interval {
  */
 const GeneModel = class GeneModel {
 	constructor(intervals){
+		//set parent and children values
+		
+		intervals.forEach(interval => {
+			if (interval.hasOwnProperty('parents')) {
+				interval.parents.forEach(parentId => {
+					const parentIndex = intervals.map(interval => interval.ID).indexOf(parentId);
+					const parent = intervals[parentIndex];
+					if (!parent.hasOwnProperty('children')){
+						parent.children = []
+					}
+					parent.children.push(interval.ID)
+				})
+			}
+		})
+
+		//pull out gene interval
+		//https://lodash.com/docs/4.17.10#partition
+		const [genes, subfeatures] = partition(intervals, interval => interval.type === 'gene');
+		assert.equal(genes.length, 1)
+		const gene = genes[0]
+		Object.assign(this, gene);
+
+		//set subfeatures
+		this.subfeatures = subfeatures;
+
+		/*
 		Object.values(intervals).forEach( interval => {
 			if (interval.parents !== undefined){
+
 				interval.parents.forEach( parentId => {
 					let parent = intervals[parentId]
 					if (parent.children === undefined){
@@ -81,6 +108,7 @@ const GeneModel = class GeneModel {
 					}
 					intervals[parentId].children.push(interval.ID)
 				})
+
 			}
 		})
 		const genes = Object.values(intervals).filter( interval => {
@@ -94,6 +122,7 @@ const GeneModel = class GeneModel {
 		this.subfeatures = Object.values(intervals).filter( interval => {
 			return interval.type !== 'gene';
 		})
+		*/
 	}
 }
 
@@ -140,7 +169,7 @@ const getGenomeSequences = ({ genomeId }) => {
 const gffFileToMongoDb = ({ fileName, genomeId, genomeSequences }) => {
 	return new Promise((resolve, reject) => {
 		const fileHandle = fs.readFileSync(fileName, { encoding: 'binary' });
-		let intervals = {};
+		let intervals = [];//{};
 		let geneCount = 0;
 
 		console.log('Initializing bulk operation');
@@ -168,10 +197,11 @@ const gffFileToMongoDb = ({ fileName, genomeId, genomeSequences }) => {
 							GeneSchema.validate(gene);
 							bulkOp.insert(gene);
 							geneCount += 1;
-							intervals = {}
+							intervals = [];
 						}
 					}
-					intervals[interval.ID] = interval;
+					intervals.push(interval)
+					//intervals[interval.ID] = interval;
 				} catch (error) {
 					reject(error)
 				}
@@ -184,7 +214,7 @@ const gffFileToMongoDb = ({ fileName, genomeId, genomeSequences }) => {
 						GeneSchema.validate(gene);
 						bulkOp.insert(gene);
 						geneCount += 1;
-						intervals = {}
+						//intervals = [];//{}
 					}
 
 					console.log('Executing bulk operation')

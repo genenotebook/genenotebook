@@ -5,13 +5,6 @@ const Genes = new Mongo.Collection('genes');
 
 //create a base schema so we can add it at multiple places
 const IntervalBaseSchema = new SimpleSchema({
-  ID: {
-    type: String,
-    unique: true,
-    index: true,
-    //denyUpdate: true,
-    label: 'Unique gene ID'
-  },
   type: {
     type: String,
     allowedValues: ['gene','mRNA','tRNA','CDS','exon','three_prime_UTR','five_prime_UTR'],
@@ -67,6 +60,13 @@ const IntervalBaseSchema = new SimpleSchema({
 
 //Define subfeature schema first so we can then add it to the gene schema
 const SubfeatureSchema = new SimpleSchema({
+  ID: {
+    type: String,
+    //unique: true,
+    //index: true,
+    //denyUpdate: true,
+    label: 'Unique gene ID'
+  },
   phase: {
     type: SimpleSchema.oneOf(Number,String),
     allowedValues: [0,1,2,'.'],
@@ -100,6 +100,13 @@ const SubfeatureSchema = new SimpleSchema({
 SubfeatureSchema.extend(IntervalBaseSchema);
 
 const GeneSchema = new SimpleSchema({
+  ID: {
+    type: String,
+    unique: true,
+    index: true,
+    //denyUpdate: true,
+    label: 'Unique gene ID'
+  },
   type: {
     type: String,
     allowedValues: ['gene'],

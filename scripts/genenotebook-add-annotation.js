@@ -45,7 +45,7 @@ geneNoteBook.loginWithPassword({ username, password })
 })
 .then(addGenomeResult => {
   const { ok, writeErrors, writeConcernErrors, nInserted } = addGenomeResult;
-  console.log(`Succesfully added ${genomeName} genome in ${nInserted} chunks`)
+  console.log(`Succesfully added ${nInserted} genes`)
   geneNoteBook.disconnect()
 })
 .catch(error => {
