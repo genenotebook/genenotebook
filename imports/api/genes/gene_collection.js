@@ -130,9 +130,9 @@ const GeneSchema = new SimpleSchema({
     type: Object,
     blackbox: true
   },
-  referenceId: { 
+  genomeId: { 
     type: String,
-    label: 'Reference genome DB identifier (_id in ReferenceInfo collection)'
+    label: 'Reference genome DB identifier (_id in genome collection)'
   },
   seqid: {
     type: String,
@@ -151,11 +151,11 @@ const GeneSchema = new SimpleSchema({
     type: String,
     allowedValues: ['+', '-'],
     label: 'Strand'
-  },
+  }/*,
   trackId: {
     type: String,
     label: 'Annotation track DB identifier (_id in Tracks collection)'
-  }
+  }*/
 });
 
 //extend the gene schema with base features

@@ -5,7 +5,7 @@ import React from 'react';
 import { compose } from 'recompose';
 
 import { queryCount } from '/imports/api/methods/queryCount.js';
-import { ReferenceInfo } from '/imports/api/genomes/reference_collection.js';
+import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 
 import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
@@ -41,11 +41,11 @@ const Stats = ({ genomes }) => {
   return <ul className='list-group'>
     {
       genomes.map(genome => {
-        return <li key={genome._id} className='list-group-item'>
-          <div className="d-inline-block mr-1">
+        return <li key={genome._id} className='list-group-item mx-4'>
+          <div className="d-inline-block ml-4">
             { genome.name }
           </div>
-          <div className="d-inline-block ml-1">
+          <div className="d-inline-block mr-4 pull-right">
             <GeneNumber {...genome} />
           </div>
         </li>
@@ -55,18 +55,29 @@ const Stats = ({ genomes }) => {
 }
 
 const statsDataTracker = () => {
-  const genomeSub = Meteor.subscribe('referenceInfo');
+  const genomeSub = Meteor.subscribe('genomes');
   const loading = !genomeSub.ready();
-  const genomes = ReferenceInfo.find({}).fetch();
+  const genomes = genomeCollection.find({}).fetch();
   return {
     loading,
     genomes
   }
 }
 
+const hasNoGenomes = ({ genomes }) => {
+  return typeof genomes === 'undefined' || genomes.length === 0;
+}
+
+const NoGenomes = () => {
+  return <div className='alert alert-dark' role='alert'>
+    <p className='text-muted mb-0'>Currently no genomes are available</p>
+  </div>
+}
+
 const withConditionalRendering = compose(
   withTracker(statsDataTracker),
-  withEither(isLoading, Loading)
+  withEither(isLoading, Loading),
+  withEither(hasNoGenomes, NoGenomes)
 )
 
 const StatsWithDataTracker = withConditionalRendering(Stats);

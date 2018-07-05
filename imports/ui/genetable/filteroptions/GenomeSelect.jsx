@@ -5,41 +5,42 @@ import { compose } from 'recompose';
 import React from 'react';
 import { cloneDeep } from 'lodash';
 
+import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
+
 import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
-import { Tracks } from '/imports/api/genomes/track_collection.js';
 
-const tracksDataTracker = ({...props}) => {
-  const trackSub = Meteor.subscribe('tracks');
-  const loading = !trackSub.ready();
-  const tracks = Tracks.find({}).fetch();
+const genomeDataTracker = ({...props}) => {
+  const genomeSub = Meteor.subscribe('genomes');
+  const loading = !genomeSub.ready();
+  const genomes = genomeCollection.find({ annotationTrack: { $exists: true } }).fetch();
   return {
     loading,
-    tracks,
+    genomes,
     ...props
   }
 }
 
 const withConditionalRendering = compose(
-  withTracker(tracksDataTracker),
+  withTracker(genomeDataTracker),
   withEither(isLoading, Loading)
 )
 
-class TrackSelect extends React.Component {
+class GenomeSelect extends React.Component {
   constructor(props){
     super(props)
     this.state = {
       initialized: false,
       show: '',
-      selectedTracks: new Set()
+      selectedGenomes: new Set()
     }
   }
 
   componentWillReceiveProps = newProps => {
     if (!this.state.initialized){
-      const tracks = newProps.tracks.map(track => track.trackName);
+      const genomes = newProps.genomes.map(genome => genome._id);
       this.setState({
-        selectedTracks: new Set(tracks),
+        selectedGenomes: new Set(genomes),
         initialized: true
       })
     }
@@ -66,70 +67,69 @@ class TrackSelect extends React.Component {
     event.nativeEvent.stopImmediatePropagation();
   }
 
-  toggleTrackSelect = event => {
-    const selectedTracks = cloneDeep(this.state.selectedTracks);
+  toggleGenomeSelect = event => {
+    const selectedGenomes = cloneDeep(this.state.selectedGenomes);
     const query = cloneDeep(this.props.query);
-    const track = event.target.id;
-    if (selectedTracks.has(track)){
-      selectedTracks.delete(track)
+    const genomeId = event.target.id;
+    if (selectedGenomes.has(genomeId)){
+      selectedGenomes.delete(genomeId)
     } else {
-      selectedTracks.add(track)
+      selectedGenomes.add(genomeId)
     }
     
-    this.setState({
-      selectedTracks: selectedTracks
-    })
+    this.setState({ selectedGenomes });
 
-    if (selectedTracks.size < this.props.tracks.length){
-      query.track = { $in: [...selectedTracks]}
-    } else if (query.hasOwnProperty('track')){
-      delete query.track;
+    if (selectedGenomes.size < this.props.genomes.length){
+      query.genomeId = { $in: [...selectedGenomes]}
+    } else if (query.hasOwnProperty('genomeId')){
+      delete query.genomeId;
     }
 
     this.props.updateQuery(query);
   }
 
   selectAll = () => {
-    const tracks = this.props.tracks.map(track => track.trackName);
+    const allGenomes = this.props.genomes.map(genome => genome._id);
+    const selectedGenomes = new Set(allGenomes)
     const query = cloneDeep(this.props.query);
-    this.setState({
-      selectedTracks: new Set(tracks)
-    })
-    if (query.hasOwnProperty('track')){
-      delete query.track
+    this.setState({ selectedGenomes });
+
+    if (query.hasOwnProperty('genomeId')){
+      delete query.genomeId
     }
     this.props.updateQuery(query)
   }
 
   unselectAll = () => {
     const query = cloneDeep(this.props.query);
-    this.setState({
-      selectedTracks: new Set([])
-    })
-    query.track = { $in: [] }
+    const selectedGenomes = new Set([]);
+    this.setState( selectedGenomes );
+    query.genomeId = { $in: [] }
     this.props.updateQuery(query)
   }
 
   render(){
-    const {tracks, ...props} = this.props;
+    const { genomes, ...props } = this.props;
+    const { selectedGenomes } = this.state;
     return ( 
       <Dropdown>
         <DropdownButton className='btn btn-sm btn-outline-dark dropdown-toggle px-2 py-0'>
-          Tracks&nbsp;
+          Genomes&nbsp;
           <span className='badge badge-dark'>
-            {`${this.state.selectedTracks.size}/${tracks.length}`}
+            {`${selectedGenomes.size}/${genomes.length}`}
           </span>
         </DropdownButton>
         <DropdownMenu>
           <h6 className="dropdown-header">Select annotation tracks</h6>
           {
-            tracks.map(({ trackName }) => {
-              const checked = this.state.selectedTracks.has(trackName);// ? ' active': '';
+            genomes.map(({ _id, name }) => {
+              console.log(_id,name)
+              const checked = selectedGenomes.has(_id);
               return (
-                <div key={`${trackName}${checked}`} className='form-check'>
-                  <input type='checkbox' className='form-check-input' id={trackName}
-                    checked={checked} onChange={this.toggleTrackSelect} />
-                  <label className='form-check-label'>{trackName}</label>
+                <div key={`${_id}${checked}`} className='form-check'>
+                  <input type='checkbox' className='form-check-input' id={_id}
+                    checked={checked} onChange={this.toggleGenomeSelect} />
+                  <label className='form-check-label'>{name}</label>
                 </div>
               )
             })
@@ -156,5 +156,5 @@ class TrackSelect extends React.Component {
   }
 }
 
-export default withConditionalRendering(TrackSelect);
+export default withConditionalRendering(GenomeSelect);
 

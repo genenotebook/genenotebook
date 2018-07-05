@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+'use strict';
+const program = require('commander');
+
+program
+    .version('0.0.1', '-v, --version')
+    .command('run', 'Run a GeneNoteBook server')
+    .command('add [type]', 'Add data to a running GeneNoteBook server')
+    .command('remove [type]', 'Remove data from a running GeneNoteBook server')
+    .command('list', 'List contents of a running GeneNoteBook server')
+    .parse(process.argv);

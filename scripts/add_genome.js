@@ -12,19 +12,19 @@ if (!module.parent){
 	let fileName;
 
 	commander
-		.arguments('<reference.fasta>')
+		.arguments('<genome.fasta>')
 		.option('-u, --username <username>','The user to authenticate as [REQUIRED]')
 		.option('-p, --password <password>','The user\'s password [REQUIRED]')
 		.option('-s, --settings [settings file]', 'JSON file with GeneNoteBook settings, default is settings.json')
-		.option('-r, --referencename [reference name]','Reference name, default is fasta filename')
+		.option('-n, --name [genome name]','Genome name, default is fasta filename')
 		.action(function(file){ fileName = path.resolve(file) })
 		.on('--help', () => {
 			console.log('');
 			console.log('  Examples:') 
 			console.log('')
-			console.log('    $ node add_reference.js -u admin -p admin -s example_settings.json -r testdata testdata.fasta')
-			console.log('    $ node add_reference.js --user admin --password admin --settings ' +
-				'example_settings.json --referencename testdata testdata.fasta')
+			console.log('    $ node add_genome.js -u admin -p admin -s example_settings.json -n testdata testdata.fasta')
+			console.log('    $ node add_genome.js --user admin --password admin --settings ' +
+				'example_settings.json --name testdata testdata.fasta')
 			console.log('')
 		})
 		.parse(process.argv)
@@ -35,7 +35,7 @@ if (!module.parent){
 		commander.help()
 	}
 
-	const referenceName = commander.referencename || fileName.split('/').pop();
+	const genomeName = commander.name || fileName.split('/').pop();
 
 	const settingsFile = commander.settings || 'settings.json';
 	const settingString = fs.readFileSync(settingsFile)
@@ -50,11 +50,11 @@ if (!module.parent){
 
 	geneNoteBook.loginWithPassword({ username, password })
 	.then(loginResult => {
-		return geneNoteBook.call('addReference', { fileName, referenceName })
+		return geneNoteBook.call('addGenome', { fileName, genomeName })
 	})
-	.then(addReferenceResult => {
-		const { ok, writeErrors, writeConcernErrors, nInserted } = addReferenceResult;
-		console.log(`Succesfully added ${nInserted} reference sequences`)
+	.then(addGenomeResult => {
+		const { ok, writeErrors, writeConcernErrors, nInserted } = addGenomeResult;
+		console.log(`Succesfully added ${genomeName} genome in ${nInserted} chunks`)
 		geneNoteBook.disconnect()
 	})
 	.catch(error => {

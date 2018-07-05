@@ -4,18 +4,18 @@ import { Roles } from 'meteor/alanning:roles';
 
 import SimpleSchema from 'simpl-schema';
 
-import { Tracks } from './track_collection.js';
+import { genomeCollection } from './genomeCollection.js';
 import { Genes } from '/imports/api/genes/gene_collection.js';
 
 export const removeAnnotationTrack = new ValidatedMethod({
   name: 'removeAnnotationTrack',
   validate: new SimpleSchema({
-    trackId: { type: String }
+    genomeId: { type: String }
   }).validator(),
   applyOptions: {
     noRetry: true
   },
-  run({ trackId }){
+  run({ genomeId }){
     if (! this.userId) {
       throw new Meteor.Error('not-authorized');
     }
@@ -23,10 +23,9 @@ export const removeAnnotationTrack = new ValidatedMethod({
       throw new Meteor.Error('not-authorized');
     }
 
-    const track = Tracks.findOne({ _id: trackId });
+    Genes.remove({ genomeId });
 
-    Genes.remove({ track: track.name });
-
-    Tracks.remove({ _id: trackId });
+    genomeCollection.update({ _id: genomeId }, { $unset: { annotationTrack: true } })
+    //Tracks.remove({ _id: trackId });
   }
 })

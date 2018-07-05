@@ -1,10 +1,12 @@
 import React from 'react';
 import { isEqual } from 'lodash';
 
-import { updateReferenceInfo } from '/imports/api/genomes/updateReferenceInfo.js';
+import { updateGenome } from '/imports/api/genomes/updateGenome.js';
 import { removeGenome } from '/imports/api/genomes/removeGenome.js';
 
 import PermissionSelect from '/imports/ui/util/PermissionSelect.jsx';
+
+import AnnotationInfo from './AnnotationInfo.jsx';
 
 class EditGenomeInfo extends React.Component {
   constructor(props){
@@ -31,10 +33,15 @@ class EditGenomeInfo extends React.Component {
   }
 
   saveChanges = () => {
-    updateReferenceInfo.call(this.state, (err,res) => {
+    updateGenome.call(this.state, (err,res) => {
       if (err) alert(err);
       this.props.toggleEdit();
     })
+  }
+
+  removeGenome = event => {
+    const genomeId = event.target.name;
+    removeGenome.call({ genomeId })
   }
 
   render(){
@@ -86,59 +93,34 @@ class EditGenomeInfo extends React.Component {
             disabled={false} />
         </td>
         <td>
-          <div className='btn-group'>
+          <AnnotationInfo { ...genome.annotationTrack }
+            genomeId={genome._id}
+            disabled={false} />
+        </td>
+        <td>
+          <div className='btn-group d-block'>
             <button
               type='button' 
               className='btn btn-outline-success btn-sm px-2 py-0'
               onClick={this.saveChanges}
               disabled={!hasChanges} >
-              Save
+              <i className="fa fa-check" /> Save
             </button>
             <button 
               type='button' 
               className='btn btn-outline-dark btn-sm px-2 py-0'
-              onClick={toggleEdit}
-            >Cancel</button>
+              onClick={toggleEdit} >
+              <i className="fa fa-remove" /> Cancel
+            </button>
           </div>
-        </td>
-      </tr>
-    )
-  }
-}
-
-class GenomeInfoLine extends React.Component {
-  removeGenome = event => {
-    const genomeId = event.target.name;
-    removeGenome.call({ genomeId })
-  }
-
-  render(){
-    const { genome, toggleEdit } = this.props;
-    return (
-      <tr>
-        <td>{genome.name}</td>
-        <td>{genome.organism}</td>
-        <td>{genome.description}</td>
-        <td>
-          <PermissionSelect 
-            permissions={genome.permissions}
-            disabled={true} />
-        </td>
-        <td>
-          <div className='btn-group'>
-            <button 
-              type='button' 
-              className='btn btn-outline-dark btn-sm px-2 py-0'
-              onClick={toggleEdit}
-              name={genome._id}>
-              <i className="fa fa-pencil" /> Edit
-            </button>
+          <hr/>
+          <div className='btn-group d-block'>
             <button 
               type='button' 
               className='btn btn-danger btn-sm px-2 py-0'
               onClick={ this.removeGenome }
               name={genome._id}>
-              <i className="fa fa-exclamation-circle" /> Delete
+              <i className="fa fa-exclamation-circle" /> Delete genome <i className="fa fa-exclamation-circle" />
             </button>
           </div>
         </td>
@@ -147,7 +129,39 @@ class GenomeInfoLine extends React.Component {
   }
 }
 
-export default class AdminGenomeInfo extends React.Component {
+const GenomeInfoLine = ({ genome, toggleEdit }) => {
+  const { _id, name, organism, description, permissions, annotationTrack } = genome;
+  return <tr>
+    <td>{ name }</td>
+    <td>{ organism }</td>
+    <td>{ description }</td>
+    <td>
+      <PermissionSelect 
+        permissions={ permissions }
+        disabled={true} />
+    </td>
+    <td>
+      <AnnotationInfo { ...annotationTrack }
+        genomeId={_id}
+        disabled={true} />
+    </td>
+    <td>
+      <div className='btn-group'>
+        <button 
+          type='button' 
+          className='btn btn-outline-dark btn-sm px-2 py-0'
+          onClick={ toggleEdit }
+          name={ _id }>
+          <i className="fa fa-pencil" /> Edit&nbsp;
+        </button>
+        
+      </div>
+    </td>
+  </tr>
+}
+
+
+export default class GenomeInfo extends React.Component {
   constructor(props){
     super(props)
     this.state = {

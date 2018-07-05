@@ -12,12 +12,11 @@ if (!module.parent){
 	let fileName;
 
 	commander
-		.arguments('<genome_annotation.gff>')
+		.arguments('<genome_annotation.gff3>')
 		.option('-u, --username <username>','User to authenticate as [REQUIRED]')
 		.option('-p, --password <password>','User password to authenticate with [REQUIRED]')
-		.option('-r, --reference <reference genome name>','Reference genome name to which the annotation belongs [REQUIRED]')
+		.option('-g, --genome-name <reference genome name>','Reference genome name to which the annotation belongs [REQUIRED]')
 		.option('-s, --settings [settings file]', 'JSON file with GeneNoteBook settings (default is settings.json)')
-		.option('-t, --trackname [annotation trackname]','Name of the annotation track (default is annotation gff filename)')
 		.action(function(file){
 			fileName = path.resolve(file);
 		})
@@ -26,23 +25,24 @@ if (!module.parent){
 			console.log('  Examples:') 
 			console.log('')
 			console.log('    $ node add_annotation.js -u admin -p admin -s example_settings.json ' + 
-				'-r testdata -t testdata_annotation testdata.gff3')
+				'-g testdata testdata.gff3')
 			console.log('    $ node add_annotation.js --user admin --password admin --settings example_settings.json ' + 
-				'--reference testdata --trackname testdata_annotation testdata.gff3')
+				'--genomename testdata testdata.gff3')
 			console.log('')
 		})
 		.parse(process.argv)
 
-	const { username, password, reference } = commander;
-	const referenceName = reference;
+	const { username, password, genomeName } = commander;
 
-	if (!( username || password || reference || fileName )){
+	if (!( username || password || genomename || fileName )){
 		commander.help()
 	}
 
-	const trackName = commander.trackname || fileName.split('/').pop();
+
+	//const trackName = commander.name || fileName.split('/').pop();
 
 	const settingsFile = commander.settings || 'settings.json';
+	console.log(`Using ${settingsFile} for settings`);
 	const settingString = fs.readFileSync(settingsFile)
 	const settings = JSON.parse(settingString);
 
@@ -55,7 +55,7 @@ if (!module.parent){
 
 	geneNoteBook.loginWithPassword({ username, password })
 	.then(loginResult => {
-		return geneNoteBook.call('addAnnotationTrack', { fileName, referenceName, trackName})
+		return geneNoteBook.call('addAnnotationTrack', { fileName, genomeName })
 	})
 	.then(addGffResult => {
 		const { ok, writeErrors, writeConcernErrors, nInserted } = addGffResult;

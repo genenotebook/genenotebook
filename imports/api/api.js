@@ -5,18 +5,19 @@ import './publications.js';
 import './transcriptomes/add_transcriptome.js';
 import './transcriptomes/updateSampleInfo.js';
 
-import './genomes/addReference.js';
+import './genomes/addGenome.js';
+import './genomes/updateGenome.js';
+import './genomes/removeGenome.js';
 import './genomes/addAnnotationTrack.js';
 import './genomes/updateTrackPermissions.js';
-import './genomes/updateReferenceInfo.js';
 import './genomes/removeAnnotationTrack.js';
-import './genomes/removeGenome.js';
+
 
 import './genes/interproscan.js';
 import './genes/add_interproscan.js';
 import './genes/add_orthogroup_trees.js';
 import './genes/download_genes.js';
-import './genes/scan_attributes.js';
+import './genes/scanGeneAttributes.js';
 
 import './blast/makeblastdb.js';
 import './blast/hasblastdb.js';

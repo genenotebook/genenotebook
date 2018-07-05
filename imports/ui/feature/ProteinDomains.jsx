@@ -1,10 +1,14 @@
 import React from 'react';
+import { compose } from 'recompose';
 import { scaleLinear } from 'd3-scale';
 import { groupBy } from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';
 import randomColor from 'randomcolor';
 
+
 import { getGeneSequences } from '/imports/api/util/util.js';
+
+import { withEither } from '/imports/ui/util/uiUtil.jsx';
 
 
 const XAxis = ({ scale, numTicks, transform, seqid }) => {
@@ -131,7 +135,26 @@ const sortGroups = (groupA, groupB) => {
   return startA - startB
 }
 
-export default class ProteinDomains extends React.Component {
+const hasNoProteinDomains = ({ gene }) => {
+  const transcripts = gene.subfeatures.filter(sub => sub.type === 'mRNA');
+  const proteinDomains = transcripts.filter(transcript => typeof transcript.protein_domains !== 'undefined');
+
+  return proteinDomains.length === 0
+}
+
+const NoProteinDomains = () => {
+  return <div className="card protein-domains px-1 pt-1 mb-0">
+    <div className="alert alert-dark mx-1 mt-1" role="alert">
+      <p className="text-center text-muted mb-0">No protein domains found</p>
+    </div>
+  </div>
+}
+
+const withConditionalRendering = compose(
+  withEither(hasNoProteinDomains, NoProteinDomains)
+)
+
+class ProteinDomains extends React.Component {
   constructor(props){
     super(props)
     this.state = {
@@ -154,7 +177,7 @@ export default class ProteinDomains extends React.Component {
     //get sequence to determine length
     const sequences = getGeneSequences(gene);
     //interproscan results should be on transcripts
-    const transcripts = this.props.gene.subfeatures.filter(sub =>  sub.type == 'mRNA');
+    const transcripts = gene.subfeatures.filter(sub =>  sub.type == 'mRNA');
     //for now we only look at the primary transcript
     const transcript = transcripts.filter(transcript => transcript.ID.endsWith('1'))[0];
     const transcriptSequence = sequences.filter(seq => seq.ID === transcript.ID)[0]
@@ -218,3 +241,7 @@ export default class ProteinDomains extends React.Component {
     )
   }
 }
+
+//export default ProteinDomains
+export default withConditionalRendering(ProteinDomains)
+

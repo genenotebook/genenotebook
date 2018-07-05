@@ -53,8 +53,8 @@ const dataTracker = ({ query, scrollLimit, selectedGenes, updateSelection, selec
  * @param  {[type]} props [description]
  * @return {[type]}       [description]
  */
-const hasNoResults = props => {
-  return props.genes.length === 0
+const hasNoResults = ({ genes }) => {
+  return typeof genes === 'undefined' || genes.length === 0
 }
 
 /**

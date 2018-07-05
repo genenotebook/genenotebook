@@ -9,23 +9,19 @@ error_cleanup() {
   rm -rf genenotebook_bundle genenotebook_bundle.tgz
 }
 
-trap error_cleanup ERR
-
 exit_cleanup() {
   rm -rf genenotebook_bundle
 }
 
-trap exit_cleanup EXIT
-
 if [ $# -eq 0 ]
 	then
-	echo "WARNING: no settings file provided. Using example_settings.json"
-	if [ ! -f example_settings.json ]
+	echo "WARNING: no config file provided. Using example_config.json"
+	if [ ! -f example_config.json ]
 		then
-		echo "ERROR: example_settings.json not found!"
+		echo "ERROR: example_config.json not found!"
 		exit 1
 	else
-		SETTINGS=example_settings.json
+		CONFIG=example_config.json
 	fi
 else
 	if [ ! -f "$1" ]
@@ -33,7 +29,7 @@ else
 		echo "ERROR: $1 not found!"
 		exit 1
 	else
-		SETTINGS=$1
+		CONFIG=$1
 	fi
 fi
 
@@ -45,9 +41,7 @@ popd &&\
 pushd scripts &&\
 npm install &&\
 popd &&\
-cp -r scripts genenotebook_bundle &&\
-cp $SETTINGS genenotebook_bundle/settings.json &&\
-cp genenotebook.sh genenotebook_bundle &&\
-chmod +775 genenotebook_bundle/genenotebook.sh &&\
+cp -r scripts/* genenotebook_bundle &&\
+cp $CONFIG genenotebook_bundle/config.json &&\
 cp -r testdata genenotebook_bundle &&\
 tar cvzf genenotebook_bundle.tgz genenotebook_bundle 

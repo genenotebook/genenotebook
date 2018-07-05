@@ -3,16 +3,16 @@ import { withTracker } from 'meteor/react-meteor-data';
 import React from 'react';
 import { compose } from 'recompose';
 
-import { ReferenceInfo } from '/imports/api/genomes/reference_collection.js';
+import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 
 import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
-import AdminGenomeInfo from './AdminGenomeInfo.jsx';
+import GenomeInfo from './GenomeInfo.jsx';
 
 const adminGenomesDataTracker = () => {
-  const subscription = Meteor.subscribe('referenceInfo');
+  const subscription = Meteor.subscribe('genomes');
   const loading = !subscription.ready();
-  const genomes = ReferenceInfo.find({}).fetch();
+  const genomes = genomeCollection.find({}).fetch();
   return {
     genomes,
     loading
@@ -31,7 +31,7 @@ const AdminGenomes = ({ genomes }) => {
         <thead>
           <tr>
             {
-              ['Reference name','Organism','Description','Permissions','Actions'].map(label => {
+              ['Reference name','Organism','Description','Permissions','Annotation track','Actions'].map(label => {
                 return <th key={label} id={label}>
                   <button className='btn btn-sm btn-outline-dark px-2 py-0' disabled>
                     {label}
@@ -44,7 +44,7 @@ const AdminGenomes = ({ genomes }) => {
         <tbody>
           {
             genomes.map(genome => {
-              return <AdminGenomeInfo key={genome._id} genome={genome} />
+              return <GenomeInfo key={genome._id} genome={genome} />
             })
           }
         </tbody>

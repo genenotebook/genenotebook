@@ -2,11 +2,11 @@
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
-
 import ReactResizeDetector from 'react-resize-detector';
-
 //import { Popover, OverlayTrigger } from 'react-bootstrap';
 import { scaleLinear } from 'd3-scale';
+import randomColor from 'randomcolor';
+import Color from 'color';
 
 import './genemodel.scss'
 
@@ -52,7 +52,12 @@ const XAxis = ({ scale, numTicks, transform, seqid }) => {
 }
 
 
-const Transcript = ({transcript, exons, scale, strand}) => {
+const Transcript = ({ transcript, exons, scale, strand, genomeId }) => {
+  const baseColor = new Color(randomColor({ seed: genomeId }));
+  const contrastColor = baseColor.isLight() ? 
+    baseColor.darken(0.5).saturate(0.3) : 
+    baseColor.lighten(0.5).desature(0.3);
+
   //put CDS exons last so they get drawn last and are placed on top
   exons.sort((exon1,exon2) => {
     return exon1.type === 'CDS' ? 1 : -1
@@ -67,21 +72,22 @@ const Transcript = ({transcript, exons, scale, strand}) => {
       <line 
         x1={scale(x1)} 
         x2={scale(x2)} 
-        y1='5' 
-        y2='5' 
+        y1='6' 
+        y2='6' 
         stroke='black'
         markerEnd='url(#arrowEnd)'
       />
       {
         exons.map(exon => {
+          const fill = exon.type === 'CDS' ? baseColor : contrastColor;
           return (
             <rect 
               key={exon.ID} 
               x={scale(exon.start)} 
               width={scale(exon.end) - scale(exon.start)} 
-              y={exon.type === 'CDS' ? 0 : 2.5} 
-              height={exon.type === 'CDS' ? 10 : 5}
-              fill={exon.type === 'CDS' ? 'darkorange' : 'brown'}/>
+              y={exon.type === 'CDS' ? 0 : 4} 
+              height={exon.type === 'CDS' ? 12 : 4}
+              fill={fill.rgb()} />
           )
         })
       }
@@ -97,7 +103,7 @@ const GenemodelGroup = ({gene, transcripts, width, scale}) => {
           const exons = gene.subfeatures.filter(subfeature => subfeature.parents.indexOf(transcript.ID) >= 0)
           return (
             <g key={index} className='transcript' transform={`translate(0,${index * 12})`} >
-              <Transcript exons={exons} transcript={transcript} scale={scale} strand={gene.strand}/>
+              <Transcript exons={exons} transcript={transcript} scale={scale} {...gene}/>
             </g>
           )
         })

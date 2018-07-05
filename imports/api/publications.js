@@ -8,8 +8,8 @@ import { Attributes } from '/imports/api/genes/attribute_collection.js';
 import { Interpro } from '/imports/api/genes/interpro_collection.js';
 import { Orthogroups } from '/imports/api/genes/orthogroup_collection.js';
 import { EditHistory } from '/imports/api/genes/edithistory_collection.js';
-import { Tracks } from '/imports/api/genomes/track_collection.js';
-import { References, ReferenceInfo } from '/imports/api/genomes/reference_collection.js';
+//import { Tracks } from '/imports/api/genomes/track_collection.js';
+import { genomeSequenceCollection, genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 import { ExperimentInfo, Transcriptomes } from '/imports/api/transcriptomes/transcriptome_collection.js';
 
 Meteor.publish({
@@ -30,24 +30,43 @@ Meteor.publish({
     //get user roles
     const roles = Roles.getRolesForUser(publication.userId);
 
-    //get accessable tracks that user can subscribe to
-    const tracks = Tracks.find({
-      permissions: {
-        $in: roles
-      }
-    }).map(track => track.trackName)
+    //get Ids of genomes user has access to
+    const userGenomes = genomeCollection.find({ 
+      permissions: { 
+        $in: roles 
+      } 
+    }).map(genome => genome._id)
 
-    //if a track is requested in the query it should be in the list of accessable tracks
-    if ( query.hasOwnProperty('track') ){
-      //array intersection in javascript: 
-      //https://stackoverflow.com/questions/1885557/simplest-code-for-array-intersection-in-javascript
-      const queryTracks = query['track']['$in'].filter(track => {
-        return tracks.indexOf(track) !== -1
-      })
-      query.track = { $in: queryTracks }
+    if (query.hasOwnProperty('genomeId')){
+      const queryGenomes = query.genomeId['$in'].filter(genomeId => {
+        //return userGenomes.indexOf(genomeId) !== -1
+        return userGenomes.includes(genomeId)
+      });
+      query.genomeId['$in'] = queryGenomes;
+    } else {
+      query.genomeId = { $in: userGenomes };
     }
 
     return Genes.find(query, {sort: sort, limit: limit})
+  },
+  singleGene (geneId) {
+    const publication = this;
+    if (!publication.userId){
+      publication.stop()
+    }
+    const roles = Roles.getRolesForUser(publication.userId);
+    
+    const genomeIds = genomeCollection.find({
+      permissions: { $in: roles }
+    }).map(genome => {
+      return genome._id
+    })
+    return Genes.find({
+      ID: geneId,
+      genomeId: {
+        $in: genomeIds
+      }
+    })
   },
   users(){
     const publication = this;
@@ -80,34 +99,19 @@ Meteor.publish({
       publication.stop()
     }
     const roles = Roles.getRolesForUser(publication.userId);
-    const tracks = Tracks.find({
+    const genomes = genomeCollection.find({
+      permissions: { $in: roles }
+    }).fetch().map(genome => genome._id)
+    /*const tracks = Tracks.find({
       permissions: { $in: roles }
     }).fetch().map(track => {
       return track._id
-    })
+    })*/
     return Attributes.find({
       $or: [
-        { tracks: { $in: tracks } },
-        { allReferences: true }
+        { genomes: { $in: genomes } },
+        { allGenomes: true }
       ]
-    })
-  },
-  singleGene (geneId) {
-    const publication = this;
-    if (!publication.userId){
-      publication.stop()
-    }
-    const roles = Roles.getRolesForUser(publication.userId);
-    const tracks = Tracks.find({
-      permissions: { $in: roles }
-    }).fetch().map(track => {
-      return track._id
-    })
-    return Genes.find({
-      ID: geneId,
-      trackId: {
-        $in: tracks
-      }
     })
   },
   geneExpression (geneId) {
@@ -149,21 +153,21 @@ Meteor.publish({
     }
     return jobQueue.find({});
   },
-  referenceInfo () {
+  genomes () {
     const publication = this;
     if (!publication.userId){
       publication.stop()
     }
     const roles = Roles.getRolesForUser(publication.userId);
     const permissions = { $in: roles };
-    return ReferenceInfo.find({ permissions })
+    return genomeCollection.find({ permissions })
   },
   orthogroups (ID) {
     if (!this.userId){
       this.stop()
     }
     return Orthogroups.find({ ID });
-  },
+  },/*
   tracks (){
     const publication = this;
     if (!publication.userId){
@@ -177,7 +181,7 @@ Meteor.publish({
         $in: roles
       }
     });
-  },
+  },*/
   interpro (){
     if (!this.userId){
       this.stop()

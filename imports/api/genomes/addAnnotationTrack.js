@@ -9,10 +9,10 @@ import { findIndex, isEqual, isEmpty, mapValues } from 'lodash';
 import querystring from 'querystring';
 
 import { Genes, GeneSchema, SubfeatureSchema } from '/imports/api/genes/gene_collection.js';
-import { References, ReferenceInfo } from '/imports/api/genomes/reference_collection.js';
+import { genomeSequenceCollection, genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 import { Tracks } from '/imports/api/genomes/track_collection.js';
 
-import { scanGeneAttributes } from '/imports/api/genes/scan_attributes.js';
+import { scanGeneAttributes } from '/imports/api/genes/scanGeneAttributes.js';
 import { formatAttributes } from '/imports/api/util/util.js';
 
 /**
@@ -27,7 +27,7 @@ querystring.unescape = uri => uri;
  * @type {Interval}
  */
 const Interval = class Interval {
-	constructor({ gffLine, trackId, referenceId , referenceSequences }){
+	constructor({ gffLine, genomeId , genomeSequences }){ //, trackId
 		assert.equal(gffLine.length, 9)
 		const [ seqid, source, type, start, end,
 			_score, strand, phase, _attributes ] = gffLine
@@ -36,11 +36,6 @@ const Interval = class Interval {
 		Object.assign(this, {
 			type, start, end, score, attributes
 		})
-		//this.type = type;
-		//this.start = start;
-		//this.end = end;
-		//this.score = String(score);
-		//this.attributes = formatAttributes(attributes);
 
 		this.ID = this.attributes.ID[0];
 		delete this.attributes.ID;
@@ -50,16 +45,19 @@ const Interval = class Interval {
 			delete this.attributes.Parent;
 		}
 
-		this.seq = referenceSequences[seqid].slice(start - 1, end)
+		try {
+			this.seq = genomeSequences[seqid].slice(start - 1, end)
+		} catch (error) {
+			console.log(seqid)
+			throw new Meteor.Error(`${seqid} is not a valid sequenceId for genome ${genomeId}`)
+		}
+
+
 		if (this.type === 'gene'){
 			Object.assign(this, {
-				seqid, source, strand, referenceId, trackId
+				seqid, source, strand, genomeId//, trackId
 			})
-				//this.seqid = seqid;
-				//this.source = source;
-				//this.strand = strand;
-				//this.referenceId = referenceId;
-				//this.trackId = trackId;
+
 			GeneSchema.validate(this)
 		} else {
 			this.phase = phase
@@ -93,10 +91,6 @@ const GeneModel = class GeneModel {
 
 		Object.assign(this, gene);
 
-		//Object.keys(gene).forEach(key => {
-		//	this[key] = gene[key]
-		//})
-
 		this.subfeatures = Object.values(intervals).filter( interval => {
 			return interval.type !== 'gene';
 		})
@@ -105,14 +99,14 @@ const GeneModel = class GeneModel {
 
 /**
  * [description]
- * @param  {String} options.referenceId [description]
+ * @param  {String} options.genomeId [description]
  * @return {Promise}                     [description]
  */
-const getReferenceSequences = ({ referenceId }) => {
+const getGenomeSequences = ({ genomeId }) => {
 	return new Promise((resolve, reject) => {
 		try {
-			console.log(`getReferenceSequences DB query { referenceId: ${referenceId} } count ${References.find({ referenceId }).count()}`);
-			const sequenceGroups = References.find({ referenceId })
+			console.log(`getGenomeSequences DB query { genomeId: ${genomeId} } count ${genomeSequenceCollection.find({ genomeId }).count()}`);
+			const sequenceGroups = genomeSequenceCollection.find({ genomeId })
 				.fetch()
 				.reduce((refs, refPart) => {
 					const { header, seq, start } = refPart;
@@ -123,12 +117,12 @@ const getReferenceSequences = ({ referenceId }) => {
 					return refs
 				},{})
 
-			const referenceSequences = mapValues(sequenceGroups, sequenceGroup => {
+			const genomeSequences = mapValues(sequenceGroups, sequenceGroup => {
 				return sequenceGroup.sort((a, b) => a.start - b.start)
 					.map(seqPart => seqPart.seq)
 					.join('')
 			})
-			resolve(referenceSequences)
+			resolve(genomeSequences)
 		} catch (error) {
 			reject(error)
 		}
@@ -138,12 +132,12 @@ const getReferenceSequences = ({ referenceId }) => {
 /**
  * [description]
  * @param  {String} options.fileName           [description]
- * @param  {String} options.referenceId        [description]
- * @param  {Object} options.referenceSequences [description]
+ * @param  {String} options.genomeeId        [description]
+ * @param  {Object} options.genomeeSequences [description]
  * @param  {String} options.trackId            [description]
  * @return {Promise}                            [description]
  */
-const gffFileToMongoDb = ({ fileName, referenceId, referenceSequences, trackId }) => {
+const gffFileToMongoDb = ({ fileName, genomeId, genomeSequences }) => {
 	return new Promise((resolve, reject) => {
 		const fileHandle = fs.readFileSync(fileName, { encoding: 'binary' });
 		let intervals = {};
@@ -165,8 +159,7 @@ const gffFileToMongoDb = ({ fileName, referenceId, referenceSequences, trackId }
 				try {
 					const { data } = line;
 					const [ gffLine ] = data;
-					//const gffLine = line.data[0]
-					let interval = new Interval({ gffLine, referenceId, trackId, referenceSequences })
+					let interval = new Interval({ gffLine, genomeId, genomeSequences })//, trackId
 
 					if (interval.parents === undefined){
 						assert.equal(interval.type, 'gene');
@@ -197,6 +190,16 @@ const gffFileToMongoDb = ({ fileName, referenceId, referenceSequences, trackId }
 					console.log('Executing bulk operation')
 					const result = bulkOp.execute();
 					
+					genomeCollection.update({
+						_id: genomeId
+					},{
+						$set: {
+							annotationTrack : {
+								name: fileName.split('/').pop()
+							}
+						}
+					})
+					/*
 					Tracks.update({ 
 						_id: trackId 
 					},{
@@ -205,7 +208,7 @@ const gffFileToMongoDb = ({ fileName, referenceId, referenceSequences, trackId }
 						}
 					})
 
-					scanGeneAttributes.call({ trackId });
+					scanGeneAttributes.call({ trackId });*/
 					resolve(result)
 				} catch (error) {
 					reject(error)
@@ -219,13 +222,12 @@ export const addAnnotationTrack = new ValidatedMethod({
 	name: 'addAnnotationTrack',
 	validate: new SimpleSchema({
 		fileName: { type: String },
-		referenceName: { type: String },
-		trackName: { type: String }
+		genomeName: { type: String }
 	}).validator(),
 	applyOptions: {
 		noRetry: true
 	},
-	run({ fileName, referenceName, trackName }){
+	run({ fileName, genomeName }){
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}
@@ -233,30 +235,31 @@ export const addAnnotationTrack = new ValidatedMethod({
 			throw new Meteor.Error('not-authorized');
 		}
 
-		console.log(`Adding annotation file "${fileName}" to reference "${referenceName}" as "${trackName}"`)
+		console.log(`Adding annotation file "${fileName}" to genome "${genomeName}"`)
 
+		const existingGenome = genomeCollection.findOne({ name: genomeName })
+		if (!existingGenome){
+			throw new Meteor.Error(`Invalid genome name: ${genomeName}`)
+		}
+
+		if (typeof existingGenome.annotationTrack !== 'undefined'){
+			throw new Meteor.Error(`Genome ${genomeName} already has an annotation track`);
+		}
+
+		/*
 		const existingTrack = Tracks.findOne({ name: trackName });
 		if (existingTrack){
 			throw new Meteor.Error('Track exists: ' + trackName);
 		}
 
-		const existingReference = ReferenceInfo.findOne({ name: referenceName })
-		if (!existingReference){
-			throw new Meteor.Error('Invalid reference: ' + referenceName)
-		}
+		
+		*/
+		const genomeId = existingGenome._id;
 
-		const referenceId = existingReference._id;
-
-		const trackId = Tracks.insert({
-			name: trackName,
-			referenceId: referenceId,
-			permissions: ['admin']
-		});
-
-		console.log(`Gathering reference sequences for ${trackName}`);
-		return getReferenceSequences({ referenceId })
-			.then(referenceSequences => {
-				return gffFileToMongoDb({ fileName, referenceId, referenceSequences, trackId })
+		console.log(`Gathering genome sequences for ${genomeName}`);
+		return getGenomeSequences({ genomeId })
+			.then(genomeSequences => {
+				return gffFileToMongoDb({ fileName, genomeId, genomeSequences })//, trackId })
 			})
 			.catch(error => {
 				console.log(error);

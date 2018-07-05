@@ -3,8 +3,8 @@ import { withTracker } from 'meteor/react-meteor-data';
 import React from 'react';
 
 import { Attributes } from '/imports/api/genes/attribute_collection.js';
-import { Tracks } from '/imports/api/genomes/track_collection.js';
-import { scanGeneAttributes } from '/imports/api/genes/scan_attributes.js';
+import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
+import { scanGeneAttributes } from '/imports/api/genes/scanGeneAttributes.js';
 
 class AdminAttributes extends React.Component {
   constructor(props){
@@ -14,10 +14,10 @@ class AdminAttributes extends React.Component {
   scanAttributes = (event) => {
     event.preventDefault();
     console.log('clicked scanAttributes')
-    this.props.tracks.forEach(track => {
-      console.log(track)
-      const trackId = track._id;
-      scanGeneAttributes.call({ trackId })
+    this.props.genomes.forEach(genome => {
+      console.log(genome)
+      const genomeId = genome._id;
+      scanGeneAttributes.call({ genomeId });
     })
   }
 
@@ -65,52 +65,22 @@ class AdminAttributes extends React.Component {
         }
         </tbody>
         </table>
-        {/*
-        <ul className='list-group'>
-        {
-          this.props.attributes.map(attribute => {
-            return (
-              <li className='list-group-item' key={attribute._id}>
-                <p>
-                  <a href={`/admin/attribute/${attribute.name}`}> {attribute.name} </a>
-                </p>
-                <ul className='list-group'>
-                  <li className='list-group-item'>
-                    <small>{`Show: ${attribute.show}`}</small>
-                  </li>
-                  <li className='list-group-item'>
-                    <small>{`Can edit: ${attribute.canEdit}`}</small>
-                  </li>
-                  {
-                    attribute.allReferences &&
-                    <li className='list-group-item'>
-                      <small>{`All references: ${attribute.allReferences}`}</small>
-                    </li>
-                  }
-                  {
-                    attribute.references &&
-                    <li className='list-group-item'>
-                      <small>{`References: ${attribute.references}`}</small>
-                    </li>
-                  }
-                </ul>
-              </li>
-            )
-          })
-        }
-        </ul>
-      */}
       </div>
     )
   }
 }
 
-export default withTracker(props => {
-  const attributeSubscription = Meteor.subscribe('attributes');
-  const trackSubscription = Meteor.subscribe('tracks');
+export default withTracker(() => {
+  const attributeSub = Meteor.subscribe('attributes');
+  const attributes = Attributes.find({}).fetch();
+  const genomeSub = Meteor.subscribe('genomes');
+  const genomes = genomeCollection.find({}).fetch();
+  const loading = !attributeSub.ready() || !genomeSub.ready();
   return {
-    attributes: Attributes.find({}).fetch(),
-    tracks: Tracks.find({}).fetch(),
-    loading: !attributeSubscription.ready() || !trackSubscription.ready()
+    attributes,
+    genomes,
+    loading
   }
-})(AdminAttributes)
+})(AdminAttributes);
+
+

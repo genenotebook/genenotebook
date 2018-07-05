@@ -7,7 +7,7 @@ import readline from 'readline';
 import Fiber from 'fibers';
 import Future from 'fibers/future';
 
-import { ReferenceInfo, References } from '/imports/api/genomes/reference_collection.js';
+import { genomeCollection, genomeSequenceCollection } from '/imports/api/genomes/genomeCollection.js';
 
 /**
  * Chunk size into which DNA sequences are inserted into the database
@@ -37,10 +37,10 @@ class SeqPart {
  * When parsing is finished the finalize method cleans up and executes the bulk operation.
  */
 class LineProcessor {
-	constructor({ referenceId, permissions = ['admin'] }){
+	constructor({ genomeId, permissions = ['admin'] }){
 		this.seqPart = new SeqPart({});
-		this.bulkOp = References.rawCollection().initializeUnorderedBulkOp();
-		this.referenceId = referenceId;
+		this.bulkOp = genomeSequenceCollection.rawCollection().initializeUnorderedBulkOp();
+		this.genomeId = genomeId;
 		this.permissions = permissions;
 	}
 
@@ -59,11 +59,11 @@ class LineProcessor {
 					seq: this.seqPart.seq,
 					start: this.seqPart.start,
 					end: this.seqPart.end,
-					referenceId: this.referenceId,
+					genomeId: this.genomeId,
 					permissions: this.permissions
 				})
 			}
-			const header = line.substring(1).split()[0];
+			const header = line.substring(1).split(' ')[0];
 			this.seqPart = new SeqPart({ header });
 		} else {
 			// process sequence line
@@ -75,7 +75,7 @@ class LineProcessor {
 					seq: this.seqPart.seq.substring(0, CHUNK_SIZE),
 					start: this.seqPart.start,
 					end: this.seqPart.end,
-					referenceId: this.referenceId,
+					genomeId: this.genomeId,
 					permissions: this.permissions
 				})
 				this.seqPart.seq = this.seqPart.seq.substring(CHUNK_SIZE);
@@ -94,7 +94,7 @@ class LineProcessor {
 			seq: this.seqPart.seq,
 			start: this.seqPart.start,
 			end: this.seqPart.end,
-			referenceId: this.referenceId,
+			genomeId: this.genomeId,
 			permissions: this.permissions
 		})
 		return this.bulkOp.execute();
@@ -107,22 +107,23 @@ class LineProcessor {
  * @param  {String} options.referenceName [description]
  * @return {Promise}                       [description]
  */
-const fastaFileToMongoDb = ({ fileName, referenceName }) => {
+const fastaFileToMongoDb = ({ fileName, genomeName }) => {
 	return new Promise((resolve, reject) => {
 		const permissions = ['admin'];
 
-		const referenceId = ReferenceInfo.insert({
-			name: referenceName,
+		const genomeId = genomeCollection.insert({
+			name: genomeName,
 			permissions: permissions,
 			description: 'description',
-			organism: 'organism'
+			organism: 'organism',
+			public: false
 		})
 
 		const lineReader = readline.createInterface({
 			input: fs.createReadStream(fileName, 'utf8')
 		})
 	
-		const lineProcessor = new LineProcessor({ referenceId, resolve, reject });
+		const lineProcessor = new LineProcessor({ genomeId, resolve, reject });
 		lineReader.on('line', line => {
 			try {
 				lineProcessor.process(line)
@@ -143,16 +144,16 @@ const fastaFileToMongoDb = ({ fileName, referenceName }) => {
 
 const parameterSchema = new SimpleSchema({
 	fileName: { type: String },
-	referenceName: { type: String }
+	genomeName: { type: String }
 })
 
-export const addReference = new ValidatedMethod({
-	name: 'addReference',
+export const addGenome = new ValidatedMethod({
+	name: 'addGenome',
 	validate: parameterSchema.validator(),
 	applyOptions: {
 		noRetry: true
 	},
-	run({ fileName, referenceName }) {
+	run({ fileName, genomeName }) {
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}
@@ -160,14 +161,14 @@ export const addReference = new ValidatedMethod({
 			throw new Meteor.Error('not-authorized');
 		}
 
-		const existingReference = ReferenceInfo.findOne({ name: referenceName });
-		if (existingReference){
-			throw new Meteor.Error(`Existing reference: ${referenceName}`)
+		const existingGenome = genomeCollection.findOne({ name: genomeName });
+		if (existingGenome){
+			throw new Meteor.Error(`Existing genome: ${genomeName}`)
 		}
 
-		console.log(`Adding ${fileName} as reference: ${referenceName}`)
+		console.log(`Adding ${fileName} as genome: ${genomeName}`)
 
-		return fastaFileToMongoDb({ fileName, referenceName })
+		return fastaFileToMongoDb({ fileName, genomeName })
 			.catch(error => {
 				console.log(error);
 				throw new Meteor.Error(error);

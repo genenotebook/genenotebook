@@ -6,7 +6,7 @@ import SimpleSchema from 'simpl-schema';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
 import { Attributes } from '/imports/api/genes/attribute_collection.js';
-import { Tracks } from '/imports/api/genomes/track_collection.js';
+import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 
 /**
  * Map function for mongodb mapreduce
@@ -43,13 +43,13 @@ const reduceFunction = function(_key, values){
 export const scanGeneAttributes = new ValidatedMethod({
 	name: 'scanGeneAttributes',
 	validate: new SimpleSchema({
-		trackId: { type: String }
+		genomeId: { type: String }
 	}).validator(),
 	applyOptions: {
 		noRetry: true
 	},
-	run({ trackId }){
-		console.log(`scanGeneAttributes: ${trackId}`)
+	run({ genomeId }){
+		console.log(`scanGeneAttributes for genome: ${genomeId}`)
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}
@@ -57,19 +57,21 @@ export const scanGeneAttributes = new ValidatedMethod({
 			throw new Meteor.Error('not-authorized');
 		}
 
-		const track = Tracks.findOne({ _id: trackId })
-
-		//check if the track exists
-		if (typeof track === 'undefined'){
-			throw new Meteor.Error(`Unknown track: ${trackId}`)
+		const genome = genomeCollection.findOne({ _id: genomeId });
+		if (!genome) {
+			throw new Meteor.Error(`Unknown genomeId: ${genomeId}`)
 		}
 
+		if (typeof genome.annotationTrack === 'undefined') {
+			throw new Meteor.Error(`Genome ${genomeId} has no annotations to scan`)
+		}
+	
 		//check that it is running on the server
 		if ( !this.isSimulation ){
 			this.unblock();
 			const mapReduceOptions = { 
 					out: { inline: 1 },
-					query: { trackId }
+					query: { genomeId }
 				}
 			//mapreduce to find all keys for all genes, this takes a while
 			console.log('mapreducing')
@@ -85,8 +87,7 @@ export const scanGeneAttributes = new ValidatedMethod({
 								name: attributeKey 
 							},{
 								$addToSet: {
-									tracks: trackId,
-									references: track.referenceId
+									genomes: genomeId
 								},
 								$setOnInsert: { 
 									name: attributeKey,

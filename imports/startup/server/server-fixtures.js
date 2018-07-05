@@ -64,7 +64,7 @@ Meteor.startup( () => {
           show: true, 
           canEdit: false, 
           reserved: true,
-          allReferences: true 
+          allGenomes: true 
       }
     },
     {

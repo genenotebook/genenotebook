@@ -1,5 +1,3 @@
-import { References } from '../genomes/reference_collection.js';
-
 /**
  * Format gff3 attribute column into key:value object.
  * @param  {String} attributeString Raw gff3 attribute column string
@@ -75,33 +73,6 @@ export const translate = (seq) => {
   })
   const pep = pepArray.join('')
   return pep
-}
-
-/**
- * Get nucleotide and protein sequences of all transcripts for a multiple genes (using CDS subfeatures)
- * @param  {Array<gene>} genes Array of Object representing gene-models
- * @return {Array}     Array with objects, where each object has a transcriptId, 
- *                        nucleotide sequence and protein sequence field
- */
-const getMultipleGeneSequences = genes => {
-  const seqids = genes.map(gene => {
-    return gene.seqid
-  })
-  const uniqueSeqids = [...new Set(seqids)]
-
-  console.log(uniqueSeqids)
-
-  const refSeqs = uniqueSeqids.reduce((obj,seqid,i) => {
-    obj[seqid] = References.find({
-      header: seqid
-    },{
-      sort: { start: 1 }
-    }).map(ref => {
-      return ref.seq
-    }).join('')
-    return obj
-  },{}); //this part is import, initialize reduce with empty object
-  console.log(refSeqs)
 }
 
 
