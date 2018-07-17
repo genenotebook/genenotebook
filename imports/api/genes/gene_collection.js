@@ -5,11 +5,11 @@ const Genes = new Mongo.Collection('genes');
 
 //create a base schema so we can add it at multiple places
 const IntervalBaseSchema = new SimpleSchema({
-  type: {
+  /*type: {
     type: String,
     allowedValues: ['gene','mRNA','tRNA','CDS','exon','three_prime_UTR','five_prime_UTR'],
     label: 'Interval type'
-  },
+  },*/
   seq: {
     type: String,
     label: 'Reference sequence of this feature'
@@ -44,7 +44,7 @@ const IntervalBaseSchema = new SimpleSchema({
   attributes: {
     type: Object,
     blackbox: true,
-    index: true,
+    //index: true,
     label: 'Any attributes'
   },
   children: {
@@ -139,6 +139,7 @@ const GeneSchema = new SimpleSchema({
   },
   genomeId: { 
     type: String,
+    index: true,
     label: 'Reference genome DB identifier (_id in genome collection)'
   },
   seqid: {

@@ -42,6 +42,9 @@ genomeSequenceCollection.attachSchema(genomeSequenceSchema)
 const genomeCollection = new Mongo.Collection('genomes')
 
 const genomeSchema = new SimpleSchema({
+	_id: {
+		type: String
+	},
 	name: {
 		type: String,
 		label: 'Reference name',

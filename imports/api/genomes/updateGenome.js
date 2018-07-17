@@ -4,7 +4,7 @@ import { Roles } from 'meteor/alanning:roles';
 
 import SimpleSchema from 'simpl-schema';
 
-import { genomeCollection } from './genomeCollection.js';
+import { genomeCollection, genomeSchema } from './genomeCollection.js';
 
 /**
  * [ValidatedMethod description]
@@ -20,14 +20,7 @@ import { genomeCollection } from './genomeCollection.js';
  */
 export const updateGenome = new ValidatedMethod({
   name: 'updateGenome',
-  validate: new SimpleSchema({
-    _id: { type: String },
-    name: { type: String },
-    organism: { type: String },
-    description: { type: String },
-    permissions: { type: Array },
-    'permissions.$': { type: String}
-  }).validator(),
+  validate: genomeSchema.validator(),
   applyOptions: {
     noRetry: true
   },
@@ -39,7 +32,7 @@ export const updateGenome = new ValidatedMethod({
       throw new Meteor.Error('not-authorized');
     }
 
-    genomeColletion.update({
+    genomeCollection.update({
       _id
     },{
       $set: {

@@ -20,8 +20,8 @@ class GeneNumber extends React.Component {
   }
 
   componentDidMount = () => {
-    const { referenceId } = this.props;
-    const query = { reference: referenceId };
+    const { _id: genomeId } = this.props;
+    const query = { genomeId };
     queryCount.call({ query }, (err,res) => {
       this.setState({
         geneNumber: res

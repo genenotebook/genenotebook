@@ -9,9 +9,13 @@ error_cleanup() {
   rm -rf genenotebook_bundle genenotebook_bundle.tgz
 }
 
+trap error_cleanup ERR
+
 exit_cleanup() {
   rm -rf genenotebook_bundle
 }
+
+trap exit_cleanup EXIT
 
 if [ $# -eq 0 ]
 	then

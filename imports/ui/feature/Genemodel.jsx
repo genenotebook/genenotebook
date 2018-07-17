@@ -11,7 +11,10 @@ import Color from 'color';
 import './genemodel.scss'
 
 
+
 const XAxis = ({ scale, numTicks, transform, seqid }) => {
+  const formatNumber = new Intl.NumberFormat().format;
+
   const range = scale.range();
 
   const [start, end] = scale.domain();
@@ -29,7 +32,7 @@ const XAxis = ({ scale, numTicks, transform, seqid }) => {
       <line x1={range[0]} x2={range[1]} y1='5' y2='5' stroke='black'/>
       <g>
         <line x1={range[0]} x2={range[0]} y1='0' y2='5' stroke='black'/>
-        <text x={range[0]} y='-10' dy='5' textAnchor='left' fontSize='10'>{start}</text>
+        <text x={range[0]} y='-10' dy='5' textAnchor='left' fontSize='10'>{ formatNumber(start) }</text>
       </g>
       {
         ticks.map(tick => {
@@ -37,14 +40,14 @@ const XAxis = ({ scale, numTicks, transform, seqid }) => {
           return (
             <g key={tick}>
               <line x1={pos} x2={pos} y1='0' y2='5' stroke='black' />
-              <text x={pos} y='-10' dy='5' textAnchor='middle' fontSize='10'>{ tick }</text>
+              <text x={pos} y='-10' dy='5' textAnchor='middle' fontSize='10'>{ formatNumber(tick) }</text>
             </g>
           )
         })
       }
       <g>
         <line x1 = {range[1]} x2 = {range[1]} y1 = '0' y2 = '5' stroke='black'/>
-        <text x={range[1]} y='-10' dy='5' textAnchor='end' fontSize='10'>{end}</text>
+        <text x={range[1]} y='-10' dy='5' textAnchor='end' fontSize='10'>{ formatNumber(end) }</text>
       </g>
       <text x={range[0]} y='15' dy='5' textAnchor='left' fontSize='11'>{seqid}</text>
     </g>
@@ -56,7 +59,7 @@ const Transcript = ({ transcript, exons, scale, strand, genomeId }) => {
   const baseColor = new Color(randomColor({ seed: genomeId }));
   const contrastColor = baseColor.isLight() ? 
     baseColor.darken(0.5).saturate(0.3) : 
-    baseColor.lighten(0.5).desature(0.3);
+    baseColor.lighten(0.5).desaturate(0.3);
 
   //put CDS exons last so they get drawn last and are placed on top
   exons.sort((exon1,exon2) => {

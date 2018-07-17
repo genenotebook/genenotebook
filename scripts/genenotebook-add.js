@@ -3,6 +3,7 @@
 const program = require('commander');
 
 program
+	.usage('genenotebook add [command]')
     .command('genome', 'Add reference genome')
     .command('annotation', 'Add genome annotation to reference genome')
     .command('transcriptome', 'Add transcriptome quantification data (kallisto output)')

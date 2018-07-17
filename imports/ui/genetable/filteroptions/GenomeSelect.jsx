@@ -120,7 +120,7 @@ class GenomeSelect extends React.Component {
           </span>
         </DropdownButton>
         <DropdownMenu>
-          <h6 className="dropdown-header">Select annotation tracks</h6>
+          <h6 className="dropdown-header">Select genomes</h6>
           {
             genomes.map(({ _id, name }) => {
               console.log(_id,name)
