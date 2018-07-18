@@ -1,7 +1,10 @@
-const jobQueue = new JobCollection('jobQueue', { noCollectionSuffix: true });
+import { JobCollection, Job } from 'meteor/vsivsi:job-collection';
+import later from 'meteor-later';
+
+const jobQueue = new JobCollection('jobQueue', { noCollectionSuffix: true, later: later });
 
 //immediately build a 'job cleaning job' so that the jobcollection does not fill up endlessly
-new Job(jobQueue, 'cleanup',{})
+new Job(jobQueue, 'cleanup', {})
   .repeat({ schedule: jobQueue.later.parse.text('every 20 minutes') })
   .save({ cancelRepeats: true })
 

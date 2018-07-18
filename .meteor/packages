@@ -22,14 +22,11 @@ alanning:roles
 random@1.1.0
 email@1.2.3
 http@1.4.1
-harrison:papa-parse
 reactive-var@1.0.11
 modules@0.12.0
 shell-server@0.3.1
 check@1.3.1
 danimal:userpresence
-zuuk:stale-session
-ostrio:files
 dispatch:mocha-phantomjs
 babel-runtime@1.2.2
 dynamic-import@0.4.0
@@ -37,10 +34,10 @@ kadira:flow-router
 
 aldeed:collection2-core
 mdg:validated-method
-aldeed:schema-index
+aldeed:schema-index@3.0.0
 reactive-dict@1.2.0
 react-meteor-data
 fourseven:scss
+mhagmajer:server-router
 static-html
 vsivsi:job-collection
-mhagmajer:server-router

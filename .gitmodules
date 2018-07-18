@@ -1,3 +1,7 @@
 [submodule "docs"]
 	path = docs
 	url = https://github.com/genenotebook/genenotebook.github.io
+[submodule "packages/meteor-job-collection"]
+	path = packages/meteor-job-collection
+	url = https://github.com/sebakerckhof/meteor-job-collection
+	branch = modernize

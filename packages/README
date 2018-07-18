@@ -1,7 +1,0 @@
-Package socket-stream-client was added to fix a bug in meteor 1.7.0.1 that results in SockJS not being defined.
-See https://github.com/meteor/meteor/issues/9928 for error description.
-Current fix is https://github.com/meteor/meteor/pull/9917#issuecomment-395808847:
-	1. First, copy the socket-stream-client package from a checkout of this repository into your local packages/ directory.
-	2. Next, open socket-stream-client/browser.js in your text editor.
-	3. Add a static import "./sockjs-0.3.4.js" line to the top of that file, so that SockJS will be bundled in the initial JS bundle, and WebSockets will not be used.
-	4. Run/test/deploy your app as usual.
