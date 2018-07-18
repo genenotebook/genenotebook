@@ -4,12 +4,13 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
 import Select from 'react-select';
-import update from 'immutability-helper';
+import { cloneDeep } from 'lodash';
+//import update from 'immutability-helper';
 
 import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
 
 import { submitBlastJob } from '/imports/api/blast/submitblastjob.js';
-import { Tracks } from '/imports/api/genomes/track_collection.js';
+import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 
 import './submitblast.scss';
 
@@ -57,10 +58,10 @@ const SequenceInput = (props) => {
               <strong>{props.seqType}</strong> sequence
             </DropdownButton>
             <DropdownMenu>
-              <a className="dropdown-item" id="Protein" onClick={props.selectSeqType} href="#">
+              <a className="dropdown-item" id="Protein" onClick={props.selectSeqType} >
                 Protein sequence
               </a>
-              <a className="dropdown-item" id="Nucleotide" onClick={props.selectSeqType} href="#">
+              <a className="dropdown-item" id="Nucleotide" onClick={props.selectSeqType} >
                 Nucleotide sequence
               </a>
             </DropdownMenu>
@@ -71,22 +72,23 @@ const SequenceInput = (props) => {
   )
 }
 
-const TrackSelect = (props) => {
+const GenomeSelect = ({ genomes, selectedGenomes, toggleGenomeSelect }) => {
   return (
     <div>
-      <label> Select tracks: </label>
+      <label> Select genomes: </label>
         {
-          props.tracks.map(track => {
+          genomes.map(genome => {
+            const { _id: genomeId, name } = genome;
             return (
-              <div className="form-check" key={track.name}>
+              <div className="form-check" key={genomeId}>
                 <input 
                   type="checkbox" 
                   className="form-check-input" 
-                  id={ track.name } 
-                  checked={props.selectedTracks.indexOf(track.name) >= 0}
-                  onChange={props.toggleTrackSelect} 
+                  id={ genomeId } 
+                  checked={selectedGenomes.has(genomeId)}
+                  onChange={toggleGenomeSelect} 
                 />
-                <label className="form-check-label" htmlFor={ track.name }>{ track.name }</label>
+                <label className="form-check-label" htmlFor={ name }>{ name }</label>
               </div>
             )
           })
@@ -136,7 +138,7 @@ class SubmitBlast extends React.Component {
       input: undefined,
       seqType: 'Nucleotide',
       dbType: 'Protein',
-      selectedTracks: []
+      selectedGenomes: new Set()
     }
   }
 
@@ -185,21 +187,27 @@ class SubmitBlast extends React.Component {
     })
   }
 
-  toggleTrackSelect = event => {
-    const trackName = event.target.id;
-    const index = this.state.selectedTracks.indexOf(trackName);
-    const operation = index < 0 ? { $push: [trackName] } : { $splice: [[index]] };
-    const newState = update(this.state, { selectedTracks: operation });
-    this.setState(newState)
+  toggleGenomeSelect = event => {
+    const genomeId = event.target.id;
+    this.setState(prevState => {
+      const selectedGenomes = cloneDeep(prevState.selectedGenomes);
+      if (selectedGenomes.has(genomeId)){
+        selectedGenomes.delete(genomeId)
+      } else {
+        selectedGenomes.add(genomeId)
+      }
+      return { selectedGenomes }
+    })
   }
 
   submit = event => {
     event.preventDefault();
-    const blastType = this.BLASTTYPES[this.state.seqType][this.state.dbType];
+    const { seqType, dbType, input, selectedGenomes } = this.state;
+    const blastType = this.BLASTTYPES[seqType][dbType];
     submitBlastJob.call({
       blastType: blastType,
-      input: this.state.input,
-      trackNames: this.state.selectedTracks
+      input: input,
+      genomeIds: [...selectedGenomes]
     }, (err,res) => {
       console.log(err)
       FlowRouter.redirect(`/blast/${res}`)
@@ -223,10 +231,10 @@ class SubmitBlast extends React.Component {
           </div>
             <ul className="list-group list-group-flush">
               <li className="list-group-item">
-                <TrackSelect 
-                  tracks = {this.props.tracks}
-                  selectedTracks = {this.state.selectedTracks}
-                  toggleTrackSelect={this.toggleTrackSelect}
+                <GenomeSelect 
+                  genomes = {this.props.genomes}
+                  selectedGenomes = {this.state.selectedGenomes}
+                  toggleGenomeSelect={this.toggleGenomeSelect}
                 />
               </li>
               <li className="list-group-item">
@@ -244,13 +252,13 @@ class SubmitBlast extends React.Component {
                   </button>
                 }
                 {
-                  this.state.input && this.state.selectedTracks.length == 0 &&
+                  this.state.input && this.state.selectedGenomes.size == 0 &&
                   <button type="button" className="btn btn-outline-secondary disabled">
-                    <span className="fa fa-question-circle-o"></span> Select track
+                    <span className="fa fa-question-circle-o"></span> Select genome annotation
                   </button>
                 }
                 {
-                  this.state.input && this.state.selectedTracks.length > 0 && 
+                  this.state.input && this.state.selectedGenomes.size > 0 && 
                   <SubmitButtons 
                     selectedDbType = {this.state.dbType}
                     dbTypes = {Object.keys(this.BLASTTYPES[this.state.seqType])}
@@ -269,15 +277,15 @@ class SubmitBlast extends React.Component {
 }
 
 export default withTracker(props => {
-  const subscription = Meteor.subscribe('tracks');
+  const subscription = Meteor.subscribe('genomes');
   const loading = !subscription.ready();
-  const tracks = Tracks.find({
-    blastdbs: {
+  const genomes = genomeCollection.find({
+    'annotationTrack.blastDb': {
       $exists: 1
     }
   }).fetch()
   return {
     loading,
-    tracks
+    genomes
   }
 })(SubmitBlast)

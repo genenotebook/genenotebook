@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Roles } from 'meteor/alanning:roles';
 
 import fs from 'fs';
 
@@ -7,7 +8,6 @@ import { Attributes } from '/imports/api/genes/attribute_collection.js';
 import { Tracks } from '/imports/api/genomes/track_collection.js';
 
 Meteor.startup( () => {
-  console.log(Meteor.settings)
   if ( Meteor.users.find().count() === 0 ) {
     console.log('Adding default admin user');
     const adminId = Accounts.createUser({

@@ -8,9 +8,11 @@ import { removeAnnotationTrack } from '/imports/api/genomes/removeAnnotationTrac
 
 import { withEither } from '/imports/ui/util/uiUtil.jsx';
 
+import { BlastDB } from './BlastDB.jsx';
 
-const hasNoAnnotation = ({ name }) => {
-  return typeof name === 'undefined';
+
+const hasNoAnnotation = ({ annotationTrack }) => {
+  return typeof annotationTrack === 'undefined';
 }
 
 const NoAnnotation = () => {
@@ -23,7 +25,6 @@ const withConditionalRendering = compose(
   withEither(hasNoAnnotation, NoAnnotation)
 )
 
-//const AnnotationInfo = ({ name, blastDbs, disabled }) => {
 class AnnotationInfo extends React.Component {
   removeAnnotationTrack = event => {
     const genomeId = event.target.id;
@@ -36,17 +37,21 @@ class AnnotationInfo extends React.Component {
     })
   }
   render(){
-    const { name, genomeId, disabled } = this.props;
+    const { annotationTrack, genomeId, isEditing } = this.props;
+    const { name, blastdbs } = annotationTrack;
     return <table style={{width:'100%'}}>
       <tbody>
-        <tr>
-          <td>{ name }</td>
+        <tr title={name}>
+          <td>{ name.substring(0,10) + '...' }</td>
         </tr>
         <tr>
-          <td>Blast DBs</td>
+          <td>
+            <BlastDB {...this.props} />
+          </td>
         </tr>
         {
-          !disabled && <tr>
+          isEditing && 
+          <tr>
             <td>
               <button 
                 type='button' 

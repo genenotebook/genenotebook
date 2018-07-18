@@ -18,28 +18,35 @@ export const submitBlastJob = new ValidatedMethod({
   validate: new SimpleSchema({
     blastType: { type: String },
     input: { type: String },
-    trackNames: { type: Array },
-    'trackNames.$': { type: String }
+    genomeIds: { type: Array },
+    'genomeIds.$': { type: String }
   }).validator(),
   applyOptions: {
     noRetry: true
   },
-  run({ blastType, input, trackNames }){
-    if (! this.userId) {
+  run({ blastType, input, genomeIds }){
+    const user = this.userId;
+    if (! user) {
       throw new Meteor.Error('not-authorized');
     }
-    if (! Roles.userIsInRole(this.userId,'user')){
+    if (! Roles.userIsInRole(user,'user')){
       throw new Meteor.Error('not-authorized');
     }
 
     console.log('submit blast job')
+
+    const jobOptions = { blastType, input, genomeIds, user };
+
+    const job = new Job(jobQueue, 'blast', jobOptions);
+
+    const jobId = job.priority('normal').save();
     
-    const jobId = new Job(jobQueue, 'blast', {
+    /*const jobId = new Job(jobQueue, 'blast', {
       blastType: blastType,
       input: input,
-      trackNames: trackNames,
+      genomeIds: trackNames,
       user: Meteor.userId()
-    }).priority('normal').save()
+    }).priority('normal').save()*/
 
     console.log(jobId)
 

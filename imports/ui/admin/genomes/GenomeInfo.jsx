@@ -93,9 +93,10 @@ class EditGenomeInfo extends React.Component {
             disabled={false} />
         </td>
         <td>
-          <AnnotationInfo { ...genome.annotationTrack }
+          <AnnotationInfo //{ ...genome.annotationTrack }
+            annotationTrack={genome.annotationTrack}
             genomeId={genome._id}
-            disabled={false} />
+            isEditing={true} />
         </td>
         <td>
           <div className='btn-group d-block'>
@@ -141,9 +142,10 @@ const GenomeInfoLine = ({ genome, toggleEdit }) => {
         disabled={true} />
     </td>
     <td>
-      <AnnotationInfo { ...annotationTrack }
+      <AnnotationInfo //{ ...annotationTrack }
+        annotationTrack={annotationTrack}
         genomeId={_id}
-        disabled={true} />
+        isEditing={false} />
     </td>
     <td>
       <div className='btn-group'>

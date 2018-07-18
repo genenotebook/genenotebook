@@ -13,14 +13,14 @@ import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
 class HasBlastDb extends React.Component {
   removeBlastDb = event => {
-    const trackId = event.target.name;
-    removeBlastDb.call({ trackId })
+    const genomeId = event.target.id;
+    removeBlastDb.call({ genomeId })
   }
   render(){
-    const { isEditing, trackId } = this.props;
+    const { isEditing, genomeId } = this.props;
     return (
       isEditing ? 
-      <button type="button" className="btn btn-danger px-2 py-0" name={trackId} onClick={this.removeBlastDb}>
+      <button type="button" className="btn btn-danger px-2 py-0" id={genomeId} onClick={this.removeBlastDb}>
         <i className="fa fa-exclamation" /> Delete
       </button> :
       <span className="badge badge-success"><i className="fa fa-check" /> Present</span>
@@ -36,8 +36,8 @@ const HasJob = () => {
 
 class HasNoJob extends React.Component {
   makeBlastDb = event => {
-    const trackId = event.target.name;
-    makeBlastDb.call({ trackId }, (err,res) => {
+    const genomeId = event.target.id;
+    makeBlastDb.call({ genomeId }, (err,res) => {
       if ( err ){
         console.log(err)
         alert(err)
@@ -45,39 +45,39 @@ class HasNoJob extends React.Component {
     })
   }
   render(){
-    const { isEditing, trackId } = this.props;
+    const { isEditing, genomeId } = this.props;
     return (
       isEditing ?
-      <button type="button" className="btn btn-outline-success btn-sm px-2 py-0" name={trackId} onClick={this.makeBlastDb}>
-        <i className="fa fa-exclamation" /> Make Blast DB
+      <button type="button" className="btn btn-outline-success btn-sm px-2 py-0 btn-block" id={genomeId} onClick={this.makeBlastDb}>
+        Make Blast DB
       </button> :
-      <button type="button" className="btn btn-outline-secondary btn-sm px-2 py-0" name={trackId} disabled>
-        <i className="fa fa-ban" />  Absent
+      <button type="button" className="btn btn-outline-secondary btn-sm px-2 py-0 btn-block" id={genomeId} disabled>
+        <i className="fa fa-ban" />  No Blast DB
       </button> 
     )
   }
 }
 
-const makeBlastDbJobTracker = ({ trackId, isEditing }) => {
+const makeBlastDbJobTracker = ({ genomeId, isEditing }) => {
   const jobQueueSub = Meteor.subscribe('jobQueue');
   const loading = !jobQueueSub.ready();
-  const job = jobQueue.findOne({ 'data.trackId': trackId });
+  const job = jobQueue.findOne({ 'data.genomeId': genomeId });
   const hasJob = typeof job !== 'undefined' && job.status !== 'completed';
   return {
     job,
     hasJob,
     loading,
-    trackId, 
+    genomeId, 
     isEditing
   }
 }
 
-const HasNoBlastDb = ({ hasJob, job, trackId, isEditing }) => {
+const HasNoBlastDb = ({ hasJob, job, genomeId, isEditing }) => {
   console.log(hasJob, job)
   return (
     hasJob ?
     <HasJob /> :
-    <HasNoJob isEditing={isEditing} trackId={trackId} />
+    <HasNoJob isEditing={isEditing} genomeId={genomeId} />
   )
 }
 
@@ -86,16 +86,17 @@ const HasNoBlastDbWithJobTracker = compose(
   withEither(isLoading, Loading)
 )(HasNoBlastDb);
 
-export const BlastDB = ({ trackId, blastdbs, isEditing }) => {
-  const hasBlastDb = typeof blastdbs !== 'undefined';
+export const BlastDB = ({ isEditing, genomeId, annotationTrack, ...props }) => {
+  console.log(props)
+  const hasBlastDb = typeof annotationTrack.blastDb !== 'undefined';
   return (
     hasBlastDb ?
-    <HasBlastDb trackId={trackId} isEditing={isEditing} /> :
-    <HasNoBlastDbWithJobTracker trackId={trackId} isEditing={isEditing} />
+    <HasBlastDb genomeId={genomeId} isEditing={isEditing} /> :
+    <HasNoBlastDbWithJobTracker genomeId={genomeId} isEditing={isEditing} />
   )
 }
 
-/*
+/* 
 Should check three conditions:
 isEditing, hasBlastDb, jobIsRunning
  */

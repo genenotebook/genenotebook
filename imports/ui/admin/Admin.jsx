@@ -5,35 +5,40 @@ import React from 'react';
 
 import AdminUsers from './users/AdminUsers.jsx';
 import AdminGenomes from './genomes/AdminGenomes.jsx';
-import AdminTracks from './tracks/AdminTracks.jsx';
 import AdminAttributes from './attributes/AdminAttributes.jsx';
 import AdminTranscriptomes from './transcriptomes/AdminTranscriptomes.jsx';
 import AdminJobqueue from './jobqueue/AdminJobqueue.jsx';
 import AdminUserGroups from './user-groups/AdminUserGroups.jsx';
 
 const ADMIN_PAGES = {
-  users: <AdminUsers />,
-  user_groups: <AdminUserGroups />,
-  genomes: <AdminGenomes />,
-  annotation_tracks: <AdminTracks />,
-  attributes: <AdminAttributes />,
-  transcriptomes: <AdminTranscriptomes />,
-  jobqueue: <AdminJobqueue />
+  'users': <AdminUsers />,
+  'user-groups': <AdminUserGroups />,
+  'genomes': <AdminGenomes />,
+  'attributes': <AdminAttributes />,
+  'transcriptomes': <AdminTranscriptomes />,
+  'jobqueue': <AdminJobqueue />
 }
 
-const Nav = (props) => {
+const urlToName = url => {
+  return url
+    .match(/(\w)(\w*)/g)
+    .map(word => `${word[0].toUpperCase()}${word.slice(1).toLowerCase()}`)
+    .join(' ')
+}
+
+const Nav = ({ pages, currentPage, changePage }) => {
   return (
     <div className="card-header">
       <a className="navbar-brand" href="#">Admin panel</a>
       <ul className="nav nav-tabs card-header-tabs">
         {
-          props.pages.map(page => {
-            const url = page.toLowerCase().replace(' ','_')
-            const active = url === props.currentPage ? 'active' : '';
+          pages.map(page => {
+            const pageName = urlToName(page);
+            const active = page === currentPage ? 'active' : '';
             return (
               <li key={ page } role="presentation" className="nav-item">
-                <a href={ `/admin/${url}` } className={`nav-link ${active}`} name={ url } onClick={props.changePage}> 
-                  { page } 
+                <a href={ `/admin/${page}` } className={`nav-link ${active}`} id={ page } onClick={changePage}> 
+                  { pageName } 
                 </a>
               </li>
             )
@@ -47,24 +52,21 @@ const Nav = (props) => {
 class Admin extends React.Component {
   constructor(props){
     super(props)
-    this.state = {
-      currentPage: props.currentPage
-    }
+    const { currentPage } = props;
+    this.state = { currentPage };
   }
 
   changePage = (event) => {
-    this.setState({
-      currentPage: event.target.name
-    })
+    const currentPage = event.target.id;
+    this.setState({ currentPage });
   }
 
   render(){
-    console.log(this.state)
     const pages = ['Users','User Groups','Genomes','Annotation tracks','Transcriptomes','Attributes','Jobqueue']
     return (
       <div className="">
         <div className="card admin-panel">
-          <Nav pages = { pages } currentPage = {this.state.currentPage} changePage = {this.changePage} />
+          <Nav pages = { Object.keys(ADMIN_PAGES) } currentPage = {this.state.currentPage} changePage = {this.changePage} />
           {
             ADMIN_PAGES[this.state.currentPage]
           }
@@ -76,8 +78,8 @@ class Admin extends React.Component {
 }
 
 export default withTracker(props => {
-  const page = FlowRouter.getParam('_id')
+  const currentPage = FlowRouter.getParam('_id');
   return {
-    currentPage: page
+    currentPage
   }
 })(Admin)

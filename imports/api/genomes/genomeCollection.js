@@ -79,16 +79,16 @@ const genomeSchema = new SimpleSchema({
 		type: String,
 		label: 'Annotation track name'
 	},
-	'annotationTrack.blastDbs': {
+	'annotationTrack.blastDb': {
 		type: Object,
 		optional: true,
 		label: 'Annotation track BLAST database identifiers'
 	},
-	'annotationTrack.blastDbs.nucl': {
+	'annotationTrack.blastDb.nucl': {
 		type: String,
 		label: 'Nucleotide BLAST database'
 	},
-	'annotationTrack.blastDbs.prot': {
+	'annotationTrack.blastDb.prot': {
 		type: String,
 		label: 'Protein BLAST database'
 	}

@@ -19,12 +19,12 @@ import { Genes } from '/imports/api/genes/gene_collection.js';
 export const makeBlastDb = new ValidatedMethod({
   name: 'makeBlastDb',
   validate: new SimpleSchema({
-    trackId: { type: String }
+    genomeId: { type: String }
   }).validator(),
   applyOptions: {
     noRetry: true
   },
-  run({ trackId }){
+  run({ genomeId }){
     const userId = this.userId;
     if (! userId) {
       throw new Meteor.Error('not-authorized');
@@ -33,7 +33,7 @@ export const makeBlastDb = new ValidatedMethod({
       throw new Meteor.Error('not-authorized');
     }
 
-    const jobOptions = { trackId, userId };
+    const jobOptions = { genomeId, userId };
 
     if (!this.isSimulation){
       const job = new Job(jobQueue, 'makeBlastDb', jobOptions);

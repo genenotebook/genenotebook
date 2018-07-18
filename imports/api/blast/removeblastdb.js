@@ -4,7 +4,8 @@ import { Roles } from 'meteor/alanning:roles';
 
 import SimpleSchema from 'simpl-schema';
 
-import { Tracks } from '/imports/api/genomes/track_collection.js';
+//import { Tracks } from '/imports/api/genomes/track_collection.js';
+import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 
 /**
  * hasBlastDb validated method: checks whether blast databases exist for a given annotation track
@@ -14,12 +15,12 @@ import { Tracks } from '/imports/api/genomes/track_collection.js';
 export const removeBlastDb = new ValidatedMethod({
   name: 'removeBlastDb',
   validate: new SimpleSchema({
-    trackId: { type: String }
+    genomeId: { type: String }
   }).validator(),
   applyOptions: {
     noRetry: true
   },
-  run({ trackId}){
+  run({ genomeId}){
     if (! this.userId) {
       throw new Meteor.Error('not-authorized');
     }
@@ -27,10 +28,17 @@ export const removeBlastDb = new ValidatedMethod({
       throw new Meteor.Error('not-authorized');
     }
 
-    console.log(`remove ${trackId}`)
+    console.log(`remove ${genomeId} blastDb`)
 
     if (!this.isSimulation){
-      const track = Tracks.findOne({ _id: trackId })
+      genomeCollection.update({
+        _id: genomeId
+      }, {
+        $unset: {
+          'annotationTrack.blastDb': true
+        }
+      })
+      /*const track = Tracks.findOne({ _id: trackId })
       console.log(track)
       Tracks.update({
         _id: trackId
@@ -38,7 +46,7 @@ export const removeBlastDb = new ValidatedMethod({
         $unset: {
           'blastdbs': 1
         }
-      })
+      })*/
     }
   }
 })

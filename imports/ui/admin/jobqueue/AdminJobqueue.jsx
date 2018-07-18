@@ -7,6 +7,10 @@ import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 
 import { formatDate } from '/imports/ui/util/uiUtil.jsx';
 
+const REMOVE_STATES = ['completed','failed','cancelled'];
+const RESTART_STATES = ['failed','cancelled'];
+const CANCEL_STATES = ['waiting','running','created','ready']; //Anything that is not completed, failed or cancelled
+
 const Status = (props) => {
   let labelClass = 'badge ';
   switch(props.status){
@@ -39,7 +43,7 @@ export const JobProgressBar = ({ progress, loading, ...job }) => {
   
   const barColor = completed === 1 && total === 1 ? 'success' : 'default';
 
-  console.log(completed, total, barColor)
+  //console.log(completed, total, barColor)
 
   return (
     <div className = 'progress'>
@@ -62,10 +66,24 @@ class AdminJobqueue extends React.Component {
     super(props)
   }
 
-  reRunJob = (event) => {
-    jobId = event.target.name
+  reRunJob = event => {
+    const jobId = event.target.name;
     jobQueue.getJob(jobId, (err, job) => {
       job.rerun();
+    });
+  }
+
+  cancelJob = event => {
+    const jobId = event.target.name;
+    jobQueue.getJob(jobId, (err, job) => {
+      job.cancel();
+    });
+  }
+
+  removeJob = event => {
+    const jobId = event.target.name;
+    jobQueue.getJob(jobId, (err, job) => {
+      job.remove();
     });
   }
 
@@ -103,8 +121,29 @@ class AdminJobqueue extends React.Component {
                       type='button' 
                       className='btn btn-outline-dark btn-sm py-0 px-2'
                       onClick={this.reRunJob}
-                      name={job._id}
-                    >Rerun</button>
+                      name={job._id} >
+                      Rerun
+                    </button>
+                    {
+                      CANCEL_STATES.indexOf(job.status) >= 0 &&
+                      <button 
+                        type='button' 
+                        className='btn btn-outline-warning btn-sm py-0 px-2'
+                        onClick={this.cancelJob}
+                        name={job._id} >
+                        Cancel
+                      </button>
+                    }
+                    {
+                      REMOVE_STATES.indexOf(job.status) >= 0 &&
+                      <button 
+                        type='button' 
+                        className='btn btn-outline-danger btn-sm py-0 px-2'
+                        onClick={this.removeJob}
+                        name={job._id} >
+                        Remove
+                      </button>
+                    }
                   </td>
                 </tr>
               )

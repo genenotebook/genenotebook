@@ -4,7 +4,7 @@ import  spawn  from 'spawn-promise';//child-process-promise';
 
 import xml2js from 'xml2js-es6-promise';
 
-import { Tracks } from '/imports/api/genomes/track_collection.js';
+import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 
 
 /**
@@ -31,12 +31,13 @@ jobQueue.processJobs(
     const {
       blastType,
       input,
-      trackNames,
+      genomeIds,
       user
     } =  job.data
 
     const dbType = DB_TYPES[blastType]
 
+    /*
     const dbs = Tracks.find({
       name: {
         $in: trackNames
@@ -47,6 +48,15 @@ jobQueue.processJobs(
       }
     }).map(track => { 
       return track.blastdbs[dbType]
+    }).join(' ')
+    */
+   
+    const dbs = genomeCollection.find({
+      _id: {
+        $in: genomeIds
+      }
+    }).map(genome => {
+      return genome.annotationTrack.blastDb[dbType]
     }).join(' ')
 
     const options = ['-db',dbs,'-outfmt','5','-num_alignments','20']
@@ -64,7 +74,7 @@ jobQueue.processJobs(
       })
       .catch( error => {
         console.log(error)
-        job.fail(error.process)
+        job.fail({ error })
         callback()
       })
     //job.done(blastResult)

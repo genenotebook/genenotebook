@@ -6,18 +6,19 @@ import fs from 'fs';
 import jobQueue from './jobqueue.js';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
-import { Tracks } from '/imports/api/genomes/track_collection.js';
+//import { Tracks } from '/imports/api/genomes/track_collection.js';
+import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 
 import { getGeneSequences } from '/imports/api/util/util.js';
 
-const makeTempFiles = async ({ trackId, job }) => {
-  const geneNumber = Genes.find({ trackId }).count()
+const makeTempFiles = async ({ genomeId, job }) => {
+  const geneNumber = Genes.find({ genomeId }).count()
   const stepSize = Math.round(geneNumber / 10);
   console.log(`scanning ${geneNumber} genes`)
   
   const tempFiles = {
-    nucl: `tmp_${trackId}.nucl.fa`,
-    prot: `tmp_${trackId}.prot.fa`
+    nucl: `tmp_${genomeId}.nucl.fa`,
+    prot: `tmp_${genomeId}.prot.fa`
   }
 
   const tempFileHandles = {
@@ -25,7 +26,7 @@ const makeTempFiles = async ({ trackId, job }) => {
     prot: fs.createWriteStream(tempFiles.prot)
   }
   
-  Genes.find({ trackId }).forEach( (gene, index) => {
+  Genes.find({ genomeId }).forEach( (gene, index) => {
 
     if (index % stepSize === 0){
       job.progress(index, geneNumber, { echo: true })
@@ -49,11 +50,11 @@ const makeTempFiles = async ({ trackId, job }) => {
   return tempFiles
 }
 
-const makeBlastDb = async ({ trackId, fastaFile, dbType }) => {
-  const outFile = `${trackId}.${dbType}`
+const makeBlastDb = async ({ genomeId, fastaFile, dbType }) => {
+  const outFile = `${genomeId}.${dbType}`
   const options = [
     '-dbtype', dbType, 
-    '-title', trackId,
+    '-title', genomeId,
     '-in', fastaFile, 
     '-out', outFile
     ];
@@ -64,11 +65,11 @@ const makeBlastDb = async ({ trackId, fastaFile, dbType }) => {
       if (stdout){
         console.log(`makeblastdb stdout:${stdout}`)
       }
-      Tracks.update({
-        _id: trackId
-      },{
+      genomeCollection.update({
+        _id: genomeId
+      }, {
         $set: {
-          [`blastdbs.${dbType}`]: outFile
+          [`annotationTrack.blastDb.${dbType}`]: outFile
         }
       })
       return outFile
@@ -84,12 +85,12 @@ jobQueue.processJobs(
   function(job, callback){
     console.log('processing makeblastdb')
     console.log(job.data)
-    const { trackId } = job.data;
+    const { genomeId } = job.data;
 
-    return makeTempFiles({ trackId, job }).then(tempFiles => {
+    return makeTempFiles({ genomeId, job }).then(tempFiles => {
       return Promise.all([
-        makeBlastDb({ dbType: 'nucl', trackId: trackId, fastaFile: tempFiles.nucl }),
-        makeBlastDb({ dbType: 'prot', trackId: trackId, fastaFile: tempFiles.prot })
+        makeBlastDb({ dbType: 'nucl', genomeId: genomeId, fastaFile: tempFiles.nucl }),
+        makeBlastDb({ dbType: 'prot', genomeId: genomeId, fastaFile: tempFiles.prot })
       ])
     }).then(dbFiles => {
       console.log({ dbFiles });
@@ -97,7 +98,7 @@ jobQueue.processJobs(
       callback();
     }).catch(error => {
       console.log(error)
-      job.fail(error)
+      job.fail({ error })
     })
   }
 )
