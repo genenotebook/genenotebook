@@ -8,27 +8,36 @@ import { makeBlastDb } from '/imports/api/blast/makeblastdb.js';
 import { removeBlastDb } from '/imports/api/blast/removeblastdb.js';
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 
+import { JobProgressBar } from '/imports/ui/admin/jobqueue/AdminJobqueue.jsx';
 import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
 
 class HasBlastDb extends React.Component {
   removeBlastDb = event => {
     const genomeId = event.target.id;
-    removeBlastDb.call({ genomeId })
+    console.log('Click remove blastdb ' + genomeId)
+    removeBlastDb.call({ genomeId } , (err,res) => {
+      if (err){
+        console.log(err)
+        alert(err)
+      }
+    })
   }
   render(){
     const { isEditing, genomeId } = this.props;
     return (
       isEditing ? 
-      <button type="button" className="btn btn-danger px-2 py-0" id={genomeId} onClick={this.removeBlastDb}>
-        <i className="fa fa-exclamation" /> Delete
+      <button type="button" className="btn btn-outline-danger btn-sm px-2 py-0 btn-block" id={genomeId} onClick={this.removeBlastDb}>
+        <span className="fa fa-exclamation" /> Remove Blast DBs
       </button> :
-      <span className="badge badge-success"><i className="fa fa-check" /> Present</span>
+      <button type="button" className="btn btn-outline-success btn-sm px-2 py-0 btn-block" id={genomeId} disabled>
+        <span className="fa fa-check" />  Blast DBs present
+      </button> 
     )
   }
 }
 
-const HasJob = () => {
+const HasJob = ({ job }) => {
   return (
     'Job status'
   )
@@ -61,7 +70,8 @@ class HasNoJob extends React.Component {
 const makeBlastDbJobTracker = ({ genomeId, isEditing }) => {
   const jobQueueSub = Meteor.subscribe('jobQueue');
   const loading = !jobQueueSub.ready();
-  const job = jobQueue.findOne({ 'data.genomeId': genomeId });
+  const job = jobQueue.findOne({ 'data.genomeId': genomeId, status: {$ne: 'completed'} });
+  console.log(job)
   const hasJob = typeof job !== 'undefined' && job.status !== 'completed';
   return {
     job,
@@ -73,10 +83,9 @@ const makeBlastDbJobTracker = ({ genomeId, isEditing }) => {
 }
 
 const HasNoBlastDb = ({ hasJob, job, genomeId, isEditing }) => {
-  console.log(hasJob, job)
   return (
     hasJob ?
-    <HasJob /> :
+    <JobProgressBar {...job} /> :
     <HasNoJob isEditing={isEditing} genomeId={genomeId} />
   )
 }
@@ -86,9 +95,8 @@ const HasNoBlastDbWithJobTracker = compose(
   withEither(isLoading, Loading)
 )(HasNoBlastDb);
 
-export const BlastDB = ({ isEditing, genomeId, annotationTrack, ...props }) => {
-  console.log(props)
-  const hasBlastDb = typeof annotationTrack.blastDb !== 'undefined';
+export const BlastDB = ({ isEditing, genomeId, blastDb, ...props }) => {
+  const hasBlastDb = typeof blastDb !== 'undefined';
   return (
     hasBlastDb ?
     <HasBlastDb genomeId={genomeId} isEditing={isEditing} /> :
@@ -96,7 +104,3 @@ export const BlastDB = ({ isEditing, genomeId, annotationTrack, ...props }) => {
   )
 }
 
-/* 
-Should check three conditions:
-isEditing, hasBlastDb, jobIsRunning
- */

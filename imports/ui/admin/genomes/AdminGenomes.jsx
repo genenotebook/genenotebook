@@ -2,6 +2,7 @@ import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
 import { compose } from 'recompose';
+import hash from 'object-hash';
 
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 
@@ -44,7 +45,7 @@ const AdminGenomes = ({ genomes }) => {
         <tbody>
           {
             genomes.map(genome => {
-              return <GenomeInfo key={genome._id} genome={genome} />
+              return <GenomeInfo key={hash(genome.annotationTrack || {})} {...genome} />
             })
           }
         </tbody>

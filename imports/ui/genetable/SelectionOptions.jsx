@@ -11,16 +11,15 @@ import React from 'react';
 export const SelectionOptions = ({ selectedGenes , selectedAllGenes, toggleDownloadDialog }) => {
   return (
     Array.from(selectedGenes).length > 0 || selectedAllGenes ?
-    <div className="btn-group btn-group-sm px-2 py-0" role="group">
-      <button type="button" className="btn btn-sm btn-success px-2 py-0" onClick={toggleDownloadDialog}>
-        <i className="fa fa-download" aria-hidden="true"></i> Download 
-      </button>
-      <button type="button" className="btn btn-sm btn-outline-warning px-2 py-0" data-toggle="modal" data-target="#download-modal">
-        <i className="fa fa-external-link" aria-hidden="true"></i> Send 
-      </button>
-    </div> :
-    <button type="button" className="btn btn-sm btn-outline-secondary px-2 py-0" disabled>  
-      Make a selection to download data
+    <button type="button" className="btn btn-sm btn-success px-2 py-0" onClick={toggleDownloadDialog}>
+      <span className="fa fa-download" aria-hidden="true" /> Download 
+    </button> :
+    <button 
+      type="button" 
+      className="btn btn-sm btn-outline-secondary px-2 py-0"
+      title="Make a selection to download data" 
+      disabled >  
+      <span className="fa fa-ban" aria-hidden="true" /> Download
     </button>
   )
 }

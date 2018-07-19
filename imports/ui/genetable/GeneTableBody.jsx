@@ -9,11 +9,11 @@ import { Genes } from '/imports/api/genes/gene_collection.js';
 
 import { withEither } from '/imports/ui/util/uiUtil.jsx';
 
-import Genemodel from '../feature/Genemodel.jsx';
-import ProteinDomains from '../feature/ProteinDomains.jsx';
-import ExpressionPlot from '../feature/ExpressionPlot.jsx';
-import SampleSelection from '../feature/SampleSelection.jsx';
-import Info from '../feature/Info.jsx';
+import Genemodel from '../singleGenePage/Genemodel.jsx';
+import ProteinDomains from '../singleGenePage/ProteinDomains.jsx';
+import ExpressionPlot from '../singleGenePage/ExpressionPlot.jsx';
+import SampleSelection from '../singleGenePage/SampleSelection.jsx';
+//import Info from '../singleGenePage/Info.jsx';
 
 const ExpressionViz = ({ gene }) => {
   return <SampleSelection gene={gene}>

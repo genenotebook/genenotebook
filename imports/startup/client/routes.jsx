@@ -18,7 +18,7 @@ import Landingpage from '/imports/ui/landingpage/Landingpage.jsx';
 
 import GeneTableCard from '/imports/ui/genetable/GeneTableCard.jsx';
 
-import Feature from '/imports/ui/feature/Feature.jsx';
+import SingleGenePage from '/imports/ui/singleGenePage/SingleGenePage.jsx';
 
 import SubmitBlast from '/imports/ui/blast/SubmitBlast.jsx';
 import BlastResult from '/imports/ui/blast/BlastResult.jsx';
@@ -145,7 +145,7 @@ loggedInRoutes.route('/gene/:_id', {
   name: 'gene',
   action() {
     mount(MainLayout, {
-      content: <Feature />
+      content: <SingleGenePage />
     })
   }
 })

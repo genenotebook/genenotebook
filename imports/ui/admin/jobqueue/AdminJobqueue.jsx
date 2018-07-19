@@ -41,7 +41,7 @@ export const JobProgressBar = ({ progress, loading, ...job }) => {
 
   const { completed, total, percent } = progress;
   
-  const barColor = completed === 1 && total === 1 ? 'success' : 'default';
+  const barColor = completed === total ? 'success' : 'default';
 
   //console.log(completed, total, barColor)
 
@@ -55,7 +55,7 @@ export const JobProgressBar = ({ progress, loading, ...job }) => {
         aria-valuemax='100'
         style={{width:`${percent}%`}}
       >
-        {`${percent}%`}
+        {`${Math.round(percent)}%`}
       </div>
     </div>
   )

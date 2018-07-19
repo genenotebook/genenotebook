@@ -152,7 +152,7 @@ class GeneTableOptions extends React.PureComponent {
             toggleVisualization={this.toggleVisualization}
             updateQuery={this.updateQuery} 
             {...this.props} {...this.state} />
-          <button type='button' className='btn btn-sm btn-outline-dark px-2 py-0' disabled>
+          <button type='button' className='btn btn-sm btn-outline-dark px-2 mx-2 py-0' disabled>
             <span className='badge badge-dark'>
               { 
                 new Intl.NumberFormat().format(this.state.queryCount)

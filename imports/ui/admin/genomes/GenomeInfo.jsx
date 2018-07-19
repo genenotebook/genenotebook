@@ -8,10 +8,10 @@ import PermissionSelect from '/imports/ui/util/PermissionSelect.jsx';
 
 import AnnotationInfo from './AnnotationInfo.jsx';
 
-class EditGenomeInfo extends React.Component {
+class EditGenomeInfo extends React.PureComponent {
   constructor(props){
     super(props)
-    const { genome } = props;
+    const { toggleEdit, ...genome } = props;
     this.state = genome;
   }
 
@@ -46,8 +46,11 @@ class EditGenomeInfo extends React.Component {
 
   render(){
     const { toggleEdit } = this.props;
-    const genome = this.state;
-    const hasChanges = !isEqual(genome, this.props.genome);
+    const { _id: genomeId, name: genomeName, 
+      organism, description, permissions,
+      annotationTrack = {} } = this.state;
+    const { name: annotationName, blastDb } = annotationTrack;
+    const hasChanges = !isEqual(this.state, this.props.genome);
     return (
       <tr>
         <td>
@@ -55,12 +58,12 @@ class EditGenomeInfo extends React.Component {
             <input 
               type="text" 
               className="form-control" 
-              id="referenceName" 
+              id="name" 
               aria-describedby="referenceName" 
-              value={ genome.name }
+              value={ genomeName }
               onChange={ this.updateField } />
             <small id="referenceNameHelp" className="form-text text-muted">
-              Reference names must be unique
+              Genome names must be unique
             </small>
           </div>
         </td>
@@ -71,7 +74,7 @@ class EditGenomeInfo extends React.Component {
               className="form-control" 
               id="organism" 
               aria-describedby="organism" 
-              value={ genome.organism }
+              value={ organism }
               onChange={ this.updateField } />
           </div>
         </td>
@@ -82,58 +85,70 @@ class EditGenomeInfo extends React.Component {
               id="description" 
               aria-describedby="description" 
               rows="3"
-              value={ genome.description }
+              value={ description }
               onChange={ this.updateField } />
           </div>
         </td>
         <td>
           <PermissionSelect 
-            permissions={genome.permissions}
+            permissions={permissions}
             updatePermissions={this.updatePermissions} 
             disabled={false} />
         </td>
         <td>
           <AnnotationInfo //{ ...genome.annotationTrack }
-            annotationTrack={genome.annotationTrack}
-            genomeId={genome._id}
+            blastDb={blastDb}
+            name={annotationName}
+            genomeId={genomeId}
             isEditing={true} />
         </td>
         <td>
-          <div className='btn-group d-block'>
-            <button
-              type='button' 
-              className='btn btn-outline-success btn-sm px-2 py-0'
-              onClick={this.saveChanges}
-              disabled={!hasChanges} >
-              <i className="fa fa-check" /> Save
-            </button>
-            <button 
-              type='button' 
-              className='btn btn-outline-dark btn-sm px-2 py-0'
-              onClick={toggleEdit} >
-              <i className="fa fa-remove" /> Cancel
-            </button>
-          </div>
-          <hr/>
-          <div className='btn-group d-block'>
-            <button 
-              type='button' 
-              className='btn btn-danger btn-sm px-2 py-0'
-              onClick={ this.removeGenome }
-              name={genome._id}>
-              <i className="fa fa-exclamation-circle" /> Delete genome <i className="fa fa-exclamation-circle" />
-            </button>
-          </div>
+          <table style={{width:'100%'}}>
+            <tbody>
+              <tr>
+                <td>
+                  <div className='btn-group btn-group-justified'>
+                    <button
+                      type='button' 
+                      className='btn btn-outline-success btn-sm px-2 py-0'
+                      onClick={this.saveChanges}
+                      disabled={!hasChanges} >
+                      <i className="fa fa-check" /> Save
+                    </button>
+                    <button 
+                      type='button' 
+                      className='btn btn-outline-dark btn-sm px-2 py-0'
+                      onClick={toggleEdit} >
+                      <i className="fa fa-remove" /> Cancel
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <button 
+                    type='button' 
+                    className='btn btn-danger btn-sm px-2 py-0 btn-block'
+                    onClick={ this.removeGenome }
+                    name={genomeId}>
+                    <i className="fa fa-exclamation" /> Delete genome
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </td>
       </tr>
     )
   }
 }
 
-const GenomeInfoLine = ({ genome, toggleEdit }) => {
-  const { _id, name, organism, description, permissions, annotationTrack } = genome;
+const GenomeInfoLine = ({ _id: genomeId, name: genomeName, organism, 
+  description, permissions, annotationTrack = {}, toggleEdit }) => {
+  
+  const { name: annotationName, blastDb } = annotationTrack;
   return <tr>
-    <td>{ name }</td>
+    <td>{ genomeName }</td>
     <td>{ organism }</td>
     <td>{ description }</td>
     <td>
@@ -143,8 +158,10 @@ const GenomeInfoLine = ({ genome, toggleEdit }) => {
     </td>
     <td>
       <AnnotationInfo //{ ...annotationTrack }
-        annotationTrack={annotationTrack}
-        genomeId={_id}
+        //annotationTrack={annotationTrack}
+        name={annotationName}
+        blastDb={blastDb}
+        genomeId={genomeId}
         isEditing={false} />
     </td>
     <td>
@@ -152,8 +169,8 @@ const GenomeInfoLine = ({ genome, toggleEdit }) => {
         <button 
           type='button' 
           className='btn btn-outline-dark btn-sm px-2 py-0'
-          onClick={ toggleEdit }
-          name={ _id }>
+          onClick={toggleEdit}
+          name={genomeId}>
           <i className="fa fa-pencil" /> Edit&nbsp;
         </button>
         
@@ -163,7 +180,7 @@ const GenomeInfoLine = ({ genome, toggleEdit }) => {
 }
 
 
-export default class GenomeInfo extends React.Component {
+export default class GenomeInfo extends React.PureComponent {
   constructor(props){
     super(props)
     this.state = {
@@ -180,12 +197,11 @@ export default class GenomeInfo extends React.Component {
   }
 
   render(){
-    const { genome } = this.props;
     const { isEditing } = this.state;
     return (
       isEditing ?
-      <EditGenomeInfo genome={genome} toggleEdit={this.toggleEdit} /> :
-      <GenomeInfoLine genome={genome} toggleEdit={this.toggleEdit} />
+      <EditGenomeInfo {...this.props} toggleEdit={this.toggleEdit} /> :
+      <GenomeInfoLine {...this.props} toggleEdit={this.toggleEdit} />
     )
   }
 };

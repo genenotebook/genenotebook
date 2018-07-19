@@ -3,6 +3,7 @@ import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
 import { mean, sum, groupBy } from 'lodash';
+import { compose } from 'recompose';
 
 import ContainerDimensions from 'react-container-dimensions';
 //import { Popover, OverlayTrigger } from 'react-bootstrap';
@@ -11,7 +12,50 @@ import { scaleLinear } from 'd3-scale';
 
 import { ExperimentInfo, Transcriptomes } from '/imports/api/transcriptomes/transcriptome_collection.js';
 
+import { withEither } from '/imports/ui/util/uiUtil.jsx';
+
 import './expressionplot.scss';
+
+const expressionDataTracker = ({ gene, samples, ...props }) => {
+  const transcriptomeSub = Meteor.subscribe('geneExpression', gene.ID);
+  const loading = !transcriptomeSub.ready();
+
+  const sampleInfo = groupBy(samples, '_id');
+  const sampleIds = samples.map(sample => sample._id);
+  
+  const values = Transcriptomes.find({
+    geneId: gene.ID,
+    experimentId: {
+      $in: sampleIds
+    }
+  }).fetch().map(value => {
+    Object.assign(value, sampleInfo[value.experimentId][0])
+    return value
+  });
+
+  return {
+    gene,
+    values,
+    loading
+  }
+}
+
+const hasNoSamples = ({ samples, ...props }) => {
+  return samples.length === 0
+}
+
+const NoSamples = () => {
+  return <div className="card expression-plot px-1 pt-1 mb-0">
+    <div className="alert alert-dark mx-1 mt-1" role="alert">
+      <p className="text-center text-muted mb-0">No expression data found</p>
+    </div>
+  </div>
+}
+
+const withConditionalRendering = compose(
+  withEither(hasNoSamples, NoSamples),
+  withTracker(expressionDataTracker)
+)
 
 /**
  * https://stackoverflow.com/a/46854785/6573438
@@ -96,7 +140,6 @@ const BarPlot = ({ samples, yScale }) => {
   )
 
   const stdErr = stdDev / Math.sqrt(samples.length);
-
 
   return (
     <g className = 'barplot'>
@@ -203,26 +246,4 @@ class ExpressionPlot extends React.Component {
   }
 }
 
-export default withTracker(({ gene, samples, ...props }) => {
-  const transcriptomeSub = Meteor.subscribe('geneExpression', gene.ID);
-  const loading = !transcriptomeSub.ready();
-
-  const sampleInfo = groupBy(samples, '_id');
-  const sampleIds = samples.map(sample => sample._id);
-  
-  const values = Transcriptomes.find({
-    geneId: gene.ID,
-    experimentId: {
-      $in: sampleIds
-    }
-  }).fetch().map(value => {
-    Object.assign(value, sampleInfo[value.experimentId][0])
-    return value
-  });
-
-  return {
-    gene,
-    values,
-    loading
-  }
-})(ExpressionPlot)
+export default withConditionalRendering(ExpressionPlot)

@@ -30,7 +30,7 @@ export const removeBlastDb = new ValidatedMethod({
 
     console.log(`remove ${genomeId} blastDb`)
 
-    if (!this.isSimulation){
+    //if (!this.isSimulation){
       genomeCollection.update({
         _id: genomeId
       }, {
@@ -47,6 +47,6 @@ export const removeBlastDb = new ValidatedMethod({
           'blastdbs': 1
         }
       })*/
-    }
+    //}
   }
 })

@@ -33,3 +33,10 @@ body {
     border-style: solid;
     border-color: black transparent transparent transparent;
 }
+
+.btn-group-justified {
+  display: flex;
+  .btn {
+    flex-grow: 1;
+  }
+}

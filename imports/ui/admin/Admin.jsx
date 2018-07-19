@@ -29,7 +29,7 @@ const urlToName = url => {
 const Nav = ({ pages, currentPage, changePage }) => {
   return (
     <div className="card-header">
-      <a className="navbar-brand" href="#">Admin panel</a>
+      <h2 className="text-dark">Admin panel</h2>
       <ul className="nav nav-tabs card-header-tabs">
         {
           pages.map(page => {

@@ -4,6 +4,7 @@ import { Job } from 'meteor/vsivsi:job-collection';
 
 import React from 'react';
 import { compose } from 'recompose';
+import hash from 'object-hash';
 
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 import { Genes } from '/imports/api/genes/gene_collection.js'; 
@@ -54,7 +55,7 @@ const withConditionalRendering = compose(
   withEither(isNotFound, NotFound)
 )
 
-class Feature extends React.Component {
+class SingleGenePage extends React.Component {
   constructor(props){
     super(props)
   }
@@ -69,11 +70,12 @@ class Feature extends React.Component {
   }
 
   render(){
+    const { gene } = this.props;
     return (
       <div className="container">
         <div className="card genebook-feature">
           <div className="card-header">
-            <a className="navbar-brand" href="#">{this.props.gene.ID}</a>
+            <h3>{this.props.gene.ID}</h3>
             {/*<button 
               type="button" 
               className="btn btn-sm btn-outline-danger pull-right" 
@@ -98,26 +100,26 @@ class Feature extends React.Component {
             </ul>
           </div>
           <div className="card-body">
-            <Info gene={this.props.gene} />
+            <Info key={hash(gene.attributes)} gene={gene} />
             <section id='genemodel'>
               <hr/>
               <h3>Genemodel</h3>
-              <GenemodelContainer gene={this.props.gene} />
+              <GenemodelContainer gene={gene} />
             </section>
-            <SeqContainer gene={this.props.gene} />
+            <SeqContainer gene={gene} />
             <section id='protein-domains'>
               <hr />
               <h3>Protein domains</h3>
-              <ProteinDomains gene={this.props.gene} />
+              <ProteinDomains gene={gene} />
             </section>
             {
-              this.props.gene.orthogroup &&
-              <Orthogroup gene={this.props.gene} />
+              gene.orthogroup &&
+              <Orthogroup gene={gene} />
             }
             <section id='expression'>
               <hr />
               <h3>Expression</h3>
-              <SampleSelection gene={this.props.gene}>
+              <SampleSelection gene={gene}>
                 <ExpressionPlot/>
               </SampleSelection>
             </section>
@@ -131,4 +133,4 @@ class Feature extends React.Component {
   }
 }
 
-export default withConditionalRendering(Feature)
+export default withConditionalRendering(SingleGenePage)

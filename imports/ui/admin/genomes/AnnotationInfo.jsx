@@ -11,8 +11,8 @@ import { withEither } from '/imports/ui/util/uiUtil.jsx';
 import { BlastDB } from './BlastDB.jsx';
 
 
-const hasNoAnnotation = ({ annotationTrack }) => {
-  return typeof annotationTrack === 'undefined';
+const hasNoAnnotation = ({ name, ...props }) => {
+  return typeof name === 'undefined';
 }
 
 const NoAnnotation = () => {
@@ -25,10 +25,9 @@ const withConditionalRendering = compose(
   withEither(hasNoAnnotation, NoAnnotation)
 )
 
-class AnnotationInfo extends React.Component {
+class AnnotationInfo extends React.PureComponent {
   removeAnnotationTrack = event => {
     const genomeId = event.target.id;
-    console.log(`removeAnnotationTrack ${genomeId}`)
     removeAnnotationTrack.call({ genomeId }, (err, res) => {
       if (err) {
         console.log(err)
@@ -36,9 +35,9 @@ class AnnotationInfo extends React.Component {
       }
     })
   }
+
   render(){
-    const { annotationTrack, genomeId, isEditing } = this.props;
-    const { name, blastdbs } = annotationTrack;
+    const { genomeId, isEditing, name, blastDb } = this.props;
     return <table style={{width:'100%'}}>
       <tbody>
         <tr title={name}>
@@ -46,7 +45,7 @@ class AnnotationInfo extends React.Component {
         </tr>
         <tr>
           <td>
-            <BlastDB {...this.props} />
+            <BlastDB genomeId={genomeId} isEditing={isEditing} name={name} blastDb={blastDb} />
           </td>
         </tr>
         {
@@ -58,7 +57,7 @@ class AnnotationInfo extends React.Component {
                 className='btn btn-danger btn-sm px-2 py-0 btn-block'
                 onClick={ this.removeAnnotationTrack }
                 id={genomeId}>
-                <i className="fa fa-exclamation-circle" /> Delete annotation <i className="fa fa-exclamation-circle" />
+                <i className="fa fa-exclamation" /> Delete annotation
               </button>
             </td>
           </tr>

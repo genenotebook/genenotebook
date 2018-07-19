@@ -197,7 +197,7 @@ class HeaderElement extends React.Component {
     const orientation = attribute.name === 'Gene ID' ? 'left' : 'right';
     return (
       <th scope='col'>
-        <div className='btn-group'>
+        <div className='btn-group btn-group-justified'>
           <button className={`btn btn-sm px-2 py-0 ${buttonClass}`} type="button" disabled>
             {attribute.name}
           </button>
@@ -288,10 +288,10 @@ const GeneTableHeader = ({ selectedColumns, attributes, selectedGenes,
           })
         }
         <th scope="col">
-          <button className='btn btn-sm btn-outline-dark px-2 py-0' disabled>{ selectedVisualization }</button>
-          <ReactResizeDetector handleWidth onResize={resize} />
+          <button className='btn btn-sm btn-outline-dark px-2 py-0 btn-block' disabled>{ selectedVisualization }</button>
+          {/*<ReactResizeDetector handleWidth onResize={resize} />*/}
         </th>
-        <th scope="col">
+        <th scope="col" style={{width: '10px'}}>
           <div className="pull-right">
             <button type="button" className="btn btn-outline-dark btn-sm px-1 py-0" onClick={toggleSelectAllGenes}>
               <span className={`fa fa-check ${activeSelection}`} aria-hidden="true" />
