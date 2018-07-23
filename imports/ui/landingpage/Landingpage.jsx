@@ -69,8 +69,12 @@ const hasNoGenomes = ({ genomes }) => {
 }
 
 const NoGenomes = () => {
-  return <div className='alert alert-dark' role='alert'>
+  return Meteor.userId() ?
+  <div className='alert alert-dark' role='alert'>
     <p className='text-muted mb-0'>Currently no genomes are available</p>
+  </div> :
+  <div className='alert alert-dark' role='alert'>
+    <p className='text-muted mb-0'>No public genomes are available. Sign in to access private data.</p>
   </div>
 }
 
@@ -86,7 +90,7 @@ const Landingpage = () => {
   return (
     <div className="container">
       <div className="jumbotron my-2 pb-1 pt-4 bg-light border">
-        <h1 className="display-4"> {Meteor.settings.public.name} </h1>
+        <h1 className="display-4"> GeneNoteBook </h1>
         <h4 className="text-muted font-weight-light"> A collaborative notebook for genes and genomes </h4>
         <hr/>
         <p className="lead font-weight-light">
@@ -96,13 +100,13 @@ const Landingpage = () => {
         <hr/>
         <p>
           <a href="/register" className="btn btn-sm btn-success">
-            <i className="fa fa-user-plus" aria-hidden="true"></i> Create an account
+            <span className="fa fa-user-plus" aria-hidden="true" /> Create an account
           </a>
           <a href="/login" className="btn btn-sm btn-primary">
-            <i className="fa fa-sign-in" aria-hidden="true"></i> Sign in
+            <span className="fa fa-sign-in" aria-hidden="true" /> Sign in
           </a>
           <a href="http://genebook.readthedocs.io/" className="btn btn-sm btn-outline-dark">
-            <i className="fa fa-github" aria-hidden="true"></i> About Genebook
+            <span className="fa fa-github" aria-hidden="true" /> About Genebook
           </a>
         </p>
       </div>
@@ -111,46 +115,45 @@ const Landingpage = () => {
 
         <div className="card bg-light text-center mb-3">
           <div className="card-body">
-            <img src="/svg/008-menu.svg" alt="" />
+            <span className='fa fa-list-alt fa-3x' aria-hidden="true" />
             <h3 className="card-title">
-              Gene list
+              Gene Table
             </h3>
-            <h6 className="card-subtitle mb-2 text-muted">
-              Browse through a list of genes with customizable queries
+            <h6 className="card-subtitle text-muted mb-2">
+              Browse through a table of genes with customizable queries
             </h6>
-            <a href="/genes" className="btn btn-dark btn-sm">
-              <i className="fa fa-list-ul" aria-hidden="true"></i> Browse
+            <a href="/genes" className="btn btn-outline-dark btn-sm px-2 py-0 btn-block">
+              <span className="fa fa-list-alt" aria-hidden="true" /> Browse
             </a> 
           </div>
         </div>
 
         <div className="card bg-light text-center mb-3">
           <div className="card-body">
-            <img src="/svg/007-loupe.svg" alt="" />
-          
+            <span className='fa fa-search fa-3x' aria-hidden="true" />
             <h3 className="card-title">
-              Advanced search
+              Custom Search
             </h3>
             <h6 className="card-subtitle mb-2 text-muted">
-              Search genomes, genes, experiments, meta-data etc.
+              Search genes based on attributes like GO terms or protein domains
             </h6>
-            <a href="#" className="btn btn-dark btn-sm">
-              <i className="fa fa-search" aria-hidden="true"></i> Search
+            <a href="#" className="btn btn-outline-dark btn-sm px-2 py-0 btn-block">
+              <span className="fa fa-search" aria-hidden="true" /> Search
             </a> 
           </div>
         </div>
 
         <div className="card bg-light text-center mb-3">
           <div className="card-body">
-            <img src="/svg/001-server.svg" alt="" />
+            <span className="fa fa-database fa-3x" aria-hidden="true" /> 
             <h3 className="card-title">
               BLAST
             </h3>
             <h6 className="card-subtitle mb-2 text-muted">
-              BLAST your protein or DNA sequence to full genomes and annotations 
+              BLAST your protein or DNA sequence to genome annotations 
             </h6>
-            <a href="/blast" className="btn btn-dark btn-sm">
-              <i className="fa fa-server" aria-hidden="true"></i> Blast
+            <a href="/blast" className="btn btn-outline-dark btn-sm px-2 py-0 btn-block">
+              <span className="fa fa-database" aria-hidden="true" /> Blast
             </a>
           </div>
         </div>

@@ -1,10 +1,31 @@
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
+import { compose } from 'recompose';
 
 import { Attributes } from '/imports/api/genes/attribute_collection.js';
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 import { scanGeneAttributes } from '/imports/api/genes/scanGeneAttributes.js';
+
+import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
+
+const attributeDataTracker = () => {
+  const attributeSub = Meteor.subscribe('attributes');
+  const attributes = Attributes.find({}).fetch();
+  const genomeSub = Meteor.subscribe('genomes');
+  const genomes = genomeCollection.find({}).fetch();
+  const loading = !attributeSub.ready() || !genomeSub.ready();
+  return {
+    attributes,
+    genomes,
+    loading
+  }
+}
+
+const withConditionalRendering = compose(
+  withTracker(attributeDataTracker),
+  withEither(isLoading, Loading)
+)
 
 class AdminAttributes extends React.Component {
   constructor(props){
@@ -22,14 +43,12 @@ class AdminAttributes extends React.Component {
   }
 
   render(){
-    const { loading, attributes, ...props } = this.props;
+    const { attributes, ...props } = this.props;
     return (
-      loading ? 
-      <div> Loading </div> :
       <div>
         <hr/>
         <button type='button' className='btn btn-warning' onClick={this.scanAttributes}>
-          <i className="fa fa-warning" aria-hidden="true"/> Scan all genes for attributes
+          <span className="fa fa-warning" aria-hidden="true"/> Scan all genes for attributes
         </button>
         <hr/>
         <table className="table table-hover table-sm">
@@ -70,17 +89,6 @@ class AdminAttributes extends React.Component {
   }
 }
 
-export default withTracker(() => {
-  const attributeSub = Meteor.subscribe('attributes');
-  const attributes = Attributes.find({}).fetch();
-  const genomeSub = Meteor.subscribe('genomes');
-  const genomes = genomeCollection.find({}).fetch();
-  const loading = !attributeSub.ready() || !genomeSub.ready();
-  return {
-    attributes,
-    genomes,
-    loading
-  }
-})(AdminAttributes);
+export default withConditionalRendering(AdminAttributes);
 
 

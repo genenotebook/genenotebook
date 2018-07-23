@@ -156,11 +156,12 @@ Meteor.publish({
   genomes () {
     const publication = this;
     if (!publication.userId){
-      publication.stop()
+      return genomeCollection.find({ public: true });
+    } else {
+      const roles = Roles.getRolesForUser(publication.userId);
+      const permissions = { $in: roles };
+      return genomeCollection.find({ permissions })
     }
-    const roles = Roles.getRolesForUser(publication.userId);
-    const permissions = { $in: roles };
-    return genomeCollection.find({ permissions })
   },
   orthogroups (ID) {
     if (!this.userId){
