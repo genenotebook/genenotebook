@@ -4,12 +4,16 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
 
-const UsernameInput = (props) => {
+import './register.scss';
+
+const UsernameInput = ({ userName, validUsername, handleChange }) => {
   return (
-    <div className={`input-group ${ !props.validUsername && 'has-danger'}`}>
-      <span className="input-group-addon">
-        <i className="fa fa-user"></i>
-      </span>
+    <div className='input-group username' >
+      <div className="input-group-prepend">
+        <span className='input-group-text'>
+          <span className="fa fa-user-circle" />
+        </span>
+      </div>
       <input 
         type="text" 
         className="form-control" 
@@ -17,38 +21,42 @@ const UsernameInput = (props) => {
         id="username"  
         pattern="^[a-zA-Z0-9]+$" 
         title="Only letters and numbers"
-        onChange = {props.handleChange}
-        value = {props.userName}
+        onChange = {handleChange}
+        value = {userName}
         required autoFocus />
     </div>
   )
 }
 
-const EmailInput = (props) => {
+const EmailInput = ({ email, validEmail, handleChange }) => {
   return (
-    <div className={`input-group ${ !props.validEmail && 'has-danger'}`}>
-      <span className="input-group-addon">
-        <i className="fa fa-envelope"></i>
-      </span>
+    <div className='input-group email'>
+      <div className="input-group-prepend">
+        <span className='input-group-text'>
+          <span className="fa fa-at" />
+        </span>
+      </div>
       <input 
         type="email" 
         className="form-control" 
         placeholder="Email" 
         id="email" 
-        onChange = {props.handleChange}
-        value = {props.email}
+        onChange = {handleChange}
+        value = {email}
         required />
     </div>
   )
 }
 
-const PassWordInput = (props) => {
+const PassWordInput = ({ password, passwordRepeat, validPassword, handleChange }) => {
   return (
-    <div>
-      <div className={`input-group password ${ !props.validPassword && 'has-danger'}`}>
-        <span className="input-group-addon">
-          <i className="fa fa-lock"></i>
-        </span>
+    <React.Fragment>
+      <div className='input-group password'>
+        <div className="input-group-prepend">
+          <span className='input-group-text'>
+            <span className="fa fa-lock" />
+          </span>
+        </div>
         <input 
           type="password" 
           className="form-control" 
@@ -56,28 +64,30 @@ const PassWordInput = (props) => {
           id="password" 
           pattern=".{8,}" 
           title="Minimum 8 charachters"
-          onChange = {props.handleChange}
-          value = {props.password}
+          onChange = {handleChange}
+          value = {password}
           required />
       </div>
-      <div className={`input-group password-repeat ${ !props.validPassword && 'has-danger'}`}>
-        <span className="input-group-addon">
-          <i className="fa fa-lock"></i>
-        </span>
+      <div className='input-group password-repeat'>
+        <div className="input-group-prepend">
+          <span className='input-group-text'>
+            <span className="fa fa-lock" />
+          </span>
+        </div>
         <input 
           type="password" 
           className="form-control" 
           placeholder="Repeat password" 
           id="passwordRepeat"
-          onChange = {props.handleChange}
-          value = {props.passwordRepeat} 
+          onChange = {handleChange}
+          value = {passwordRepeat} 
           required />
       </div>
-    </div>
+    </React.Fragment>
   )
 }
 
-class Register extends React.Component {
+export default class Register extends React.Component {
   constructor(props){
     super(props)
     this.state = {
@@ -91,11 +101,10 @@ class Register extends React.Component {
     }
   }
 
-  submit = (event) => {
+  handleSubmit = (event) => {
     event.preventDefault()
-    console.log('submit')
-    console.log(this.state)
-    if (this.state.password !== this.state.passwordRepeat){
+    const { username, email, password, passwordRepeat } = this.state;
+    if (password !== passwordRepeat){
       alert('Passwords do not match!')
       this.setState({
         password: '',
@@ -103,12 +112,7 @@ class Register extends React.Component {
         validPassword: false
       })
     } else {
-      const userData = {
-        username:  this.state.username,
-        email: this.state.email,
-        password: this.state.password
-      }
-      Accounts.createUser(userData, (err,res) => {
+      Accounts.createUser({ username, email, password }, (err,res) => {
         if (err){
           this.setState({
             password: '',
@@ -159,50 +163,68 @@ class Register extends React.Component {
   }
 
   filledInAllFields = () => {
-    return (
-      this.state.username.length > 0 &&
-      this.state.email.length > 0 &&
-      this.state.password.length > 0 &&
-      this.state.passwordRepeat.length > 0
-    )
+    const { username, email, password, passwordRepeat } = this.state;
+    return username.length && email.length && password.length && passwordRepeat.length;
   }
 
   render(){
     return (
-      <div className="row justify-content-center">
-        <div className="col-3">
-        <h1 className="text-center login-title">Create new Genebook account</h1>
-          <div className="register">
-            <form className="form-register" onSubmit={this.submit} >
-              <UsernameInput 
-                userName = {this.state.username} 
-                validUsername = {this.state.validUsername}
-                handleChange = {this.handleChange} />
-              <EmailInput 
-                email = {this.state.email} 
-                validEmail = {this.state.validEmail}
-                handleChange = {this.handleChange} />
-              <PassWordInput 
-                password = {this.state.password} 
-                passwordRepeat = {this.state.passwordRepeat} 
-                validPassword = {this.state.validPassword}
-                handleChange = {this.handleChange} />
-              <button 
-                className={`btn btn-lg btn-block ${ this.filledInAllFields() ? 'btn-success' : 'btn-outline-success' }`} 
-                type="submit"
-                disabled = { !this.filledInAllFields() }>
-                {
-                  this.filledInAllFields() ? 'Sign up' : 'Please fill in all fields'
-                }
-              </button>
-            </form>
-          </div>
-        </div>
+      <div className='card register'>
+        <form className="form-register text-center" onSubmit={this.handleSubmit}>
+          <img className="mb-4 rounded-circle" src="logo.svg" alt="" width="100" height="100" />
+          <h1 className="h3 mb-3 font-weight-normal">Create GeneNoteBook Account</h1>
+          <UsernameInput {...this.state} handleChange={this.handleChange} />
+          <EmailInput {...this.state} handleChange={this.handleChange} />
+          <PassWordInput {...this.state} handleChange={this.handleChange} />
+          <button 
+            className={`btn btn-lg btn-block ${ this.filledInAllFields() ? 'btn-success' : 'btn-outline-success' }`} 
+            type="submit"
+            disabled = { !this.filledInAllFields() }>
+            {
+              this.filledInAllFields() ? 'Sign up' : 'Please fill in all fields'
+            }
+          </button>
+        </form>
       </div>
     )
   }
 }
 
+/*
 export default withTracker(props => {
   return {}
 })(Register);
+*/
+
+{/*
+  <div className="row justify-content-center">
+    <div className="col-3">
+    <h1 className="text-center login-title">Create new Genebook account</h1>
+      <div className="register">
+        <form className="form-register" onSubmit={this.submit} >
+          <UsernameInput 
+            userName = {this.state.username} 
+            validUsername = {this.state.validUsername}
+            handleChange = {this.handleChange} />
+          <EmailInput 
+            email = {this.state.email} 
+            validEmail = {this.state.validEmail}
+            handleChange = {this.handleChange} />
+          <PassWordInput 
+            password = {this.state.password} 
+            passwordRepeat = {this.state.passwordRepeat} 
+            validPassword = {this.state.validPassword}
+            handleChange = {this.handleChange} />
+          <button 
+            className={`btn btn-lg btn-block ${ this.filledInAllFields() ? 'btn-success' : 'btn-outline-success' }`} 
+            type="submit"
+            disabled = { !this.filledInAllFields() }>
+            {
+              this.filledInAllFields() ? 'Sign up' : 'Please fill in all fields'
+            }
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+*/}

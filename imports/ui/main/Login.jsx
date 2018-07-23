@@ -4,6 +4,8 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
 
+import './login.scss';
+
 class Login extends React.Component {
   constructor(props){
     super(props)
@@ -15,7 +17,8 @@ class Login extends React.Component {
 
   handleSubmit = (event) => {
     event.preventDefault();
-    Meteor.loginWithPassword(this.state.username, this.state.password, (err,res) => {
+    const { username, password } = this.state;
+    Meteor.loginWithPassword(username, password, (err,res) => {
       this.setState({
         password: ''
       })
@@ -35,7 +38,43 @@ class Login extends React.Component {
 
   render(){
     return (
-      <div>
+      <div className="card signin">
+        <form className="form-signin text-center" onSubmit={this.handleSubmit}>
+          <img className="mb-4 rounded-circle" src="logo.svg" alt="" width="100" height="100" />
+          <h1 className="h3 mb-3 font-weight-normal">Please sign in</h1>
+          <label htmlFor="inputEmail" className="sr-only">Email address</label>
+          <input 
+            type="text" 
+            id="username" 
+            className="form-control" 
+            placeholder="Username" 
+            onChange={this.handleChange}
+            required autoFocus />
+          <label htmlFor="inputPassword" className="sr-only">Password</label>
+          <input 
+            type="password" 
+            id="password" 
+            className="form-control" 
+            placeholder="Password" 
+            onChange={this.handleChange}
+            required />
+          <button 
+            className="btn btn-lg btn-primary btn-block mb-3" type="submit">Sign in</button>
+          <a href="/register" id="new-account">Create new account</a>
+          <p className="mt-5 mb-3 text-muted">© 2017-2018</p>
+        </form>
+      </div>
+    )
+  }
+}
+
+export default withTracker(props => {
+  return {
+    redirect: '/'
+  }
+})(Login);
+
+        {/*
         <div className="row justify-content-center">
           <div className="col-3">
             <h1 className="text-center login-title">Sign in to continue</h1>
@@ -65,13 +104,4 @@ class Login extends React.Component {
             <a href="/register" className="text-center new-account" id="new-account">Create new account</a>
           </div>
         </div>
-      </div>
-    )
-  }
-}
-
-export default withTracker(props => {
-  return {
-    redirect: '/'
-  }
-})(Login);
+      */}

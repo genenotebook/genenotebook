@@ -90,7 +90,7 @@ const Landingpage = () => {
   return (
     <div className="container">
       <div className="jumbotron my-2 pb-1 pt-4 bg-light border">
-        <h1 className="display-4"> GeneNoteBook </h1>
+        <h1 className='genenotebook-title'> GeneNoteBook </h1>
         <h4 className="text-muted font-weight-light"> A collaborative notebook for genes and genomes </h4>
         <hr/>
         <p className="lead font-weight-light">
