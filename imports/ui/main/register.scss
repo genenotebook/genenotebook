@@ -24,7 +24,7 @@
 }
 
 .form-register {
-  .fa {
+  [class^='icon-'] {
     width: 1rem;
   }
   .username {

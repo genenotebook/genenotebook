@@ -28,10 +28,10 @@ class HasBlastDb extends React.Component {
     return (
       isEditing ? 
       <button type="button" className="btn btn-outline-danger btn-sm px-2 py-0 btn-block" id={genomeId} onClick={this.removeBlastDb}>
-        <span className="fa fa-exclamation" /> Remove Blast DBs
+        <span className="icon-exclamation" /> Remove Blast DBs
       </button> :
       <button type="button" className="btn btn-outline-success btn-sm px-2 py-0 btn-block" id={genomeId} disabled>
-        <span className="fa fa-check" />  Blast DBs present
+        <span className="icon-check" />  Blast DBs present
       </button> 
     )
   }
@@ -61,7 +61,7 @@ class HasNoJob extends React.Component {
         Make Blast DB
       </button> :
       <button type="button" className="btn btn-outline-secondary btn-sm px-2 py-0 btn-block" id={genomeId} disabled>
-        <i className="fa fa-ban" />  No Blast DB
+        <i className="icon-block" />  No Blast DB
       </button> 
     )
   }

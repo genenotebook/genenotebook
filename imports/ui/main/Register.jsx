@@ -11,7 +11,7 @@ const UsernameInput = ({ userName, validUsername, handleChange }) => {
     <div className='input-group username' >
       <div className="input-group-prepend">
         <span className='input-group-text'>
-          <span className="fa fa-user-circle" />
+          <span className="icon-user" />
         </span>
       </div>
       <input 
@@ -33,7 +33,7 @@ const EmailInput = ({ email, validEmail, handleChange }) => {
     <div className='input-group email'>
       <div className="input-group-prepend">
         <span className='input-group-text'>
-          <span className="fa fa-at" />
+          <span className="icon-at" />
         </span>
       </div>
       <input 
@@ -54,7 +54,7 @@ const PassWordInput = ({ password, passwordRepeat, validPassword, handleChange }
       <div className='input-group password'>
         <div className="input-group-prepend">
           <span className='input-group-text'>
-            <span className="fa fa-lock" />
+            <span className="icon-lock" />
           </span>
         </div>
         <input 
@@ -71,7 +71,7 @@ const PassWordInput = ({ password, passwordRepeat, validPassword, handleChange }
       <div className='input-group password-repeat'>
         <div className="input-group-prepend">
           <span className='input-group-text'>
-            <span className="fa fa-lock" />
+            <span className="icon-lock" />
           </span>
         </div>
         <input 

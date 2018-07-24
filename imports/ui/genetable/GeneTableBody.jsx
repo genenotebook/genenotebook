@@ -136,7 +136,7 @@ const withConditionalRendering = compose(
 const GeneTableRow = ({gene, selectedColumns, selectedAllGenes, selectedGenes, 
   updateSelection, attributes, selectedVisualization, ...props }) => {
   const selected = selectedAllGenes || selectedGenes.has(gene.ID)
-  const active = selected ? 'active' : '';
+  const color = selected ? 'black' : 'white';
   const selectedAttributes = attributes.filter(attribute => {
     return selectedColumns.has(attribute.name)
   }).reduce((obj, attribute) => {
@@ -176,7 +176,7 @@ const GeneTableRow = ({gene, selectedColumns, selectedAllGenes, selectedGenes,
           className="btn btn-sm btn-outline-dark pull-right px-1 py-0"
           id={gene.ID}
           onClick={updateSelection.bind(this)} >
-          <span id={gene.ID} className={`fa fa-check ${active}`} aria-hidden="true" />
+          <span id={gene.ID} className='icon-check' aria-hidden="true" style={{color}} />
         </button>
       </td>
     </tr>

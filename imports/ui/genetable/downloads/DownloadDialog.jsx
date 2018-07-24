@@ -174,7 +174,7 @@ export default class DownloadDialogModal extends React.Component {
                 {
                   downloading ? 
                   <button type="button" className="btn btn-success" disabled>
-                    <span className="fa fa-circle-o-notch fa-spin"/> Preparing download URL
+                    <span className="icon-spin"/> Preparing download URL
                   </button> :
                   <button 
                     type="button" 

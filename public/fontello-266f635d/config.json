@@ -1,0 +1,184 @@
+{
+  "name": "",
+  "css_prefix_text": "icon-",
+  "css_use_suffix": false,
+  "hinting": true,
+  "units_per_em": 1000,
+  "ascent": 850,
+  "glyphs": [
+    {
+      "uid": "56a0672588820ab1a16363e5d07dd22e",
+      "css": "user",
+      "code": 59394,
+      "src": "linecons"
+    },
+    {
+      "uid": "02ad0683eaa9826f396fa7ccf1f1fb25",
+      "css": "database",
+      "code": 59392,
+      "src": "linecons"
+    },
+    {
+      "uid": "9725db89b610135dc76cd8a21afffa83",
+      "css": "search",
+      "code": 59393,
+      "src": "linecons"
+    },
+    {
+      "uid": "c9bef3dc67fea47e94c4a5030ea64dad",
+      "css": "clipboard",
+      "code": 59395,
+      "src": "elusive"
+    },
+    {
+      "uid": "ef47651da3866460f27baf85ae234e5c",
+      "css": "list",
+      "code": 59396,
+      "src": "iconic"
+    },
+    {
+      "uid": "29e7f6072d5935d7818204d9b088508b",
+      "css": "block",
+      "code": 59398,
+      "src": "entypo"
+    },
+    {
+      "uid": "b08cfe8039de2ce815686aced2caef06",
+      "css": "download",
+      "code": 59399,
+      "src": "entypo"
+    },
+    {
+      "uid": "in76hg99crrkpcbz2rjnmgbiw74s72y0",
+      "css": "check",
+      "code": 59400,
+      "src": "modernpics"
+    },
+    {
+      "uid": "dbd39eb5a1d67beb54cfcb535e840e0f",
+      "css": "plus",
+      "code": 59397,
+      "src": "iconic"
+    },
+    {
+      "uid": "2cc73cc335f054682c04fe63439c4dcb",
+      "css": "trash",
+      "code": 59401,
+      "src": "linecons"
+    },
+    {
+      "uid": "d4816c0845aa43767213d45574b3b145",
+      "css": "history",
+      "code": 61914,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "00391fac5d419345ffcccd95b6f76263",
+      "css": "exclamation",
+      "code": 61738,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "0f6a2573a7b6df911ed199bb63717e27",
+      "css": "github",
+      "code": 61595,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "a204f0fa972408eaae5a363c444991b2",
+      "css": "login",
+      "code": 59402,
+      "src": "entypo"
+    },
+    {
+      "uid": "2d76f2c8d13be40694ecadfea7fb83c3",
+      "css": "logout",
+      "code": 59403,
+      "src": "entypo"
+    },
+    {
+      "uid": "6274e0601f2feef7eced89146e708de0",
+      "css": "user-add",
+      "code": 59404,
+      "src": "entypo"
+    },
+    {
+      "uid": "3a230e539a4f3b904debd04c6c155034",
+      "css": "questionmark",
+      "code": 59405,
+      "src": "entypo"
+    },
+    {
+      "uid": "2aeb4987b469d22fcb8b471b6d2cdfff",
+      "css": "pencil",
+      "code": 59406,
+      "src": "linecons"
+    },
+    {
+      "uid": "0cd2582b8c93719d066ee0affd02ac78",
+      "css": "sort-up",
+      "code": 61792,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "27b13eff5eb0ca15e01a6e65ffe6eeec",
+      "css": "sort-down",
+      "code": 61793,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "f4445feb55521283572ee88bc304f928",
+      "css": "floppy",
+      "code": 59407,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "15739f3032c2aa3df67efc96b3ffef56",
+      "css": "cancel",
+      "code": 59408,
+      "src": "websymbols"
+    },
+    {
+      "uid": "47e9e56d2b5abe839bcf1e014d643dea",
+      "css": "lock",
+      "code": 59409,
+      "src": "linecons"
+    },
+    {
+      "uid": "874694a9126e8193bca844356d1b6328",
+      "css": "at",
+      "code": 59410,
+      "src": "mfglabs"
+    },
+    {
+      "uid": "3e2bd88137dd7ceec98b4bfd8640e5ec",
+      "css": "params",
+      "code": 59411,
+      "src": "linecons"
+    },
+    {
+      "uid": "484b4ad2058d17849f205c4054b6f315",
+      "css": "cog",
+      "code": 59412,
+      "src": "linecons"
+    },
+    {
+      "uid": "c21d309f797d3644dc8d28c4617738ce",
+      "css": "left",
+      "code": 59413,
+      "src": "mfglabs"
+    },
+    {
+      "uid": "1d35198f5190ec004dd4ec742fbe19ca",
+      "css": "right",
+      "code": 59414,
+      "src": "mfglabs"
+    },
+    {
+      "uid": "9bd60140934a1eb9236fd7a8ab1ff6ba",
+      "css": "spin",
+      "code": 59444,
+      "src": "fontelico"
+    }
+  ]
+}

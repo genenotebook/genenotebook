@@ -73,7 +73,7 @@ class SingleGenePage extends React.Component {
     const { gene } = this.props;
     return (
       <div className="container">
-        <div className="card genebook-feature">
+        <div className="card single-gene-page my-2">
           <div className="card-header">
             <h3>{this.props.gene.ID}</h3>
             {/*<button 

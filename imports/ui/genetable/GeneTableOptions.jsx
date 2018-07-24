@@ -145,7 +145,7 @@ class GeneTableOptions extends React.PureComponent {
 
   render(){
     return (
-      <div className="card">
+      <div className="card my-2">
         <div className="card-header d-flex justify-content-between px-1 py-1">
           <FilterOptions 
             toggleColumnSelect={this.toggleColumnSelect}

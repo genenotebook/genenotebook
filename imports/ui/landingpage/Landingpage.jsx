@@ -100,13 +100,13 @@ const Landingpage = () => {
         <hr/>
         <p>
           <a href="/register" className="btn btn-sm btn-success">
-            <span className="fa fa-user-plus" aria-hidden="true" /> Create an account
+            <span className="icon-user-add" aria-hidden="true" /> Create an account
           </a>
           <a href="/login" className="btn btn-sm btn-primary">
-            <span className="fa fa-sign-in" aria-hidden="true" /> Sign in
+            <span className="icon-login" aria-hidden="true" /> Sign in
           </a>
           <a href="http://genebook.readthedocs.io/" className="btn btn-sm btn-outline-dark">
-            <span className="fa fa-github" aria-hidden="true" /> About Genebook
+            <span className="icon-github" aria-hidden="true" /> About Genebook
           </a>
         </p>
       </div>
@@ -115,7 +115,7 @@ const Landingpage = () => {
 
         <div className="card bg-light text-center mb-3">
           <div className="card-body">
-            <span className='fa fa-list-alt fa-3x' aria-hidden="true" />
+            <span className='icon-clipboard' aria-hidden="true" style={{fontSize: '3rem'}} />
             <h3 className="card-title">
               Gene Table
             </h3>
@@ -123,14 +123,14 @@ const Landingpage = () => {
               Browse through a table of genes with customizable queries
             </h6>
             <a href="/genes" className="btn btn-outline-dark btn-sm px-2 py-0 btn-block">
-              <span className="fa fa-list-alt" aria-hidden="true" /> Browse
+              <span className="icon-list" aria-hidden="true" /> Browse
             </a> 
           </div>
         </div>
 
         <div className="card bg-light text-center mb-3">
           <div className="card-body">
-            <span className='fa fa-search fa-3x' aria-hidden="true" />
+            <span className='icon-search' aria-hidden="true" style={{fontSize: '3rem'}} />
             <h3 className="card-title">
               Custom Search
             </h3>
@@ -138,14 +138,14 @@ const Landingpage = () => {
               Search genes based on attributes like GO terms or protein domains
             </h6>
             <a href="#" className="btn btn-outline-dark btn-sm px-2 py-0 btn-block">
-              <span className="fa fa-search" aria-hidden="true" /> Search
+              <span className="icon-search" aria-hidden="true" /> Search
             </a> 
           </div>
         </div>
 
         <div className="card bg-light text-center mb-3">
           <div className="card-body">
-            <span className="fa fa-database fa-3x" aria-hidden="true" /> 
+            <span className="icon-database" aria-hidden="true" style={{fontSize: '3rem'}} /> 
             <h3 className="card-title">
               BLAST
             </h3>
@@ -153,7 +153,7 @@ const Landingpage = () => {
               BLAST your protein or DNA sequence to genome annotations 
             </h6>
             <a href="/blast" className="btn btn-outline-dark btn-sm px-2 py-0 btn-block">
-              <span className="fa fa-database" aria-hidden="true" /> Blast
+              <span className="icon-database" aria-hidden="true" /> Blast
             </a>
           </div>
         </div>

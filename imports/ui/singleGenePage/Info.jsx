@@ -20,32 +20,32 @@ const Controls = (props) => {
     <div>
       {
         props.showHistory &&
-        <button type="button" className="btn btn-outline-dark btn-sm pull-right px-2 py-0 viewingHistory" onClick={props.toggleHistory}>
-          <i className="fa fa-history" aria-hidden="true"></i> Hide history
+        <button type="button" className="btn btn-outline-dark btn-sm float-right px-2 py-0 viewingHistory" onClick={props.toggleHistory}>
+          <span className="icon-history" aria-hidden="true" /> Hide history
         </button>
       }
       {
         props.totalVersionNumber > 0 && !props.isEditing && !props.showHistory &&
-        <button type="button" className="btn btn-outline-dark btn-sm pull-right px-2 py-0 viewingHistory" onClick={props.toggleHistory}>
-          <i className="fa fa-history" aria-hidden="true"></i> 
+        <button type="button" className="btn btn-outline-dark btn-sm float-right px-2 py-0 viewingHistory" onClick={props.toggleHistory}>
+          <i className="icon-history" aria-hidden="true"></i> 
           &nbsp;Show history&nbsp;
           <span className="badge badge-dark">{ props.totalVersionNumber }</span>
         </button>
       }
       {
         canEdit() && !props.isEditing && !props.showHistory &&
-        <button type="button" className="btn btn-outline-dark btn-sm pull-right px-2 py-0 edit" onClick={props.startEdit}>
-          <i className="fa fa-pencil-square-o" aria-hidden="true"></i> Edit
+        <button type="button" className="btn btn-outline-dark btn-sm float-right px-2 py-0 edit" onClick={props.startEdit}>
+          <span className="icon-pencil" aria-hidden="true" /> Edit
         </button>
       }
       {
         canEdit() && props.isEditing && !props.showHistory &&
-        <div className="btn-group pull-right">
+        <div className="btn-group float-right">
           <button type="button" className="btn btn-outline-success px-2 py-0 btn-sm save" onClick={props.saveEdit}>
-            <i className="fa fa-floppy-o" aria-hidden="true"></i> Save
+            <span className="icon-floppy" aria-hidden="true" /> Save
           </button>
           <button type="button" className="btn btn-outline-danger btn-sm px-2 py-0 cancel" onClick={props.cancelEdit}>
-            <i className="fa fa-times" aria-hidden="true"></i> Cancel
+            <span className="icon-cancel" aria-hidden="true" /> Cancel
           </button>
         </div>
       }
@@ -62,7 +62,7 @@ const VersionHistory = (props) => {
   return (
     <div>
       <div className="alert alert-primary" role="alert">
-        <i className="fa fa-exclamation-circle" aria-hidden="true" /> You are watching 
+        <span className="icon-exclamation" aria-hidden="true" /> You are watching 
         version <span className='badge badge-light'> { props.currentVersionNumber + 1 } / { props.totalVersionNumber + 1 } </span> 
         &nbsp;of this gene by user Foobar Baz { /*props.editBy*/ } at { props.editAt }&nbsp;
         { 
@@ -74,10 +74,10 @@ const VersionHistory = (props) => {
       </div>
       <div className="pager">
         <button className="btn btn-sm btn-outline-dark px-2 py-0" name="previous" onClick={ props.selectVersion } disabled={!hasPreviousVersion}>
-          <i className={`fa ${hasPreviousVersion ? 'fa-arrow-left' : 'fa-ban'}`} aria-hidden="true"></i> {previousText}
+          <span className={`${hasPreviousVersion ? 'icon-left' : 'icon-block'}`} aria-hidden="true" /> {previousText}
         </button>
-        <button className="btn btn-sm btn-outline-dark px-2 py-0 pull-right" name="next" onClick={ props.selectVersion } disabled={!hasNextVersion}>
-         {nextText} <i className={`fa ${hasNextVersion ? 'fa-arrow-right' : 'fa-ban'}`} aria-hidden="true"></i>
+        <button className="btn btn-sm btn-outline-dark px-2 py-0 float-right" name="next" onClick={ props.selectVersion } disabled={!hasNextVersion}>
+         {nextText} <span className={`${hasNextVersion ? 'icon-right' : 'icon-block'}`} aria-hidden="true" />
         </button>
       </div>
     </div>
@@ -99,7 +99,7 @@ const AttributeInput = (props) => {
           className="btn btn-outline-danger btn-sm"
           name={props.name}
           onClick = {props.deleteAttribute.bind(this,props.name)}>
-          <span className="fa fa-trash-o"/> Delete attribute
+          <span className="icon-trash"/> Delete attribute
         </button>
       </div>
     </div>
@@ -391,7 +391,7 @@ class Info extends React.Component {
                 type = 'button'
                 className = 'btn btn-outline-success btn-sm px-2 py-0'
                 onClick = {this.startAddingAttribute}>
-                <span className="fa fa-plus" /> Add new attribute
+                <span className="icon-plus" /> Add new attribute
               </button>
             </div>
           }

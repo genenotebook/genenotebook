@@ -42,7 +42,7 @@ class Login extends React.Component {
         <form className="form-signin text-center" onSubmit={this.handleSubmit}>
           <img className="mb-4 rounded-circle" src="logo.svg" alt="" width="100" height="100" />
           <h1 className="h3 mb-3 font-weight-normal">Please sign in</h1>
-          <label htmlFor="inputEmail" className="sr-only">Email address</label>
+          <label htmlFor="inputEmail" className="sr-only">Username</label>
           <input 
             type="text" 
             id="username" 

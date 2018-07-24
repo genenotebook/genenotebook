@@ -17,7 +17,7 @@ const hasNoAnnotation = ({ name, ...props }) => {
 
 const NoAnnotation = () => {
   return <button type="button" className="btn btn-outline-secondary btn-sm px-2 py-0" disabled>
-    <i className="fa fa-ban" /> No annotation
+    <span className="icon-block" /> No annotation
   </button> 
 }
 
@@ -57,7 +57,7 @@ class AnnotationInfo extends React.PureComponent {
                 className='btn btn-danger btn-sm px-2 py-0 btn-block'
                 onClick={ this.removeAnnotationTrack }
                 id={genomeId}>
-                <i className="fa fa-exclamation" /> Delete annotation
+                <span className="icon-exclamation" /> Delete annotation
               </button>
             </td>
           </tr>

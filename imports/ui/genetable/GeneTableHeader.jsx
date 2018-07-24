@@ -275,7 +275,7 @@ const GeneTableHeader = ({ selectedColumns, attributes, selectedGenes,
     return obj
   },{})
 
-  const activeSelection = [...selectedGenes].length > 0 || selectedAllGenes ? 'active' : '';
+  const checkBoxColor = [...selectedGenes].length || selectedAllGenes ? 'black' : 'white';
   return (
     <thead>
       <tr>
@@ -294,7 +294,7 @@ const GeneTableHeader = ({ selectedColumns, attributes, selectedGenes,
         <th scope="col" style={{width: '10px'}}>
           <div className="pull-right">
             <button type="button" className="btn btn-outline-dark btn-sm px-1 py-0" onClick={toggleSelectAllGenes}>
-              <span className={`fa fa-check ${activeSelection}`} aria-hidden="true" />
+              <span className='icon-check' aria-hidden="true" style={{color: checkBoxColor}} />
             </button>
           </div>
         </th>

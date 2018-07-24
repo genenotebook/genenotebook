@@ -6,9 +6,7 @@ const InactiveAccountWarning = props => {
   return (
     <div className='container alert alert-danger text-center inactive-account-warning' role='alert'>
       <h4 className='alert-heading'>
-        <i className="fa fa-exclamation-triangle"/>
-        &nbsp; Inactive account &nbsp;
-        <i className="fa fa-exclamation-triangle"/>
+        <span className="icon-exclamation"/> Inactive account
       </h4>
       <p>
         Your account is currently not activated <br/>

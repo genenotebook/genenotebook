@@ -48,7 +48,7 @@ class AdminAttributes extends React.Component {
       <div>
         <hr/>
         <button type='button' className='btn btn-warning' onClick={this.scanAttributes}>
-          <span className="fa fa-warning" aria-hidden="true"/> Scan all genes for attributes
+          <span className="icon-exclamation" aria-hidden="true"/> Scan all genes for attributes
         </button>
         <hr/>
         <table className="table table-hover table-sm">

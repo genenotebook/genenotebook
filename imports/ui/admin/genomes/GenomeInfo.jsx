@@ -113,13 +113,13 @@ class EditGenomeInfo extends React.PureComponent {
                       className='btn btn-outline-success btn-sm px-2 py-0'
                       onClick={this.saveChanges}
                       disabled={!hasChanges} >
-                      <i className="fa fa-check" /> Save
+                      <span className="icon-check" /> Save
                     </button>
                     <button 
                       type='button' 
                       className='btn btn-outline-dark btn-sm px-2 py-0'
                       onClick={toggleEdit} >
-                      <i className="fa fa-remove" /> Cancel
+                      <span className="icon-remove" /> Cancel
                     </button>
                   </div>
                 </td>
@@ -131,7 +131,7 @@ class EditGenomeInfo extends React.PureComponent {
                     className='btn btn-danger btn-sm px-2 py-0 btn-block'
                     onClick={ this.removeGenome }
                     name={genomeId}>
-                    <i className="fa fa-exclamation" /> Delete genome
+                    <span className="icon-exclamation" /> Delete genome
                   </button>
                 </td>
               </tr>
@@ -171,7 +171,7 @@ const GenomeInfoLine = ({ _id: genomeId, name: genomeName, organism,
           className='btn btn-outline-dark btn-sm px-2 py-0'
           onClick={toggleEdit}
           name={genomeId}>
-          <i className="fa fa-pencil" /> Edit&nbsp;
+          <span className="icon-pencil" /> Edit&nbsp;
         </button>
         
       </div>

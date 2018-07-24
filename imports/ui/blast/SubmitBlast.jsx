@@ -248,13 +248,13 @@ class SubmitBlast extends React.Component {
                 {
                   !this.state.input &&
                   <button type="button" className="btn btn-outline-secondary disabled">
-                    <span className="fa fa-question-circle-o"></span> Enter sequence
+                    <span className="icon-questionmark"></span> Enter sequence
                   </button>
                 }
                 {
                   this.state.input && this.state.selectedGenomes.size == 0 &&
                   <button type="button" className="btn btn-outline-secondary disabled">
-                    <span className="fa fa-question-circle-o"></span> Select genome annotation
+                    <span className="icon-questionmark"></span> Select genome annotation
                   </button>
                 }
                 {
