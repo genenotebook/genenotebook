@@ -21,7 +21,7 @@ export const VISUALIZATIONS =['Gene model', 'Protein domains', 'Gene expression'
  * @param  {[type]} props [description]
  * @return {[type]}       [description]
  */
-const tableColumnDataTracker = props => {
+const attributeTracker = () => {
   const attributeSub = Meteor.subscribe('attributes');
   const loading = !attributeSub.ready();
   const attributes = attributeCollection.find({show: true}).fetch();
@@ -31,27 +31,51 @@ const tableColumnDataTracker = props => {
   }
 }
 
+const searchTracker = ({ attributes }) => {
+  FlowRouter.watchPathChange();
+  const { queryParams } = FlowRouter.current();
+  const { attributes: attributeString, search } = queryParams;
+  const query = {};
+  attributes
+    .filter(attribute => new RegExp(attribute.name).test(attributeString) )
+    .forEach(attribute => query[attribute.query] = { $eq: search })
+
+  const selectedAttributes = attributes
+    .filter(attribute => {
+      return attribute.defaultSelected || new RegExp(attribute.name).test(attributeString)
+    }).map(attribute => attribute.name)
+  return {
+    attributes,
+    selectedAttributes,
+    query
+  }
+  
+}
+
 /**
  * [withConditionalRendering description]
  * @type {[type]}
  */
 const withConditionalRendering = compose(
-  withTracker(tableColumnDataTracker),
-  withEither(isLoading, Loading)
+  withTracker(attributeTracker),
+  withEither(isLoading, Loading),
+  withTracker(searchTracker)
 )
 
 
 class GeneTableOptions extends React.PureComponent {
   constructor(props){
     super(props)
+    const { query = {}, selectedAttributes } = props;
+    const selectedColumns = new Set(['Gene ID'].concat(selectedAttributes))
     this.state = {
       limit: 40,
-      query: {},
+      query: query,
       sort: {},
       queryCount: '...',
       selectedGenes: new Set(),
       selectedAllGenes: false,
-      selectedColumns: new Set(['Gene ID', 'Note']),
+      selectedColumns: selectedColumns,
       selectedVisualization: VISUALIZATIONS[0],
       showDownloadDialog: false,
       dummy: 0
@@ -83,7 +107,7 @@ class GeneTableOptions extends React.PureComponent {
   updateSort = sort => {
     this.setState({ 
       sort: sort,
-      dummy: this.state.dummy + 1
+      dummy: this.state.dummy + 1 //weird hack to force updating if sort object changes.
     });
   }
 

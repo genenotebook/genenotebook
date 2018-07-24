@@ -10,21 +10,44 @@ import SearchBar from './SearchBar.jsx';
 
 import './header.scss';
 
-const LoggedInButton = () => {
+const adminTracker = () => {
+  const isAdmin = Roles.userIsInRole(Meteor.userId(), 'admin');
+  return {
+    isAdmin
+  }
+}
+
+const LoggedInButton = ({ isAdmin }) => {
   return <Dropdown>
     <DropdownButton className="btn btn-sm btn-outline-dark dropdown-toggle">
       <span className="icon-user" aria-hidden="true" />
     </DropdownButton>
     <DropdownMenu className='dropdown-menu header-menu px-2'>
-      <a role="menuitem" href="/profile" className="dropdown-item featuremenu-item">Edit profile</a>
-      <a role="menuitem" className="dropdown-item featuremenu-item disabled" disabled>My favourites</a>
+      <a role="menuitem" href={`${Meteor.absoluteUrl()}profile`} className="dropdown-item featuremenu-item">
+        <span className='icon-pencil' /> Edit profile
+      </a>
+      <a role="menuitem" className="dropdown-item featuremenu-item disabled text-muted" disabled>
+        <span className='icon-clipboard' /> My favourites
+      </a>
       <div className="dropdown-divider" />
+      {
+        isAdmin &&
+        <React.Fragment>
+          <a role="menuitem" href={`${Meteor.absoluteUrl()}admin`} className="dropdown-item featuremenu-item">
+            <span className="icon-cog" /> Admin settings
+          </a>
+          <div className="dropdown-divider" />
+        </React.Fragment>
+      }
+      
       <button type="button" className="btn btn-outline-danger btn-sm btn-block" id="signout" onClick={Meteor.logout}>
-        Sign out
+        <span className='icon-logout' /> Sign out
       </button>
     </DropdownMenu>
   </Dropdown>
 }
+
+const LoggedInButtonWithTracker = withTracker(adminTracker)(LoggedInButton);
 
 const LoggedOutButton = () => {
   return <a href="/login" className="btn btn-primary btn-sm" id="signin">
@@ -35,7 +58,7 @@ const LoggedOutButton = () => {
 const UserButtons = () => {
   const loggedIn = !!Meteor.userId();
   return loggedIn ? 
-  <LoggedInButton /> :
+  <LoggedInButtonWithTracker /> :
   <LoggedOutButton />
 }
 

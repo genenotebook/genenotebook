@@ -52,6 +52,7 @@ const labelFromQuery = ({ queryKey, queryValue }) => {
  * @return {[type]}       [description]
  */
 const stateFromQuery = query => {
+  console.log(query)
   const queryKey = Object.keys(query)[0];
   const queryValue = Object.values(query)[0];
   let queryLabel;
@@ -243,7 +244,7 @@ class HeaderElement extends React.Component {
                   <textarea 
                     className="form-control" 
                     onChange={this.updateQueryValue} 
-                    value={this.props.queryValue} /> :
+                    value={this.state.queryValue} /> :
                   null
                 }
               </div>

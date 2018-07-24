@@ -19,7 +19,7 @@ export class DropdownMenu extends React.Component {
     super(props)
   }
   render(){
-    const {children, show, className, ...props} = this.props;
+    const {children, show = '', className = '', ...props} = this.props;
     return (
       <div key='dropdownMenu' className={`dropdown-menu ${show} ${className}`} {...props}>
         { children }
