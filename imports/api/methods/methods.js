@@ -2,7 +2,7 @@ import { spawn } from 'child_process';
 import Future from 'fibers/future';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
-import { Attributes } from '/imports/api/genes/attribute_collection.js';
+import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 import { EditHistory } from '/imports/api/genes/edithistory_collection.js';
 
 import { reverseComplement, translate, getGeneSequences } from '/imports/api/util/util.js';
@@ -166,7 +166,7 @@ Meteor.methods({
 					revert: revertString
 				})
 				newAttributes.forEach( newAttribute => {
-					Attributes.findAndModify({
+					attributeCollection.findAndModify({
 						query: {
 							name: newAttribute.name
 						},
@@ -197,7 +197,7 @@ Meteor.methods({
 		if (! Roles.userIsInRole(this.userId,'admin')){
 			throw new Meteor.Error('not-authorized');
 		}
-		Attributes.update({'_id':_id},{$set:fields})
+		attributeCollection.update({'_id':_id},{$set:fields})
 	},
 	formatGff3 (query){
 		if (! this.userId) {

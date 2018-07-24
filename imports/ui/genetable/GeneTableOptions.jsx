@@ -5,7 +5,7 @@ import React from 'react';
 import { compose } from 'recompose';
 import { cloneDeep } from 'lodash';
 
-import { Attributes } from '/imports/api/genes/attribute_collection.js';
+import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 
 import { queryCount } from '/imports/api/methods/queryCount.js';
 
@@ -24,7 +24,7 @@ export const VISUALIZATIONS =['Gene model', 'Protein domains', 'Gene expression'
 const tableColumnDataTracker = props => {
   const attributeSub = Meteor.subscribe('attributes');
   const loading = !attributeSub.ready();
-  const attributes = Attributes.find({show: true}).fetch();
+  const attributes = attributeCollection.find({show: true}).fetch();
   return {
     loading, 
     attributes
@@ -45,14 +45,16 @@ class GeneTableOptions extends React.PureComponent {
   constructor(props){
     super(props)
     this.state = {
-      scrollLimit: 50,
+      limit: 40,
       query: {},
+      sort: {},
       queryCount: '...',
       selectedGenes: new Set(),
       selectedAllGenes: false,
       selectedColumns: new Set(['Gene ID', 'Note']),
       selectedVisualization: VISUALIZATIONS[0],
-      showDownloadDialog: false
+      showDownloadDialog: false,
+      dummy: 0
     }
   }
 
@@ -65,10 +67,24 @@ class GeneTableOptions extends React.PureComponent {
     })
   }
 
-  updateScrollLimit = newScrollLimit => {
-    this.setState({
-      scrollLimit: newScrollLimit
+  updateScrollLimit = limit => {
+    this.setState({ limit });
+  }
+
+  updateQuery = query => {
+    queryCount.call({ query }, (err,res) => {
+      this.setState({
+        query: query,
+        queryCount: res
+      })
     })
+  }
+
+  updateSort = sort => {
+    this.setState({ 
+      sort: sort,
+      dummy: this.state.dummy + 1
+    });
   }
 
   updateSelection = event => {
@@ -86,10 +102,12 @@ class GeneTableOptions extends React.PureComponent {
   }
 
   renderChildren = props => {
+    console.log(this.state)
     return React.Children.map(this.props.children, child => {
       return React.cloneElement(child, {
         updateSelection: this.updateSelection,
         updateQuery: this.updateQuery,
+        updateSort: this.updateSort,
         updateScrollLimit: this.updateScrollLimit,
         toggleSelectAllGenes: this.toggleSelectAllGenes,
         toggleDownloadDialog: this.toggleDownloadDialog,
@@ -132,15 +150,6 @@ class GeneTableOptions extends React.PureComponent {
   toggleVisualization = event => {
     const selectedVisualization = event.target.id;
     this.setState({ selectedVisualization });
-  }
-
-  updateQuery = query => {
-    queryCount.call({ query }, (err,res) => {
-      this.setState({
-        query: query,
-        queryCount: res
-      })
-    })
   }
 
   render(){

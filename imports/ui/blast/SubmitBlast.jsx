@@ -218,7 +218,7 @@ class SubmitBlast extends React.Component {
     return (
       this.props.loading ? 
       <div>LOADING</div> :
-      <form className="container form-group" role="form" id="blast">
+      <form className="container form-group py-2" role="form" id="blast">
         <div className="card">
           <div className="card-header">Blast search</div>
           <div className="card-body">

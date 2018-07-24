@@ -4,7 +4,7 @@ import { Roles } from 'meteor/alanning:roles';
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
-import { Attributes } from '/imports/api/genes/attribute_collection.js';
+import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 import { Interpro } from '/imports/api/genes/interpro_collection.js';
 import { Orthogroups } from '/imports/api/genes/orthogroup_collection.js';
 import { EditHistory } from '/imports/api/genes/edithistory_collection.js';
@@ -13,7 +13,7 @@ import { genomeSequenceCollection, genomeCollection } from '/imports/api/genomes
 import { ExperimentInfo, Transcriptomes } from '/imports/api/transcriptomes/transcriptome_collection.js';
 
 Meteor.publish({
-  genes({query, limit, sort}){
+  genes({ query = {}, limit = 40, sort = {ID: 1} }){
     console.log('publishing gene list')
     console.log('limit', limit)
     console.log('sort', sort)
@@ -22,11 +22,6 @@ Meteor.publish({
     if (!publication.userId){
       publication.stop()
     }
-
-    limit = limit || 40;
-    query = query || {};
-    sort = sort || {};
-
     //get user roles
     const roles = Roles.getRolesForUser(publication.userId);
 
@@ -39,7 +34,6 @@ Meteor.publish({
 
     if (query.hasOwnProperty('genomeId')){
       const queryGenomes = query.genomeId['$in'].filter(genomeId => {
-        //return userGenomes.indexOf(genomeId) !== -1
         return userGenomes.includes(genomeId)
       });
       query.genomeId['$in'] = queryGenomes;
@@ -47,7 +41,7 @@ Meteor.publish({
       query.genomeId = { $in: userGenomes };
     }
 
-    return Genes.find(query, {sort: sort, limit: limit})
+    return Genes.find(query, { sort, limit })
   },
   singleGene (geneId) {
     const publication = this;
@@ -102,12 +96,8 @@ Meteor.publish({
     const genomes = genomeCollection.find({
       permissions: { $in: roles }
     }).fetch().map(genome => genome._id)
-    /*const tracks = Tracks.find({
-      permissions: { $in: roles }
-    }).fetch().map(track => {
-      return track._id
-    })*/
-    return Attributes.find({
+
+    return attributeCollection.find({
       $or: [
         { genomes: { $in: genomes } },
         { allGenomes: true }
@@ -168,21 +158,7 @@ Meteor.publish({
       this.stop()
     }
     return Orthogroups.find({ ID });
-  },/*
-  tracks (){
-    const publication = this;
-    if (!publication.userId){
-      publication.stop()
-      //throw new Meteor.Error('Unauthorized')
-    }
-    const roles = Roles.getRolesForUser(publication.userId);
-    console.log(`tracks publication for user ${publication.userId} with roles ${roles}`)
-    return Tracks.find({
-      permissions: {
-        $in: roles
-      }
-    });
-  },*/
+  },
   interpro (){
     if (!this.userId){
       this.stop()

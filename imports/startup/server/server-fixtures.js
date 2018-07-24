@@ -4,8 +4,8 @@ import { Roles } from 'meteor/alanning:roles';
 import fs from 'fs';
 
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
-import { Attributes } from '/imports/api/genes/attribute_collection.js';
-import { Tracks } from '/imports/api/genomes/track_collection.js';
+import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
+import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 
 Meteor.startup( () => {
   if ( Meteor.users.find().count() === 0 ) {
@@ -54,7 +54,7 @@ Meteor.startup( () => {
   ]
   permanentAttributes.forEach( attribute => {
     console.log(`Adding default filter option: ${attribute.name}`)
-    Attributes.update({
+    attributeCollection.update({
       name: attribute.name
     },
     {
@@ -72,20 +72,22 @@ Meteor.startup( () => {
     })
   })
 
-  Tracks.find({ 
-    blastdbs: { 
+  genomeCollection.find({ 
+    'annotationTrack.blastDb': { 
       $exists: true
     }
-  }).fetch().filter(track => {
-    const hasNucDb = fs.existsSync(track.blastdbs.nuc)
-    const hasProtDb = fs.existsSync(track.blastdbs.prot)
+  }).fetch().filter(genome => {
+    const { annotationTrack } = genome;
+    const { blastDb } = annotationTrack;
+    const hasNucDb = fs.existsSync(blastDb.nucl)
+    const hasProtDb = fs.existsSync(blastDb.prot)
     return !hasProtDb || !hasNucDb
-  }).map(track => {
-    Tracks.update({
-      _id: track._id
+  }).map(({ _id }) => {
+    genomeCollection.update({
+      _id
     },{
       $unset: {
-        blastdbs: true
+        'annotationTrack.blastDb': true
       }
     })
   })

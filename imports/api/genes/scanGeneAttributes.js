@@ -2,11 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 
 import SimpleSchema from 'simpl-schema';
-//import Future from 'fibers/future';
 
-import { Genes } from '/imports/api/genes/gene_collection.js';
-import { Attributes } from '/imports/api/genes/attribute_collection.js';
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
+
+import { Genes } from './gene_collection.js';
+import { attributeCollection } from './attributeCollection.js';
 
 /**
  * Map function for mongodb mapreduce
@@ -83,7 +83,7 @@ export const scanGeneAttributes = new ValidatedMethod({
 						const attributeKeys = result.value.attributeKeys;
 						attributeKeys.forEach(attributeKey => {
 							console.log(attributeKey)
-							Attributes.update({ 
+							attributeCollection.update({ 
 								name: attributeKey 
 							},{
 								$addToSet: {

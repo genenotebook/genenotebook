@@ -123,7 +123,7 @@ class BlastResult extends React.Component {
     const { job, ...props } = this.props;
     return (
       <div className="container">
-        <div className='card'>
+        <div className='card py-2'>
           <div className='card-header'>
             <b>Blast results</b> <small> Job ID: {job._id}</small>
           </div>

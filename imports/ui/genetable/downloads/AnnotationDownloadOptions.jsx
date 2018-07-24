@@ -3,12 +3,12 @@ import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
 
-import { Attributes } from '/imports/api/genes/attribute_collection.js';
+import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 
 const dataTracker = ({ ...props }) => {
   const attributeSub = Meteor.subscribe('attributes');
   const loading = !attributeSub.ready();
-  const attributes = Attributes.find({}).fetch();
+  const attributes = attributeCollection.find({}).fetch();
   return {
     loading, attributes, ...props
   }

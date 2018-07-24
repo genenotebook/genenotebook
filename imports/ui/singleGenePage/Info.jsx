@@ -7,7 +7,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import { diff, apply } from 'rus-diff'; 
 
 import { EditHistory } from '/imports/api/genes/edithistory_collection.js';
-import { Attributes } from '/imports/api/genes/attribute_collection.js';
+import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 
 import './info.scss';
 
@@ -414,7 +414,7 @@ export default withTracker( props => {
       }
     }).fetch();
 
-  const attributeNames = Attributes.find({
+  const attributeNames = attributeCollection.find({
     reserved: false
   },{
     field: name

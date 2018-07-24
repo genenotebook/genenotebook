@@ -36,14 +36,11 @@ const VISUALIZATIONS = {
  * @param  {Boolean} options.selectedAll     [description]
  * @return {Object}                         [description]
  */
-const dataTracker = ({ query, scrollLimit, selectedGenes, updateSelection, selectedAll }) => {
-  const geneSub = Meteor.subscribe('genes', {
-    limit: scrollLimit, 
-    sort: {ID: 1}, 
-    query: query
-  })
+const dataTracker = ({ query = {}, sort = {ID: 1}, limit = 40, selectedGenes, updateSelection, selectedAll }) => {
+  console.log(query,sort,limit)
+  const geneSub = Meteor.subscribe('genes', { query, sort, limit });
   const loading = !geneSub.ready();
-  const genes = Genes.find(query).fetch();
+  const genes = Genes.find(query, { limit, sort }).fetch();
   
   return { genes, loading, selectedGenes, updateSelection, selectedAll }
 }
@@ -198,7 +195,7 @@ class GeneTableBody extends React.PureComponent {
 
   onScroll = () => {
     if ((window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 500)){
-      this.props.updateScrollLimit(this.props.scrollLimit + 50)
+      this.props.updateScrollLimit(this.props.limit + 50)
     }
   }
   render(){

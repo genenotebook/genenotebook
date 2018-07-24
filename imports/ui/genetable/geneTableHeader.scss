@@ -5,3 +5,12 @@ th {
 .dropdown-menu-right {
   margin-left: -10rem !important;
 }
+
+.sort-wrapper {
+  padding-bottom: 10px;
+}
+
+.has-sort, .has-query {
+  background-color: lighten(#28a745, 50%);
+  border-radius: 0.25rem;
+}

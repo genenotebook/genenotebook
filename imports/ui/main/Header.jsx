@@ -6,6 +6,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import React from 'react';
 
 import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
+import SearchBar from './SearchBar.jsx';
 
 import './header.scss';
 
@@ -36,25 +37,6 @@ const UserButtons = () => {
   return loggedIn ? 
   <LoggedInButton /> :
   <LoggedOutButton />
-}
-
-const SearchBar = () => {
-  return <form className="form-inline search mx-auto" role="search">
-    <div className="input-group input-group-sm mb-0">
-      <input type="text" className="form-control" />
-      <div className="input-group-append btn-group">
-        <button type="button" className="btn btn-sm btn-outline-secondary">Search</button>
-        <Dropdown>
-          <DropdownButton className='btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split' />
-          <DropdownMenu className='dropdown-menu dropdown-menu-left'>
-            <a className="dropdown-item disabled" disabled>Genes</a>
-            <a className="dropdown-item disabled" disabled>Genomes</a>
-            <a className="dropdown-item disabled" disabled>Transcriptomes</a>
-          </DropdownMenu>
-        </Dropdown>
-      </div>
-    </div>
-  </form>
 }
 
 const routeTracker = ({ routes }) => {

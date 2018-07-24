@@ -123,10 +123,9 @@ class GenomeSelect extends React.Component {
           <h6 className="dropdown-header">Select genomes</h6>
           {
             genomes.map(({ _id, name }) => {
-              console.log(_id,name)
               const checked = selectedGenomes.has(_id);
               return (
-                <div key={`${_id}${checked}`} className='form-check'>
+                <div key={`${_id}-${checked}`} className='form-check'>
                   <input type='checkbox' className='form-check-input' id={_id}
                     checked={checked} onChange={this.toggleGenomeSelect} />
                   <label className='form-check-label'>{name}</label>

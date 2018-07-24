@@ -3,7 +3,7 @@ import { withTracker } from 'meteor/react-meteor-data';
 import React from 'react';
 import { compose } from 'recompose';
 
-import { Attributes } from '/imports/api/genes/attribute_collection.js';
+import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 import { scanGeneAttributes } from '/imports/api/genes/scanGeneAttributes.js';
 
@@ -11,7 +11,7 @@ import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
 const attributeDataTracker = () => {
   const attributeSub = Meteor.subscribe('attributes');
-  const attributes = Attributes.find({}).fetch();
+  const attributes = attributeCollection.find({}).fetch();
   const genomeSub = Meteor.subscribe('genomes');
   const genomes = genomeCollection.find({}).fetch();
   const loading = !attributeSub.ready() || !genomeSub.ready();

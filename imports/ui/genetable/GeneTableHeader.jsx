@@ -137,7 +137,7 @@ class HeaderElement extends React.Component {
         queryValue: ''
       }
     }
-    this.state.sort = 'None'
+    this.state.sortOrder = 'None'
   }
 
   updateQueryLabel = selection => {
@@ -155,11 +155,13 @@ class HeaderElement extends React.Component {
     })
   }
 
-  updateSort = event => {
-    const sortOrder = event.target.id === this.state.sort ? 'None' : event.target.id;
-    this.setState({
-      sort: sortOrder
-    })
+  updateSortOrder = event => {
+    const { attribute, updateSort } = this.props;
+    const sortOrder = parseInt(event.target.id)
+    const newSortOrder = sortOrder === this.state.sortOrder ? 'None' : sortOrder;
+    const sort = newSortOrder === 'None' ? {} : { [attribute.query]: newSortOrder }
+    this.setState({ sortOrder: newSortOrder });
+    updateSort(sort)
   }
 
   hasNewQuery = () => {
@@ -191,9 +193,10 @@ class HeaderElement extends React.Component {
   }
 
   render(){
-    const { query, attribute, ...props} = this.props;
+    const { query, attribute, sort,  ...props} = this.props;
     const hasQuery = query.hasOwnProperty(attribute.query);
-    const buttonClass = hasQuery ? 'btn-success' : 'btn-outline-dark';
+    const hasSort = sort.hasOwnProperty(attribute.query);
+    const buttonClass = hasQuery || hasSort ? 'btn-success' : 'btn-outline-dark';
     const orientation = attribute.name === 'Gene ID' ? 'left' : 'right';
     return (
       <th scope='col'>
@@ -204,41 +207,45 @@ class HeaderElement extends React.Component {
           <Dropdown>
             <DropdownButton className={`btn btn-sm px-1 py-0 dropdown-toggle ${buttonClass}`}/>
             <DropdownMenu className={`dropdown-menu dropdown-menu-${orientation} px-2`}>
-              <h6 className="dropdown-header">Sort:</h6>
-              <div className="form-check">
-                {
-                  ['Increasing', 'Decreasing'].map(sortOrder => {
-                    const checked = this.state.sort === sortOrder;
-                    return (
-                      <div key={sortOrder}>
-                        <input className="form-check-input" 
-                          type="checkbox" 
-                          id={sortOrder} 
-                          onClick={this.updateSort}
-                          defaultChecked={checked} />
-                        <label className="form-check-label" htmlFor={sortOrder}>
-                          {sortOrder}
-                        </label>
-                      </div>
-                    )
-                  })
-                }
+              <div className={`sort-wrapper ${hasSort ? 'has-sort' : ''}`}>
+                <h6 className="dropdown-header">Sort:</h6>
+                <div className="form-check">
+                  {
+                    [1, -1].map(sortOrder => {
+                      const checked = sort[attribute.query] === sortOrder;//this.state.sortOrder === sortOrder;
+                      return (
+                        <div key={`${sortOrder}-${checked}`}>
+                          <input className="form-check-input" 
+                            type="checkbox" 
+                            id={sortOrder} 
+                            onChange={this.updateSortOrder}
+                            checked={checked} />
+                          <label className="form-check-label" htmlFor={sortOrder}>
+                            { sortOrder === 1 ? 'Increasing' : 'Decreasing' }
+                          </label>
+                        </div>
+                      )
+                    })
+                  }
+                </div>
               </div>
               <div className="dropdown-divider" />
-              <h6 className="dropdown-header">Filter:</h6>
-              <Select
-                className='form-control-sm px-0 is-valid' 
-                value={this.state.queryLabel}
-                options={QUERY_TYPES}
-                onChange={this.updateQueryLabel} />
-              {
-                ['None','Present','Not present'].indexOf(this.state.queryLabel) < 0 ?
-                <textarea 
-                  className="form-control" 
-                  onChange={this.updateQueryValue} 
-                  value={this.props.queryValue} /> :
-                null
-              }
+              <div className={`query-wrapper pb-1 mb-1 ${hasQuery ? 'has-query' : ''}`}>
+                <h6 className="dropdown-header">Filter:</h6>
+                <Select
+                  className='form-control-sm' 
+                  value={this.state.queryLabel}
+                  options={QUERY_TYPES}
+                  onChange={this.updateQueryLabel} />
+                {
+                  ['None','Present','Not present'].indexOf(this.state.queryLabel) < 0 ?
+                  <textarea 
+                    className="form-control" 
+                    onChange={this.updateQueryValue} 
+                    value={this.props.queryValue} /> :
+                  null
+                }
+              </div>
               {
                 this.hasNewQuery() ?
                 <button type='button' className='btn btn-sm btn-block btn-outline-success' onClick={this.updateQuery}>
