@@ -198,8 +198,9 @@ class HeaderElement extends React.Component {
     const hasSort = sort.hasOwnProperty(attribute.query);
     const buttonClass = hasQuery || hasSort ? 'btn-success' : 'btn-outline-dark';
     const orientation = attribute.name === 'Gene ID' ? 'left' : 'right';
+    const colStyle = attribute.name === 'Gene ID' ? { width: '10rem' } : {};
     return (
-      <th scope='col'>
+      <th scope='col' style={{...colStyle}}>
         <div className='btn-group btn-group-justified'>
           <button className={`btn btn-sm px-2 py-0 ${buttonClass}`} type="button" disabled>
             {attribute.name}
