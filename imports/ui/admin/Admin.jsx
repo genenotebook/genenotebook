@@ -64,8 +64,8 @@ class Admin extends React.Component {
   render(){
     const pages = ['Users','User Groups','Genomes','Annotation tracks','Transcriptomes','Attributes','Jobqueue']
     return (
-      <div className="">
-        <div className="card admin-panel">
+      <div className="container">
+        <div className="card admin-panel my-2">
           <Nav pages = { Object.keys(ADMIN_PAGES) } currentPage = {this.state.currentPage} changePage = {this.changePage} />
           {
             ADMIN_PAGES[this.state.currentPage]

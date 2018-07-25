@@ -9,6 +9,8 @@ import { scanGeneAttributes } from '/imports/api/genes/scanGeneAttributes.js';
 
 import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
+import AttributeInfo from './AttributeInfo.jsx';
+
 const attributeDataTracker = () => {
   const attributeSub = Meteor.subscribe('attributes');
   const attributes = attributeCollection.find({}).fetch();
@@ -55,7 +57,7 @@ class AdminAttributes extends React.Component {
           <thead>
           <tr>
             {
-              ['Name','Query','Visible','Can edit','References','Actions'].map(label => {
+              ['Name','Query','Display default','Search default','Actions'].map(label => {
                 return <th key={label} scope='col'>
                   <button type='button' className='btn btn-sm btn-outline-dark py-0 px-2' disabled>
                     { label }
@@ -68,18 +70,7 @@ class AdminAttributes extends React.Component {
         <tbody>
         {
           attributes.map(attribute => {
-            return (
-              <tr key={attribute._id}>
-                <td>{attribute.name}</td>
-                <td>{attribute.query}</td>
-                <td>{attribute.show}</td>
-                <td>{attribute.canEdit}</td>
-                <td>{attribute.references ? attribute.references : attribute.allReferences}</td>
-                <td>
-                  <button type='button' className='btn btn-sm btn-outline-dark py-0 px-2'>Edit</button>
-                </td>
-              </tr>
-            )
+            return <AttributeInfo key={attribute._id} {...attribute} />
           })
         }
         </tbody>

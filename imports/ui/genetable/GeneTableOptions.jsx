@@ -37,13 +37,13 @@ const searchTracker = ({ attributes }) => {
   const { attributes: attributeString, search } = queryParams;
   const query = {};
   attributes
-    .filter(attribute => new RegExp(attribute.name).test(attributeString) )
+    .filter(({ name }) => new RegExp(name).test(attributeString) )
     .forEach(attribute => query[attribute.query] = { $eq: search })
 
   const selectedAttributes = attributes
-    .filter(attribute => {
-      return attribute.defaultSelected || new RegExp(attribute.name).test(attributeString)
-    }).map(attribute => attribute.name)
+    .filter(({ defaultShow, defaultSearch, name }) => {
+      return defaultShow || defaultSearch || new RegExp(name).test(attributeString)
+    }).map(({ name }) => name)
   return {
     attributes,
     selectedAttributes,

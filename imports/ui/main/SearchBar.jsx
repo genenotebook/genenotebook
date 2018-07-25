@@ -78,30 +78,36 @@ class SearchBar extends React.PureComponent {
   }
 
   clearSearch = () => {
+    this.setState({
+      searchString: ''
+    })
     FlowRouter.go('/genes');
   }
 
   render(){
     const { attributes } = this.props;
     const { selectedAttributes, searchString } = this.state;
-    return <form className="form-inline search mx-auto" role="search">
+    return <form className="form-inline search mx-auto" role="search" onSubmit={this.search}>
       <div className="input-group input-group-sm">
+        {
+          searchString && 
+          <div className='input-group-prepend'>
+            <button type="button" className="btn btn-sm btn-danger" onClick={this.clearSearch}>
+              <span className='icon-cancel' />
+            </button>
+          </div>
+        }
         <input 
           type="text" 
           className="form-control"
           placeholder="Search genes"
           value={searchString}
-          onChange={this.updateSearchString} />
+          onChange={this.updateSearchString}
+          onSubmit={this.search} />
         <div className="input-group-append btn-group">
-          <button type="button" className="btn btn-sm btn-outline-secondary" onClick={this.search}>
+          <button type="submit" className="btn btn-sm btn-outline-secondary">
             <span className='icon-search' />
           </button>
-          {
-            searchString && 
-            <button type="button" className="btn btn-sm btn-danger" onClick={this.clearSearch}>
-              <span className='icon-cancel' />
-            </button>
-          }
           <Dropdown>
             <DropdownButton className='btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split' />
             <DropdownMenu>
