@@ -31,6 +31,11 @@ const attributeTracker = () => {
   }
 }
 
+/**
+ * [description]
+ * @param  {[type]} options.attributes [description]
+ * @return {[type]}                    [description]
+ */
 const searchTracker = ({ attributes }) => {
   FlowRouter.watchPathChange();
   const { queryParams } = FlowRouter.current();
@@ -52,10 +57,6 @@ const searchTracker = ({ attributes }) => {
   
 }
 
-/**
- * [withConditionalRendering description]
- * @type {[type]}
- */
 const withConditionalRendering = compose(
   withTracker(attributeTracker),
   withEither(isLoading, Loading),
@@ -84,8 +85,12 @@ class GeneTableOptions extends React.PureComponent {
   }
 
   static getDerivedStateFromProps = (props, state) => {
+    console.log(props,state)
     const { query = {}, selectedAttributes } = props;
-    const selectedColumns = new Set(['Gene ID'].concat(selectedAttributes));
+    Object.assign(query, state.query)
+    const selectedColumns = new Set(['Gene ID']
+      .concat(selectedAttributes)
+      .concat([...state.selectedColumns]));
     return {
       query,
       selectedColumns

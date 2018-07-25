@@ -116,7 +116,7 @@ class SingleGenePage extends React.Component {
             </ul>
           </div>
           <div className="card-body">
-            <Info key={hash(gene.attributes)} gene={gene} />
+            <Info key={hash(gene.attributes)} gene={gene} genome={genome} />
             <section id='genemodel'>
               <hr/>
               <h3>Genemodel</h3>

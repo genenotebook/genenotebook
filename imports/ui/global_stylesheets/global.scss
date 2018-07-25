@@ -1,8 +1,9 @@
 @import "{}/node_modules/bootstrap/scss/bootstrap.scss";
+@import url('https://fonts.googleapis.com/css?family=Roboto:300');
 //@import "_font-awesome.scss";
 
 body {
-	font-family: 'Raleway', Arial, sans-serif;
+	font-family: 'Roboto', Arial, sans-serif;
 	font-style:normal;
 	#loading {
 		-animation: spin .7s infinite linear;

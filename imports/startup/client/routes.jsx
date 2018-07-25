@@ -132,7 +132,7 @@ exposedRoutes.route('/inactive-account', {
   }
 })
 
-loggedInRoutes.route('/genes', {
+exposedRoutes.route('/genes', {
   name: 'genes',
   action() {
     mount(MainLayout, {
@@ -141,7 +141,7 @@ loggedInRoutes.route('/genes', {
   }
 })
 
-loggedInRoutes.route('/gene/:_id', {
+exposedRoutes.route('/gene/:_id', {
   name: 'gene',
   action() {
     mount(MainLayout, {

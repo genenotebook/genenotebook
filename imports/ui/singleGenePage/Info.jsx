@@ -260,7 +260,7 @@ class Info extends React.Component {
   }
 
   render(){
-    const gene = this.props.gene;
+    const { gene, genome } = this.props;
     const attributes = this.state.newAttributes ? this.state.newAttributes : this.state.attributes;
 
     const currentVersion = this.props.editHistory[0]
@@ -304,8 +304,8 @@ class Info extends React.Component {
           <table className="table table-hover">
             <tbody>
               <tr>
-                <td>Reference</td>
-                <td>{ gene.reference }</td>
+                <td>Genome</td>
+                <td>{ genome.name } <small>({genome.organism})</small></td>
               </tr>
               <tr>
                 <td>Genome coordinates</td>

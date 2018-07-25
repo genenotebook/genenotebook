@@ -6,6 +6,8 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import React from 'react';
 
 import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
+import { withEither } from '/imports/ui/util/uiUtil.jsx';
+
 import SearchBar from './SearchBar.jsx';
 
 import './header.scss';
@@ -15,6 +17,10 @@ const adminTracker = () => {
   return {
     isAdmin
   }
+}
+
+const logout = () => {
+  Meteor.logout();
 }
 
 const LoggedInButton = ({ isAdmin }) => {
@@ -40,7 +46,7 @@ const LoggedInButton = ({ isAdmin }) => {
         </React.Fragment>
       }
       
-      <button type="button" className="btn btn-outline-danger btn-sm btn-block" id="signout" onClick={Meteor.logout}>
+      <button type="button" className="btn btn-outline-danger btn-sm btn-block" id="signout" onClick={logout}>
         <span className='icon-logout' /> Sign out
       </button>
     </DropdownMenu>
@@ -55,12 +61,16 @@ const LoggedOutButton = () => {
   </a>
 }
 
-const UserButtons = () => {
-  const loggedIn = !!Meteor.userId();
-  return loggedIn ? 
+const UserButtons = withTracker(() => {
+  const isLoggedIn = !!Meteor.userId() && !Meteor.loggingIn();
+  return {
+    isLoggedIn
+  }
+})(({ isLoggedIn }) => {
+  return isLoggedIn ? 
   <LoggedInButtonWithTracker /> :
   <LoggedOutButton />
-}
+})
 
 const routeTracker = ({ routes }) => {
   FlowRouter.watchPathChange();

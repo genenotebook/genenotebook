@@ -98,17 +98,20 @@ const Landingpage = () => {
         </p>
         <StatsWithDataTracker />
         <hr/>
-        <p>
-          <a href="/register" className="btn btn-sm btn-success">
-            <span className="icon-user-add" aria-hidden="true" /> Create an account
-          </a>
-          <a href="/login" className="btn btn-sm btn-primary">
-            <span className="icon-login" aria-hidden="true" /> Sign in
-          </a>
-          <a href="http://genebook.readthedocs.io/" className="btn btn-sm btn-outline-dark">
-            <span className="icon-github" aria-hidden="true" /> About Genebook
-          </a>
-        </p>
+        {
+          !Meteor.userId() && 
+          <div className='btn-group mx-auto pb-3' role='group'>
+            <a href="/register" className="btn btn-sm btn-outline-success">
+              <span className="icon-user-add" aria-hidden="true" /> Create an account
+            </a>
+            <a href="/login" className="btn btn-sm btn-outline-primary">
+              <span className="icon-login" aria-hidden="true" /> Sign in
+            </a>
+            <a href="http://genebook.readthedocs.io/" className="btn btn-sm btn-outline-dark">
+              <span className="icon-github" aria-hidden="true" /> About Genebook
+            </a>
+          </div>
+        }
       </div>
 
       <div className="card-deck">

@@ -12,33 +12,34 @@ import { EditHistory } from '/imports/api/genes/edithistory_collection.js';
 import { genomeSequenceCollection, genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 import { ExperimentInfo, Transcriptomes } from '/imports/api/transcriptomes/transcriptome_collection.js';
 
+
+const availableGenomes =  publication => {
+  const roles = Roles.getRolesForUser(publication.userId);
+  const genomes = genomeCollection.find({ 
+      $or: [
+       { permissions: { $in: roles } },
+       { public: true }
+      ]
+    }).map(genome => genome._id)
+  return genomes
+}
+
 Meteor.publish({
   genes({ query = {}, limit = 40, sort = {ID: 1} }){
-    console.log('publishing gene list')
-    console.log('limit', limit)
-    console.log('sort', sort)
-    console.log('query', query)
     const publication = this;
     if (!publication.userId){
-      publication.stop()
+      //publication.stop()
     }
-    //get user roles
-    const roles = Roles.getRolesForUser(publication.userId);
-
-    //get Ids of genomes user has access to
-    const userGenomes = genomeCollection.find({ 
-      permissions: { 
-        $in: roles 
-      } 
-    }).map(genome => genome._id)
+    
+    const genomeIds = availableGenomes(publication);
 
     if (query.hasOwnProperty('genomeId')){
-      const queryGenomes = query.genomeId['$in'].filter(genomeId => {
-        return userGenomes.includes(genomeId)
+      const queryGenomeIds = query.genomeId['$in'].filter(genomeId => {
+        return genomeIds.includes(genomeId)
       });
-      query.genomeId['$in'] = queryGenomes;
+      query.genomeId['$in'] = queryGenomeIds;
     } else {
-      query.genomeId = { $in: userGenomes };
+      query.genomeId = { $in: genomeIds };
     }
 
     return Genes.find(query, { sort, limit })
@@ -46,15 +47,11 @@ Meteor.publish({
   singleGene (geneId) {
     const publication = this;
     if (!publication.userId){
-      publication.stop()
+      //publication.stop()
     }
-    const roles = Roles.getRolesForUser(publication.userId);
-    
-    const genomeIds = genomeCollection.find({
-      permissions: { $in: roles }
-    }).map(genome => {
-      return genome._id
-    })
+
+    const genomeIds = availableGenomes(publication);
+
     return Genes.find({
       ID: geneId,
       genomeId: {
@@ -89,17 +86,12 @@ Meteor.publish({
   },
   attributes(){
     const publication = this;
-    if (!publication.userId){
-      publication.stop()
-    }
-    const roles = Roles.getRolesForUser(publication.userId);
-    const genomes = genomeCollection.find({
-      permissions: { $in: roles }
-    }).fetch().map(genome => genome._id)
+
+    const genomeIds = availableGenomes(publication);
 
     return attributeCollection.find({
       $or: [
-        { genomes: { $in: genomes } },
+        { genomes: { $in: genomeIds } },
         { allGenomes: true }
       ]
     })
