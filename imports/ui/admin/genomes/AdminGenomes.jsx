@@ -32,7 +32,7 @@ const AdminGenomes = ({ genomes }) => {
         <thead>
           <tr>
             {
-              ['Reference name','Organism','Description','Permissions','Annotation track','Actions'].map(label => {
+              ['Reference name','Organism','Description','Public','Permissions','Annotation track','Actions'].map(label => {
                 return <th key={label} id={label}>
                   <button className='btn btn-sm btn-outline-dark px-2 py-0' disabled>
                     {label}

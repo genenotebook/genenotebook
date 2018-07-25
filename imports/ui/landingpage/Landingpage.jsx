@@ -24,7 +24,7 @@ class GeneNumber extends React.Component {
     const query = { genomeId };
     queryCount.call({ query }, (err,res) => {
       this.setState({
-        geneNumber: res
+        geneNumber: new Intl.NumberFormat().format(res)
       })
     })
   }
@@ -32,7 +32,7 @@ class GeneNumber extends React.Component {
   render(){
     const { geneNumber } = this.state;
     return <button type='button' className='btn btn-sm btn-outline-dark px-2 py-0' disabled>
-      <span className='badge badge-dark'>{ new Intl.NumberFormat().format(geneNumber) }</span> genes
+      <span className='badge badge-dark'>{ geneNumber }</span> genes
     </button>
   }
 };

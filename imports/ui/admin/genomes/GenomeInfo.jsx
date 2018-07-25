@@ -23,6 +23,12 @@ class EditGenomeInfo extends React.PureComponent {
     })
   }
 
+  togglePublic = () => {
+    this.setState({
+      public: !this.state.public
+    })
+  }
+
   updatePermissions = newPermissions => {
     //make sure admin is always in permissions and that there are no duplicates
     const permissions = newPermissions.map(permission => permission.value)
@@ -46,8 +52,8 @@ class EditGenomeInfo extends React.PureComponent {
 
   render(){
     const { toggleEdit } = this.props;
-    const { _id: genomeId, name: genomeName, 
-      organism, description, permissions,
+    const { _id: genomeId, name: genomeName, organism, 
+      description, permissions, public: isPublic,
       annotationTrack = {} } = this.state;
     const { name: annotationName, blastDb } = annotationTrack;
     const hasChanges = !isEqual(this.state, this.props.genome);
@@ -90,10 +96,13 @@ class EditGenomeInfo extends React.PureComponent {
           </div>
         </td>
         <td>
+          <input type='checkbox' checked={isPublic} onChange={this.togglePublic} />
+        </td>
+        <td>
           <PermissionSelect 
             permissions={permissions}
             updatePermissions={this.updatePermissions} 
-            disabled={false} />
+            disabled={isPublic} />
         </td>
         <td>
           <AnnotationInfo //{ ...genome.annotationTrack }
@@ -143,7 +152,7 @@ class EditGenomeInfo extends React.PureComponent {
   }
 }
 
-const GenomeInfoLine = ({ _id: genomeId, name: genomeName, organism, 
+const GenomeInfoLine = ({ _id: genomeId, name: genomeName, organism, public: isPublic,
   description, permissions, annotationTrack = {}, toggleEdit }) => {
   
   const { name: annotationName, blastDb } = annotationTrack;
@@ -151,6 +160,9 @@ const GenomeInfoLine = ({ _id: genomeId, name: genomeName, organism,
     <td>{ genomeName }</td>
     <td>{ organism }</td>
     <td>{ description }</td>
+    <td>
+      <input type='checkbox' checked={isPublic} disabled/>
+    </td>
     <td>
       <PermissionSelect 
         permissions={ permissions }

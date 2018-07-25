@@ -73,7 +73,7 @@ class GeneTableOptions extends React.PureComponent {
     this.state = {
       limit: 40,
       query: query,
-      sort: {},
+      sort: undefined,
       queryCount: '...',
       selectedGenes: new Set(),
       selectedAllGenes: false,
@@ -85,7 +85,6 @@ class GeneTableOptions extends React.PureComponent {
   }
 
   static getDerivedStateFromProps = (props, state) => {
-    console.log(props,state)
     const { query = {}, selectedAttributes } = props;
     Object.assign(query, state.query)
     const selectedColumns = new Set(['Gene ID']
@@ -114,7 +113,7 @@ class GeneTableOptions extends React.PureComponent {
     queryCount.call({ query }, (err,res) => {
       this.setState({
         query: query,
-        queryCount: res
+        queryCount: new Intl.NumberFormat().format(res)
       })
     })
   }
@@ -202,9 +201,7 @@ class GeneTableOptions extends React.PureComponent {
             {...this.props} {...this.state} />
           <button type='button' className='btn btn-sm btn-outline-dark px-2 mx-2 py-0' disabled>
             <span className='badge badge-dark'>
-              { 
-                new Intl.NumberFormat().format(this.state.queryCount)
-              }
+              { this.state.queryCount }
             </span> query results
           </button>
           <SelectionOptions 

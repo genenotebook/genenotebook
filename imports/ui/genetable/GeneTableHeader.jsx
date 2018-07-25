@@ -160,7 +160,7 @@ class HeaderElement extends React.Component {
     const { attribute, updateSort } = this.props;
     const sortOrder = parseInt(event.target.id)
     const newSortOrder = sortOrder === this.state.sortOrder ? 'None' : sortOrder;
-    const sort = newSortOrder === 'None' ? {} : { [attribute.query]: newSortOrder }
+    const sort = newSortOrder === 'None' ? undefined : { [attribute.query]: newSortOrder };
     this.setState({ sortOrder: newSortOrder });
     updateSort(sort)
   }
@@ -196,7 +196,7 @@ class HeaderElement extends React.Component {
   render(){
     const { query, attribute, sort,  ...props} = this.props;
     const hasQuery = query.hasOwnProperty(attribute.query);
-    const hasSort = sort.hasOwnProperty(attribute.query);
+    const hasSort = sort && sort.hasOwnProperty(attribute.query);
     const buttonClass = hasQuery || hasSort ? 'btn-success' : 'btn-outline-dark';
     const orientation = attribute.name === 'Gene ID' ? 'left' : 'right';
     const colStyle = attribute.name === 'Gene ID' ? { width: '10rem' } : {};
@@ -214,7 +214,7 @@ class HeaderElement extends React.Component {
                 <div className="form-check">
                   {
                     [1, -1].map(sortOrder => {
-                      const checked = sort[attribute.query] === sortOrder;//this.state.sortOrder === sortOrder;
+                      const checked = sort && sort[attribute.query] === sortOrder;//this.state.sortOrder === sortOrder;
                       return (
                         <div key={`${sortOrder}-${checked}`}>
                           <input className="form-check-input" 
