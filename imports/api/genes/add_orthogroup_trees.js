@@ -27,7 +27,7 @@ export const addOrthogroupTrees = new ValidatedMethod({
         //console.log(fileName)
         const orthogroupId = fileName.split('/').pop().split('_')[0];
         
-        const data = fs.readFileSync(fileName, 'utf8')//, (err, data) => {
+        const data = fs.readFileSync(fileName, 'utf8');
           const tree = parseNewick(data);
           orthoBulkOp.insert({
             ID: orthogroupId,
