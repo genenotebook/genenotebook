@@ -1,5 +1,6 @@
 docs
 api-docs
 scripts
-genenotebook_bundle
+genenotebook_v*
 testdata
+data

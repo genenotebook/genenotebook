@@ -3,49 +3,32 @@
 set -o errexit
 set -o pipefail
 set -o nounset
-#set -o xtrace
+set -o xtrace
+
+VERSION=$(jq -r '.version' package.json)
+
+BUNDLE_NAME="genenotebook_v$VERSION"
 
 error_cleanup() {
-  rm -rf genenotebook_bundle genenotebook_bundle.tgz
+  rm -rf $BUNDLE_NAME $BUNDLE_NAME.tgz
 }
 
 trap error_cleanup ERR
 
 exit_cleanup() {
-  rm -rf genenotebook_bundle
+  rm -rf $BUNDLE_NAME
 }
 
 trap exit_cleanup EXIT
 
-if [ $# -eq 0 ]
-	then
-	echo "WARNING: no config file provided. Using example_config.json"
-	if [ ! -f example_config.json ]
-		then
-		echo "ERROR: example_config.json not found!"
-		exit 1
-	else
-		CONFIG=example_config.json
-	fi
-else
-	if [ ! -f "$1" ]
-		then
-		echo "ERROR: $1 not found!"
-		exit 1
-	else
-		CONFIG=$1
-	fi
-fi
-
-meteor build --directory genenotebook_bundle &&\
-mv genenotebook_bundle/bundle/* genenotebook_bundle &&\
-pushd genenotebook_bundle/programs/server &&\
+meteor build --directory $BUNDLE_NAME &&\
+mv $BUNDLE_NAME/bundle/* $BUNDLE_NAME &&\
+pushd $BUNDLE_NAME/programs/server &&\
 npm install &&\
 popd &&\
 pushd scripts &&\
 npm install &&\
 popd &&\
-cp -r scripts/* genenotebook_bundle &&\
-cp $CONFIG genenotebook_bundle/config.json &&\
-cp -r testdata genenotebook_bundle &&\
-tar cvzf genenotebook_bundle.tgz genenotebook_bundle 
+cp -r scripts/* $BUNDLE_NAME &&\
+cp -r testdata $BUNDLE_NAME &&\
+tar cvzf $BUNDLE_NAME.tgz $BUNDLE_NAME 

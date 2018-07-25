@@ -3,13 +3,15 @@ import find from 'lodash/find';
 
 import { getGeneSequences } from '/imports/api/util/util.js';
 
+import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
+
 import './seq.scss';
 
 const Controls = (props) => {
   let seqTypes = ['nucl','prot']
   return (
     <div>
-      <div className="btn-group btn-group-sm sequence-toggle pull-right" role="group">
+      <div className="btn-group btn-group-sm sequence-toggle float-right" role="group">
         {
           seqTypes.map(seqType => {
             const active = seqType === props.seqType ? 'active' : '';
@@ -27,18 +29,18 @@ const Controls = (props) => {
         }
       </div>
 
-      <div className="btn-group btn-group-sm pull-right">
-        <button type="button" className="btn btn-outline-dark dropdown-toggle px-2 py-0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          { props.selectedTranscript } <span className="caret"></span>
-        </button>
-        <ul className="dropdown-menu">
-          {
+      <div className="btn-group btn-group-sm float-right">
+        <Dropdown>
+          <DropdownButton className="btn btn-sm btn-outline-dark dropdown-toggle px-2 py-0">
+            { props.selectedTranscript }
+          </DropdownButton>
+          <DropdownMenu>
+          { 
             props.transcripts.map( transcript => {
               return (
                 <li key={transcript}>
-                  <a 
-                    href="#" 
-                    className="select-transcript-seq" 
+                  <a href="#" 
+                    className="select-transcript-seq dropdown-item" 
                     onClick={props.selectTranscript.bind(this,transcript)} >
                     { transcript }
                   </a>
@@ -46,7 +48,8 @@ const Controls = (props) => {
               )
             })
           }
-        </ul>
+          </DropdownMenu>
+        </Dropdown>
       </div>
     </div>
   )

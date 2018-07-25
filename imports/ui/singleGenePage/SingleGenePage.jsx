@@ -7,7 +7,8 @@ import { compose } from 'recompose';
 import hash from 'object-hash';
 
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
-import { Genes } from '/imports/api/genes/gene_collection.js'; 
+import { Genes } from '/imports/api/genes/gene_collection.js';
+import { genomeCollection } from '/imports/api/genomes/genomeCollection.js'; 
 
 import { withEither } from '/imports/ui/util/uiUtil.jsx';
 
@@ -38,21 +39,36 @@ const isNotFound = ({ gene, ...props }) => {
   return typeof gene === 'undefined'
 }
 
-const dataTracker = () => {
+const geneDataTracker = () => {
   const geneId = FlowRouter.getParam('_id');
   const geneSub = Meteor.subscribe('singleGene', geneId);
-  const loading = !geneSub.ready();
   const gene = Genes.findOne({ ID: geneId });
+
+  
+  const loading = !geneSub.ready();
   return {
     loading,
     gene
   }
 }
 
+const genomeDataTracker = ({ gene }) => {
+  const genomeSub = Meteor.subscribe('genomes');
+  const genome = genomeCollection.findOne({ _id: gene.genomeId });
+  const loading = !genomeSub.ready();
+  return {
+    loading,
+    gene,
+    genome
+  }
+}
+
 const withConditionalRendering = compose(
-  withTracker(dataTracker),
+  withTracker(geneDataTracker),
   withEither(isLoading, Loading),
-  withEither(isNotFound, NotFound)
+  withEither(isNotFound, NotFound),
+  withTracker(genomeDataTracker),
+  withEither(isLoading, Loading)
 )
 
 class SingleGenePage extends React.Component {
@@ -70,12 +86,12 @@ class SingleGenePage extends React.Component {
   }
 
   render(){
-    const { gene } = this.props;
+    const { gene, genome } = this.props;
     return (
       <div className="container">
         <div className="card single-gene-page my-2">
           <div className="card-header">
-            <h3>{this.props.gene.ID}</h3>
+            <h4 className='lead'>{gene.ID} <small className='text-muted'>{genome.name}</small></h4>
             {/*<button 
               type="button" 
               className="btn btn-sm btn-outline-danger pull-right" 

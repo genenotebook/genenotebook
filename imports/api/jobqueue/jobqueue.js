@@ -17,7 +17,7 @@ const cleanup = jobQueue.processJobs(
   (job,callback) => {
     let current = new Date()
     current.setMinutes(current.getMinutes() - 20 )
-    ids = jobQueue.find({
+    jobIds = jobQueue.find({
       status: {
         $in: Job.jobStatusRemovable
       },
@@ -30,10 +30,10 @@ const cleanup = jobQueue.processJobs(
       }
     }).map(job => job._id)
 
-    if (ids.length > 0){
-      jobQueue.removeJobs(ids)
+    if (jobIds.length){
+      jobQueue.removeJobs(jobIds)
     }
-    job.done(`removed ${ids.length} old jobs`)
+    job.done(`removed ${jobIds.length} old jobs`)
     callback()
   })
 

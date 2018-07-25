@@ -105,7 +105,7 @@ const GenemodelGroup = ({gene, transcripts, width, scale}) => {
         transcripts.map((transcript,index) => {
           const exons = gene.subfeatures.filter(subfeature => subfeature.parents.indexOf(transcript.ID) >= 0)
           return (
-            <g key={index} className='transcript' transform={`translate(0,${index * 12})`} >
+            <g key={index} className='transcript' transform={`translate(0,${index * 14})`} >
               <Transcript exons={exons} transcript={transcript} scale={scale} {...gene}/>
             </g>
           )
@@ -151,7 +151,7 @@ export default class Genemodel extends React.PureComponent {
           <XAxis 
             scale={scale} 
             numTicks='4' 
-            transform={`translate(0,${ 12 * transcripts.length + 15})`}
+            transform={`translate(0,${ 12 * transcripts.length + 18})`}
             seqid={gene.seqid}/>
           <defs>
             <marker id='arrowEnd' markerWidth='15' markerHeight='10' refX='0' refY='5' orient='auto'>
