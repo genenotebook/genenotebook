@@ -284,6 +284,8 @@ const GeneTableHeader = ({ selectedColumns, attributes, selectedGenes,
     return obj
   },{})
 
+  console.log(selectedAttributes)
+
   const checkBoxColor = [...selectedGenes].length || selectedAllGenes ? 'black' : 'white';
   return (
     <thead>

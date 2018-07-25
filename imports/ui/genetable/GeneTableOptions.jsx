@@ -68,6 +68,7 @@ class GeneTableOptions extends React.PureComponent {
     super(props)
     const { query = {}, selectedAttributes } = props;
     const selectedColumns = new Set(['Gene ID'].concat(selectedAttributes))
+    console.log(selectedColumns)
     this.state = {
       limit: 40,
       query: query,
@@ -79,6 +80,15 @@ class GeneTableOptions extends React.PureComponent {
       selectedVisualization: VISUALIZATIONS[0],
       showDownloadDialog: false,
       dummy: 0
+    }
+  }
+
+  static getDerivedStateFromProps = (props, state) => {
+    const { query = {}, selectedAttributes } = props;
+    const selectedColumns = new Set(['Gene ID'].concat(selectedAttributes));
+    return {
+      query,
+      selectedColumns
     }
   }
 
