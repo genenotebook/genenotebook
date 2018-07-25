@@ -1,0 +1,10 @@
+{
+  "lockfileVersion": 1,
+  "dependencies": {
+    "meteor-job": {
+      "version": "1.5.2",
+      "resolved": "https://registry.npmjs.org/meteor-job/-/meteor-job-1.5.2.tgz",
+      "integrity": "sha512-BOLmB0bQ4XPCB5IOvd5pFiXf5pJCQaCTwFWIozcTPkaUlk95aj8q4Dtjg3tIVFKNw6zcGCOkGCbXQAtVT6omYg=="
+    }
+  }
+}
