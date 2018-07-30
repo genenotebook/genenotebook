@@ -58,7 +58,7 @@
     "react-resize-detector": "^2.3.0",
     "react-select": "^1.2.1",
     "readline-promise": "^1.0.3",
-    "recompose": "^0.26.0",
+    "recompose": "^0.28.0",
     "request": "^2.87.0",
     "request-promise-native": "^1.0.5",
     "rus-diff": "^1.1.0",
