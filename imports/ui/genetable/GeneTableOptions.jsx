@@ -85,11 +85,8 @@ class GeneTableOptions extends React.PureComponent {
   }
 
   static getDerivedStateFromProps = (props, state) => {
-    const { query = {}, selectedAttributes } = props;
-    Object.assign(query, state.query)
-    const selectedColumns = new Set(['Gene ID']
-      .concat(selectedAttributes)
-      .concat([...state.selectedColumns]));
+    const { query = {} } = props;
+    const selectedColumns = new Set(state.selectedColumns).add('Gene ID');
     return {
       query,
       selectedColumns
