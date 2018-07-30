@@ -1,4 +1,4 @@
-# Changelog
+# GeneNoteBook Changelog
 
 All notable changes to this project will be documented in this file.
 
@@ -10,7 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Executable to add Orthofinder phylogenetic trees (```genenotebook add orthogroups```)
 
 ### Fixed
-- Fixed ability to unselect default gene attribute columns in GeneTable view
+- Ability to unselect default gene attribute columns in GeneTable view
+- Scanning gene attributes in the admin section now also removes old/unused attributes
 
 ## 0.1.0 - 2018-07-27
 ### Added
