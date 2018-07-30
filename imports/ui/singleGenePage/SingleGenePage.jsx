@@ -128,10 +128,11 @@ class SingleGenePage extends React.Component {
               <h3>Protein domains</h3>
               <ProteinDomains gene={gene} />
             </section>
-            {
-              gene.orthogroup &&
+            <section id='orthogroup'>
+              <hr />
+              <h3>Orthogroup</h3>
               <Orthogroup gene={gene} />
-            }
+            </section>
             <section id='expression'>
               <hr />
               <h3>Expression</h3>

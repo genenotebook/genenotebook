@@ -6,7 +6,7 @@ import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 import { Genes } from '/imports/api/genes/gene_collection.js';
 import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 import { Interpro } from '/imports/api/genes/interpro_collection.js';
-import { Orthogroups } from '/imports/api/genes/orthogroup_collection.js';
+import { orthogroupCollection } from '/imports/api/genes/orthogroup_collection.js';
 import { EditHistory } from '/imports/api/genes/edithistory_collection.js';
 //import { Tracks } from '/imports/api/genomes/track_collection.js';
 import { genomeSequenceCollection, genomeCollection } from '/imports/api/genomes/genomeCollection.js';
@@ -149,7 +149,7 @@ Meteor.publish({
     if (!this.userId){
       this.stop()
     }
-    return Orthogroups.find({ ID });
+    return orthogroupCollection.find({ ID });
   },
   interpro (){
     if (!this.userId){

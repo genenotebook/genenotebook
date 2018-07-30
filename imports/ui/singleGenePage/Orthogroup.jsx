@@ -2,19 +2,45 @@ import { withTracker } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
 
 import React from 'react';
+import { compose } from 'recompose';
 import ContainerDimensions from 'react-container-dimensions';
 import { cluster, tree, hierarchy } from 'd3';
 
-import { Orthogroups } from '/imports/api/genes/orthogroup_collection.js';
+import { orthogroupCollection } from '/imports/api/genes/orthogroup_collection.js';
+
+import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
 import GeneLink from './GeneLink.jsx';
 
-const Loading = props => {
-  return (
-    <div className='card tree'>
-    </div>
-  )
+const hasNoOrthogroup = ({ orthogroup }) => {
+  return typeof orthogroup === 'undefined'
 }
+
+const NoOrthogroup = () => {
+  return <div className="card orthogroup px-1 pt-1 mb-0">
+    <div className="alert alert-dark mx-1 mt-1" role="alert">
+      <p className="text-center text-muted mb-0">No Orthogroup found</p>
+    </div>
+  </div>
+}
+
+const orthogroupDataTracker = ({ gene }) => {
+  const { orthogroupId } = gene;
+  const orthoSub = Meteor.subscribe('orthogroups', orthogroupId);
+  const loading = !orthoSub.ready();
+  const orthogroup = orthogroupCollection.findOne({ID: orthogroupId});
+  return {
+    loading,
+    gene,
+    orthogroup
+  }
+}
+
+const withConditionalRendering = compose(
+  withTracker(orthogroupDataTracker),
+  withEither(isLoading, Loading),
+  withEither(hasNoOrthogroup, NoOrthogroup)
+)
 
 const TreeBranches = ({nodes}) => {
   return nodes.map(node => {
@@ -80,8 +106,6 @@ class Orthogroup extends React.Component {
   render(){
     return (
       <div id="orthogroup">
-        <hr />
-        <h3>Orthogroup</h3>
         {
           this.props.loading ?
           <Loading /> :
@@ -92,12 +116,4 @@ class Orthogroup extends React.Component {
   }
 }
 
-export default withTracker(props => {
-  const orthoSub = Meteor.subscribe('orthogroups', props.gene.orthogroup);
-  const orthogroup = Orthogroups.findOne({ID: props.gene.orthogroup});
-  return {
-    loading: !orthoSub.ready(),
-    gene: props.gene,
-    orthogroup: orthogroup
-  }
-})(Orthogroup);
+export default withConditionalRendering(Orthogroup);

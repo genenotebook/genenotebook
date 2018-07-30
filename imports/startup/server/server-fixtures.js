@@ -39,14 +39,14 @@ Meteor.startup( () => {
       name: 'Note',
       query: 'attributes.Note'
     },
-    /*{
+    {
       name: 'Orthogroup',
-      query: 'orthogroup'
+      query: 'orthogroupId'
     },
     {
       name: 'Protein domains',
       query: 'subfeatures.protein_domains'
-    },*/
+    },
     {
       name: 'Gene ID',
       query: 'ID'

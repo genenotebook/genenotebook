@@ -142,6 +142,12 @@ const GeneSchema = new SimpleSchema({
     index: true,
     label: 'Reference genome DB identifier (_id in genome collection)'
   },
+  orthogroupId: {
+    type: String,
+    index: true,
+    optional: true,
+    label: 'Orthogroup DB identifier (_id in orthogroup collection)'
+  },
   seqid: {
     type: String,
     label: 'ID of the sequence on which the gene is, e.g. chr1'

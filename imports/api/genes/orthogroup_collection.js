@@ -3,6 +3,6 @@ import SimpleSchema from 'simpl-schema';
 
 //DESIGN SCHEMA
 
-const Orthogroups = new Mongo.Collection('orthogroups');
+const orthogroupCollection = new Mongo.Collection('orthogroups');
 
-export { Orthogroups }
+export { orthogroupCollection }

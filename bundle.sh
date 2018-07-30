@@ -31,4 +31,5 @@ npm install &&\
 popd &&\
 cp -r scripts/* $BUNDLE_NAME &&\
 cp -r testdata $BUNDLE_NAME &&\
+cp -r LICENSE $BUNDLE_NAME &&\
 tar cvzf $BUNDLE_NAME.tgz $BUNDLE_NAME 

@@ -3,9 +3,9 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method';
 
 import SimpleSchema from 'simpl-schema';
 import Papa from 'papaparse';
-import glob from 'glob';
+import { glob } from 'glob-promise';
 
-import { Orthogroups } from '/imports/api/genes/orthogroup_collection.js';
+import { orthogroupCollection } from '/imports/api/genes/orthogroup_collection.js';
 import { Genes } from '/imports/api/genes/gene_collection.js';
 import { parseNewick } from '/imports/api/util/util.js';
 import fs from 'fs';
@@ -13,31 +13,67 @@ import fs from 'fs';
 export const addOrthogroupTrees = new ValidatedMethod({
   name: 'addOrthogroupTrees',
   validate: new SimpleSchema({
-    folder: { type: String }
+    folderName: { type: String }
   }).validator(),
   applyOptions: {
     noRetry: true
   },
-  run({ folder }){
-    console.log('addOrthogroupTrees', folder)
+  run({ folderName }){
+    console.log('addOrthogroupTrees', folderName)
     const geneBulkOp = Genes.rawCollection().initializeUnorderedBulkOp();
-    const orthoBulkOp = Orthogroups.rawCollection().initializeUnorderedBulkOp();
-    glob(`${folder}/*`, (err, fileNames) => {
-      fileNames.forEach(fileName => {
-        //console.log(fileName)
+    const orthoBulkOp = orthogroupCollection.rawCollection().initializeUnorderedBulkOp();
+    return glob(`${folderName}/*`)
+      .then(fileNames => {
+        fileNames.forEach(fileName => {
         const orthogroupId = fileName.split('/').pop().split('_')[0];
         
         const data = fs.readFileSync(fileName, 'utf8');
-          const tree = parseNewick(data);
+          const { size, tree, geneIds } = parseNewick(data);
+
           orthoBulkOp.insert({
             ID: orthogroupId,
-            size: tree.size,
-            tree: tree.tree,
-            genes: tree.geneIds
+            size,
+            tree,
+            genes
           })
-          geneBulkOp.find({ID: {$in: tree.geneIds}}).update({$set: {orthogroup: orthogroupId}})
-          //console.log(orthogroupId, tree.size, tree.geneIds);
-        //});
+          geneBulkOp.find({
+            ID: { $in: tree.geneIds }
+          }).update({
+            $set: { orthogroupId }
+          })
+        })
+        return Promise.all([
+          geneBulkOp.execute(),
+          orthoBulkOp.execute()
+        ])
+      })
+      .catch(error => {
+        console.log(error)
+        throw new Meteor.Error(error)
+      })
+
+    /*
+    })
+    
+      , (err, fileNames) => {
+      fileNames.forEach(fileName => {
+        const orthogroupId = fileName.split('/').pop().split('_')[0];
+        
+        const data = fs.readFileSync(fileName, 'utf8');
+          const { size, tree, geneIds } = parseNewick(data);
+
+          orthoBulkOp.insert({
+            ID: orthogroupId,
+            size,
+            tree,
+            genes
+          })
+          geneBulkOp.find({
+            ID: { $in: tree.geneIds }
+          }).update({
+            $set: { orthogroupId }
+          })
+
       })
     console.log('geneBulkOp execute')
     const geneBulkOpResults = geneBulkOp.execute();
@@ -48,6 +84,6 @@ export const addOrthogroupTrees = new ValidatedMethod({
     console.log(orthoBulkOpResults)
     })
 
-
+  */
   }
 })
