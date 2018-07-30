@@ -6,7 +6,7 @@
   "license": "ISC",
   "dependencies": {
     "asteroid": "2.0.3",
-    "commander": "2.15.1",
+    "commander": "2.16.0",
     "ws": "5.2.0"
   }
 }
