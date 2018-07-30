@@ -68,7 +68,7 @@
     "thread-sleep": "^2.1.0",
     "try-thread-sleep": "^2.0.0",
     "utf-8-validate": "^2.0.0",
-    "ws": "^1.1.5",
+    "ws": "^6.0.0",
     "xml2js-es6-promise": "^1.1.1"
   }
 }
