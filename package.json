@@ -64,7 +64,7 @@
     "rus-diff": "^1.1.0",
     "simpl-schema": "^1.5.3",
     "spawn-promise": "^0.1.8",
-    "spawn-sync": "^1.0.15",
+    "spawn-sync": "^2.0.0",
     "thread-sleep": "^2.1.0",
     "try-thread-sleep": "^2.0.0",
     "utf-8-validate": "^2.0.0",
