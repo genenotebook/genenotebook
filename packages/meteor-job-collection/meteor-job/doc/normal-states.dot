@@ -1,0 +1,24 @@
+digraph jobStatus {
+
+  graph [splines="spline" mclimit=20.0 ratio=auto rankdir=LR]
+
+  created [shape=box];
+  waiting;
+  ready;
+  running;
+  completed;
+  failed;
+  removed [shape=box];
+  created -> waiting [label=".save()" weight=100.0];
+  waiting -> ready [label=<.ready() /<BR/><I>automatic</I>> weight=100.0];
+  ready -> running [label=".getWork()" weight=100.0];
+  running -> completed [label=".done()" weight=100.0];
+  running -> failed [label=".fail()"];
+  running -> waiting [label=<.fail()<BR/><I>with retry</I>>];
+  completed -> removed [label=".remove()" weight=100.0];
+  failed -> removed [label=".remove()"];
+  completed -> waiting [label=<.rerun() / <I>auto repeat</I><BR/><I>new job</I>>];
+  failed -> waiting [label=".restart()"];
+  created -> created [label=".depends() /\n.priority() /\n.retry() /\n.repeat() /\n.delay() /\n.after()"];
+  running -> running [label=".log()\n.progress()"];
+}
