@@ -54,17 +54,17 @@ const labelFromQuery = ({ queryKey, queryValue }) => {
 const stateFromQuery = query => {
   console.log(query)
   const queryKey = Object.keys(query)[0];
-  const queryValue = Object.values(query)[0];
+  const queryValue = query[queryKey];
   let queryLabel;
   switch(queryKey){
     case '$exists':
       queryLabel = queryValue ? 'Present' : 'Not present';
       break
     case '$eq':
-      queryLabel = 'Equals';//queryValue instanceof RegExp ? 'Contains' : 'Equals';
+      queryLabel = 'Equals';
       break
     case '$ne':
-      queryLabel = 'Does not equal';//queryValue instanceof RegExp ? 'Does not contain' : 'Does not equal';
+      queryLabel = 'Does not equal';
       break
     case '$regex':
       queryLabel = 'Contains';
@@ -73,7 +73,7 @@ const stateFromQuery = query => {
       queryLabel = 'Does not contain';
       break
     default:
-      console.error(`Unknown query: {${queryType}:${queryValue}}`)
+      console.error(`Unknown query: {${queryKey}:${queryValue}}`)
       break
   }
   const state = { queryLabel, queryValue };
@@ -120,6 +120,17 @@ const queryFromLabel = ({ queryLabel, queryValue }) => {
   return query
 }
 
+const getAttributeQuery = ({ query, attribute }) => {
+  console.log('getAttributeQuery',query, attribute.query)
+  if (query.hasOwnProperty(attribute.query)){
+    return query[attribute.query]
+  } else {
+    if (query.hasOwnProperty('$or')){
+      return query.$or.filter(searchQuery => Object.keys(searchQuery)[0] === attribute.query)[0]
+    }
+  }
+}
+
 /**
  * 
  */
@@ -127,8 +138,8 @@ class HeaderElement extends React.Component {
   constructor(props){
     super(props)
     const { query, attribute, ...otherProps } = props;
-    if (query.hasOwnProperty(attribute.query)){
-      const attributeQuery = query[attribute.query];
+    const attributeQuery = getAttributeQuery({ query, attribute });
+    if (typeof attributeQuery !== 'undefined'){
       const queryKey = Object.keys(attributeQuery)[0];
       const queryValue = Object.values(attributeQuery)[0];
       this.state = stateFromQuery(attributeQuery);
@@ -195,7 +206,9 @@ class HeaderElement extends React.Component {
 
   render(){
     const { query, attribute, sort,  ...props} = this.props;
-    const hasQuery = query.hasOwnProperty(attribute.query);
+    const attributeQuery = getAttributeQuery({ query, attribute });
+    console.log(attributeQuery)
+    const hasQuery = typeof attributeQuery !== 'undefined';
     const hasSort = sort && sort.hasOwnProperty(attribute.query);
     const buttonClass = hasQuery || hasSort ? 'btn-success' : 'btn-outline-dark';
     const orientation = attribute.name === 'Gene ID' ? 'left' : 'right';
@@ -235,7 +248,7 @@ class HeaderElement extends React.Component {
               <div className={`query-wrapper pb-1 mb-1 ${hasQuery ? 'has-query' : ''}`}>
                 <h6 className="dropdown-header">Filter:</h6>
                 <Select
-                  className='form-control-sm' 
+                  className='form-control-sm pb-5' 
                   value={this.state.queryLabel}
                   options={QUERY_TYPES}
                   onChange={this.updateQueryLabel} />
@@ -283,8 +296,6 @@ const GeneTableHeader = ({ selectedColumns, attributes, selectedGenes,
     obj[attribute.name] = attribute
     return obj
   },{})
-
-  console.log(selectedAttributes)
 
   const checkBoxColor = [...selectedGenes].length || selectedAllGenes ? 'black' : 'white';
   return (
