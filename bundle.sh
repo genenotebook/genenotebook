@@ -21,7 +21,7 @@ trap error_cleanup ERR
 
 #trap exit_cleanup EXIT
 
-meteor build --directory $BUNDLE_NAME &&\
+meteor build --directory --allow-superuser $BUNDLE_NAME &&\
 mv $BUNDLE_NAME/bundle/* $BUNDLE_NAME &&\
 pushd $BUNDLE_NAME/programs/server &&\
 npm install &&\
