@@ -1,11 +1,12 @@
 {
   "name": "genenotebook",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "repository": "https://github.com/genenotebook/genenotebook",
   "description": "A portable website for browsing and querying genome sequences and annotations",
   "license": "AGPL-3.0",
   "scripts": {
-    "preinstall": "curl https://install.meteor.com/ | sh",
+    "preinstall": "meteor help || curl https://install.meteor.com/ | sh",
+    "postinstall": "./bundle.sh",
     "preupdate": "meteor update",
     "docs": "documentation build --shallow imports/** -f html -o api-docs",
     "postdocs": "cp api-docs/index.html docs/pages/api-docs.html && cp -r api-docs/assets docs/",
@@ -32,7 +33,7 @@
     "d3-scale-chromatic": "^1.3.0",
     "documentation": "^6.3.3",
     "dot-object": "^1.7.0",
-    "fibers": "^1.0.15",
+    "fibers": "^3.0.0",
     "file-saver": "^1.3.8",
     "file-type": "^4.4.0",
     "fs.extra": "^1.3.2",
@@ -64,11 +65,11 @@
     "rus-diff": "^1.1.0",
     "simpl-schema": "^1.5.3",
     "spawn-promise": "^0.1.8",
-    "spawn-sync": "^1.0.15",
+    "spawn-sync": "^2.0.0",
     "thread-sleep": "^2.1.0",
     "try-thread-sleep": "^2.0.0",
-    "utf-8-validate": "^2.0.0",
-    "ws": "^1.1.5",
+    "utf-8-validate": "^5.0.0",
+    "ws": "^6.0.0",
     "xml2js-es6-promise": "^1.1.1"
   }
 }

@@ -40,6 +40,72 @@ const reduceFunction = function(_key, values){
 	return { attributeKeys: attributeKeys }
 }
 
+const findNewAttributes = ({ genomeId }) => {
+	const mapReduceOptions = { 
+		out: { inline: 1 },
+		query: { genomeId }
+	}
+	//mapreduce to find all keys for all genes, this takes a while
+	console.log('mapreducing')
+	return Genes.rawCollection()
+		.mapReduce(mapFunction, reduceFunction, mapReduceOptions)
+		.then(results => {
+			console.log('mapreduce finished')
+			results.forEach( result => {
+				const attributeKeys = result.value.attributeKeys;
+				attributeKeys.forEach(attributeKey => {
+					console.log(attributeKey)
+					attributeCollection.update({ 
+						name: attributeKey 
+					},{
+						$addToSet: {
+							genomes: genomeId
+						},
+						$setOnInsert: { 
+							name: attributeKey,
+							query: `attributes.${attributeKey}`,
+							defaultShow: false, 
+							defaultSearch: false
+						}
+					},{
+						upsert: true
+					})
+				})
+			})
+		})
+		.catch(err => {
+			console.log(err)
+			throw new Meteor.Error(err)
+		})
+}
+
+const removeOldAttributes = ({ genomeId }) => {
+	console.log('Removing old attributes');
+	const oldAttributeIds = attributeCollection.find({
+		$or: [
+			{ allGenomes: true },
+			{ genomes: genomeId }
+		]
+	}).fetch().filter(attribute => {
+		const count =  Genes.find({
+			genomeId,
+			[attribute.query]: {
+				$exists: true
+			}
+		}).count()
+		console.log(`${attribute.query} ${count}`)
+		return count === 0
+	}).map(attribute => attribute._id)
+
+	console.log(oldAttributeIds)
+
+	const update = attributeCollection.remove({
+		_id: { $in: oldAttributeIds }
+	})
+	console.log(update)
+	return update
+}
+
 export const scanGeneAttributes = new ValidatedMethod({
 	name: 'scanGeneAttributes',
 	validate: new SimpleSchema({
@@ -68,44 +134,9 @@ export const scanGeneAttributes = new ValidatedMethod({
 	
 		//check that it is running on the server
 		if ( !this.isSimulation ){
-			this.unblock();
-			const mapReduceOptions = { 
-					out: { inline: 1 },
-					query: { genomeId }
-				}
-			//mapreduce to find all keys for all genes, this takes a while
-			console.log('mapreducing')
-			const attributeScan = Genes.rawCollection()
-				.mapReduce(mapFunction, reduceFunction, mapReduceOptions)
-				.then(results => {
-					console.log('mapreduce finished')
-					results.forEach( result => {
-						const attributeKeys = result.value.attributeKeys;
-						attributeKeys.forEach(attributeKey => {
-							console.log(attributeKey)
-							attributeCollection.update({ 
-								name: attributeKey 
-							},{
-								$addToSet: {
-									genomes: genomeId
-								},
-								$setOnInsert: { 
-									name: attributeKey,
-									query: `attributes.${attributeKey}`,
-									show: true, 
-									canEdit: false, 
-									reserved: false 
-								}
-							},{
-								upsert: true
-							})
-						})
-					})
-				})
-				.catch(err => {
-					console.log(err)
-					throw new Meteor.Error(err)
-				})
+			//this.unblock();
+			removeOldAttributes({ genomeId });
+			findNewAttributes({ genomeId });
 			return true
 		}
 	}

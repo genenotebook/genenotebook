@@ -40,15 +40,27 @@ const searchTracker = ({ attributes }) => {
   FlowRouter.watchPathChange();
   const { queryParams } = FlowRouter.current();
   const { attributes: attributeString, search } = queryParams;
-  const query = {};
+  const query = { $or: [] };
   attributes
     .filter(({ name }) => new RegExp(name).test(attributeString) )
-    .forEach(attribute => query[attribute.query] = { $eq: search })
+    .forEach(attribute => {
+      query.$or.push({ 
+        [attribute.query]: { 
+          $regex: search, 
+          $options: 'i' 
+        }
+      })
+    });
 
   const selectedAttributes = attributes
     .filter(({ defaultShow, defaultSearch, name }) => {
       return defaultShow || defaultSearch || new RegExp(name).test(attributeString)
     }).map(({ name }) => name)
+
+  if (!query.$or.length) {
+    delete query.$or
+  }
+
   return {
     attributes,
     selectedAttributes,
@@ -84,15 +96,14 @@ class GeneTableOptions extends React.PureComponent {
     }
   }
 
-  static getDerivedStateFromProps = (props, state) => {
-    const { query = {}, selectedAttributes } = props;
-    Object.assign(query, state.query)
-    const selectedColumns = new Set(['Gene ID']
-      .concat(selectedAttributes)
-      .concat([...state.selectedColumns]));
+  static getDerivedStateFromProps = async (props, state) => {
+    const { query = {} } = props;
+    const selectedColumns = new Set(state.selectedColumns).add('Gene ID');
+    const _queryCount = await queryCount.call({ query });
     return {
       query,
-      selectedColumns
+      selectedColumns,
+      queryCount: _queryCount
     }
   }
 
