@@ -8,8 +8,8 @@
 import { Meteor } from "meteor/meteor";
 import { check, Match } from "meteor/check";
 import { Mongo } from "meteor/mongo";
-import Job from 'meteor-job';
-//import Job from "../job/src/job_class";
+//import Job from 'meteor-job';
+import Job from "../meteor-job/lib/job_class.js";
 
 const status = {
   WAITING: "waiting",
