@@ -52,18 +52,17 @@ Meteor.startup( () => {
       query: 'ID'
     }
   ]
-  permanentAttributes.forEach( attribute => {
-    console.log(`Adding default filter option: ${attribute.name}`)
+  permanentAttributes.forEach( ({ name, query }) => {
+    console.log(`Adding default filter option: ${name}`)
     attributeCollection.update({
-      name: attribute.name
+      name
     },
     {
       $setOnInsert: {
-          name: attribute.name, 
-          query: attribute.query, 
-          show: true, 
-          canEdit: false, 
-          reserved: true,
+          name, 
+          query, 
+          defaultShow: false, 
+          defaultSearch: false, 
           allGenomes: true 
       }
     },

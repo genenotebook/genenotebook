@@ -36,10 +36,7 @@ class AdminAttributes extends React.Component {
 
   scanAttributes = (event) => {
     event.preventDefault();
-    console.log('clicked scanAttributes')
-    this.props.genomes.forEach(genome => {
-      console.log(genome)
-      const genomeId = genome._id;
+    this.props.genomes.forEach(({ _id: genomeId }) => {
       scanGeneAttributes.call({ genomeId });
     })
   }

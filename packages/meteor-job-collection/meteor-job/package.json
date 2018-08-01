@@ -1,0 +1,61 @@
+{
+  "_from": "meteor-job@1.5.2",
+  "_id": "meteor-job@1.5.2",
+  "_inBundle": false,
+  "_integrity": "sha512-BOLmB0bQ4XPCB5IOvd5pFiXf5pJCQaCTwFWIozcTPkaUlk95aj8q4Dtjg3tIVFKNw6zcGCOkGCbXQAtVT6omYg==",
+  "_location": "/meteor-job",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "meteor-job@1.5.2",
+    "name": "meteor-job",
+    "escapedName": "meteor-job",
+    "rawSpec": "1.5.2",
+    "saveSpec": null,
+    "fetchSpec": "1.5.2"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/meteor-job/-/meteor-job-1.5.2.tgz",
+  "_shasum": "8c2eff12cccdd021f832dd618301ae13d5c6084c",
+  "_spec": "meteor-job@1.5.2",
+  "_where": "/Users/rensholmer/Documents/Code/genenotebook/packages/meteor-job-collection/.npm/package-new-1fmarj4.9evmk",
+  "author": {
+    "name": "Vaughn Iverson"
+  },
+  "bugs": {
+    "url": "https://github.com/vsivsi/meteor-job/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {},
+  "deprecated": false,
+  "description": "Class for Meteor jobCollection for use both within meteor.js and with pure node.js workers",
+  "devDependencies": {
+    "chai": "^4.0.2",
+    "coffee-script": "^1.12.6",
+    "fibers": "^3.0.0",
+    "mocha": "^5.0.0",
+    "rewire": "^4.0.0",
+    "sinon": "^6.0.0"
+  },
+  "engine": {
+    "node": ">=0.10.40"
+  },
+  "homepage": "https://github.com/vsivsi/meteor-job#readme",
+  "keywords": [],
+  "license": "MIT",
+  "main": "lib/job_class.js",
+  "name": "meteor-job",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vsivsi/meteor-job.git"
+  },
+  "scripts": {
+    "prepare": "coffee --compile --output lib/ src/",
+    "test": "make test"
+  },
+  "version": "1.5.2"
+}

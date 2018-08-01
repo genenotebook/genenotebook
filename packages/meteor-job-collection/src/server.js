@@ -5,8 +5,8 @@
  */
 
 import { Meteor } from "meteor/meteor";
-import Job from 'meteor-job';
-// import Job from "../job/src/job_class";
+//import Job from 'meteor-job';
+import Job from "../meteor-job/lib/job_class.js";
 import { EventEmitter } from "events";
 import JobCollectionBase from "./shared";
 

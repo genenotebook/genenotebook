@@ -34,6 +34,7 @@ class EditAttributeInfo extends React.PureComponent {
   render(){
     const { name, query, toggleEdit } = this.props;
     const { defaultShow, defaultSearch } = this.state;
+    console.log( defaultShow, defaultSearch )
     const hasChanges = !(defaultShow === this.props.defaultShow && defaultSearch === this.props.defaultSearch)
     return <tr>
       <td>
