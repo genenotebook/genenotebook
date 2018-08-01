@@ -59,7 +59,7 @@
     "react-resize-detector": "^3.0.0",
     "react-select": "^2.0.0",
     "readline-promise": "^1.0.3",
-    "recompose": "^0.26.0",
+    "recompose": "^0.28.0",
     "request": "^2.87.0",
     "request-promise-native": "^1.0.5",
     "rus-diff": "^1.1.0",
