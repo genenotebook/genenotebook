@@ -3,12 +3,24 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method';
 
 import SimpleSchema from 'simpl-schema';
 import Papa from 'papaparse';
-import { glob } from 'glob-promise';
+import glob from 'glob';
 
 import { orthogroupCollection } from '/imports/api/genes/orthogroup_collection.js';
 import { Genes } from '/imports/api/genes/gene_collection.js';
 import { parseNewick } from '/imports/api/util/util.js';
 import fs from 'fs';
+
+const globPromise = (pattern, options) => {
+  return new Promise((resolve, reject) => {
+    glob(pattern, options, (err, files) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(files)
+      }
+    })
+  })
+}
 
 export const addOrthogroupTrees = new ValidatedMethod({
   name: 'addOrthogroupTrees',
@@ -22,22 +34,21 @@ export const addOrthogroupTrees = new ValidatedMethod({
     console.log('addOrthogroupTrees', folderName)
     const geneBulkOp = Genes.rawCollection().initializeUnorderedBulkOp();
     const orthoBulkOp = orthogroupCollection.rawCollection().initializeUnorderedBulkOp();
-    return glob(`${folderName}/*`)
+    return globPromise(`${folderName}/*`)
       .then(fileNames => {
         fileNames.forEach(fileName => {
         const orthogroupId = fileName.split('/').pop().split('_')[0];
         
         const data = fs.readFileSync(fileName, 'utf8');
           const { size, tree, geneIds } = parseNewick(data);
-
           orthoBulkOp.insert({
             ID: orthogroupId,
             size,
-            tree,
-            genes
+            tree: data,
+            geneIds
           })
           geneBulkOp.find({
-            ID: { $in: tree.geneIds }
+            ID: { $in: geneIds }
           }).update({
             $set: { orthogroupId }
           })
@@ -47,8 +58,11 @@ export const addOrthogroupTrees = new ValidatedMethod({
           orthoBulkOp.execute()
         ])
       })
-      .catch(error => {
-        console.log(error)
+      .catch(error  => {
+        console.log(Object.keys(error))
+        error.writeErrors.forEach(err => {
+          console.log(err.errmsg)
+        })
         throw new Meteor.Error(error)
       })
 
