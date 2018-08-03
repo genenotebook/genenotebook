@@ -34,7 +34,7 @@ const withConditionalRendering = compose(
   withEither(isLoading, Loading)
 )
 
-class SearchBar extends React.PureComponent {
+class SearchBar extends React.Component {
   constructor(props){
     super(props)
     const selectedAttributes = props.selectedAttributes.length ?

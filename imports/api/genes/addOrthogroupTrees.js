@@ -39,17 +39,17 @@ export const addOrthogroupTrees = new ValidatedMethod({
         fileNames.forEach(fileName => {
         const orthogroupId = fileName.split('/').pop().split('_')[0];
         
-        const data = fs.readFileSync(fileName, 'utf8');
-          const { size, tree, geneIds } = parseNewick(data);
+        const treeNewick = fs.readFileSync(fileName, 'utf8');
+          const { size, tree, geneIds } = parseNewick(treeNewick);
           orthoBulkOp.insert({
             ID: orthogroupId,
             size,
-            tree: data,
+            tree: treeNewick,
             geneIds
           })
-          geneBulkOp.find({
+          geneBulkOp.updateMany({
             ID: { $in: geneIds }
-          }).update({
+          },{
             $set: { orthogroupId }
           })
         })

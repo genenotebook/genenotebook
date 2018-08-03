@@ -55,6 +55,7 @@ const stateFromQuery = query => {
   console.log(query)
   const queryKey = Object.keys(query)[0];
   const queryValue = query[queryKey];
+
   let queryLabel;
   switch(queryKey){
     case '$exists':
@@ -121,7 +122,6 @@ const queryFromLabel = ({ queryLabel: { label, value }, queryValue }) => {
 }
 
 const getAttributeQuery = ({ query, attribute }) => {
-  console.log('getAttributeQuery',query, attribute.query)
   if (query.hasOwnProperty(attribute.query)){
     return query[attribute.query]
   } else {
@@ -139,9 +139,8 @@ class HeaderElement extends React.Component {
     super(props)
     const { query, attribute, ...otherProps } = props;
     const attributeQuery = getAttributeQuery({ query, attribute });
+    console.log(attributeQuery)
     if (typeof attributeQuery !== 'undefined'){
-      const queryKey = Object.keys(attributeQuery)[0];
-      const queryValue = Object.values(attributeQuery)[0];
       this.state = stateFromQuery(attributeQuery);
     } else {
       this.state = {
@@ -159,7 +158,6 @@ class HeaderElement extends React.Component {
     const { attribute, query, updateQuery, ...props } = this.props
     const queryLabel = selection//selection ? selection.label : 'None';
 
-    console.log(selection)
     this.setState({
       queryLabel,
       dummy: this.state.dummy + 1
@@ -213,7 +211,6 @@ class HeaderElement extends React.Component {
   render(){
     const { query, attribute, sort,  ...props} = this.props;
     const attributeQuery = getAttributeQuery({ query, attribute });
-    console.log(attributeQuery)
     const hasQuery = typeof attributeQuery !== 'undefined';
     const hasSort = sort && sort.hasOwnProperty(attribute.query);
     const buttonClass = hasQuery || hasSort ? 'btn-success' : 'btn-outline-dark';

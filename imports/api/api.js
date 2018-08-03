@@ -15,8 +15,8 @@ import './genomes/removeAnnotationTrack.js';
 
 import './genes/interproscan.js';
 import './genes/add_interproscan.js';
-import './genes/add_orthogroup_trees.js';
-import './genes/download_genes.js';
+import './genes/addOrthogroupTrees.js';
+import './genes/downloadGenes.js';
 import './genes/scanGeneAttributes.js';
 import './genes/updateAttributeInfo.js';
 

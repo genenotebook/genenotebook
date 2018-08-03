@@ -134,9 +134,10 @@ exposedRoutes.route('/inactive-account', {
 
 exposedRoutes.route('/genes', {
   name: 'genes',
-  action() {
+  action (params, queryParams) {
+    const { attributes: searchAttributes, search: searchValue } = queryParams;
     mount(MainLayout, {
-      content: <GeneTable />
+      content: <GeneTable {...{searchAttributes, searchValue}} />
     })
   }
 })
