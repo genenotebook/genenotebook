@@ -146,9 +146,6 @@ Meteor.publish({
     }
   },
   orthogroups (ID) {
-    
-    console.log('orthogroup subscription',ID)
-    console.log(orthogroupCollection.find({ ID }))
     return orthogroupCollection.find({ ID });
   },
   interpro (){

@@ -56,7 +56,7 @@ const XAxis = ({ scale, numTicks, transform, seqid }) => {
 
 
 const Transcript = ({ transcript, exons, scale, strand, genomeId }) => {
-  const baseColor = new Color(randomColor({ seed: genomeId }));
+  const baseColor = new Color(randomColor({ seed: genomeId + genomeId.slice(3) }));
   const contrastColor = baseColor.isLight() ? 
     baseColor.darken(0.5).saturate(0.3) : 
     baseColor.lighten(0.5).desaturate(0.3);

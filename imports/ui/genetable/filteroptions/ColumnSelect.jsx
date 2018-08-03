@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
-import { VISUALIZATIONS } from '/imports/ui/genetable/GeneTableOptions.jsx';
+import { VISUALIZATIONS } from '/imports/ui/genetable/GeneTable.jsx';
 
 const ColumnSelect = ({ attributes, selectedColumns, toggleColumnSelect, selectedVisualization, toggleVisualization }) => {
   console.log(selectedVisualization)

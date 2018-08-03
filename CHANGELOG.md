@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Changed
-- Orthogroup trees are now stored as text and parsed to an object in the browser, since some trees are too big to fit into MongoDB as objects.
+- Orthogroup trees are now stored as text and parsed into an object in the browser, since some trees are too big to fit into MongoDB as objects.
 
 ## [0.1.1]
 ### Added

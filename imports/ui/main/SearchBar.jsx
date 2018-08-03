@@ -66,7 +66,8 @@ class SearchBar extends React.PureComponent {
     })
   }
 
-  search = () => {
+  search = event => {
+    event.preventDefault();
     const { selectedAttributes, searchString } = this.state;
     console.log(selectedAttributes, searchString)
     if (searchString.length && selectedAttributes.size){

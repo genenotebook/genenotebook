@@ -60,9 +60,11 @@ export const addOrthogroupTrees = new ValidatedMethod({
       })
       .catch(error  => {
         console.log(Object.keys(error))
-        error.writeErrors.forEach(err => {
-          console.log(err.errmsg)
-        })
+        if (error.writeErrors){
+          error.writeErrors.forEach(err => {
+            console.log(err.errmsg)
+          })
+        }
         throw new Meteor.Error(error)
       })
 

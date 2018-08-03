@@ -43,7 +43,7 @@ const labelFromQuery = ({ queryKey, queryValue }) => {
       console.error(`Unknown query: {${queryType}:${queryValue}}`)
       break
   }
-  return label
+  return { label: label, value: label }
 }
 
 /**
@@ -76,7 +76,7 @@ const stateFromQuery = query => {
       console.error(`Unknown query: {${queryKey}:${queryValue}}`)
       break
   }
-  const state = { queryLabel, queryValue };
+  const state = { queryLabel : { label: queryLabel, value: queryLabel }, queryValue };
   if (queryKey === '$not'){
     state.queryValue = queryValue['$regex'];
   }
@@ -89,9 +89,9 @@ const stateFromQuery = query => {
  * @param  {[type]} options.queryValue [description]
  * @return {[type]}                    [description]
  */
-const queryFromLabel = ({ queryLabel, queryValue }) => {
+const queryFromLabel = ({ queryLabel: { label, value }, queryValue }) => {
   let query;
-  switch(queryLabel){
+  switch(label){
     case 'None':
       query = {};
       break
@@ -114,7 +114,7 @@ const queryFromLabel = ({ queryLabel, queryValue }) => {
       query = { $not: { $regex: queryValue} }
       break
     default:
-      console.error(`Unknown label/value: ${queryLabel}/${queryValue}`)
+      console.error(`Unknown label/value: ${label}/${queryValue}`)
       break
   }
   return query
@@ -145,18 +145,24 @@ class HeaderElement extends React.Component {
       this.state = stateFromQuery(attributeQuery);
     } else {
       this.state = {
-        queryLabel: 'None',
+        queryLabel: { label: 'None', value: 'None' },
         queryValue: ''
       }
     }
-    this.state.sortOrder = 'None'
+    Object.assign(this.state,{
+      sortOrder: 'None',
+      dummy: 0
+    })
   }
 
   updateQueryLabel = selection => {
     const { attribute, query, updateQuery, ...props } = this.props
-    const queryLabel = selection ? selection.label : 'None';
+    const queryLabel = selection//selection ? selection.label : 'None';
+
+    console.log(selection)
     this.setState({
-      queryLabel
+      queryLabel,
+      dummy: this.state.dummy + 1
     })
   }
 
@@ -193,7 +199,7 @@ class HeaderElement extends React.Component {
     const { queryLabel, queryValue } = this.state;
     const newQuery = cloneDeep(query);
 
-    if (queryLabel === 'None'){
+    if (queryLabel.label === 'None'){
       if (newQuery.hasOwnProperty(attribute.query)){
         delete newQuery[attribute.query]
       }
@@ -253,7 +259,7 @@ class HeaderElement extends React.Component {
                   options={QUERY_TYPES}
                   onChange={this.updateQueryLabel} />
                 {
-                  ['None','Present','Not present'].indexOf(this.state.queryLabel) < 0 ?
+                  ['None','Present','Not present'].indexOf(this.state.queryLabel.label) < 0 ?
                   <textarea 
                     className="form-control" 
                     onChange={this.updateQueryValue} 

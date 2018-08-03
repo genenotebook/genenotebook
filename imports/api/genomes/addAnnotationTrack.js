@@ -9,6 +9,7 @@ import { findIndex, isEqual, isEmpty, mapValues, partition } from 'lodash';
 import querystring from 'querystring';
 
 import { Genes, GeneSchema, SubfeatureSchema } from '/imports/api/genes/gene_collection.js';
+import { orthogroupCollection } from '/imports/api/genes/orthogroup_collection.js';
 import { genomeSequenceCollection, genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 import { Tracks } from '/imports/api/genomes/track_collection.js';
 
@@ -98,30 +99,10 @@ const GeneModel = class GeneModel {
 		this.subfeatures = subfeatures;
 
 		/*
-		Object.values(intervals).forEach( interval => {
-			if (interval.parents !== undefined){
-
-				interval.parents.forEach( parentId => {
-					let parent = intervals[parentId]
-					if (parent.children === undefined){
-						intervals[parentId].children = []
-					}
-					intervals[parentId].children.push(interval.ID)
-				})
-
-			}
-		})
-		const genes = Object.values(intervals).filter( interval => {
-			return interval.type === 'gene';
-		})
-		assert.equal(genes.length, 1)
-		const gene = genes[0]
-
-		Object.assign(this, gene);
-
-		this.subfeatures = Object.values(intervals).filter( interval => {
-			return interval.type !== 'gene';
-		})
+		const orthogroup = orthogroupCollection.findOne({ geneIds: gene.ID });
+		if ( typeof orthogroup !== 'undefined'){
+			this.orthogroupId = orthogroup.ID
+		}
 		*/
 	}
 }

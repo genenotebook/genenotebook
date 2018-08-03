@@ -316,10 +316,10 @@ class Info extends React.Component {
                 <td>{ gene.source }</td>
               </tr>
               {
-                gene.orthogroup &&
+                gene.orthogroupId &&
                 <tr>
                   <td>Orthogroup</td>
-                  <td>{ gene.orthogroup }</td>
+                  <td>{ gene.orthogroupId }</td>
                 </tr>
               }
               { attributes &&
