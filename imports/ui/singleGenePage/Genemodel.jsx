@@ -1,16 +1,16 @@
-//import { Template } from 'meteor/templating';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
+//import ReactDOM from 'react-dom';
+//import { OverlayTrigger } from 'react-bootstrap';
+import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import ReactResizeDetector from 'react-resize-detector';
-//import { Popover, OverlayTrigger } from 'react-bootstrap';
+//import { Manager, Reference, Popper } from 'react-popper';
 import { scaleLinear } from 'd3-scale';
 import randomColor from 'randomcolor';
 import Color from 'color';
 
 import './genemodel.scss'
-
-
 
 const XAxis = ({ scale, numTicks, transform, seqid }) => {
   const formatNumber = new Intl.NumberFormat().format;
@@ -54,47 +54,75 @@ const XAxis = ({ scale, numTicks, transform, seqid }) => {
   )
 }
 
+//const Exon = ({ genomeId, geneId, type, start, end, scale, attributes }) => {
+class Exon extends React.Component {
+  constructor(props){
+    super(props)
+    this.state = {
+      showPopover: false
+    }
+  }
 
-const Transcript = ({ transcript, exons, scale, strand, genomeId }) => {
-  const baseColor = new Color(randomColor({ seed: genomeId + genomeId.slice(3) }));
-  const contrastColor = baseColor.isLight() ? 
-    baseColor.darken(0.5).saturate(0.3) : 
-    baseColor.lighten(0.5).desaturate(0.3);
+  togglePopover = () => {
+    this.setState({
+      showPopover: !this.state.showPopover
+    })
+  }
 
+  render(){
+    const { genomeId, start, end, type, scale, attributes, ID, seq } = this.props;
+    const { showPopover } = this.state;
+
+    const exonId = `${type}-${start}-${end}`;
+
+    const baseColor = new Color(randomColor({ seed: genomeId + genomeId.slice(3) }));
+    const contrastColor = baseColor.isLight() ? 
+      baseColor.darken(0.5).saturate(0.3) : 
+      baseColor.lighten(0.5).desaturate(0.3);
+
+    const fill = type === 'CDS' ? baseColor : contrastColor;
+    const x = scale(start);
+    const width = scale(end) -  scale(start);
+    const y = type === 'CDS' ? 0 : 4;
+    const height = type === 'CDS' ? 12 : 4;
+    return <React.Fragment>
+      <rect className='exon' key={exonId} {...{x, y, width, height, fill: fill.rgb()}} 
+            id={exonId} onClick={this.togglePopover} />
+      <Popover placement='top' isOpen={showPopover} 
+        target={exonId} toggle={this.togglePopover}>
+        <PopoverHeader>
+          { ID }
+        </PopoverHeader>
+        <PopoverBody>
+          { `${type}..${start}..${end}` }
+          <hr />
+          { seq }
+        </PopoverBody>
+      </Popover>
+    </React.Fragment>
+  }
+}
+
+const Transcript = ({ transcript, exons, scale, strand, genomeId, geneId }) => {
   //put CDS exons last so they get drawn last and are placed on top
   exons.sort((exon1,exon2) => {
     return exon1.type === 'CDS' ? 1 : -1
   })
 
   //flip start and end coordinates based on strand so that marker end is always drawn correctly
-  const x1 = strand === '+' ? transcript.start : transcript.end;
-  const x2 = strand === '+' ? transcript.end : transcript.start;
+  const x1 = scale(strand === '+' ? transcript.start : transcript.end);
+  const x2 = scale(strand === '+' ? transcript.end : transcript.start);
   
+  const y1 = 6;
+  const y2 = 6;
+
   return (
-    <g>
-      <line 
-        x1={scale(x1)} 
-        x2={scale(x2)} 
-        y1='6' 
-        y2='6' 
-        stroke='black'
-        markerEnd='url(#arrowEnd)'
-      />
+    <React.Fragment>
+      <line {...{ x1, x2, y1, y2 }} stroke='black' markerEnd='url(#arrowEnd)' />
       {
-        exons.map(exon => {
-          const fill = exon.type === 'CDS' ? baseColor : contrastColor;
-          return (
-            <rect 
-              key={`${exon.type}..${exon.start}..${exon.end}`} 
-              x={scale(exon.start)} 
-              width={scale(exon.end) - scale(exon.start)} 
-              y={exon.type === 'CDS' ? 0 : 4} 
-              height={exon.type === 'CDS' ? 12 : 4}
-              fill={fill.rgb()} />
-          )
-        })
+        exons.map(exon => <Exon key={exon.ID} {...{ genomeId, geneId, scale, ...exon }} /> )
       }
-    </g>
+    </React.Fragment>
   )
 }
 
@@ -104,9 +132,10 @@ const GenemodelGroup = ({gene, transcripts, width, scale}) => {
       {
         transcripts.map((transcript,index) => {
           const exons = gene.subfeatures.filter(subfeature => subfeature.parents.indexOf(transcript.ID) >= 0)
+          const { ID: geneId, strand, genomeId } = gene;
           return (
             <g key={index} className='transcript' transform={`translate(0,${index * 14})`} >
-              <Transcript exons={exons} transcript={transcript} scale={scale} {...gene}/>
+              <Transcript {...{ exons, transcript, scale, geneId, genomeId, strand}} />
             </g>
           )
         })
