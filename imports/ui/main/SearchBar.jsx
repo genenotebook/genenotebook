@@ -90,32 +90,26 @@ class SearchBar extends React.Component {
     const { selectedAttributes, searchString } = this.state;
     return <form className="form-inline search mx-auto" role="search" onSubmit={this.search}>
       <div className="input-group input-group-sm">
-        {
+        {/*
           searchString && 
           <div className='input-group-prepend'>
             <button type="button" className="btn btn-sm btn-danger" onClick={this.clearSearch}>
               <span className='icon-cancel' />
             </button>
           </div>
-        }
-        <input 
-          type="text" 
-          className="form-control"
-          placeholder="Search genes"
-          value={searchString}
-          onChange={this.updateSearchString}
-          onSubmit={this.search} />
-        <div className="input-group-append btn-group">
-          <button type="submit" className="btn btn-sm btn-outline-secondary">
-            <span className='icon-search' />
-          </button>
+        */}
+        <div className="input-group-prepend">
           <Dropdown>
-            <DropdownButton className='btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split' />
+            <DropdownButton className='btn btn-sm btn-outline-dark dropdown-toggle search-dropdown border' />
             <DropdownMenu>
+              <h6 className='dropdown-header'>
+                Select attributes to search
+              </h6>
               {
                 attributes.map( ({ name }) => {
                   const checked = selectedAttributes.has(name);
-                  return <div key={`${name} ${checked}`} className='form-check px-2' style={{justifyContent: 'flex-start'}}>
+                  return <div key={`${name} ${checked}`} className='form-check px-3 pb-1' 
+                    style={{justifyContent: 'flex-start', whiteSpace: 'pre' }}>
                     <input type='checkbox' className='form-check-input' id={name}
                       checked={checked} onChange={this.toggleAttributeSelect} />
                     <label className='form-check-label'>{name}</label>
@@ -124,6 +118,25 @@ class SearchBar extends React.Component {
               }
             </DropdownMenu>
           </Dropdown>
+        </div>
+        <input 
+          type="text" 
+          className="form-control border-right-0 border search-bar"
+          placeholder="Search genes"
+          value={searchString}
+          onChange={this.updateSearchString}
+          onSubmit={this.search} />
+        { searchString &&
+          <span className='input-group-addon bg-white border-left-0 border pt-1 clear-search'>
+            <span className='icon-cancel' onClick={this.clearSearch} />
+          </span>
+          
+        }
+        
+        <div className="input-group-append btn-group">
+          <button type="submit" className="btn btn-sm btn-outline-dark border">
+            <span className='icon-search' />
+          </button>
         </div>
       </div>
     </form>

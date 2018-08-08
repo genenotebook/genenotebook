@@ -61,11 +61,11 @@ class GenomeSelect extends React.Component {
     document.removeEventListener('click', this.close);
   }
 
-  preventClose = event => {
+  /*preventClose = event => {
     event.preventDefault();
     event.stopPropagation();
     event.nativeEvent.stopImmediatePropagation();
-  }
+  }*/
 
   toggleGenomeSelect = event => {
     const selectedGenomes = cloneDeep(this.state.selectedGenomes);

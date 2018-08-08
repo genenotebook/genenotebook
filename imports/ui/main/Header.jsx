@@ -25,7 +25,7 @@ const logout = () => {
 
 const LoggedInButton = ({ isAdmin }) => {
   return <Dropdown>
-    <DropdownButton className="btn btn-sm btn-outline-dark dropdown-toggle">
+    <DropdownButton className="btn btn-sm btn-outline-dark dropdown-toggle border">
       <span className="icon-user" aria-hidden="true" />
     </DropdownButton>
     <DropdownMenu className='dropdown-menu header-menu px-2'>
@@ -120,7 +120,7 @@ class NavBar extends React.PureComponent {
     return <nav className='navbar navbar-expand-md bg-light navbar-light py-0'>
       <div className='container'>
         <a className="navbar-brand" href="/">
-          <img src="logo.svg" alt="GeneNoteBook logo" className="navbar-logo rounded-circle" />
+          <img src="/logo.svg" alt="GeneNoteBook logo" className="navbar-logo rounded-circle" />
         </a>
         <button className='navbar-toggler' type='button' onClick={this.toggleShow}>
           <span className='navbar-toggler-icon' />

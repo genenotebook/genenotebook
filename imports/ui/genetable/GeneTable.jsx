@@ -99,11 +99,14 @@ class GeneTable extends React.PureComponent {
   }
 
   static getDerivedStateFromProps =  (props, state) => {
-    console.log('getDerivedStateFromProps')
     const { query: newQuery, currentQueryCount, selectedAttributes } = props;
     const { query: oldQuery } = state;
-    const query = isEmpty(newQuery) ? newQuery : Object.assign({}, oldQuery, newQuery);
+    const query = Object.assign({}, oldQuery, newQuery);
+    if (isEmpty(newQuery)){
+      delete query.$or;
+    }
     const selectedColumns = new Set(['Gene ID', ...state.selectedColumns, ...selectedAttributes]);
+    console.log('getDerivedStateFromProps', query, newQuery, oldQuery);
     return {
       query,
       selectedColumns

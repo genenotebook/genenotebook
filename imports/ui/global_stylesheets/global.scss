@@ -1,38 +1,13 @@
 @import "{}/node_modules/bootstrap/scss/bootstrap.scss";
 @import url('https://fonts.googleapis.com/css?family=Roboto:300');
-//@import "_font-awesome.scss";
 
 body {
-	font-family: 'Roboto', Arial, sans-serif;
-	font-style:normal;
-	#loading {
-		-animation: spin .7s infinite linear;
-		-webkit-animation: spin2 .7s infinite linear;
-	}
-}
-
-.tooltip {
-	background-color: black;
-    color: #fff;
-    text-align: center;
-    padding: 5px;
-    border-radius: 6px;
-    position: absolute;
-    z-index: 1;
-    border-width: 0.5px;
-    border-style: solid;
-    border-color: white;
-}
-
-.tooltip::after {
-    content: " ";
-    position: absolute;
-    top: 100%; /* At the bottom of the tooltip */
-    left: 50%;
-    //margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: black transparent transparent transparent;
+  font-family: 'Roboto', Arial, sans-serif;
+  font-style:normal;
+  #loading {
+    -animation: spin .7s infinite linear;
+    -webkit-animation: spin2 .7s infinite linear;
+  }
 }
 
 .btn-group-justified {
@@ -40,4 +15,8 @@ body {
   .btn {
     flex-grow: 1;
   }
+}
+
+::-ms-clear {
+  display: none;
 }

@@ -7,6 +7,14 @@ import { compose } from 'recompose';
 
 import { withEither, isLoading, Loading } from './uiUtil.jsx';
 
+class SelectionOption extends Object {
+  constructor(optionName){
+    super();
+    this.value = optionName;
+    this.label = optionName;
+  }
+}
+
 const permissionSelectDataTracker = props => {
   const roleSub = Meteor.subscribe('roles');
   const loading = !roleSub.ready();
@@ -24,16 +32,13 @@ const withConditionalRendering = compose(
 )
 
 const PermissionSelect = ({ roles, permissions, updatePermissions, disabled, ...props }) => {
-  return (
-    <Select 
+  return <Select 
       name='genome-permission-select'
-      value={permissions}
-      options={roles.map(role => { return {value: role.name, label: role.name} })}
+      value={permissions.map(permission => new SelectionOption(permission))}
+      options={roles.map(({ name }) => new SelectionOption(name))}
       onChange={updatePermissions}
-      multi={true}
-      disabled={disabled}
-      />
-  )
+      isMulti={true}
+      disabled={disabled} />
 }
 
 export default withConditionalRendering(PermissionSelect);
