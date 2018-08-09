@@ -14,6 +14,27 @@
     }
     .exon {
       cursor: pointer;
+      &:hover {
+        stroke: #007bff; //Bootstrap primary color
+        stroke-width: 2px;
+        stroke-linejoin: round;
+      }
+    }
+    .transcript-hover {
+      cursor: pointer;
+      stroke-width: 16px;
+      stroke: transparent;
+      &:hover {
+        stroke: #007bff; //Bootstrap primary color
+        
+        //stroke-linejoin: round;
+      }
     }
   }
+}
+
+.exon-sequence {
+  max-height: 20rem;
+  word-break: break-all;
+  font-family: monospace;
 }

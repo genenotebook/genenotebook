@@ -231,7 +231,7 @@ class GeneTable extends React.PureComponent {
               toggleVisualization={this.toggleVisualization}
               updateQuery={this.updateQuery} 
               {...this.props} {...this.state} />
-            <button type='button' className='btn btn-sm btn-outline-dark px-2 mx-2 py-0' disabled>
+            <button type='button' className='btn btn-sm btn-outline-dark px-2 mx-2 py-0 border' disabled>
               <span className='badge badge-dark'>
                 { currentQueryCount }
               </span> query results

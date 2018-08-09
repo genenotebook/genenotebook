@@ -1,11 +1,8 @@
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
-//import ReactDOM from 'react-dom';
-//import { OverlayTrigger } from 'react-bootstrap';
 import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import ReactResizeDetector from 'react-resize-detector';
-//import { Manager, Reference, Popper } from 'react-popper';
 import { scaleLinear } from 'd3-scale';
 import randomColor from 'randomcolor';
 import Color from 'color';
@@ -54,7 +51,52 @@ const XAxis = ({ scale, numTicks, transform, seqid }) => {
   )
 }
 
-//const Exon = ({ genomeId, geneId, type, start, end, scale, attributes }) => {
+const ExonPopover = ({ showPopover, togglePopover, exonId, ID, type, start, end, phase, attributes, seq }) => {
+  return (
+    <Popover placement='top' isOpen={showPopover} target={exonId} toggle={togglePopover}>
+      <PopoverHeader>
+        { ID }
+      </PopoverHeader>
+      <PopoverBody className='px-0 py-0'>
+        <div className="table-responive">
+          <table className="table table-hover">
+            <tbody>
+              <tr>
+                <td>Type</td>
+                <td>{type}</td>
+              </tr>
+              <tr>
+                <td>Coordinates</td>
+                <td>{start}..{end}</td>
+              </tr>
+              <tr>
+                <td>Phase</td>
+                <td>{phase}</td>
+              </tr>
+              {
+                Object.keys(attributes).map(attribute => {
+                  return <tr key={attribute}>
+                    <td>{attribute}</td>
+                    <td>{attributes[attribute]}</td>
+                  </tr>
+                })
+              }
+              <tr>
+                <td colspan='2'>
+                  <h6>Exon sequence</h6>
+                  <div className="card exon-sequence px-1">
+                    { seq }
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </PopoverBody>
+    </Popover>
+  )
+}
+
 class Exon extends React.Component {
   constructor(props){
     super(props)
@@ -64,6 +106,7 @@ class Exon extends React.Component {
   }
 
   togglePopover = () => {
+    console.log(this.props)
     this.setState({
       showPopover: !this.state.showPopover
     })
@@ -85,20 +128,13 @@ class Exon extends React.Component {
     const width = scale(end) -  scale(start);
     const y = type === 'CDS' ? 0 : 4;
     const height = type === 'CDS' ? 12 : 4;
+
+    const style = { ':hover': { border: '1px solid black'} };
+
     return <React.Fragment>
-      <rect className='exon' key={exonId} {...{x, y, width, height, fill: fill.rgb()}} 
+      <rect className='exon' {...{ x, y, width, height, fill: fill.rgb() }} 
             id={exonId} onClick={this.togglePopover} />
-      <Popover placement='top' isOpen={showPopover} 
-        target={exonId} toggle={this.togglePopover}>
-        <PopoverHeader>
-          { ID }
-        </PopoverHeader>
-        <PopoverBody>
-          { `${type}..${start}..${end}` }
-          <hr />
-          { seq }
-        </PopoverBody>
-      </Popover>
+      <ExonPopover exonId={exonId} {...this.props} {...this.state} />
     </React.Fragment>
   }
 }
@@ -109,26 +145,33 @@ const Transcript = ({ transcript, exons, scale, strand, genomeId, geneId }) => {
     return exon1.type === 'CDS' ? 1 : -1
   })
 
+  const { start, end } = transcript;
+
+  const transcriptId = `mRNA_${start}_${end}`;
+
   //flip start and end coordinates based on strand so that marker end is always drawn correctly
-  const x1 = scale(strand === '+' ? transcript.start : transcript.end);
-  const x2 = scale(strand === '+' ? transcript.end : transcript.start);
+  const x1 = scale(strand === '+' ? start : end);
+  const x2 = scale(strand === '+' ? end : start);
   
   const y1 = 6;
   const y2 = 6;
 
+  const t = strand === '+' ? 2 : -2;
   return (
     <React.Fragment>
-      <line {...{ x1, x2, y1, y2 }} stroke='black' markerEnd='url(#arrowEnd)' />
+      <line {...{ x1, x2, y1, y2 }} stroke='black' markerEnd='url(#arrowEnd)' id={transcriptId}/>
+      <line {...{ x1: x1 - t, x2: x2 + t, y1, y2 }} className='transcript-hover'  />
       {
         exons.map(exon => <Exon key={exon.ID} {...{ genomeId, geneId, scale, ...exon }} /> )
       }
+      {/*<ExonPopover exonId={transcriptId} {...transcript} showPopover={true} />*/}
     </React.Fragment>
   )
 }
 
 const GenemodelGroup = ({gene, transcripts, width, scale}) => {
   return (
-    <g className='genemodel'>
+    <g className='genemodel' transform='translate(0,4)'>
       {
         transcripts.map((transcript,index) => {
           const exons = gene.subfeatures.filter(subfeature => subfeature.parents.indexOf(transcript.ID) >= 0)
@@ -175,12 +218,12 @@ export default class Genemodel extends React.PureComponent {
     const scale = scaleLinear().domain([start,end]).range([.05 * this.state.width, .90 * this.state.width])
     return (
       <div id="genemodel-card" className='card genemodel px-0 pb-0'>
-        <svg width={this.state.width} height={12 * transcripts.length + 40} className='genemodel-container'>
+        <svg width={this.state.width} height={14 * transcripts.length + 46} className='genemodel-container'>
           <GenemodelGroup gene={gene} transcripts={transcripts} width={this.state.width} scale={scale}/>
           <XAxis 
             scale={scale} 
             numTicks='4' 
-            transform={`translate(0,${ 12 * transcripts.length + 18})`}
+            transform={`translate(0,${ 14 * transcripts.length + 22})`}
             seqid={gene.seqid}/>
           <defs>
             <marker id='arrowEnd' markerWidth='15' markerHeight='10' refX='0' refY='5' orient='auto'>

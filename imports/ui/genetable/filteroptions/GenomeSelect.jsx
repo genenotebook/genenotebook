@@ -113,7 +113,7 @@ class GenomeSelect extends React.Component {
     const { selectedGenomes } = this.state;
     return ( 
       <Dropdown>
-        <DropdownButton className='btn btn-sm btn-outline-dark dropdown-toggle px-2 py-0'>
+        <DropdownButton className='btn btn-sm btn-outline-dark dropdown-toggle px-2 py-0 border'>
           Genomes&nbsp;
           <span className='badge badge-dark'>
             {`${selectedGenomes.size}/${genomes.length}`}

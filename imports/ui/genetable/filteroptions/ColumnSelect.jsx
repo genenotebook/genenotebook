@@ -7,7 +7,7 @@ const ColumnSelect = ({ attributes, selectedColumns, toggleColumnSelect, selecte
   console.log(selectedVisualization)
   return (
     <Dropdown>
-      <DropdownButton className='btn btn-sm btn-outline-dark dropdown-toggle px-2 py-0'>
+      <DropdownButton className='btn btn-sm btn-outline-dark dropdown-toggle px-2 py-0 border'>
         Columns&nbsp;
         <span className='badge badge-dark'>
           {`${selectedColumns.size}/${attributes.length}`}
