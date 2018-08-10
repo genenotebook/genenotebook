@@ -154,7 +154,7 @@ const GeneTableRow = ({gene, selectedColumns, selectedAllGenes, selectedGenes,
               { 
                 attribute.name === 'Gene ID' ?
                 <a className='genelink' title={gene.ID} href={`${Meteor.absoluteUrl()}gene/${gene.ID}`}>{gene.ID}</a> : 
-                attributeValue 
+                attributeValue && String(attributeValue) 
               }
             </td>
           )

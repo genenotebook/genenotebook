@@ -8,13 +8,13 @@ import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdow
 import './seq.scss';
 
 const Controls = (props) => {
-  let seqTypes = ['nucl','prot']
+  const seqTypes = ['nucl','prot']
   return (
     <div>
       <div className="btn-group btn-group-sm sequence-toggle float-right" role="group">
         {
           seqTypes.map(seqType => {
-            const active = seqType === props.seqType ? 'active' : '';
+            const active = seqType === props.seqType ? 'active' : 'border';
             return (
               <button
                 key={seqType}
@@ -31,10 +31,11 @@ const Controls = (props) => {
 
       <div className="btn-group btn-group-sm float-right">
         <Dropdown>
-          <DropdownButton className="btn btn-sm btn-outline-dark dropdown-toggle px-2 py-0">
+          <DropdownButton className="btn btn-sm btn-outline-dark dropdown-toggle px-2 py-0 border">
             { props.selectedTranscript }
           </DropdownButton>
           <DropdownMenu>
+          <h6 className='dropdown-header'>Select transcript</h6>
           { 
             props.transcripts.map( transcript => {
               return (

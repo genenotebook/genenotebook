@@ -19,6 +19,7 @@ import './genes/addOrthogroupTrees.js';
 import './genes/downloadGenes.js';
 import './genes/scanGeneAttributes.js';
 import './genes/updateAttributeInfo.js';
+import './genes/updateGene.js';
 
 import './blast/makeblastdb.js';
 import './blast/hasblastdb.js';

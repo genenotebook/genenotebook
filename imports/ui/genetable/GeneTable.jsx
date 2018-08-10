@@ -222,7 +222,7 @@ class GeneTable extends React.PureComponent {
     const downloadOptions = { selectedGenes, showDownloadDialog, 
       toggleDownloadDialog: this.toggleDownloadDialog };
     
-    return <div className='container-fluid px-0 mx-0'>
+    return <div className='container-fluid px-0 mx-0 genetable'>
       <div className='table-responsive'>
         <div className="card my-2">
           <div className="card-header d-flex justify-content-between px-1 py-1">
@@ -231,7 +231,7 @@ class GeneTable extends React.PureComponent {
               toggleVisualization={this.toggleVisualization}
               updateQuery={this.updateQuery} 
               {...this.props} {...this.state} />
-            <button type='button' className='btn btn-sm btn-outline-dark px-2 mx-2 py-0 border' disabled>
+            <button type='button' className='btn btn-sm btn-outline-dark px-2 mx-2 py-0 border query-count' disabled>
               <span className='badge badge-dark'>
                 { currentQueryCount }
               </span> query results

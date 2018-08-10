@@ -1,10 +1,10 @@
 .genetable{
+  .query-count:disabled {
+    opacity: 1 !important;
+  }
   word-break: break-word;
   td[data-label="Gene ID"]{
     word-break: normal;
-  }
-  .btn:disabled{
-    //opacity: 1;
   }
 
   min-height: 30rem;

@@ -6,33 +6,25 @@ import { compose } from 'recompose';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
 
-const withEither = (conditionalRenderingFn, EitherComponent) => (Component) => (props) =>
-  conditionalRenderingFn(props)
-    ? <EitherComponent { ...props }/>
-    : <Component { ...props } />
+import { withEither } from '/imports/ui/util/uiUtil.jsx';
 
-const Loading = (props) => {
-  return <span style={{fontSize: 10}}>...{props.transcriptId}</span>
-}
 
-const NotFound = (props) => {
-  return <span style={{fontSize: 10}}>{props.transcriptId}</span>
-}
+const isLoading = ({ loading }) => loading;
 
-const GeneLink = props => {
+const Loading = ({ transcriptId }) => <span style={{fontSize: 10}}> ...{transcriptId} </span>
+
+
+const isNotFound = ({ gene }) => typeof gene === 'undefined';
+
+const NotFound = ({ transcriptId }) => <span style={{fontSize: 10}}>{transcriptId}</span>
+
+
+const GeneLink = ({ geneId, transcriptId, gene }) => {
   return (
-    <a href={`/gene/${props.geneId}`} style={{fontSize: 10}}>
-      {props.transcriptId} {props.gene.attributes.Name}
+    <a href={`/gene/${geneId}`} style={{fontSize: 10}}>
+      {transcriptId} {gene.attributes.Name}
     </a>
   )
-}
-
-const isLoading = props => {
-  return props.loading;
-}
-
-const isNotFound = props => {
-  return typeof props.gene === 'undefined';
 }
 
 const withConditionalRendering = compose(
@@ -40,14 +32,16 @@ const withConditionalRendering = compose(
   withEither(isNotFound, NotFound)
 )
 
-export default withTracker(({geneId, transcripId }) => {
+export default withTracker(({ geneId, transcriptId }) => {
+  console.log(geneId, transcriptId)
   const geneSub = Meteor.subscribe('singleGene', geneId);
   const loading = !geneSub.ready();
-  const gene = Genes.findOne({ID: geneId});
+  const gene = Genes.findOne({ ID: geneId });
+  console.log(gene)
   return {
     loading,
     geneId,
-    transcripId,
+    transcriptId,
     gene
   }
 })(withConditionalRendering(GeneLink));

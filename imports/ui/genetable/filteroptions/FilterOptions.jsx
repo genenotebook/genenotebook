@@ -8,7 +8,7 @@ import './filteroptions.scss';
 const FilterOptions = ({ ...props }) => {
   return (
     <div className='btn-group' role='group'>
-      <button className='btn btn-sm btn-outline-dark px-2 py-0 border' disabled>
+      <button className='btn btn-sm btn-outline-dark px-2 py-0 border filter-options' disabled>
         Select:
       </button>
       <GenomeSelect {...props} />

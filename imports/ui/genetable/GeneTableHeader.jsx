@@ -219,7 +219,7 @@ class HeaderElement extends React.Component {
     return (
       <th scope='col' style={{...colStyle}}>
         <div className='btn-group btn-group-justified'>
-          <button className={`btn btn-sm px-2 py-0 ${buttonClass}`} type="button" disabled>
+          <button className={`btn btn-sm px-2 py-0 genetable-dropdown ${buttonClass}`} type="button" disabled>
             {attribute.name}
           </button>
           <Dropdown>
@@ -313,7 +313,7 @@ const GeneTableHeader = ({ selectedColumns, attributes, selectedGenes,
           })
         }
         <th scope="col">
-          <button className='btn btn-sm btn-outline-dark px-2 py-0 btn-block' disabled>{ selectedVisualization }</button>
+          <button className='btn btn-sm btn-outline-dark px-2 py-0 btn-block genetable-dropdown' disabled>{ selectedVisualization }</button>
           {/*<ReactResizeDetector handleWidth onResize={resize} />*/}
         </th>
         <th scope="col" style={{width: '10px'}}>

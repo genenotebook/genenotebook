@@ -5,6 +5,8 @@ import SimpleSchema from 'simpl-schema';
 import Papa from 'papaparse';
 import glob from 'glob';
 
+import { BSON } from 'bson';
+
 import { orthogroupCollection } from '/imports/api/genes/orthogroup_collection.js';
 import { Genes } from '/imports/api/genes/gene_collection.js';
 import { parseNewick } from '/imports/api/util/util.js';
@@ -22,6 +24,56 @@ const globPromise = (pattern, options) => {
   })
 }
 
+const executeBulkOp = bulkOp => {
+  return new Promise ((resolve, reject) => {
+    try {
+      bulkOpResult = bulkOp.execute();
+      resolve(bulkOpResult);
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+
+const addOrthogroupTree = ({ fileName, geneBulkOp, orthoBulkOp }) => {
+  const orthogroupId = fileName.split('/').pop().split('_')[0];
+  
+  const treeNewick = fs.readFileSync(fileName, 'utf8');
+  const { size, tree, geneIds } = parseNewick(treeNewick);
+
+  orthogroupCollection.insert({
+    ID: orthogroupId,
+    size,
+    tree: treeNewick,
+    geneIds
+  }, (err, _id) => {
+    if (err) {
+      throw new Meteor.Error(err);
+    }
+    Genes.update({
+      ID: { $in: geneIds }
+    },{
+      $set: { orthogroupId }
+    },{
+      multi: true 
+    }, (err, nUpdated) => {
+      if (err){
+        throw new Meteor.Error(err);
+      }
+    })
+  })
+
+  
+
+  /*geneBulkOp.find({
+    ID: { $in: geneIds }
+  }).update({
+    $set: { orthogroupId }
+  })*/
+
+  //return new BSON().calculateObjectSize(data)
+}
+
 export const addOrthogroupTrees = new ValidatedMethod({
   name: 'addOrthogroupTrees',
   validate: new SimpleSchema({
@@ -36,27 +88,19 @@ export const addOrthogroupTrees = new ValidatedMethod({
     const orthoBulkOp = orthogroupCollection.rawCollection().initializeUnorderedBulkOp();
     return globPromise(`${folderName}/*`)
       .then(fileNames => {
+        //let size = 0;
         fileNames.forEach(fileName => {
-        const orthogroupId = fileName.split('/').pop().split('_')[0];
-        
-        const treeNewick = fs.readFileSync(fileName, 'utf8');
-          const { size, tree, geneIds } = parseNewick(treeNewick);
-          orthoBulkOp.insert({
-            ID: orthogroupId,
-            size,
-            tree: treeNewick,
-            geneIds
-          })
-          geneBulkOp.updateMany({
-            ID: { $in: geneIds }
-          },{
-            $set: { orthogroupId }
-          })
+          addOrthogroupTree({ fileName, orthoBulkOp, geneBulkOp })
         })
-        return Promise.all([
-          geneBulkOp.execute(),
-          orthoBulkOp.execute()
-        ])
+        //console.log(size)
+        //const orthoBulkOpResults = orthoBulkOp.execute();
+        //const geneBulkOpResults = geneBulkOp.execute();
+
+        //return orthoBulkOpResults
+        //return executeBulkOp(geneBulkOp);
+      //})
+      //.then(geneBulkOpResults => {
+      //  return executeBulkOp(orthoBulkOp)
       })
       .catch(error  => {
         console.log(Object.keys(error))

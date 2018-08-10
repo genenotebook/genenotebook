@@ -8,6 +8,7 @@ import { diff, apply } from 'rus-diff';
 
 import { EditHistory } from '/imports/api/genes/edithistory_collection.js';
 import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
+import { updateGene } from '/imports/api/genes/updateGene.js';
 
 import './info.scss';
 
@@ -34,7 +35,7 @@ const Controls = (props) => {
       }
       {
         canEdit() && !props.isEditing && !props.showHistory &&
-        <button type="button" className="btn btn-outline-dark btn-sm float-right px-2 py-0 edit" onClick={props.startEdit}>
+        <button type="button" className="btn btn-outline-dark btn-sm float-right px-2 py-0 edit border" onClick={props.startEdit}>
           <span className="icon-pencil" aria-hidden="true" /> Edit
         </button>
       }
@@ -160,17 +161,17 @@ class Info extends React.Component {
     }
 
     const update = diff(oldGene, newGene)
-    const revert = diff(newGene, oldGene)
     const geneId = this.props.gene.ID;
 
-    Meteor.call('updateGeneInfo',geneId,update,revert,(err,res) => {
-      if (err) {
-        console.error(err)
-      }
-      if (res) {
-        console.log(res)
+    console.log(update)
+
+    updateGene.call({ geneId, update }, (err, res) => {
+      if ( err ) {
+        console.log(err)
+        alert(err)
       }
     })
+
     //save changes and unlock gene so it can be edited by others again
     this.setState({ 
       isEditing: false,

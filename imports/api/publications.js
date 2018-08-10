@@ -27,9 +27,6 @@ const availableGenomes =  publication => {
 Meteor.publish({
   genes({ query = {}, limit = 40, sort = {ID: 1} }){
     const publication = this;
-    if (!publication.userId){
-      //publication.stop()
-    }
     
     const genomeIds = availableGenomes(publication);
 
@@ -46,9 +43,6 @@ Meteor.publish({
   },
   singleGene (geneId) {
     const publication = this;
-    if (!publication.userId){
-      //publication.stop()
-    }
 
     const genomeIds = availableGenomes(publication);
 
