@@ -84,7 +84,7 @@ const ExonPopover = ({ showPopover, togglePopover, targetId, ID, type, start, en
               <tr>
                 <td colSpan='2'>
                   <h6>{type} sequence</h6>
-                  <div className="card exon-sequence px-1">
+                  <div className="card exon-sequence">
                     { seq }
                   </div>
                 </td>
