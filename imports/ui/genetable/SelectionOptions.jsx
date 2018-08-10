@@ -16,7 +16,7 @@ export const SelectionOptions = ({ selectedGenes , selectedAllGenes, toggleDownl
     </button> :
     <button 
       type="button" 
-      className="btn btn-sm btn-outline-secondary px-2 py-0"
+      className="btn btn-sm btn-outline-secondary px-2 py-0 border"
       title="Make a selection to download data" 
       disabled >  
       <span className="icon-block" aria-hidden="true" /> Download

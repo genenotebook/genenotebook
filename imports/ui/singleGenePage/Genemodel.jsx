@@ -51,9 +51,9 @@ const XAxis = ({ scale, numTicks, transform, seqid }) => {
   )
 }
 
-const ExonPopover = ({ showPopover, togglePopover, exonId, ID, type, start, end, phase, attributes, seq }) => {
+const ExonPopover = ({ showPopover, togglePopover, targetId, ID, type, start, end, phase, attributes, seq }) => {
   return (
-    <Popover placement='top' isOpen={showPopover} target={exonId} toggle={togglePopover}>
+    <Popover placement='top' isOpen={showPopover} target={targetId} toggle={togglePopover}>
       <PopoverHeader>
         { ID }
       </PopoverHeader>
@@ -82,8 +82,8 @@ const ExonPopover = ({ showPopover, togglePopover, exonId, ID, type, start, end,
                 })
               }
               <tr>
-                <td colspan='2'>
-                  <h6>Exon sequence</h6>
+                <td colSpan='2'>
+                  <h6>{type} sequence</h6>
                   <div className="card exon-sequence px-1">
                     { seq }
                   </div>
@@ -116,7 +116,7 @@ class Exon extends React.Component {
     const { genomeId, start, end, type, scale, attributes, ID, seq } = this.props;
     const { showPopover } = this.state;
 
-    const exonId = `${type}-${start}-${end}`;
+    const targetId = `${type}-${start}-${end}`;
 
     const baseColor = new Color(randomColor({ seed: genomeId + genomeId.slice(3) }));
     const contrastColor = baseColor.isLight() ? 
@@ -133,40 +133,59 @@ class Exon extends React.Component {
 
     return <React.Fragment>
       <rect className='exon' {...{ x, y, width, height, fill: fill.rgb() }} 
-            id={exonId} onClick={this.togglePopover} />
-      <ExonPopover exonId={exonId} {...this.props} {...this.state} />
+            id={targetId} onClick={this.togglePopover} />
+      <ExonPopover {...{targetId, ...this.props, ...this.state}} togglePopover={this.togglePopover} />
     </React.Fragment>
   }
 }
 
-const Transcript = ({ transcript, exons, scale, strand, genomeId, geneId }) => {
-  //put CDS exons last so they get drawn last and are placed on top
-  exons.sort((exon1,exon2) => {
-    return exon1.type === 'CDS' ? 1 : -1
-  })
+//const Transcript = ({ transcript, exons, scale, strand, genomeId, geneId }) => {
+class Transcript extends React.Component {
+  constructor(props){
+    super(props)
+    this.state = {
+      showPopover: false
+    }
+  }
 
-  const { start, end } = transcript;
+  togglePopover = () => {
+    console.log(this.props)
+    this.setState({
+      showPopover: !this.state.showPopover
+    })
+  }
 
-  const transcriptId = `mRNA_${start}_${end}`;
+  render(){
+    const { transcript, exons, scale, strand, genomeId, geneId } = this.props;
+    const { showPopover } = this.state;
+    //put CDS exons last so they get drawn last and are placed on top
+    exons.sort((exon1,exon2) => {
+      return exon1.type === 'CDS' ? 1 : -1
+    })
 
-  //flip start and end coordinates based on strand so that marker end is always drawn correctly
-  const x1 = scale(strand === '+' ? start : end);
-  const x2 = scale(strand === '+' ? end : start);
-  
-  const y1 = 6;
-  const y2 = 6;
+    const { start, end } = transcript;
 
-  const t = strand === '+' ? 2 : -2;
-  return (
-    <React.Fragment>
-      <line {...{ x1, x2, y1, y2 }} stroke='black' markerEnd='url(#arrowEnd)' id={transcriptId}/>
-      <line {...{ x1: x1 - t, x2: x2 + t, y1, y2 }} className='transcript-hover'  />
-      {
-        exons.map(exon => <Exon key={exon.ID} {...{ genomeId, geneId, scale, ...exon }} /> )
-      }
-      {/*<ExonPopover exonId={transcriptId} {...transcript} showPopover={true} />*/}
-    </React.Fragment>
-  )
+    const targetId = transcript.ID.replace('.','_');//`mRNA_${start}_${end}`;
+
+    //flip start and end coordinates based on strand so that marker end is always drawn correctly
+    const x1 = scale(strand === '+' ? start : end);
+    const x2 = scale(strand === '+' ? end : start);
+    
+    const y1 = 6;
+    const y2 = 6;
+
+    const t = strand === '+' ? 2 : -2;
+    return (
+      <React.Fragment>
+        <line {...{ x1, x2, y1, y2 }} stroke='black' markerEnd='url(#arrowEnd)' id={targetId}/>
+        <line {...{ x1: x1 - t, x2: x2 + t, y1, y2 }} className='transcript-hover' onClick={this.togglePopover} />
+        {
+          exons.map(exon => <Exon key={exon.ID} {...{ genomeId, geneId, scale, ...exon }} /> )
+        }
+        <ExonPopover {...{ targetId, showPopover, ...transcript }} togglePopover={this.togglePopover} />
+      </React.Fragment>
+    )
+  }
 }
 
 const GenemodelGroup = ({gene, transcripts, width, scale}) => {
