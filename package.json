@@ -6,7 +6,6 @@
   "license": "AGPL-3.0",
   "scripts": {
     "preinstall": "meteor help || curl https://install.meteor.com/ | sh",
-    "postinstall": "./bundle.sh",
     "preupdate": "meteor update",
     "docs": "documentation build --shallow imports/** -f html -o api-docs",
     "postdocs": "cp api-docs/index.html docs/pages/api-docs.html && cp -r api-docs/assets docs/",
@@ -14,7 +13,7 @@
     "dev": "meteor"
   },
   "dependencies": {
-    "@babel/runtime": "^7.0.0-rc.1",
+    "@babel/runtime": "^7.0.0-beta.55",
     "asteroid": "^2.0.3",
     "bcrypt": "^3.0.0",
     "bootstrap": "^4.1.2",
