@@ -28,7 +28,7 @@ querystring.unescape = uri => uri;
  * @type {Interval}
  */
 const Interval = class Interval {
-	constructor({ gffLine, genomeId , genomeSequences }){ //, trackId
+	constructor({ gffLine, genomeId }){//, genomeSequences }){ //, trackId
 		assert.equal(gffLine.length, 9)
 		const [ seqid, source, type, start, end,
 			_score, strand, phase, _attributes ] = gffLine
@@ -47,10 +47,13 @@ const Interval = class Interval {
 		}
 
 		try {
-			this.seq = genomeSequences[seqid].slice(start - 1, end)
+			this.seq = getGenomeSequence({ genomeId, seqid, start, end })
+			//this.seq = genomeSequences[seqid].slice(start - 1, end)
 		} catch (error) {
 			console.log(seqid)
-			throw new Meteor.Error(`${seqid} is not a valid sequenceId for genome ${genomeId}`)
+			console.log(error)
+			throw new Meteor.Error(error)
+			//throw new Meteor.Error(`${seqid} is not a valid sequenceId for genome ${genomeId}`)
 		}
 
 
@@ -107,11 +110,28 @@ const GeneModel = class GeneModel {
 	}
 }
 
+const getGenomeSequence = ({ genomeId, seqid, start, end }) => {
+	let shiftCoordinates = 10e99;
+	const seq = genomeSequenceCollection.find({
+		genomeId,
+		header: seqid,
+		start: { $lte: end },
+		end: { $gte: start }
+	}).fetch().sort((a,b) => {
+		return a.start - b.start
+	}).map(seqPart => {
+		shiftCoordinates = Math.min(shiftCoordinates, seqPart.start);
+		return seqPart.seq
+	}).join('');
+	return seq.slice(start - shiftCoordinates - 1, end - shiftCoordinates)
+}
+
 /**
  * [description]
  * @param  {String} options.genomeId [description]
  * @return {Promise}                     [description]
  */
+/*
 const getGenomeSequences = ({ genomeId }) => {
 	return new Promise((resolve, reject) => {
 		try {
@@ -138,6 +158,7 @@ const getGenomeSequences = ({ genomeId }) => {
 		}
 	})
 }
+*/
 
 /**
  * [description]
@@ -147,14 +168,15 @@ const getGenomeSequences = ({ genomeId }) => {
  * @param  {String} options.trackId            [description]
  * @return {Promise}                            [description]
  */
-const gffFileToMongoDb = ({ fileName, genomeId, genomeSequences }) => {
+//const gffFileToMongoDb = ({ fileName, genomeId, genomeSequences }) => {
+const gffFileToMongoDb = ({ fileName, genomeId }) => {
 	return new Promise((resolve, reject) => {
 		const fileHandle = fs.readFileSync(fileName, { encoding: 'binary' });
 		let intervals = [];//{};
 		let geneCount = 0;
 
 		console.log('Initializing bulk operation');
-		const bulkOp = Genes.rawCollection().initializeUnorderedBulkOp();
+		let bulkOp = Genes.rawCollection().initializeUnorderedBulkOp();
 
 		console.log(`Start reading ${fileName}`)
 		Papa.parse(fileHandle, {
@@ -169,7 +191,7 @@ const gffFileToMongoDb = ({ fileName, genomeId, genomeSequences }) => {
 				try {
 					const { data } = line;
 					const [ gffLine ] = data;
-					let interval = new Interval({ gffLine, genomeId, genomeSequences })//, trackId
+					let interval = new Interval({ gffLine, genomeId })//, genomeSequences })//, trackId
 
 					if (interval.parents === undefined){
 						assert.equal(interval.type, 'gene');
@@ -179,6 +201,11 @@ const gffFileToMongoDb = ({ fileName, genomeId, genomeSequences }) => {
 							bulkOp.insert(gene);
 							geneCount += 1;
 							intervals = [];
+							if ( geneCount % 1000 == 0){
+								console.log(`Processed ${geneCount} genes`)
+								bulkOp.execute();
+								bulkOp = Genes.rawCollection().initializeUnorderedBulkOp();
+							}
 						}
 					}
 					intervals.push(interval)
@@ -257,17 +284,13 @@ export const addAnnotationTrack = new ValidatedMethod({
 			throw new Meteor.Error(`Genome ${genomeName} already has an annotation track`);
 		}
 
-		/*
-		const existingTrack = Tracks.findOne({ name: trackName });
-		if (existingTrack){
-			throw new Meteor.Error('Track exists: ' + trackName);
-		}
-
-		
-		*/
 		const genomeId = existingGenome._id;
 
-		console.log(`Gathering genome sequences for ${genomeName}`);
+		return gffFileToMongoDb({ fileName, genomeId }).catch(error => {
+			console.log(error);
+			throw new Meteor.Error(error);
+		})
+		/*console.log(`Gathering genome sequences for ${genomeName}`);
 		return getGenomeSequences({ genomeId })
 			.then(genomeSequences => {
 				return gffFileToMongoDb({ fileName, genomeId, genomeSequences })//, trackId })
@@ -276,6 +299,7 @@ export const addAnnotationTrack = new ValidatedMethod({
 				console.log(error);
 				throw new Meteor.Error(error);
 			})
+		*/
 	}
 })
 

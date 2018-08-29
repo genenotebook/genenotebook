@@ -165,7 +165,7 @@ class Transcript extends React.Component {
 
     const { start, end } = transcript;
 
-    const targetId = transcript.ID.replace('.','_');//`mRNA_${start}_${end}`;
+    const targetId = transcript.ID.replace(/\.|:/g,'_');//`mRNA_${start}_${end}`;
 
     //flip start and end coordinates based on strand so that marker end is always drawn correctly
     const x1 = scale(strand === '+' ? start : end);

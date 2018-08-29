@@ -10,7 +10,7 @@
     "docs": "documentation build --shallow imports/** -f html -o api-docs",
     "postdocs": "cp api-docs/index.html docs/pages/api-docs.html && cp -r api-docs/assets docs/",
     "bundle": "./bundle.sh",
-    "dev": "meteor"
+    "dev": "NODE_OPTIONS=--max-old-space-size=8192 meteor "
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0-beta.55",
