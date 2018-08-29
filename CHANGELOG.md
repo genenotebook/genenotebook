@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
+
+## [0.1.2] 2018-08-29
 ### Added
 - Working popovers for genemodels
 
@@ -14,8 +16,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - Orthogroup trees are now stored as text and parsed into an object in the browser, since some trees are too big to fit into MongoDB as objects.
+- During the adding of annotations, corresponding sequences are loaded one-by-one in stead of all at once. This fixes memory issues for large genomes.
 
-## [0.1.1]
+## [0.1.1] 2018-08-02
 ### Added
 - Executable to add Orthofinder phylogenetic trees (```genenotebook add orthogroups```)
 
@@ -23,9 +26,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Ability to unselect default gene attribute columns in GeneTable view
 - Scanning gene attributes in the admin section now also removes old/unused attributes
 
-## 0.1.0 - 2018-07-27
+## 0.1.0 - 2018-07-25
 ### Added
 - First GeneNoteBook version ready for use
 
-[Unreleased]: https://github.com/genenotebook/genenotebook/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/genenotebook/genenotebook/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/genenotebook/genenotebook/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/genenotebook/genenotebook/compare/v0.1.0...v0.1.1
