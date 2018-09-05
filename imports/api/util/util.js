@@ -14,6 +14,26 @@ export const formatAttributes = attributeString => {
 }
 
 /**
+ * Debug formatting gff3 attribute column by logging intermediate steps to console
+ * @param  {String} attributeString Raw gff3 attribute column string
+ * @return {Object}                 Key:value pairs of attributes.
+ */
+export const debugFormatAttributes = attributeString => {
+  arr = attributeString.split(';');
+  console.log(arr)
+  const attributes = arr.reduce((attr, stringPart) => {
+    const [key, value] = stringPart.split('=')
+    console.log(key,value)
+    const values = value.split('"').join('').split(',').map(decodeURIComponent)
+    console.log(values)
+    attr[key] = values
+    return attr
+  }, {})
+  console.log(attributes)
+  return attributes
+}
+
+/**
  * Reverse complement a DNA string
  * @param  {String} seq String representing DNA constisting of alphabet AaCcGgTtNn
  * @return {String}     String representing DNA constisting of alphabet AaCcGgTtNn, reverse complement of input

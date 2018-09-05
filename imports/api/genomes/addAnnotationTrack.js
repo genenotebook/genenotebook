@@ -169,14 +169,14 @@ const getGenomeSequences = ({ genomeId }) => {
  * @return {Promise}                            [description]
  */
 //const gffFileToMongoDb = ({ fileName, genomeId, genomeSequences }) => {
-const gffFileToMongoDb = ({ fileName, genomeId }) => {
+const gffFileToMongoDb = ({ fileName, genomeId, strict }) => {
 	return new Promise((resolve, reject) => {
 		const fileHandle = fs.readFileSync(fileName, { encoding: 'binary' });
 		let intervals = [];//{};
 		let geneCount = 0;
 
 		console.log('Initializing bulk operation');
-		let bulkOp = Genes.rawCollection().initializeUnorderedBulkOp();
+		let bulkOp = Genes.initializeUnorderedBulkOp();
 
 		console.log(`Start reading ${fileName}`)
 		Papa.parse(fileHandle, {
@@ -191,7 +191,7 @@ const gffFileToMongoDb = ({ fileName, genomeId }) => {
 				try {
 					const { data } = line;
 					const [ gffLine ] = data;
-					let interval = new Interval({ gffLine, genomeId })//, genomeSequences })//, trackId
+					let interval = new Interval({ gffLine, genomeId })
 
 					if (interval.parents === undefined){
 						assert.equal(interval.type, 'gene');
@@ -204,7 +204,7 @@ const gffFileToMongoDb = ({ fileName, genomeId }) => {
 							if ( geneCount % 1000 == 0){
 								console.log(`Processed ${geneCount} genes`)
 								bulkOp.execute();
-								bulkOp = Genes.rawCollection().initializeUnorderedBulkOp();
+								bulkOp = Genes.initializeUnorderedBulkOp();
 							}
 						}
 					}
@@ -237,16 +237,6 @@ const gffFileToMongoDb = ({ fileName, genomeId }) => {
 							}
 						}
 					})
-					/*
-					Tracks.update({ 
-						_id: trackId 
-					},{
-						$set: {
-							geneCount
-						}
-					})
-
-					scanGeneAttributes.call({ trackId });*/
 					resolve(result)
 				} catch (error) {
 					reject(error)
@@ -265,7 +255,7 @@ export const addAnnotationTrack = new ValidatedMethod({
 	applyOptions: {
 		noRetry: true
 	},
-	run({ fileName, genomeName }){
+	run({ fileName, genomeName, strict = true }){
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}
@@ -286,20 +276,13 @@ export const addAnnotationTrack = new ValidatedMethod({
 
 		const genomeId = existingGenome._id;
 
-		return gffFileToMongoDb({ fileName, genomeId }).catch(error => {
+		return gffFileToMongoDb({ fileName, genomeId, strict }).catch(error => {
+			console.log(error);
+			throw new Meteor.Error(error);
+		}).catch(error => {
 			console.log(error);
 			throw new Meteor.Error(error);
 		})
-		/*console.log(`Gathering genome sequences for ${genomeName}`);
-		return getGenomeSequences({ genomeId })
-			.then(genomeSequences => {
-				return gffFileToMongoDb({ fileName, genomeId, genomeSequences })//, trackId })
-			})
-			.catch(error => {
-				console.log(error);
-				throw new Meteor.Error(error);
-			})
-		*/
 	}
 })
 
