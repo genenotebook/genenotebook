@@ -37,7 +37,7 @@ class SeqPart {
  * When parsing is finished the finalize method cleans up and executes the bulk operation.
  */
 class LineProcessor {
-	constructor({ genomeId, permissions = ['admin'] }){
+	constructor({ genomeId, permissions }){
 		this.seqPart = new SeqPart({});
 		this.bulkOp = genomeSequenceCollection.rawCollection().initializeUnorderedBulkOp();
 		this.genomeId = genomeId;
@@ -123,7 +123,7 @@ const fastaFileToMongoDb = ({ fileName, genomeName }) => {
 			input: fs.createReadStream(fileName, 'utf8')
 		})
 	
-		const lineProcessor = new LineProcessor({ genomeId, resolve, reject });
+		const lineProcessor = new LineProcessor({ genomeId, permissions });
 		lineReader.on('line', line => {
 			try {
 				lineProcessor.process(line)

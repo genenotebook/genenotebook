@@ -31,9 +31,19 @@ class GeneNumber extends React.Component {
 
   render(){
     const { geneNumber } = this.state;
-    return <button type='button' className='btn btn-sm btn-outline-dark px-2 py-0' disabled>
-      <span className='badge badge-dark'>{ geneNumber }</span> genes
-    </button>
+    const { public: isPublic } = this.props;
+    return <div className="btn-group" role="group">
+      <button type='button' className='btn btn-sm btn-outline-dark px-2 py-0' disabled>
+        {
+          isPublic ?
+          <span className='badge badge-success'>Public</span> :
+          <span className='badge badge-warning'>Private</span>
+        }
+      </button>
+      <button type='button' className='btn btn-sm btn-outline-dark px-2 py-0' disabled>
+        <span className='badge badge-dark'>{ geneNumber }</span> genes
+      </button>
+    </div>
   }
 };
 
@@ -41,9 +51,11 @@ const Stats = ({ genomes }) => {
   return <ul className='list-group'>
     {
       genomes.map(genome => {
-        return <li key={genome._id} className='list-group-item mx-4'>
+        return <li key={genome._id} className='list-group-item d-flex justify-content-between'>
           <div className="d-inline-block ml-4">
-            { genome.name }
+            { genome.name }   <span className='font-italic text-muted'>
+              { genome.organism }
+            </span>
           </div>
           <div className="d-inline-block mr-4 pull-right">
             <GeneNumber {...genome} />
