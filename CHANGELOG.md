@@ -8,8 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - Gene attributes with multiple values can be toggled to display more or less values
+
 ### Fixed
 - Adding Interproscan gff3 (```genenotebook add interproscan```)
+- Downloads no longer save empty files
 
 ### Changed
 - Parsing genome annotation gff3 more efficiently fetches genomic regions and skips (with warning) unrecognized features
