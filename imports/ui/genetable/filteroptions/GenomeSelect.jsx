@@ -13,7 +13,9 @@ import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdow
 const genomeDataTracker = ({...props}) => {
   const genomeSub = Meteor.subscribe('genomes');
   const loading = !genomeSub.ready();
-  const genomes = genomeCollection.find({ annotationTrack: { $exists: true } }).fetch();
+  const genomes = genomeCollection.find({ 
+    annotationTrack: { $exists: true } 
+  }).fetch();
   return {
     loading,
     genomes,
@@ -103,7 +105,7 @@ class GenomeSelect extends React.Component {
   unselectAll = () => {
     const query = cloneDeep(this.props.query);
     const selectedGenomes = new Set([]);
-    this.setState( selectedGenomes );
+    this.setState({ selectedGenomes });
     query.genomeId = { $in: [] }
     this.props.updateQuery(query)
   }
@@ -113,7 +115,8 @@ class GenomeSelect extends React.Component {
     const { selectedGenomes } = this.state;
     return ( 
       <Dropdown>
-        <DropdownButton className='btn btn-sm btn-outline-dark dropdown-toggle px-2 py-0 border'>
+        <DropdownButton 
+          className='btn btn-sm btn-outline-dark dropdown-toggle px-2 py-0 border'>
           Genomes&nbsp;
           <span className='badge badge-dark'>
             {`${selectedGenomes.size}/${genomes.length}`}
