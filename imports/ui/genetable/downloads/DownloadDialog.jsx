@@ -36,7 +36,8 @@ export default class DownloadDialogModal extends React.Component {
   }
 
   componentWillReceiveProps = nextProps => {
-    const query = DownloadDialogModal.queryFromProps(nextProps)
+    const query = DownloadDialogModal.queryFromProps(nextProps);
+    console.log('componentWillReceiveProps query', query)
     queryCount.call({ query }, (err, res) => {
       this.setState({
         queryCount: res
@@ -45,6 +46,7 @@ export default class DownloadDialogModal extends React.Component {
   }
 
   static queryFromProps = ({ selectedAllGenes, selectedGenes, query, ...props }) => {
+    console.log('queryFromProps selectedAllGenes', selectedAllGenes)
     return selectedAllGenes ? query : { ID: { $in: [...selectedGenes] } }
   }
 

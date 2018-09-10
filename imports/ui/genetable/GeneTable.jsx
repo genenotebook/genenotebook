@@ -219,8 +219,8 @@ class GeneTable extends React.PureComponent {
       updateSelection: this.updateSelection, selectedColumns, attributes, 
       selectedVisualization, updateScrollLimit: this.updateScrollLimit };
 
-    const downloadOptions = { selectedGenes, showDownloadDialog, 
-      toggleDownloadDialog: this.toggleDownloadDialog };
+    const downloadOptions = { selectedGenes, showDownloadDialog, selectedAllGenes,
+      query, toggleDownloadDialog: this.toggleDownloadDialog };
     
     return <div className='container-fluid px-0 mx-0 genetable'>
       <div className='table-responsive'>

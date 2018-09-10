@@ -192,7 +192,7 @@ const AttributeColumn = ({ attributeName, attributeValue, geneId }) => {
  * @param  {[type]} options.updateSelection  [description]
  * @return {[type]}                          [description]
  */
-const GeneTableRow = ({gene, selectedColumns, selectedAllGenes, selectedGenes, 
+const GeneTableRow = ({ gene, selectedColumns, selectedAllGenes, selectedGenes, 
   updateSelection, attributes, selectedVisualization, ...props }) => {
   const selected = selectedAllGenes || selectedGenes.has(gene.ID)
   const color = selected ? 'black' : 'white';
@@ -211,18 +211,8 @@ const GeneTableRow = ({gene, selectedColumns, selectedAllGenes, selectedGenes,
         [...selectedColumns].map(attributeName => {
           const attribute = selectedAttributes[attributeName]
           const attributeValue = dot.pick(attribute.query, gene)
-          return <AttributeColumn {...{ attributeName, attributeValue, geneId: gene.ID }}/>/*(
-            <td key={attributeName} data-label={attributeName}>
-              { 
-                attributeName === 'Gene ID' ?
-                <a className='genelink' title={gene.ID} 
-                  href={`${Meteor.absoluteUrl()}gene/${gene.ID}`}>
-                  {gene.ID}
-                </a> : 
-                attributeValue && String(attributeValue) 
-              }
-            </td>
-          )*/
+          return <AttributeColumn key={attributeName}
+            {...{ attributeName, attributeValue, geneId: gene.ID }} />
         })
       }
       <td data-label={selectedVisualization} style={{width: '20rem'}}>
