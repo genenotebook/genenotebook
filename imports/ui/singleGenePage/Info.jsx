@@ -10,6 +10,8 @@ import { EditHistory } from '/imports/api/genes/edithistory_collection.js';
 import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 import { updateGene } from '/imports/api/genes/updateGene.js';
 
+import { AttributeValue } from '/imports/ui/genetable/GeneTableBody.jsx';
+
 import './info.scss';
 
 const canEdit = () => {
@@ -85,26 +87,16 @@ const VersionHistory = (props) => {
   )
 }
 
-const AttributeInput = (props) => {
-  return (
-    <div className="input-group input-group-sm">
-      <input 
-        type = "text" 
-        className = "form-control form-control-sm" 
-        onChange = { props.onChange } 
-        name = { props.name } 
-        value = { props.value } />
-      <div className="input-group-append">
-        <button 
-          type="button"
-          className="btn btn-outline-danger btn-sm"
-          name={props.name}
-          onClick = {props.deleteAttribute.bind(this,props.name)}>
-          <span className="icon-trash"/> Delete attribute
-        </button>
-      </div>
-    </div>
-  )
+const AttributeInput = ({ name, value, onChange, deleteAttribute }) => {
+  return <div className='d-flex justify-content-between'>
+    <textarea className='form-control'
+      {...{ name, value, onChange }} />
+    <button type='button' name={name}
+      className='btn btn-outline-danger btn-sm'
+      onClick={deleteAttribute.bind(this, name)}>
+      <span className='icon-trash' /> 
+    </button>
+  </div>
 }
 
 class Info extends React.Component {
@@ -276,8 +268,6 @@ class Info extends React.Component {
       })
     })
 
-    //console.log(interproDomains)
-
     return (
       <div id="info">
         <Controls
@@ -304,6 +294,10 @@ class Info extends React.Component {
         <div className="table-responive">
           <table className="table table-hover">
             <tbody>
+              <tr>
+                <td>Gene ID</td>
+                <td>{ gene.ID }</td>
+              </tr>
               <tr>
                 <td>Genome</td>
                 <td>{ genome.name } <small>({genome.organism})</small></td>
@@ -339,7 +333,7 @@ class Info extends React.Component {
                             value = {value} 
                             onChange = {this.changeAttributeValue}
                             deleteAttribute = {this.deleteAttribute} /> :
-                          value
+                          <AttributeValue attributeValue={value} />
                         }
                       </td>
                     </tr>

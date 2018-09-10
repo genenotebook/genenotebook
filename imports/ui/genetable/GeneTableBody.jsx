@@ -121,6 +121,68 @@ const withConditionalRendering = compose(
   withEither(hasNoResults, NoResults)
 )
 
+
+class AttributeValueArray extends React.Component {
+  constructor(props){
+    super(props)
+    this.state = {
+      showAll: false
+    }
+  }
+  toggleShowAll = event => {
+    event.preventDefault();
+    this.setState({
+      showAll: !this.state.showAll
+    });
+  }
+  render(){
+    const { showAll } = this.state;
+    const { attributeValue } = this.props;
+    const values = showAll ? attributeValue : attributeValue.slice(0,2);
+    const buttonText = showAll ? 'Show less' : 'Show more ...';
+    return <ul className='list-group list-group-flush'>
+      {
+        values.map(value => {
+          return <li key={value} className='list-group-item py-0'>
+            { value }
+          </li>
+        })
+      }
+      {
+        attributeValue.length > 2 &&
+        <li className='list-group-item'>
+          <a href='#' onClick={this.toggleShowAll}>
+            { buttonText }
+          </a>
+        </li>
+      }
+    </ul>
+  }
+}
+
+const GeneLink = ({ geneId }) => {
+  return <a className='genelink' title={geneId} 
+    href={`${Meteor.absoluteUrl()}gene/${geneId}`}>
+    { geneId }
+  </a>
+}
+
+export const AttributeValue = ({ attributeValue }) => {
+  return Array.isArray(attributeValue) && attributeValue.length > 1 ?
+    <AttributeValueArray {...{ attributeValue }} /> :
+    String(attributeValue)
+}
+
+const AttributeColumn = ({ attributeName, attributeValue, geneId }) => {
+  return <td data-label={attributeName}>
+    {
+      attributeName === 'Gene ID' ?
+      <GeneLink {...{ geneId }} /> :
+      attributeValue && <AttributeValue {...{ attributeValue }} />
+    }
+  </td>
+}
+
 /**
  * [description]
  * @param  {[type]} options.gene             [description]
@@ -149,15 +211,18 @@ const GeneTableRow = ({gene, selectedColumns, selectedAllGenes, selectedGenes,
         [...selectedColumns].map(attributeName => {
           const attribute = selectedAttributes[attributeName]
           const attributeValue = dot.pick(attribute.query, gene)
-          return (
+          return <AttributeColumn {...{ attributeName, attributeValue, geneId: gene.ID }}/>/*(
             <td key={attributeName} data-label={attributeName}>
               { 
-                attribute.name === 'Gene ID' ?
-                <a className='genelink' title={gene.ID} href={`${Meteor.absoluteUrl()}gene/${gene.ID}`}>{gene.ID}</a> : 
+                attributeName === 'Gene ID' ?
+                <a className='genelink' title={gene.ID} 
+                  href={`${Meteor.absoluteUrl()}gene/${gene.ID}`}>
+                  {gene.ID}
+                </a> : 
                 attributeValue && String(attributeValue) 
               }
             </td>
-          )
+          )*/
         })
       }
       <td data-label={selectedVisualization} style={{width: '20rem'}}>

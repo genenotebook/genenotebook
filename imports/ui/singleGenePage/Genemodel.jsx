@@ -241,7 +241,7 @@ export default class Genemodel extends React.PureComponent {
           <GenemodelGroup gene={gene} transcripts={transcripts} width={this.state.width} scale={scale}/>
           <XAxis 
             scale={scale} 
-            numTicks='4' 
+            numTicks='2' 
             transform={`translate(0,${ 14 * transcripts.length + 22})`}
             seqid={gene.seqid}/>
           <defs>

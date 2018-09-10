@@ -12,7 +12,7 @@ import AdminUserGroups from './user-groups/AdminUserGroups.jsx';
 
 const ADMIN_PAGES = {
   'users': <AdminUsers />,
-  'user-groups': <AdminUserGroups />,
+  //'user-groups': <AdminUserGroups />,
   'genomes': <AdminGenomes />,
   'attributes': <AdminAttributes />,
   'transcriptomes': <AdminTranscriptomes />,
@@ -37,7 +37,8 @@ const Nav = ({ pages, currentPage, changePage }) => {
             const active = page === currentPage ? 'active' : '';
             return (
               <li key={ page } role="presentation" className="nav-item">
-                <a href={ `/admin/${page}` } className={`nav-link ${active}`} id={ page } onClick={changePage}> 
+                <a href={ `/admin/${page}` } className={`nav-link ${active}`} 
+                  id={ page } onClick={changePage}> 
                   { pageName } 
                 </a>
               </li>
@@ -62,11 +63,11 @@ class Admin extends React.Component {
   }
 
   render(){
-    const pages = ['Users','User Groups','Genomes','Annotation tracks','Transcriptomes','Attributes','Jobqueue']
     return (
-      <div className="container">
+      <div className="container-fluid px-0 mx-0">
         <div className="card admin-panel my-2">
-          <Nav pages = { Object.keys(ADMIN_PAGES) } currentPage = {this.state.currentPage} changePage = {this.changePage} />
+          <Nav pages = { Object.keys(ADMIN_PAGES) } 
+            currentPage = {this.state.currentPage} changePage = {this.changePage} />
           {
             ADMIN_PAGES[this.state.currentPage]
           }

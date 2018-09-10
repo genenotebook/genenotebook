@@ -16,7 +16,9 @@ const hasNoAnnotation = ({ name, ...props }) => {
 }
 
 const NoAnnotation = () => {
-  return <button type="button" className="btn btn-outline-secondary btn-sm px-2 py-0" disabled>
+  return <button type="button" 
+    className="btn btn-outline-secondary btn-sm px-2 py-0" 
+    disabled>
     <span className="icon-block" /> No annotation
   </button> 
 }
@@ -45,7 +47,8 @@ class AnnotationInfo extends React.PureComponent {
         </tr>
         <tr>
           <td>
-            <BlastDB genomeId={genomeId} isEditing={isEditing} name={name} blastDb={blastDb} />
+            <BlastDB genomeId={genomeId} isEditing={isEditing} 
+              name={name} blastDb={blastDb} />
           </td>
         </tr>
         {
