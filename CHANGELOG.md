@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - Adding Interproscan gff3 
 
+### Changed
+- Parsing genome annotation gff3 more efficiently fetches genomic regions and skips (with warning) unrecognized features
+
 ## [0.1.2] 2018-08-29
 ### Added
 - Working popovers for genemodels

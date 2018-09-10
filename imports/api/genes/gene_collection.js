@@ -1,6 +1,10 @@
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
+const VALID_SUBFEATURE_TYPES = ['mRNA','CDS','exon',
+  'five_prime_UTR','three_prime_UTR'];
+const VALID_INTERVAL_TYPES = [].concat(VALID_SUBFEATURE_TYPES, ['gene']);
+
 const Genes = new Mongo.Collection('genes');
 
 //create a base schema so we can add it at multiple places
@@ -63,7 +67,7 @@ const SubfeatureSchema = new SimpleSchema({
   ID: {
     type: String,
     //unique: true,
-    //index: true,
+    index: true,
     //denyUpdate: true,
     label: 'Unique gene ID'
   },
@@ -74,7 +78,7 @@ const SubfeatureSchema = new SimpleSchema({
   },
   type: {
     type: String,
-    allowedValues: ['mRNA','tRNA','CDS','exon','five_prime_UTR','three_prime_UTR'],
+    allowedValues: VALID_SUBFEATURE_TYPES,
     label: 'Subfeature types'
   },
   parents: {
@@ -129,13 +133,13 @@ const GeneSchema = new SimpleSchema({
   },
   subfeatures: {
     type: Array,//[SubfeatureSchema],
-
-    optional: true,
+    //optional: true,
     label: 'Array of subfeatures'
   },
   'subfeatures.$': {
-    type: Object,
-    blackbox: true
+    type: SubfeatureSchema,
+    //blackbox: true
+    label: 'Gene subfeatures'
   },
   genomeId: { 
     type: String,
@@ -177,4 +181,10 @@ GeneSchema.extend(IntervalBaseSchema);
 
 Genes.attachSchema(GeneSchema);
 
-export { Genes, GeneSchema, SubfeatureSchema };
+export { 
+  Genes, 
+  GeneSchema, 
+  SubfeatureSchema, 
+  VALID_SUBFEATURE_TYPES, 
+  VALID_INTERVAL_TYPES 
+};

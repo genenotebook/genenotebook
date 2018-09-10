@@ -5,10 +5,12 @@ import SimpleSchema from 'simpl-schema';
 import assert from 'assert';
 import Papa from 'papaparse';
 import fs from 'fs';
-import { findIndex, isEqual, isEmpty, mapValues, partition } from 'lodash';
+import { findIndex, isEqual, isEmpty, mapValues, 
+	partition, omit } from 'lodash';
 import querystring from 'querystring';
 
-import { Genes, GeneSchema, SubfeatureSchema } from '/imports/api/genes/gene_collection.js';
+import { Genes, GeneSchema, SubfeatureSchema, 
+	VALID_SUBFEATURE_TYPES, VALID_INTERVAL_TYPES } from '/imports/api/genes/gene_collection.js';
 import { orthogroupCollection } from '/imports/api/genes/orthogroup_collection.js';
 import { genomeSequenceCollection, genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 import { Tracks } from '/imports/api/genomes/track_collection.js';
@@ -28,12 +30,11 @@ querystring.unescape = uri => uri;
  * @type {Interval}
  */
 const Interval = class Interval {
-	constructor({ gffLine, genomeId }){//, genomeSequences }){ //, trackId
-		assert.equal(gffLine.length, 9)
+	constructor({ gffFields, genomeId }){//, genomeSequences }){ //, trackId
 		const [ seqid, source, type, start, end,
-			_score, strand, phase, _attributes ] = gffLine
+			_score, strand, phase, attributeString ] = gffFields;
 		const score = String(_score);
-		const attributes = formatAttributes(_attributes);
+		const attributes = formatAttributes(attributeString);
 		Object.assign(this, {
 			type, start, end, score, attributes
 		})
@@ -41,32 +42,18 @@ const Interval = class Interval {
 		this.ID = this.attributes.ID[0];
 		delete this.attributes.ID;
 
-		if (typeof this.attributes.Parent !== 'undefined'){
+		if (typeof this.attributes.Parent === 'undefined'){
+			//top level feature
+			Object.assign(this, {
+				seqid, source, strand, genomeId
+			})
+		} else {
+			//sub feature
+			this.phase = phase;
 			this.parents = this.attributes.Parent;
 			delete this.attributes.Parent;
 		}
 
-		try {
-			this.seq = getGenomeSequence({ genomeId, seqid, start, end })
-			//this.seq = genomeSequences[seqid].slice(start - 1, end)
-		} catch (error) {
-			console.log(seqid)
-			console.log(error)
-			throw new Meteor.Error(error)
-			//throw new Meteor.Error(`${seqid} is not a valid sequenceId for genome ${genomeId}`)
-		}
-
-
-		if (this.type === 'gene'){
-			Object.assign(this, {
-				seqid, source, strand, genomeId//, trackId
-			})
-
-			GeneSchema.validate(this)
-		} else {
-			this.phase = phase
-			SubfeatureSchema.validate(this)
-		}
 	}
 }
 
@@ -93,72 +80,62 @@ const GeneModel = class GeneModel {
 
 		//pull out gene interval
 		//https://lodash.com/docs/4.17.10#partition
-		const [genes, subfeatures] = partition(intervals, interval => interval.type === 'gene');
-		assert.equal(genes.length, 1)
+		const [genes, subfeatures] = partition(intervals, interval => typeof interval.parents === 'undefined');//interval.type === 'gene');
+		assert(genes.length === 1, `Can not make a gene model of ${genes.length} lines with type gene`);
 		const gene = genes[0]
 		Object.assign(this, gene);
 
 		//set subfeatures
 		this.subfeatures = subfeatures;
+	}
 
-		/*
-		const orthogroup = orthogroupCollection.findOne({ geneIds: gene.ID });
-		if ( typeof orthogroup !== 'undefined'){
-			this.orthogroupId = orthogroup.ID
+	fetchGenomeSequence = () => {
+		let shiftCoordinates = 10e99;
+		const genomicRegion = genomeSequenceCollection.find({
+			genomeId: this.genomeId,
+			header: this.seqid,
+			start: { $lte: this.end },
+			end: { $gte: this.start }
+		}).fetch().sort((a,b) => {
+			return a.start - b.start
+		}).map(seqPart => {
+			shiftCoordinates = Math.min(shiftCoordinates, seqPart.start);
+			return seqPart.seq
+		}).join('');
+		this.seq = genomicRegion.slice(this.start - shiftCoordinates - 1,
+			this.end - shiftCoordinates);
+		this.subfeatures.forEach(subfeature => {
+			subfeature.seq = genomicRegion.slice(subfeature.start - shiftCoordinates - 1,
+				subfeature.end - shiftCoordinates)
+		});
+		return this
+	}
+
+	validate = () => {
+		const validationContext = GeneSchema.newContext();
+		validationContext.validate(this.dataFields);
+		return validationContext
+	}
+
+	saveToDb = bulkOp => {
+		if (this.type === 'gene'){
+			this.fetchGenomeSequence();
+			const validation = this.validate();
+			
+			if (validation.isValid()) {
+				bulkOp.insert(this.dataFields);
+			} else {
+				validation.validationErrors().forEach(err => {
+					console.warn(`## WARNING: ${this.ID} ${err.name} ${err.value} ${err.type}`)
+				})
+			}
 		}
-		*/
+	}
+
+	get dataFields() {
+		return omit(this, ['fetchGenomeSequence', 'validate','saveToDb','dataFields'])
 	}
 }
-
-const getGenomeSequence = ({ genomeId, seqid, start, end }) => {
-	let shiftCoordinates = 10e99;
-	const seq = genomeSequenceCollection.find({
-		genomeId,
-		header: seqid,
-		start: { $lte: end },
-		end: { $gte: start }
-	}).fetch().sort((a,b) => {
-		return a.start - b.start
-	}).map(seqPart => {
-		shiftCoordinates = Math.min(shiftCoordinates, seqPart.start);
-		return seqPart.seq
-	}).join('');
-	return seq.slice(start - shiftCoordinates - 1, end - shiftCoordinates)
-}
-
-/**
- * [description]
- * @param  {String} options.genomeId [description]
- * @return {Promise}                     [description]
- */
-/*
-const getGenomeSequences = ({ genomeId }) => {
-	return new Promise((resolve, reject) => {
-		try {
-			console.log(`getGenomeSequences DB query { genomeId: ${genomeId} } count ${genomeSequenceCollection.find({ genomeId }).count()}`);
-			const sequenceGroups = genomeSequenceCollection.find({ genomeId })
-				.fetch()
-				.reduce((refs, refPart) => {
-					const { header, seq, start } = refPart;
-					if (!refs.hasOwnProperty(header)){
-						refs[header] = [];
-					}
-					refs[header].push({ seq, start })
-					return refs
-				},{})
-
-			const genomeSequences = mapValues(sequenceGroups, sequenceGroup => {
-				return sequenceGroup.sort((a, b) => a.start - b.start)
-					.map(seqPart => seqPart.seq)
-					.join('')
-			})
-			resolve(genomeSequences)
-		} catch (error) {
-			reject(error)
-		}
-	})
-}
-*/
 
 /**
  * [description]
@@ -172,11 +149,12 @@ const getGenomeSequences = ({ genomeId }) => {
 const gffFileToMongoDb = ({ fileName, genomeId, strict }) => {
 	return new Promise((resolve, reject) => {
 		const fileHandle = fs.readFileSync(fileName, { encoding: 'binary' });
-		let intervals = [];//{};
+		let intervals = [];
 		let geneCount = 0;
+		let lineNumber = 0;
 
 		console.log('Initializing bulk operation');
-		let bulkOp = Genes.initializeUnorderedBulkOp();
+		let bulkOp = Genes.rawCollection().initializeUnorderedBulkOp();
 
 		console.log(`Start reading ${fileName}`)
 		Papa.parse(fileHandle, {
@@ -184,32 +162,31 @@ const gffFileToMongoDb = ({ fileName, genomeId, strict }) => {
 			dynamicTyping: true,
 			skipEmptyLines: true,
 			comments: '#',
+			fastMode: true,
 			error(error,file) {
+				console.log(error)
 				reject(error)
 			},
-			step(line){
+			step(line, parser){
+				lineNumber += 1;
 				try {
 					const { data } = line;
-					const [ gffLine ] = data;
-					let interval = new Interval({ gffLine, genomeId })
+					const [ gffFields ] = data;
 
-					if (interval.parents === undefined){
-						assert.equal(interval.type, 'gene');
-						if ( !isEmpty(intervals) ) {
+					assert(gffFields.length === 9, 
+						`${gffFields} is not a correct gff line with 9 fields`);
+					let interval = new Interval({ gffFields, genomeId })
+
+					if (typeof interval.parents === 'undefined'){
+						if (!isEmpty(intervals)){
 							const gene = new GeneModel(intervals);
-							GeneSchema.validate(gene);
-							bulkOp.insert(gene);
-							geneCount += 1;
-							intervals = [];
-							if ( geneCount % 1000 == 0){
-								console.log(`Processed ${geneCount} genes`)
-								bulkOp.execute();
-								bulkOp = Genes.initializeUnorderedBulkOp();
-							}
+							gene.saveToDb();
 						}
+						intervals = [];
 					}
+					
 					intervals.push(interval)
-					//intervals[interval.ID] = interval;
+
 				} catch (error) {
 					reject(error)
 				}
@@ -219,10 +196,24 @@ const gffFileToMongoDb = ({ fileName, genomeId, strict }) => {
 					if ( !isEmpty(intervals) ) {
 						console.log('constructing final gene')
 						const gene = new GeneModel(intervals);
-						GeneSchema.validate(gene);
-						bulkOp.insert(gene);
-						geneCount += 1;
-						//intervals = [];//{}
+						gene.saveToDb();
+						/*
+						if (gene.type === 'gene'){
+							gene.fetchGenomeSequence();
+							const validation = gene.validate(GeneSchema);
+							if (validation.isValid()){
+
+							} else {
+								validation.validationErrors().forEach(err => {
+									console.warn(`## WARNING: ${gene.ID} ${err.name} ${err.value} ${err.type}`)
+								})
+							}
+							/*if (!validation.isValid()) {
+								reject(validation.validationErrors())
+							}
+							bulkOp.insert(gene.dataFields);
+							geneCount += 1;
+						}*/
 					}
 
 					console.log('Executing bulk operation')
@@ -237,6 +228,7 @@ const gffFileToMongoDb = ({ fileName, genomeId, strict }) => {
 							}
 						}
 					})
+					console.log(`Finished inserting ${geneCount} genes`)
 					resolve(result)
 				} catch (error) {
 					reject(error)
