@@ -7,14 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Fixed
-- Adding Interproscan gff3 
+- Adding Interproscan gff3 (```genenotebook add interproscan```)
 
 ### Changed
 - Parsing genome annotation gff3 more efficiently fetches genomic regions and skips (with warning) unrecognized features
 
 ## [0.1.2] 2018-08-29
 ### Added
-- Working popovers for genemodels
+- Popovers for genemodels
 
 ### Fixed
 - Searching and dropdown queries no longer conflict
