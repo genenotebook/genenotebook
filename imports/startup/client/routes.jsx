@@ -170,16 +170,6 @@ loggedInRoutes.route('/blast/:_id', {
   }
 })
 
-/*
-loggedInRoutes.route('/search=:_search', {
-  name: 'search',
-  action() {
-    BlazeLayout.render('appBody', { main: 'genelist' })
-  }
-})
-
-*/
-
 
 loggedInRoutes.route('/profile', {
   name: 'userProfile',

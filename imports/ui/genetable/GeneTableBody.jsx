@@ -143,16 +143,16 @@ class AttributeValueArray extends React.Component {
     return <ul className='list-group list-group-flush'>
       {
         values.map(value => {
-          return <li key={value} className='list-group-item py-0'>
+          return <li key={value} className='list-group-item py-0 px-0'>
             { value }
           </li>
         })
       }
       {
         attributeValue.length > 2 &&
-        <li className='list-group-item'>
+        <li className='list-group-item py-0'>
           <a href='#' onClick={this.toggleShowAll}>
-            { buttonText }
+            <small>{ buttonText }</small>
           </a>
         </li>
       }

@@ -180,7 +180,7 @@ const gffFileToMongoDb = ({ fileName, genomeId, strict }) => {
 					if (typeof interval.parents === 'undefined'){
 						if (!isEmpty(intervals)){
 							const gene = new GeneModel(intervals);
-							gene.saveToDb();
+							gene.saveToDb(bulkOp);
 						}
 						intervals = [];
 					}
@@ -196,7 +196,7 @@ const gffFileToMongoDb = ({ fileName, genomeId, strict }) => {
 					if ( !isEmpty(intervals) ) {
 						console.log('constructing final gene')
 						const gene = new GeneModel(intervals);
-						gene.saveToDb();
+						gene.saveToDb(bulkOp);
 						/*
 						if (gene.type === 'gene'){
 							gene.fetchGenomeSequence();

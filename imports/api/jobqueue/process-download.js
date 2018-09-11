@@ -29,7 +29,6 @@ const formatTsv = ({ gene, options}) => {
 
 const formatFasta = ({ gene, options }) => {
   const { seqType } = options;
-  console.log(seqType)
   const sequences = getGeneSequences(gene);
   const fastaArray = sequences.map(seq => {
     const seqString = seq[seqType].match(/.{1,80}/g).join('\n');
@@ -63,8 +62,8 @@ const processDownload = (job, callback) => {
   // the finish event is emitted when all data has been flushed from the stream
   compress.on('finish', async () => {  
     console.log('wrote all data to file');
-    job.done(fileName)
-    callback()
+    job.done(fileName);
+    callback();
   });
 
   const querySize = Genes.find(query).count();

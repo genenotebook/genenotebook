@@ -9,7 +9,6 @@ import { withEither } from '/imports/ui/util/uiUtil.jsx';
 import { previewDataTracker } from './previewDataTracker.js';
 
 const formatFasta = ({ gene, seqType }) => {
-  console.log(seqType)
   const sequences = getGeneSequences(gene);
   const fastaLines = sequences.map(seq => {
     const seqLines = seq[seqType].match(/.{1,60}/g);
@@ -53,16 +52,6 @@ const SequenceDownload = ({ previewGenes, options, ...props }) => {
       <div className="card-body">
         <h4 className="card-title">Download preview</h4>
         <SequencePreviewWithCheck previewGenes = { previewGenes } seqType = { seqType } />
-        {/*
-          previewGenes.map(gene => {
-            return formatFasta({ gene, seqType }).map(fastaLine => {
-              return <span key={fastaLine}>
-                {fastaLine}
-                <br/>
-              </span>
-            })
-          })
-        */}
       </div>
     </div>
   )

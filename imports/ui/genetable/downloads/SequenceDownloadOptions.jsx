@@ -19,8 +19,9 @@ class SequenceDownloadOptions extends React.Component {
 
   componentDidMount = () => {
     const defaultOptions = {
-      seqType: 'nucl',
-      fileFormat: '.fasta'
+      selectedSeqType: 'nucl',
+      fileFormat: '.fasta',
+      primaryTranscriptsOnly: true
     }
     this.props.updateOptions(defaultOptions)
     this.setState({
@@ -29,13 +30,14 @@ class SequenceDownloadOptions extends React.Component {
   }
 
   changeSeqType = event => {
-    const seqType = event.target.id;
-    this.props.updateOptions({ seqType });
+    const selectedSeqType = event.target.id;
+    this.props.updateOptions({ selectedSeqType });
   }
 
   render(){
     const { initialized } = this.state;
     const { options } = this.props;
+    const { selectedSeqType, primaryTranscriptsOnly } = options;
     return (
       initialized ?
       <form>
@@ -46,7 +48,7 @@ class SequenceDownloadOptions extends React.Component {
           <div className="col-sm-8">
             {
               ['nucl','prot'].map(seqType => {
-                const checked = seqType === options.seqType ? 'checked' : '';
+                const checked = seqType === selectedSeqType ? 'checked' : '';
                 return (
                   <div key={seqType} className="form-check">
                     <input 
@@ -83,6 +85,19 @@ class SequenceDownloadOptions extends React.Component {
                 htmlFor="file-format" >
                 .fasta
               </label>
+            </div>
+          </div>
+        </div>
+        <div className='row'>
+          <div className='col-sm-4'>
+            Primary transcripts only
+          </div>
+          <div className='col-sm-8'>
+            <div className='form-check'>
+              <input className='form-check-input'
+                type='checkbox'
+                id='primary-transcripts-only'
+                checked={primaryTranscriptsOnly} />
             </div>
           </div>
         </div>
