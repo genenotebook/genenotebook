@@ -51,7 +51,11 @@ const addOrthogroupTree = ({ fileName, geneBulkOp, orthoBulkOp }) => {
       throw new Meteor.Error(err);
     }
     Genes.update({
-      ID: { $in: geneIds }
+      $or: [
+        { ID: { $in: geneIds } },
+        { 'subfeatures.ID': { $in: geneIds }}
+      ]
+      
     },{
       $set: { orthogroupId }
     },{

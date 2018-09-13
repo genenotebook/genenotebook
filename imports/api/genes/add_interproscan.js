@@ -126,7 +126,7 @@ const parseInterproscanGff = fileName => {
     const fileHandle = fs.readFileSync(fileName, { encoding:'binary' });
 
     const allInterproIds = new Set();
-    const bulkOp = Genes.initializeUnorderedBulkOp();
+    const bulkOp = Genes.rawCollection().initializeUnorderedBulkOp();
 
     Papa.parse(fileHandle, {
       delimiter: '\t',
