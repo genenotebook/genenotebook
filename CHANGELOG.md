@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - Gene attributes with multiple values can be toggled to display more or less values
+- Option to download primary transcripts only
 
 ### Fixed
 - Adding Interproscan gff3 (```genenotebook add interproscan```)
