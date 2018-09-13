@@ -21,9 +21,9 @@ class SequenceDownloadOptions extends React.Component {
     const defaultOptions = {
       selectedSeqType: 'nucl',
       fileFormat: '.fasta',
-      primaryTranscriptsOnly: true
+      primaryTranscriptOnly: true
     }
-    this.props.updateOptions(defaultOptions)
+    this.props.updateOptions(defaultOptions);
     this.setState({
       initialized: true
     })
@@ -34,10 +34,21 @@ class SequenceDownloadOptions extends React.Component {
     this.props.updateOptions({ selectedSeqType });
   }
 
+  togglePrimaryTranscript = () => {
+    const { 
+      options: {
+        primaryTranscriptOnly = true
+      }
+    } = this.props;
+    //const primaryTranscriptOnly = typeof options.primaryTranscriptOnly === 'undefined' ? true : options.primaryTranscriptOnly;
+    this.props.updateOptions({ primaryTranscriptOnly });
+  }
+
   render(){
     const { initialized } = this.state;
     const { options } = this.props;
-    const { selectedSeqType, primaryTranscriptsOnly } = options;
+    const { selectedSeqType, primaryTranscriptOnly } = options;
+    console.log(selectedSeqType, primaryTranscriptOnly)
     return (
       initialized ?
       <form>
@@ -90,14 +101,15 @@ class SequenceDownloadOptions extends React.Component {
         </div>
         <div className='row'>
           <div className='col-sm-4'>
-            Primary transcripts only
+            Primary transcript only
           </div>
           <div className='col-sm-8'>
             <div className='form-check'>
               <input className='form-check-input'
                 type='checkbox'
-                id='primary-transcripts-only'
-                checked={primaryTranscriptsOnly} />
+                id='primary-transcript-only'
+                checked={primaryTranscriptOnly}
+                onChange={this.togglePrimaryTranscript} />
             </div>
           </div>
         </div>

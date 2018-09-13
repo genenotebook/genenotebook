@@ -37,13 +37,13 @@ export const downloadGenes = new ValidatedMethod({
      */
     console.log(`downloading ${dataType}`)
     console.log(query);
+    console.log(options);
     
     const queryString = JSON.stringify(query);
     const optionString = JSON.stringify(options);
 
     const queryHash = hash(`${queryString}${dataType}${optionString}`);
 
-    console.log(queryHash)
     if (! this.userId) {
       throw new Meteor.Error('not-authorized');
     }

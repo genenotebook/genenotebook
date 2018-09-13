@@ -28,10 +28,14 @@ const formatTsv = ({ gene, options}) => {
 }
 
 const formatFasta = ({ gene, options }) => {
-  const { seqType } = options;
-  const sequences = getGeneSequences(gene);
-  const fastaArray = sequences.map(seq => {
-    const seqString = seq[seqType].match(/.{1,80}/g).join('\n');
+  const { selectedSeqType, primaryTranscriptOnly } = options;
+  const sequences = getGeneSequences(gene).sort((a,b) => {
+    return b.nucl.length - a.nucl.length
+  });
+
+  const slice = primaryTranscriptOnly ? 1 : sequences.length;
+  const fastaArray = sequences.slice(0, slice).map(seq => {
+    const seqString = seq[selectedSeqType].match(/.{1,80}/g).join('\n');
     return `>${seq.ID}\n${seqString}`
   })
   return fastaArray.join('\n')

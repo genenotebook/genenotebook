@@ -28,6 +28,12 @@ const Running = ({ job }) => {
   )
 }
 
+const JobNotFound = () => {
+  return <div>
+    <p>Job not found</p>
+  </div>
+}
+
 const isWaiting = ({ job }) => {
   const waitingStates = ['waiting','ready']
   const isWaiting = waitingStates.indexOf(job.status) > 0;
@@ -47,15 +53,18 @@ const isFinished = ({ job }) => {
   return isFinished;
 }
 
-const downloadExists = ({loading, job, ...props}) => {
-  return typeof job !== 'undefined'
+const jobNotFound = ({ job }) => {
+  return typeof job === 'undefined'
 }
 
 const downloadDataTracker = () => {
   const queryHash = FlowRouter.getParam('_id');
   const jobSub = Meteor.subscribe('jobQueue');
   const loading = !jobSub.ready();
-  const job = jobQueue.findOne({ 'data.queryHash': queryHash });
+  const job = jobQueue.findOne({
+    type: 'download',
+    'data.queryHash': queryHash 
+  });
   return {
     loading,
     job
@@ -64,6 +73,7 @@ const downloadDataTracker = () => {
 
 const withConditionalRendering = compose(
   withTracker(downloadDataTracker),
+  withEither(jobNotFound, JobNotFound),
   withEither(isLoading, Loading),
   withEither(isWaiting, Waiting),
   withEither(isRunning, Running)

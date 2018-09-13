@@ -45,7 +45,6 @@ const SequencePreview = ({ previewGenes, seqType }) => {
 const SequencePreviewWithCheck = withEither(hasNoPreview, NoPreview)(SequencePreview);
 
 const SequenceDownload = ({ previewGenes, options, ...props }) => {
-  console.log(props)
   const { seqType } = options;
   return (
     <div className="card download-preview">

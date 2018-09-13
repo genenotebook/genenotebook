@@ -2,6 +2,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
 import classNames from 'classnames';
+import { cloneDeep } from 'lodash';
 
 import AnnotationDownload from './AnnotationDownload.jsx';
 import AnnotationDownloadOptions from './AnnotationDownloadOptions.jsx';
@@ -54,7 +55,6 @@ export default class DownloadDialogModal extends React.Component {
     const downloadQuery = selectedAllGenes ? query : { ID: { $in: [...selectedGenes] } };
 
     queryCount.call({ query: downloadQuery }, (err,res) => {
-      console.log
       this.setState({
         queryCount: res
       })
@@ -90,10 +90,12 @@ export default class DownloadDialogModal extends React.Component {
     this.props.toggleDownloadDialog()
   }
 
-  updateOptions = options => {
+  updateOptions = newOptions => {
+    const options = cloneDeep(this.state.options);
+    Object.assign(options, newOptions);
     this.setState({
       options
-    })
+    });
   }
 
   render(){
