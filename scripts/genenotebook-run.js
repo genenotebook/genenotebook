@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env node --max-old-space-size 8192
 'use strict';
 const program = require('commander');
 const fs = require('fs');
@@ -19,5 +19,7 @@ const ROOT_URL = program.rootUrl || 'http://localhost';
 const NODE_OPTIONS = program.nodeOptions || '--max-old-space-size=8192';
 
 Object.assign(process.env, { MONGO_URL, ROOT_URL, PORT, NODE_OPTIONS });
+
+console.log(process.env);
 
 require('./main.js');
