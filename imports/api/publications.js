@@ -15,13 +15,13 @@ import { ExperimentInfo, Transcriptomes } from '/imports/api/transcriptomes/tran
 
 const availableGenomes =  publication => {
   const roles = Roles.getRolesForUser(publication.userId);
-  const genomes = genomeCollection.find({ 
+  const genomeIds = genomeCollection.find({ 
       $or: [
        { permissions: { $in: roles } },
        { public: true }
       ]
     }).map(genome => genome._id)
-  return genomes
+  return genomeIds
 }
 
 Meteor.publish({
@@ -41,17 +41,19 @@ Meteor.publish({
 
     return Genes.find(query, { sort, limit })
   },
-  singleGene (geneId) {
+  singleGene ({ geneId, transcriptId }) {
     const publication = this;
 
     const genomeIds = availableGenomes(publication);
 
-    return Genes.find({
-      ID: geneId,
-      genomeId: {
-        $in: genomeIds
-      }
-    })
+    const query = { genomeId: { $in: genomeIds } };
+    if ( typeof geneId === 'undefined'){
+      Object.assign(query, { 'subfeatures.ID': transcriptId });
+    } else {
+      Object.assign(query, { ID: geneId });
+    }
+
+    return Genes.find(query);
   },
   users(){
     const publication = this;

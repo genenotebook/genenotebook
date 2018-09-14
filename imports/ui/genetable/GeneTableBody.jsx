@@ -136,9 +136,10 @@ class AttributeValueArray extends React.Component {
     });
   }
   render(){
+    const maxLength = 2;
     const { showAll } = this.state;
     const { attributeValue } = this.props;
-    const values = showAll ? attributeValue : attributeValue.slice(0,2);
+    const values = showAll ? attributeValue : attributeValue.slice(0,maxLength);
     const buttonText = showAll ? 'Show less' : 'Show more ...';
     return <ul className='list-group list-group-flush'>
       {
@@ -149,14 +150,45 @@ class AttributeValueArray extends React.Component {
         })
       }
       {
-        attributeValue.length > 2 &&
-        <li className='list-group-item py-0'>
-          <a href='#' onClick={this.toggleShowAll}>
+        attributeValue.length > maxLength &&
+        <li className='list-group-item py-0 px-0'>
+          <a className='px-3' href='#' onClick={this.toggleShowAll}>
             <small>{ buttonText }</small>
           </a>
         </li>
       }
     </ul>
+  }
+}
+
+class AttributeValueSingle extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      showAll: false
+    };
+  }
+  toggleShowAll = event => {
+    event.preventDefault();
+    this.setState({
+      showAll: !this.state.showAll
+    })
+  }
+  render(){
+    const maxLength = 100;
+    const { showAll } = this.state;
+    const attributeValue = String(this.props.attributeValue);
+    const value = showAll ? attributeValue : attributeValue.slice(0, maxLength);
+    const buttonText = showAll ? 'Show less' : 'Show more ...';
+    return <React.Fragment>
+      <p className='mb-1'>{ value }</p>
+      {
+        attributeValue.length > maxLength &&
+        <a className='px-3 py-0' href='#' onClick={this.toggleShowAll}>
+          <small>{ buttonText }</small>
+        </a>
+      }
+    </React.Fragment>
   }
 }
 
@@ -167,11 +199,19 @@ const GeneLink = ({ geneId }) => {
   </a>
 }
 
+const isArray = ({ attributeValue }) => {
+  return Array.isArray(attributeValue) && attributeValue.length > 1
+}
+
+/*
 export const AttributeValue = ({ attributeValue }) => {
   return Array.isArray(attributeValue) && attributeValue.length > 1 ?
     <AttributeValueArray {...{ attributeValue }} /> :
     String(attributeValue)
 }
+*/
+
+export const AttributeValue = withEither(isArray, AttributeValueArray)(AttributeValueSingle);
 
 const AttributeColumn = ({ attributeName, attributeValue, geneId }) => {
   return <td data-label={attributeName}>

@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { Roles } from 'meteor/alanning:roles';
 
+import SimpleSchema from 'simpl-schema';
 import assert from 'assert';
 import Papa from 'papaparse';
 import fs from 'fs';
@@ -9,6 +11,83 @@ import { Tracks } from '/imports/api/genomes/track_collection.js';
 import { Genes } from '/imports/api/genes/gene_collection.js';
 import { ExperimentInfo, Transcriptomes } from '/imports/api/transcriptomes/transcriptome_collection.js';
 
+
+const parseKallistoTsv = ({ fileName, sampleName, replicaGroup, 
+	description, permissions = ['admin'] }) => {
+	return new Promise((resolve, reject) => {
+		const fileHandle = fs.readFileSync(fileName, { encoding: 'binary' });
+		Papa.parse(fileHandle, {
+			delimiter: '\t',
+			dynamicTyping: true,
+			skipEmptyLines: true,
+			comments: '#',
+			header: true,
+			error(error, file){
+				reject(new Meteor.Error(error))
+			},
+			complete(results, file){
+				let nInserted = 0;
+				const { data } = results;
+
+				const experimentId = ExperimentInfo.insert({
+					sampleName,
+					replicaGroup,
+					description,
+					permissions
+				});
+
+				data.forEach(({ target_id, tpm, est_counts }) => {
+					const { ID: geneId } = Genes.findOne({
+						$or: [
+							{ ID: target_id },
+							{ 'subfeatures.ID': target_id }
+						]
+					})
+					if (typeof geneId === 'undefined'){
+						console.warn(`## WARNING: ${geneId} not found`);
+					} else {
+						nInserted += 1;
+						Transcriptomes.insert({
+							geneId,
+							tpm,
+							est_counts,
+							permissions,
+							experimentId
+						})
+					}
+				})
+				resolve(nInserted);
+			}
+		})
+	})
+}
+
+export const addTranscriptome = new ValidatedMethod({
+	name: 'addTranscriptome',
+	validate: new SimpleSchema({
+		fileName: String,
+		sampleName: String,
+		replicaGroup: String,
+		description: String
+	}).validator(),
+	applyOptions: {
+		noRetry: true
+	},
+	run({ fileName, sampleName, replicaGroup, description }){
+		if (! this.userId) {
+			throw new Meteor.Error('not-authorized');
+		}
+		if (! Roles.userIsInRole(this.userId, 'admin')){
+			throw new Meteor.Error('not-authorized');
+		}
+		return parseKallistoTsv({ fileName, sampleName, replicaGroup, description })
+			.catch(error => {
+				console.log(error)
+			})
+	}
+})
+
+/*
 Meteor.methods({
 	addTranscriptome(config){
 		console.log('trying to insert',config)	
@@ -81,6 +160,7 @@ Meteor.methods({
 					}
 				})
 				*/
+			/*
 				console.log('Start inserting expression data')
 				results.data.forEach( (gene) => {
 					Transcriptomes.insert({
@@ -99,3 +179,4 @@ Meteor.methods({
 		return `Succesfully inserted ${config.sampleName}`
 	}
 })
+*/

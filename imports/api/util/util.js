@@ -144,6 +144,7 @@ export const parseNewick = newickString => {
   const geneIds = []
   let tree = {};
   let subtree = {};
+  let nNodes = 0;
   tokens.forEach((token, tokenIndex) => {
     switch(token){
       case '(': //new branchset
@@ -170,10 +171,15 @@ export const parseNewick = newickString => {
           previousToken === ','
         ){
           tree.name = token;
-          const geneId = token.split('.').slice(0,-1).join('.');
-          if (geneId.length > 0){
-            geneIds.push(geneId)
+          nNodes += 1;
+          if (token.length > 0){
+            geneIds.push(token)
           }
+          //geneIds.push(token);
+          //const geneId = token.split('.').slice(0,-1).join('.');
+          //if (geneId.length > 0){
+          //  geneIds.push(geneId)
+          //}
         } else if (previousToken === ':'){
           tree.branchLength = parseFloat(token);
         }
@@ -182,7 +188,7 @@ export const parseNewick = newickString => {
   return {
     tree: tree,
     geneIds: geneIds,
-    size: geneIds.length
+    size: .5 * (nNodes + 1)//geneIds.length
   };
 }
 

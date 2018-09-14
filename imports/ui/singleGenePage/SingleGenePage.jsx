@@ -41,7 +41,7 @@ const isNotFound = ({ gene, ...props }) => {
 
 const geneDataTracker = () => {
   const geneId = FlowRouter.getParam('_id');
-  const geneSub = Meteor.subscribe('singleGene', geneId);
+  const geneSub = Meteor.subscribe('singleGene', { geneId });
   const gene = Genes.findOne({ ID: geneId });
 
   

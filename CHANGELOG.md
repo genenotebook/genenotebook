@@ -9,8 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Gene attributes with multiple values can be toggled to display more or less values
 - Option to download primary transcripts only
+- Add kallisto tsv files from command line
 
 ### Fixed
+- Parsing newick formatted orthogroup trees and linking genes on gene ID / transcript ID
 - Adding Interproscan gff3 (```genenotebook add interproscan```)
 - Downloads no longer save empty files
 

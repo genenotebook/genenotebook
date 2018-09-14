@@ -175,6 +175,12 @@ export const addInterproscan = new ValidatedMethod({
     noRetry: true
   },
   run({ fileName }){
+    if (! this.userId) {
+      throw new Meteor.Error('not-authorized');
+    }
+    if (! Roles.userIsInRole(this.userId, 'admin')){
+      throw new Meteor.Error('not-authorized');
+    }
     return parseInterproscanGff(fileName)
       .catch(error => {
         console.log(error)

@@ -41,6 +41,8 @@ const addOrthogroupTree = ({ fileName, geneBulkOp, orthoBulkOp }) => {
   const treeNewick = fs.readFileSync(fileName, 'utf8');
   const { size, tree, geneIds } = parseNewick(treeNewick);
 
+  console.log(orthogroupId, geneIds);
+
   orthogroupCollection.insert({
     ID: orthogroupId,
     size,
@@ -87,6 +89,12 @@ export const addOrthogroupTrees = new ValidatedMethod({
     noRetry: true
   },
   run({ folderName }){
+    if (! this.userId) {
+      throw new Meteor.Error('not-authorized');
+    }
+    if (! Roles.userIsInRole(this.userId, 'admin')){
+      throw new Meteor.Error('not-authorized');
+    }
     console.log('addOrthogroupTrees', folderName)
     const geneBulkOp = Genes.rawCollection().initializeUnorderedBulkOp();
     const orthoBulkOp = orthogroupCollection.rawCollection().initializeUnorderedBulkOp();

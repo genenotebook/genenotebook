@@ -8,10 +8,6 @@ const ExperimentInfoSchema = new SimpleSchema({
 		type: String,
 		label: 'Short name for the sample',
 	},
-	experimentGroup: {
-		type: String,
-		label: 'Identifier to group together samples from the same experiment'
-	},
 	replicaGroup: {
 		type: String,
 		label: 'Identifier to group together samples from the same replica'
@@ -48,7 +44,7 @@ const TranscriptomeSchema = new SimpleSchema({
 		label: 'Experiment ID',
 		//index: true
 	},
-	raw_counts: {
+	est_counts: {
 		type: Number,
 		//decimal: true,
 		label: 'Raw read counts'
