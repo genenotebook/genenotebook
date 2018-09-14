@@ -68,8 +68,8 @@ const processInterproscanGffLine = ({ line, bulkOp }) => {
         }
       })
       */
-      
-      Genes.update({
+
+      const res = Genes.update({
         'subfeatures.ID': seqId
       },{ 
         $addToSet: { 
@@ -77,7 +77,7 @@ const processInterproscanGffLine = ({ line, bulkOp }) => {
           'attributes.interproIds': [...interproIds]
         }
       })
-      
+
     } else {
       console.log('Undefined attributes:')
       console.log(line.join('\t'))
