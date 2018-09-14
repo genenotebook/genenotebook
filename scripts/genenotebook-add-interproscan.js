@@ -38,8 +38,10 @@ geneNoteBook.loginWithPassword({ username, password })
   return geneNoteBook.call('addInterproscan', { fileName })
 })
 .then(addInterproscanResult => {
-  const { ok, writeErrors, writeConcernErrors, nInserted } = addGenomeResult;
-  console.log(`Succesfully added ${genomeName} genome in ${nInserted} chunks`)
+  console.log('Finished')
+  console.log(addInterproscanResult)
+  //const { ok, writeErrors, writeConcernErrors, nInserted } = addInterproscanResult;
+  //console.log(`Succesfully added ${genomeName} genome in ${nInserted} chunks`)
   geneNoteBook.disconnect()
 })
 .catch(error => {

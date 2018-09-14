@@ -58,15 +58,17 @@ const processInterproscanGffLine = ({ line, bulkOp }) => {
         proteinDomain['signature_desc'] = attributes['signature_desc'][0];
       }
 
+      /*
       bulkOp.find({
         'subfeatures.ID': seqId
-      }).updateOne({
+      }).update({
         $addToSet: { 
           'subfeatures.$.protein_domains': proteinDomain,
           'attributes.interproIds': [...interproIds]
         }
       })
-      /*
+      */
+      
       Genes.update({
         'subfeatures.ID': seqId
       },{ 
@@ -75,7 +77,7 @@ const processInterproscanGffLine = ({ line, bulkOp }) => {
           'attributes.interproIds': [...interproIds]
         }
       })
-      */
+      
     } else {
       console.log('Undefined attributes:')
       console.log(line.join('\t'))
@@ -155,8 +157,10 @@ const parseInterproscanGff = fileName => {
 
       },
       complete(results,file) {
+        bukOpResults = bulkOp.execute();
+        //console.log(bukOpResults)
         console.log('Finished')
-        resolve(allInterproIds)
+        resolve(bukOpResults)
       }
     })
   })
