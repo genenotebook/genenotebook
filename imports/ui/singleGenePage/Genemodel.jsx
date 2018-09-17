@@ -52,49 +52,47 @@ const XAxis = ({ scale, numTicks, transform, seqid }) => {
 }
 
 const ExonPopover = ({ showPopover, togglePopover, targetId, ID, type, start, end, phase, attributes, seq }) => {
-  return (
-    <Popover placement='top' isOpen={showPopover} target={targetId} toggle={togglePopover}>
-      <PopoverHeader>
-        { ID }
-      </PopoverHeader>
-      <PopoverBody className='px-0 py-0'>
-        <div className="table-responive">
-          <table className="table table-hover">
-            <tbody>
-              <tr>
-                <td>Type</td>
-                <td>{type}</td>
-              </tr>
-              <tr>
-                <td>Coordinates</td>
-                <td>{start}..{end}</td>
-              </tr>
-              <tr>
-                <td>Phase</td>
-                <td>{phase}</td>
-              </tr>
-              {
-                Object.keys(attributes).map(attribute => {
-                  return <tr key={attribute}>
-                    <td>{attribute}</td>
-                    <td>{attributes[attribute]}</td>
-                  </tr>
-                })
-              }
-              <tr>
-                <td colSpan='2'>
-                  <h6>{type} sequence</h6>
-                  <div className="card exon-sequence">
-                    { seq }
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </PopoverBody>
-    </Popover>
-  )
+  return <Popover placement='top' isOpen={showPopover} target={targetId} toggle={togglePopover}>
+    <PopoverHeader>
+      { ID }
+    </PopoverHeader>
+    <PopoverBody className='px-0 py-0'>
+      <div className="table-responive">
+        <table className="table table-hover">
+          <tbody>
+            <tr>
+              <td>Type</td>
+              <td>{type}</td>
+            </tr>
+            <tr>
+              <td>Coordinates</td>
+              <td>{start}..{end}</td>
+            </tr>
+            <tr>
+              <td>Phase</td>
+              <td>{phase}</td>
+            </tr>
+            {
+              Object.keys(attributes).map(attribute => {
+                return <tr key={attribute}>
+                  <td>{attribute}</td>
+                  <td>{attributes[attribute]}</td>
+                </tr>
+              })
+            }
+            <tr>
+              <td colSpan='2'>
+                <h6>{type} sequence</h6>
+                <div className="card exon-sequence">
+                  { seq }
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </PopoverBody>
+  </Popover>
 }
 
 class Exon extends React.Component {
@@ -134,7 +132,8 @@ class Exon extends React.Component {
     return <React.Fragment>
       <rect className='exon' {...{ x, y, width, height, fill: fill.rgb() }} 
             id={targetId} onClick={this.togglePopover} />
-      <ExonPopover {...{targetId, ...this.props, ...this.state}} togglePopover={this.togglePopover} />
+      <ExonPopover {...{targetId, ...this.props, ...this.state}} 
+        togglePopover={this.togglePopover} />
     </React.Fragment>
   }
 }

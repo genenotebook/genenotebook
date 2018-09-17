@@ -65,7 +65,7 @@ class InterproscanProcessor {
 
         if (Dbxref.length) {
           proteinDomain['Dbxref'] = Dbxref;
-          dbUpdate['$addToSet']['attributes.Dbxref'] = Dbxref;
+          dbUpdate['$addToSet']['attributes.Dbxref'] = { $each: Dbxref };
         }
 
         if (signature_desc.length) {
@@ -74,7 +74,7 @@ class InterproscanProcessor {
 
         if (Ontology_term.length) {
           proteinDomain['Ontology_term'] = Ontology_term;
-          dbUpdate['$addToSet']['attributes.Ontology_term'] = Ontology_term;
+          dbUpdate['$addToSet']['attributes.Ontology_term'] = { $each: Ontology_term };
         }
 
         dbUpdate['$addToSet']['subfeatures.$.protein_domains'] = proteinDomain;
@@ -94,78 +94,6 @@ class InterproscanProcessor {
   }
 }
 /*
-const processInterproscanGffLine = ({ line, bulkOp }) => {
-  const [ seqId, source, type, start, end,
-      score, strand, phase, attributeString ] = line;
-  const interproIds = new Set();
-
-  if (type === 'protein_match'){
-    if (typeof attributeString !== 'undefined'){
-      let attributes;
-      try {
-        attributes = formatAttributes(attributeString);
-      } catch (error) {
-        console.log(`Error line ${lineNumber}`)
-        console.log(line.join('\t'))
-        console.log(attributeString)
-        console.log(debugFormatAttributes(attributeString))
-        throw new Meteor.Error(error)
-      }
-
-      const { Name, Dbxref } = attributes;
-      const proteinDomain = { start, end, source, score, name: Name };
-      
-      if (typeof Dbxref !== 'undefined'){
-        proteinDomain['dbxref'] = Dbxref;
-        let hasInterpro = false;
-        Dbxref.forEach(crossref => {
-          const [db, id] = crossref.split(':')
-          if (/InterPro/.test(db)){
-            hasInterpro = true
-            proteinDomain['interpro'] = id;
-            interproIds.add(id);
-          }
-        })
-        if (!hasInterpro) {
-          proteinDomain['interpro'] = 'Unintegrated signature';
-        }
-      } else {
-        proteinDomain['interpro'] = 'Unintegrated signature';
-      }
-
-      if (typeof attributes['signature_desc'] !== 'undefined'){
-        proteinDomain['signature_desc'] = attributes['signature_desc'][0];
-      }
-
-      /*
-      bulkOp.find({
-        'subfeatures.ID': seqId
-      }).update({
-        $addToSet: { 
-          'subfeatures.$.protein_domains': proteinDomain,
-          'attributes.interproIds': [...interproIds]
-        }
-      })
-      */
-      /*
-      const res = Genes.update({
-        'subfeatures.ID': seqId
-      },{ 
-        $addToSet: { 
-          'subfeatures.$.protein_domains': proteinDomain,
-          attributes
-        }
-      })
-      */
-     /*
-    } else {
-      console.log('Undefined attributes:')
-      console.log(line.join('\t'))
-    }
-  }
-  return interproIds;
-}
-*/
 const scanInterproApi = interproIds => {
   console.log(interproIds)
   const date = new Date();
@@ -198,7 +126,7 @@ const scanInterproApi = interproIds => {
     throw new Meteor.Error(error)
   })
 }
-
+*/
 const parseInterproscanGff = fileName => {
   return new Promise((resolve, reject) => {
     console.log('addInterproscan', fileName)
@@ -208,10 +136,8 @@ const parseInterproscanGff = fileName => {
     const fileHandle = fs.readFileSync(fileName, { encoding:'binary' });
 
     const allInterproIds = new Set();
-    //const bulkOp = Genes.rawCollection().initializeUnorderedBulkOp();
 
     const lineProcessor = new InterproscanProcessor();
-
 
     Papa.parse(fileHandle, {
       delimiter: '\t',
@@ -234,13 +160,12 @@ const parseInterproscanGff = fileName => {
         } else {
           lineProcessor.parse(line);
         }
-
       },
       complete(results,file) {
-        bukOpResults = lineProcessor.finalize();//bulkOp.execute();
-        //console.log(bukOpResults)
-        console.log('Finished')
-        resolve(bukOpResults)
+        console.log('Executing bulk operation');
+        bukOpResults = lineProcessor.finalize();
+        console.log('Finished');
+        resolve(bukOpResults);
       }
     })
   })
