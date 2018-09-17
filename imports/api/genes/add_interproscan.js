@@ -14,6 +14,86 @@ import { Interpro } from '/imports/api/genes/interpro_collection.js';
 
 import { formatAttributes, debugFormatAttributes } from '/imports/api/util/util.js';
 
+const logAttributeError = ({ lineNumber, line, attributeString, error }) => {
+  console.log(`Error line ${lineNumber}`)
+  console.log(line.join('\t'))
+  console.log(attributeString)
+  console.log(debugFormatAttributes(attributeString))
+  throw new Meteor.Error(error)
+}
+
+class InterproscanProcessor {
+  constructor(){
+    this.bulkOp = Genes.rawCollection().initializeUnorderedBulkOp();
+    this.lineNumber = 0;
+  }
+
+  parse = line => {
+    this.lineNumber += 1;
+    const [ seqId, source, type, start, end,
+      score, strand, phase, attributeString ] = line;
+
+    if (type === 'protein_match'){
+      if (typeof attributeString !== 'undefined'){
+        let attributes;
+        try {
+          attributes = formatAttributes(attributeString);
+        } catch (error) {
+          logAttributeError({ lineNumber: this.lineNumber, line, 
+            attributeString, error });
+        }
+
+        const dbUpdate = { $addToSet: {} };
+
+        const { Name, Dbxref = [], Ontology_term = [], 
+          signature_desc = [] } = attributes;
+
+        const proteinDomain = { start, end, source, score, name: Name[0] };
+
+        const interproIds = Dbxref.filter(xref => {
+          return /InterPro/.test(xref)
+        }).map(interproId => {
+          const [db, id] = interproId.split(':');
+          return id;
+        });
+
+        if (interproIds.length) {
+          proteinDomain['interproId'] = interproIds[0];
+        } else {
+          proteinDomain['interproId'] = 'Unintegrated signature';
+        }
+
+        if (Dbxref.length) {
+          proteinDomain['Dbxref'] = Dbxref;
+          dbUpdate['$addToSet']['attributes.Dbxref'] = Dbxref;
+        }
+
+        if (signature_desc.length) {
+          proteinDomain['signature_desc'] = signature_desc[0];
+        }
+
+        if (Ontology_term.length) {
+          proteinDomain['Ontology_term'] = Ontology_term;
+          dbUpdate['$addToSet']['attributes.Ontology_term'] = Ontology_term;
+        }
+
+        dbUpdate['$addToSet']['subfeatures.$.protein_domains'] = proteinDomain;
+
+        
+        this.bulkOp.find({ 'subfeatures.ID': seqId }).update(dbUpdate);
+
+      } else {
+        console.log('Undefined attributes:')
+        console.log(line.join('\t'))
+      }
+    }
+  }
+
+  finalize = () => {
+    return this.bulkOp.execute();
+  }
+}
+/*
 const processInterproscanGffLine = ({ line, bulkOp }) => {
   const [ seqId, source, type, start, end,
       score, strand, phase, attributeString ] = line;
@@ -32,14 +112,13 @@ const processInterproscanGffLine = ({ line, bulkOp }) => {
         throw new Meteor.Error(error)
       }
 
-      const name = attributes['Name'][0];
-      const proteinDomain = { start, end, source, score, name };
-      const dbxref = attributes['Dbxref'];
+      const { Name, Dbxref } = attributes;
+      const proteinDomain = { start, end, source, score, name: Name };
       
-      if (typeof dbxref !== 'undefined'){
-        proteinDomain['dbxref'] = dbxref;
+      if (typeof Dbxref !== 'undefined'){
+        proteinDomain['dbxref'] = Dbxref;
         let hasInterpro = false;
-        dbxref.forEach(crossref => {
+        Dbxref.forEach(crossref => {
           const [db, id] = crossref.split(':')
           if (/InterPro/.test(db)){
             hasInterpro = true
@@ -68,16 +147,17 @@ const processInterproscanGffLine = ({ line, bulkOp }) => {
         }
       })
       */
-
+      /*
       const res = Genes.update({
         'subfeatures.ID': seqId
       },{ 
         $addToSet: { 
           'subfeatures.$.protein_domains': proteinDomain,
-          'attributes.interproIds': [...interproIds]
+          attributes
         }
       })
-
+      */
+     /*
     } else {
       console.log('Undefined attributes:')
       console.log(line.join('\t'))
@@ -85,7 +165,7 @@ const processInterproscanGffLine = ({ line, bulkOp }) => {
   }
   return interproIds;
 }
-
+*/
 const scanInterproApi = interproIds => {
   console.log(interproIds)
   const date = new Date();
@@ -128,7 +208,10 @@ const parseInterproscanGff = fileName => {
     const fileHandle = fs.readFileSync(fileName, { encoding:'binary' });
 
     const allInterproIds = new Set();
-    const bulkOp = Genes.rawCollection().initializeUnorderedBulkOp();
+    //const bulkOp = Genes.rawCollection().initializeUnorderedBulkOp();
+
+    const lineProcessor = new InterproscanProcessor();
+
 
     Papa.parse(fileHandle, {
       delimiter: '\t',
@@ -149,15 +232,12 @@ const parseInterproscanGff = fileName => {
             parser.abort()
           }
         } else {
-          const interproIds = processInterproscanGffLine({ line, bulkOp });
-          for (let interproId of interproIds){
-            allInterproIds.add(interproId)
-          }
+          lineProcessor.parse(line);
         }
 
       },
       complete(results,file) {
-        bukOpResults = bulkOp.execute();
+        bukOpResults = lineProcessor.finalize();//bulkOp.execute();
         //console.log(bukOpResults)
         console.log('Finished')
         resolve(bukOpResults)

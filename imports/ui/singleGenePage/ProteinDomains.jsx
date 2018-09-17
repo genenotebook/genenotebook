@@ -56,15 +56,16 @@ const SourceGroup = ({source, domains, transform, scale}) => {
     <g transform={transform}>
       {
         domains.map((domain, domainIndex) => {
-          const fill = domain.interpro === 'Unintegrated signature' ? 'grey' : randomColor({seed: domain.interpro});
+          const { interproId, start, end, name } = domain;
+          const fill = interproId === 'Unintegrated signature' ? 'grey' : randomColor({seed: interproId});
           return <rect 
-            x={scale(domain.start)}
-            width={scale(domain.end) - scale(domain.start)}
+            x={scale(start)}
+            width={scale(end) - scale(start)}
             y='0'
             height='8'
             rx='4'
             ry='4'
-            key={`${domain.name}${domainIndex}`} 
+            key={`${name}${domainIndex}`} 
             style={{
               fill: fill,
               stroke:'black',
@@ -78,8 +79,6 @@ const SourceGroup = ({source, domains, transform, scale}) => {
 }
 
 const InterproGroup = ({interproId, sourceGroups, transform, scale}) => {
-  //const label = typeof interproId !== 'undefined' ? interproId : 'Unintegrated signature';
-  //const label = interproId;
   const [xMin, xMax] = scale.range();
   const descriptions = new Set();
   Object.entries(sourceGroups).forEach((domainGroup, sourceIndex) => {
@@ -90,7 +89,7 @@ const InterproGroup = ({interproId, sourceGroups, transform, scale}) => {
       }
     })
   })
-  const description = [...descriptions][0];
+  const description = [...descriptions].sort((a,b) => b.length - a.length)[0];
   return (
     <g transform={transform}>
       <foreignObject width={xMax} height='25' x='0' y='-22'>
@@ -99,7 +98,7 @@ const InterproGroup = ({interproId, sourceGroups, transform, scale}) => {
           <a href="#" className="btn btn-outline-dark px-2 py-0" style={{fontSize: '.7rem'}}>
             {interproId}
           </a>
-          &nbsp;{description}
+          &nbsp;{ interproId !== 'Unintegrated signature' && description}
         </p>
       </foreignObject>
       {
@@ -178,12 +177,12 @@ class ProteinDomains extends React.Component {
     const sequences = getGeneSequences(gene);
     //interproscan results should be on transcripts
     const transcripts = gene.subfeatures.filter(sub =>  sub.type == 'mRNA');
-    //for now we only look at the primary transcript
-    const transcript = transcripts.filter(transcript => transcript.ID.endsWith('1'))[0];
+    //pick transcript with annotated protein domains
+    const transcript = transcripts.filter(transcript => typeof transcript.protein_domains !== 'undefined')[0];
     const transcriptSequence = sequences.filter(seq => seq.ID === transcript.ID)[0]
     const transcriptSize = transcriptSequence.prot.length;
     
-    const interproGroups = Object.entries(groupBy(transcript.protein_domains, 'interpro')).sort(sortGroups);
+    const interproGroups = Object.entries(groupBy(transcript.protein_domains, 'interproId')).sort(sortGroups);
     const totalGroups = interproGroups.length;
     let totalDomains = 0;
     const sortedDomains = interproGroups.map(domainGroup => {
@@ -242,6 +241,5 @@ class ProteinDomains extends React.Component {
   }
 }
 
-//export default ProteinDomains
 export default withConditionalRendering(ProteinDomains)
 

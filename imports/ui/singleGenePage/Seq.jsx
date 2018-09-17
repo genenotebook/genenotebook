@@ -68,8 +68,16 @@ export default class SeqContainer extends React.Component {
     this.state = {
       selectedTranscript: transcripts[0],
       transcripts: transcripts,
-      seqType: 'nucl'
+      seqType: 'nucl',
+      showAll: false
     }
+  }
+
+  toggleShowAll = event => {
+    event.preventDefault();
+    this.setState({
+      showAll: !this.state.showAll
+    })
   }
 
   selectTranscript = (transcriptId) => {
@@ -81,25 +89,32 @@ export default class SeqContainer extends React.Component {
   }
 
   render(){
-    const sequences = getGeneSequences(this.props.gene)
-    const sequence = find(sequences, { ID: this.state.selectedTranscript })
+    const maxLength = 300;
+    const { showAll, selectedTranscript, transcripts, seqType } = this.state;
+    const sequences = getGeneSequences(this.props.gene);
+    const sequence = find(sequences, { ID: this.state.selectedTranscript });
+    const showSequence = showAll ? sequence[seqType] : sequence[seqType].slice(0, maxLength) + '...';
+    const buttonText = showAll ? 'Show less' : 'Show more ...';
 
     return (
       <div id="sequence">
         <hr />
         <Controls 
-          selectedTranscript = { this.state.selectedTranscript } 
+          selectedTranscript = { selectedTranscript } 
           selectTranscript = { this.selectTranscript }
-          transcripts = { this.state.transcripts }
-          seqType = { this.state.seqType }
+          transcripts = { transcripts }
+          seqType = { seqType }
           selectSeqType = { this.selectSeqType }
         />
-        <h3>Sequence</h3>
+        <h3>Coding Sequence</h3>
         <div className="card seq-container">
           <p className="seq"> 
-            >{ this.state.selectedTranscript } <br/> 
-            { sequence[this.state.seqType] }
+            >{ selectedTranscript } <br/> 
+            { showSequence }
           </p>
+          <a href='#' onClick={this.toggleShowAll}>
+            <small>{ buttonText }</small>
+          </a>
         </div>
       </div>
     )
