@@ -20,6 +20,4 @@ const NODE_OPTIONS = program.nodeOptions || '--max-old-space-size=8192';
 
 Object.assign(process.env, { MONGO_URL, ROOT_URL, PORT, NODE_OPTIONS });
 
-console.log(process.env);
-
 require('./main.js');
