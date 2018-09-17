@@ -1,0 +1,8 @@
+.protein-domain-interval {
+  cursor: pointer;
+  &:hover {
+    stroke: #007bff !important; //Bootstrap primary color
+    stroke-width: 2px !important;
+    stroke-linejoin: round;
+  }
+}
