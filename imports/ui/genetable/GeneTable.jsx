@@ -85,7 +85,7 @@ class GeneTable extends React.PureComponent {
   constructor(props){
     super(props)
     this.state = {
-      limit: 40,
+      limit: 20,
       query: {},
       sort: undefined,
       currentQueryCount: '...',

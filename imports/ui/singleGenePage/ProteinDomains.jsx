@@ -140,7 +140,6 @@ class ProteinDomain extends React.Component {
     })
   }
   render(){
-    console.log(this.props)
     const { interproId, start, end, name, domainIndex, scale } = this.props;
     const fill = interproId === 'Unintegrated signature' ? 
             'grey' : randomColor({seed: interproId});
