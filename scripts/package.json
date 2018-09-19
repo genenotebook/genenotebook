@@ -1,6 +1,6 @@
 {
   "name": "genenotebook_scripts",
-  "version": "0.1.0-beta",
+  "version": "0.1.3",
   "description": "Data loading scripts for GeneNoteBook",
   "author": "Rens Holmer",
   "license": "ISC",
