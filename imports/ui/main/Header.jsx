@@ -56,7 +56,7 @@ const LoggedInButton = ({ isAdmin }) => {
 const LoggedInButtonWithTracker = withTracker(adminTracker)(LoggedInButton);
 
 const LoggedOutButton = () => {
-  return <a href="/login" className="btn btn-primary btn-sm" id="signin">
+  return <a href={`${Meteor.absoluteUrl()}login`} className="btn btn-primary btn-sm" id="signin">
     <span className="icon-login" aria-hidden="true" /> Sign in
   </a>
 }
@@ -119,8 +119,8 @@ class NavBar extends React.PureComponent {
     const show = this.state.show ? 'show' : '';
     return <nav className='navbar navbar-expand-md bg-light navbar-light py-0'>
       <div className='container'>
-        <a className="navbar-brand" href="/">
-          <img src="/logo.svg" alt="GeneNoteBook logo" className="navbar-logo rounded-circle" />
+        <a className="navbar-brand" href={Meteor.absoluteUrl()}>
+          <img src="logo.svg" alt="GeneNoteBook logo" className="navbar-logo rounded-circle" />
         </a>
         <button className='navbar-toggler' type='button' onClick={this.toggleShow}>
           <span className='navbar-toggler-icon' />

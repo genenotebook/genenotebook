@@ -60,7 +60,7 @@ class Login extends React.Component {
             required />
           <button 
             className="btn btn-lg btn-primary btn-block mb-3" type="submit">Sign in</button>
-          <a href="/register" id="new-account">Create new account</a>
+          <a href={`${Meteor.absoluteUrl()}register`} id="new-account">Create new account</a>
           <p className="mt-5 mb-3 text-muted">© 2017-2018</p>
         </form>
       </div>
