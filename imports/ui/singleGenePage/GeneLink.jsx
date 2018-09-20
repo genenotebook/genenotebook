@@ -21,7 +21,7 @@ const NotFound = ({ transcriptId }) => <span style={{fontSize: 10}}>{transcriptI
 
 const GeneLink = ({ transcriptId, gene }) => {
   return (
-    <a href={`/gene/${gene.ID}`} style={{fontSize: 10}}>
+    <a href={`${Meteor.absoluteUrl()}gene/${gene.ID}`} style={{fontSize: 10}}>
       {transcriptId} {gene.attributes.Name}
     </a>
   )

@@ -27,7 +27,7 @@ const AdminUserInfo = ({ _id, username, emails, profile, createdAt, roles, ...us
   const { first_name, last_name } = profile;
   return <tr>
     <td>
-      <a href={`/admin/user/${_id}`} > 
+      <a href={`${Meteor.absoluteUrl()}admin/user/${_id}`} > 
         {username}
       </a>
     </td>
