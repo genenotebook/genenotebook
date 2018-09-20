@@ -2,7 +2,7 @@ import './publications.js';
 
 //Import these methods here so they can be used with the Meteor.call('methodName') syntax.
 //This is crucial to be able to call them with the asteroid ddp connection in the data-loading scripts
-import './transcriptomes/add_transcriptome.js';
+import './transcriptomes/addTranscriptome.js';
 import './transcriptomes/updateSampleInfo.js';
 
 import './genomes/addGenome.js';
@@ -14,7 +14,7 @@ import './genomes/removeAnnotationTrack.js';
 
 
 import './genes/interproscan.js';
-import './genes/add_interproscan.js';
+import './genes/addInterproscan.js';
 import './genes/addOrthogroupTrees.js';
 import './genes/downloadGenes.js';
 import './genes/scanGeneAttributes.js';

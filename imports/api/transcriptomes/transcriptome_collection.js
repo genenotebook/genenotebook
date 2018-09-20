@@ -4,6 +4,10 @@ import SimpleSchema from 'simpl-schema';
 const ExperimentInfo = new Mongo.Collection('experiments');
 
 const ExperimentInfoSchema = new SimpleSchema({
+	genomeId: {
+		type: String,
+		label: 'Genome ID'
+	},
 	sampleName: {
 		type: String,
 		label: 'Short name for the sample',
@@ -11,10 +15,6 @@ const ExperimentInfoSchema = new SimpleSchema({
 	replicaGroup: {
 		type: String,
 		label: 'Identifier to group together samples from the same replica'
-	},
-	trackId: {
-		type: String,
-		label: 'Annotation track to which the transcriptome is mapped'
 	},
 	description: {
 		type: String,
@@ -37,21 +37,19 @@ const TranscriptomeSchema = new SimpleSchema({
 	geneId: {
 		type: String,
 		label: 'Gene ID',
-		//index: true
+		index: true
 	},
 	experimentId: {
 		type: String,
 		label: 'Experiment ID',
-		//index: true
+		index: true
 	},
 	est_counts: {
 		type: Number,
-		//decimal: true,
 		label: 'Raw read counts'
 	},
 	tpm: {
 		type: Number,
-		//decimal: true,
 		label: 'TPM normalized read counts'
 	}
 })

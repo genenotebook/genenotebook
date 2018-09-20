@@ -1,6 +1,7 @@
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
+import { compose } from 'recompose';
 import { groupBy } from 'lodash';
 import update from 'immutability-helper';
 
@@ -8,12 +9,41 @@ import { isEqual, omit } from 'lodash';
 
 import { ExperimentInfo } from '/imports/api/transcriptomes/transcriptome_collection.js';
 import { Tracks } from '/imports/api/genomes/track_collection.js';
+import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 
 import { updateSampleInfo } from '/imports/api/transcriptomes/updateSampleInfo.js';
 
+import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
+
 import TrackExperiments from './TrackExperiments.jsx';
+import GenomeExperiment from './GenomeExperiment.jsx';
 
 import './AdminTranscriptomes.scss';
+
+
+const dataTracker = props => {
+  const expInfoSub = Meteor.subscribe('experimentInfo');
+  const experiments = ExperimentInfo.find({}).fetch();
+
+  const genomeSub = Meteor.subscribe('genomes');
+  const genomes = genomeCollection.find({}).fetch();
+
+  const roleSub = Meteor.subscribe('roles');
+  const roles = Meteor.roles.find({}).fetch();
+
+  const loading = !expInfoSub.ready() || !genomeSub.ready() || !roleSub.ready();
+  return {
+    experiments,
+    genomes,
+    loading,
+    roles
+  }
+}
+
+const withConditionalRendering = compose(
+  withTracker(dataTracker),
+  withEither(isLoading, Loading)
+)
 
 class AdminTranscriptomes extends React.Component {
   constructor(props){
@@ -34,17 +64,26 @@ class AdminTranscriptomes extends React.Component {
   }
 
   render(){
+    const { experiments, genomes, roles } = this.props;
+    console.log(experiments)
     return (
-      this.props.loading ? 
-      <div> Loading </div> :
       <div>
         <hr/>
-        <ul className='list-group'>
+        <ul className='list-group list-group-flush'>
         {
-          this.props.tracks.map(track => {
+          genomes.map(genome => {
+            const genomeExperiments = experiments.filter(experiment => {
+              return experiment.genomeId === genome._id
+            })
+            return <li className='list-group-item' key={genome._id}>
+              <GenomeExperiment {...{ roles, genome, experiments: genomeExperiments }} />
+            </li>
+
+            /*
             const trackSamples = this.props.experiments.filter(experiment => {
               return experiment.track === track.trackName;
             })
+
             const expanded = this.state.expanded.indexOf(track.trackName) >= 0;
             return (
               <li key={track.trackName} className='list-group-item experiment-track'>
@@ -61,7 +100,7 @@ class AdminTranscriptomes extends React.Component {
                   expanded && <TrackExperiments samples={trackSamples} roles={this.props.allRoles}/>
                 }
               </li>
-            )
+            )*/
           })
         }
         </ul>
@@ -70,18 +109,5 @@ class AdminTranscriptomes extends React.Component {
   }
 }
 
-export default withTracker(props => {
-  const expInfoSub = Meteor.subscribe('experimentInfo');
-  const trackSub = Meteor.subscribe('tracks');
-  const userSub = Meteor.subscribe('users');
-  const allRoles = Meteor.users.find({}).fetch().reduce((roles, user) => {
-    return roles.concat(user.roles)
-  },[])
-  const uniqueRoles = [...new Set(allRoles)]
-  return {
-    experiments: ExperimentInfo.find({}).fetch(),
-    tracks: Tracks.find({}).fetch(),
-    loading: !expInfoSub.ready() || !trackSub.ready() || !userSub.ready(),
-    allRoles: uniqueRoles
-  }
-})(AdminTranscriptomes)
+export default withConditionalRendering(AdminTranscriptomes);
+//export default withTracker(dataTracker)(AdminTranscriptomes)
