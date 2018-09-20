@@ -33,7 +33,7 @@ const HitLine = (props) => {
   const [gene, transcript] = hit.Hit_def[0].split(' ')
   return (
     <div>
-      <a href={`/gene/${gene}`}> {transcript} </a>
+      <a href={`${Meteor.absoluteUrl()}gene/${gene}`}> {transcript} </a>
       <small>
         <b>E-value:</b> {hit.Hit_hsps[0].Hsp[0].Hsp_evalue[0]}
       </small>

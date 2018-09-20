@@ -37,7 +37,7 @@ const Nav = ({ pages, currentPage, changePage }) => {
             const active = page === currentPage ? 'active' : '';
             return (
               <li key={ page } role="presentation" className="nav-item">
-                <a href={ `/admin/${page}` } className={`nav-link ${active}`} 
+                <a href={ `${Meteor.absoluteUrl()}admin/${page}` } className={`nav-link ${active}`} 
                   id={ page } onClick={changePage}> 
                   { pageName } 
                 </a>

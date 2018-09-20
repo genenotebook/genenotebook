@@ -113,14 +113,14 @@ const Landingpage = () => {
         {
           !Meteor.userId() && 
           <div className='btn-group mx-auto pb-3' role='group'>
-            <a href="/register" className="btn btn-sm btn-outline-success">
+            <a href={`${Meteor.absoluteUrl()}register`} className="btn btn-sm btn-outline-success">
               <span className="icon-user-add" aria-hidden="true" /> Create an account
             </a>
-            <a href="/login" className="btn btn-sm btn-outline-primary">
+            <a href={`${Meteor.absoluteUrl()}login`} className="btn btn-sm btn-outline-primary">
               <span className="icon-login" aria-hidden="true" /> Sign in
             </a>
-            <a href="http://genebook.readthedocs.io/" className="btn btn-sm btn-outline-dark">
-              <span className="icon-github" aria-hidden="true" /> About Genebook
+            <a href="http://genenotebook.github.io/" className="btn btn-sm btn-outline-dark">
+              <span className="icon-github" aria-hidden="true" /> About GeneNotebook
             </a>
           </div>
         }
@@ -137,7 +137,7 @@ const Landingpage = () => {
             <h6 className="card-subtitle text-muted mb-2">
               Browse through a table of genes with customizable queries
             </h6>
-            <a href="/genes" className="btn btn-outline-dark btn-sm px-2 py-0 btn-block">
+            <a href={`${Meteor.absoluteUrl()}genes`} className="btn btn-outline-dark btn-sm px-2 py-0 btn-block">
               <span className="icon-list" aria-hidden="true" /> Browse
             </a> 
           </div>
@@ -167,7 +167,7 @@ const Landingpage = () => {
             <h6 className="card-subtitle mb-2 text-muted">
               BLAST your protein or DNA sequence to genome annotations 
             </h6>
-            <a href="/blast" className="btn btn-outline-dark btn-sm px-2 py-0 btn-block">
+            <a href={`${Meteor.absoluteUrl()}blast`} className="btn btn-outline-dark btn-sm px-2 py-0 btn-block">
               <span className="icon-database" aria-hidden="true" /> Blast
             </a>
           </div>
