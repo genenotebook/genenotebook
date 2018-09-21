@@ -8,22 +8,37 @@ import update from 'immutability-helper';
 
 import { ExperimentInfo } from '/imports/api/transcriptomes/transcriptome_collection.js';
 
+const dataTracker = ({ gene, children }) => {
+  const { genomeId } = gene;
+  const experimentSub = Meteor.subscribe('experimentInfo');
+  const loading = !experimentSub.ready()
+  const experiments = ExperimentInfo.find({ genomeId }).fetch();
+  const replicaGroups = groupBy(experiments, 'replicaGroup');
+  return {
+    loading,
+    experiments,
+    children,
+    replicaGroups
+  }
+}
+
 class SampleSelection extends React.Component {
   constructor(props){
     super(props)
     this.state = {
       options: [{value:'loading',label:'loading...'}],
-      selection: ['loading']
+      selection: [{value:'loading',label:'loading...'}]
     }
   }
-  componentWillReceiveProps = nextProps => {
-    const options = Object.keys(nextProps.replicaGroups).map(replicaGroup => {
+  componentWillReceiveProps = ({ replicaGroups }) => {
+    const options = Object.keys(replicaGroups).map(replicaGroup => {
       return {
         value: replicaGroup,
         label: replicaGroup
       }
     })
-    const selection = options.map(option => option.value)
+    //const selection = options.map(option => option.value)
+    const selection = options.slice(0, 10);
     this.setState({
       options,
       selection
@@ -33,7 +48,7 @@ class SampleSelection extends React.Component {
   updateSelection = newSelection => {
     const newState = update(this.state, {
       selection: {
-        $set: newSelection.map( selection => selection.value)
+        $set: newSelection//.map( selection => selection.value)
       }
     })
     this.setState(newState)
@@ -41,15 +56,15 @@ class SampleSelection extends React.Component {
 
   renderChildren = () => {
     const { selection } = this.state;
-    const { replicaGroups, gene } = this.props;
-    const _samples = selection.map(replicaGroupId => {
-      return replicaGroups[replicaGroupId].map(sample => {
+    const { replicaGroups, gene, children } = this.props;
+    const _samples = selection.map(({ value }) => {
+      return replicaGroups[value].map(sample => {
         return sample
       })
     })
     const samples = [].concat(..._samples);
 
-    return React.Children.map(this.props.children, child => {
+    return React.Children.map(children, child => {
       return React.cloneElement(child, {
         samples,
         gene 
@@ -59,14 +74,11 @@ class SampleSelection extends React.Component {
 
   render(){
     const { loading } = this.props;
+    const { selection, options } = this.state;
     return (
       <div>
-        <Select 
-          multi={true}
-          value={this.state.selection}
-          options={this.state.options}
-          onChange={this.updateSelection} 
-        />
+        <Select isMulti value={selection} closeMenuOnSelect={false}
+          options={options} onChange={this.updateSelection} />
         {
           !loading && this.renderChildren()
         }
@@ -75,16 +87,4 @@ class SampleSelection extends React.Component {
   }
 }
 
-export default withTracker(({ gene, children }) => {
-  const { trackId } = gene;
-  const experimentSub = Meteor.subscribe('experimentInfo');
-  const loading = !experimentSub.ready()
-  const experiments = ExperimentInfo.find({ trackId }).fetch();
-  const replicaGroups = groupBy(experiments, 'replicaGroup');
-  return {
-    loading,
-    experiments,
-    children,
-    replicaGroups
-  }
-})(SampleSelection);
+export default withTracker(dataTracker)(SampleSelection);

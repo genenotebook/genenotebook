@@ -17,7 +17,6 @@ export const updateSampleInfo = new ValidatedMethod({
   validate: new SimpleSchema({
     _id: { type: String },
     sampleName: { type: String },
-    experimentGroup: { type: String },
     replicaGroup: { type: String },
     description: { type: String },
     permissions: { type: Array },
@@ -26,7 +25,7 @@ export const updateSampleInfo = new ValidatedMethod({
   applyOptions: {
     noRetry: true
   },
-  run({ _id, sampleName, experimentGroup, replicaGroup, description, permissions }){
+  run({ _id, sampleName, replicaGroup, description, permissions }){
     if (! this.userId) {
       throw new Meteor.Error('not-authorized');
     }
@@ -39,15 +38,12 @@ export const updateSampleInfo = new ValidatedMethod({
     }
 
     console.log({
-      _id,sampleName,experimentGroup,replicaGroup,description,permissions
+      _id,sampleName,replicaGroup,description,permissions
     })
 
-    ExperimentInfo.update({
-      _id: _id
-    },{
+    return ExperimentInfo.update({ _id },{
       $set: {
         sampleName,
-        experimentGroup,
         replicaGroup,
         description,
         permissions

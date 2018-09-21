@@ -2,13 +2,13 @@ import React from 'react';
 import { groupBy } from 'lodash';
 
 import { updateReplicaGroup } from '/imports/api/transcriptomes/updateReplicaGroup.js';
-
+import { updateSampleInfo } from '/imports/api/transcriptomes/updateSampleInfo.js';
 class Experiment extends React.Component {
   constructor(props){
     super(props);
     const { sampleName, replicaGroup, description, permissions } = props;
     this.state = {
-      isEditing: false,
+      edit: false,
       sampleName,
       replicaGroup,
       description,
@@ -17,7 +17,7 @@ class Experiment extends React.Component {
   }
   toggleEdit = () => {
     this.setState({
-      isEditing: !this.state.isEditing
+      edit: !this.state.edit
     })
   }
   updateField = event => {
@@ -28,41 +28,63 @@ class Experiment extends React.Component {
     })
   }
   submit = () => {
-    console.log(this.state);
+    event.preventDefault();
+    const { _id } = this.props;
+    const { sampleName, replicaGroup, description, permissions } = this.state;
+    updateSampleInfo.call({
+      _id, sampleName, replicaGroup, description, permissions
+    }, (err,res) => {
+      if (err) alert(err);
+    })
     this.setState({
-      isEditing: false
+      edit: false
     })
   }
   render(){
-    const { sampleName, replicaGroup, description, permissions } = this.state;
+    const { sampleName, replicaGroup, description, permissions, edit } = this.state;
     const { allReplicaGroups } = this.props;
-    return <form onSubmit={this.submit}>
-      <div className='form-row'>
-        <div className='form-group col-md-4'>
-          <label htmlFor='sample-name'>Sample name</label>
-          <input type='text' className='form-control form-control-sm' id='sampleName' 
-            value={sampleName} onChange={this.updateField} disabled/>
-        </div>
-        <div className='form-group col-md-4'>
-          <label htmlFor='description'>description</label>
-          <input type='text' className='form-control form-control-sm' id='description' 
-            value={description} onChange={this.updateField} disabled/>
-        </div>
-        <div className='form-group col-md-4'>
-          <label htmlFor='allReplicaGroups' role='group'>Replica group</label>
-          <select className='form-control form-control-sm' disabled>
-            {
-              allReplicaGroups.map(replicaGroupOption => {
-                return <option key={replicaGroupOption} value={replicaGroupOption}
-                  selected={replicaGroup === replicaGroupOption}>
-                  { replicaGroupOption }
-                </option>
-              })
-            }
-          </select>
-        </div>
+    return <React.Fragment>
+      <div className='btn-group' role='group'>
+        <button className='btn btn-sm border px-0 py-0' id='edit' onClick={this.toggleEdit} >
+          <span className={edit ? 'icon-cancel' : 'icon-pencil'} id='edit' onClick={this.toggleEdit} />
+        </button>
+        {
+          edit &&
+          <button className='btn btn-sm btn-success px-0 py-0' id='save' onClick={this.submit} >
+            <span className='icon-floppy' id='save' onClick={this.submit} />
+          </button>
+        }
       </div>
-    </form>
+      <form onSubmit={this.submit}>
+        <div className='form-row'>
+          <div className='form-group col-md-4'>
+            <label htmlFor='sample-name'>Sample name</label>
+            <input type='text' className='form-control form-control-sm' id='sampleName' 
+              title={sampleName} value={sampleName} onChange={this.updateField} 
+              disabled={!edit}/>
+          </div>
+          <div className='form-group col-md-4'>
+            <label htmlFor='description'>description</label>
+            <input type='text' id='description' value={description} title={description}
+              className='form-control form-control-sm' onChange={this.updateField} 
+              disabled={!edit}/>
+          </div>
+          <div className='form-group col-md-4'>
+            <label htmlFor='allReplicaGroups' role='group'>Replica group</label>
+            <select className='form-control form-control-sm' disabled={!edit} 
+              value={replicaGroup} id='replicaGroup' onChange={this.updateField}>
+              {
+                allReplicaGroups.map(replicaGroupOption => {
+                  return <option key={replicaGroupOption} value={replicaGroupOption}>
+                    { replicaGroupOption }
+                  </option>
+                })
+              }
+            </select>
+          </div>
+        </div>
+      </form>
+    </React.Fragment>
   }
 }
 
@@ -136,8 +158,9 @@ class ReplicaGroup extends React.Component {
           <form className='form-inline d-inline-flex ml-2' onSubmit={this.submit}>
             <div className='form-group'>
               <label htmlFor='replica-group'>Replica group</label>
-              <input type='text' className='form-control form-control-sm ml-2' id='replica-group' 
-                value={replicaGroup} onChange={this.updateReplicaGroup} disabled={!edit} />
+              <input type='text' className='form-control form-control-sm ml-2' 
+                id='replica-group' value={replicaGroup} size='40' title={replicaGroup}
+                onChange={this.updateReplicaGroup} disabled={!edit} />
             </div>
           </form>
         </div>

@@ -47,17 +47,17 @@ const TreeBranches = ({ nodes, chronogram = true }) => {
   const offset = chronogram ? 0 : 50;
   const multiplier = chronogram ? 1 : 2;
   const value = chronogram ? 'y' : 'value';
+  const style = {fill: 'none', stroke: 'black', strokeWidth: 1};
   return nodes.map(node => {
     const d = `
       M${offset + (node.parent[value] * multiplier)},${node.parent.x} 
       L${offset + (node.parent[value] * multiplier)},${node.x} 
       L${offset + (node[value] * multiplier)},${node.x}`;
-    return <path key={d} d={d} style={{fill: 'none', stroke: 'black', strokeWidth: 1}}/>
+    return <path key={d} d={d} style={style}/>
   })
 }
 
 const TreeNodes = ({ nodes }) => {
-  console.log(nodes)
   const tipNodes = nodes.filter(node => node.data.name.length > 0);
   return tipNodes.map(node => {
     const transcriptId = node.data.name
@@ -73,7 +73,6 @@ const TreeNodes = ({ nodes }) => {
 }
 
 const Tree = ({ tree, size, geneIds }) => {
-  console.log(tree)
   return (
     <div className='card tree'>
       <ContainerDimensions>
