@@ -11,7 +11,7 @@ import { orthogroupCollection } from '/imports/api/genes/orthogroup_collection.j
 
 import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
-import GeneLink from './GeneLink.jsx';
+import OrthogroupTipNode from './OrthogroupTipNode.jsx';
 
 const hasNoOrthogroup = ({ orthogroup }) => {
   return typeof orthogroup === 'undefined'
@@ -57,19 +57,28 @@ const TreeBranches = ({ nodes, chronogram = true }) => {
   })
 }
 
-const TreeNodes = ({ nodes }) => {
-  const tipNodes = nodes.filter(node => node.data.name.length > 0);
-  return tipNodes.map(node => {
-    const transcriptId = node.data.name
-    return (
-      <g key={`${node.x}_${node.y}_${node.data.name}`}>
-        <circle cy={node.x} cx={node.y} r='3' />
-        <foreignObject width='300' height='10' x={node.y + 10} y={node.x - 15}>
-          <GeneLink transcriptId={transcriptId} />
-        </foreignObject>
-      </g>
-    )
-  })
+const TreeBranch = ({ node, chronogram = true}) => {
+  const offset = chronogram ? 0 : 50;
+  const multiplier = chronogram ? 1 : 2;
+  const value = chronogram ? 'y' : 'value';
+  const style = {fill: 'none', stroke: 'black', strokeWidth: 1};
+  const d = `M${offset + (node.parent[value] * multiplier)},${node.parent.x} 
+      L${offset + (node.parent[value] * multiplier)},${node.x} 
+      L${offset + (node[value] * multiplier)},${node.x}`;
+  return <path {...{ d, style }} />
+}
+
+const InternalNode = ({ data = { name: ''}, x, y }) => {
+  const nodeLabel = data.name;
+  return <text x={y + 3} y={x + 3} fontSize='10'>
+    { nodeLabel }
+  </text>
+}
+
+const TreeNode = ({ node }) => {
+  return typeof node.children === 'undefined' ? 
+    <OrthogroupTipNode {...node} /> :
+    <InternalNode {...node} />
 }
 
 const Tree = ({ tree, size, geneIds }) => {
@@ -91,8 +100,18 @@ const Tree = ({ tree, size, geneIds }) => {
             return (
               <svg width={width - 10} height={svgHeight}>
                 <g transform={`translate(10,0)`}>
+                  {
+                    nodes.map(node => {
+                      return <React.Fragment key={`${node.x}_${node.y}`}>
+                        <TreeBranch node={node} />
+                        <TreeNode node={node} />
+                      </React.Fragment>
+                    })
+                  }
+                  {/*
                   <TreeBranches nodes={nodes} />
                   <TreeNodes nodes={nodes} />
+                */}
                 </g>
               </svg>
             )
