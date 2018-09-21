@@ -120,7 +120,9 @@ class NavBar extends React.PureComponent {
     return <nav className='navbar navbar-expand-md bg-light navbar-light py-0'>
       <div className='container'>
         <a className="navbar-brand" href={Meteor.absoluteUrl()}>
-          <img src="logo.svg" alt="GeneNoteBook logo" className="navbar-logo rounded-circle" />
+          <small>
+            <img src={`${Meteor.absoluteUrl()}logo.svg`} alt="GeneNoteBook logo" className="navbar-logo rounded-circle" />
+          </small>
         </a>
         <button className='navbar-toggler' type='button' onClick={this.toggleShow}>
           <span className='navbar-toggler-icon' />

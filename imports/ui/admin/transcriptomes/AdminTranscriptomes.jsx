@@ -78,29 +78,6 @@ class AdminTranscriptomes extends React.Component {
             return <li className='list-group-item' key={genome._id}>
               <GenomeExperiment {...{ roles, genome, experiments: genomeExperiments }} />
             </li>
-
-            /*
-            const trackSamples = this.props.experiments.filter(experiment => {
-              return experiment.track === track.trackName;
-            })
-
-            const expanded = this.state.expanded.indexOf(track.trackName) >= 0;
-            return (
-              <li key={track.trackName} className='list-group-item experiment-track'>
-                <input 
-                  type='submit' 
-                  className='fa btn btn-sm btn-outline-dark' 
-                  value={ expanded ? '\uf068' : '\uf067' } 
-                  id={track.trackName}
-                  onClick={this.toggleExpand} />
-                <small className='text-muted'>&nbsp;Annotation track: </small>
-                {track.trackName}  
-                <span className='badge badge-dark pull-right'>{trackSamples.length} samples</span>
-                {
-                  expanded && <TrackExperiments samples={trackSamples} roles={this.props.allRoles}/>
-                }
-              </li>
-            )*/
           })
         }
         </ul>
@@ -110,4 +87,3 @@ class AdminTranscriptomes extends React.Component {
 }
 
 export default withConditionalRendering(AdminTranscriptomes);
-//export default withTracker(dataTracker)(AdminTranscriptomes)

@@ -179,6 +179,12 @@
       "css": "spin",
       "code": 59444,
       "src": "fontelico"
+    },
+    {
+      "uid": "9559f17a471856ef50ed266e726cfa25",
+      "css": "minus",
+      "code": 59415,
+      "src": "iconic"
     }
   ]
 }
