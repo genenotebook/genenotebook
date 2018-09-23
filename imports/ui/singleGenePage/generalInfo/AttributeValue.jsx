@@ -62,7 +62,10 @@ class AttributeValueSingle extends React.Component {
     const maxLength = 100;
     const { showAll } = this.state;
     const attributeValue = String(this.props.attributeValue);
-    const value = showAll ? attributeValue : `${attributeValue.slice(0, maxLength)}...`;
+
+    const value = showAll || attributeValue.length <= maxLength ? attributeValue : 
+      `${attributeValue.slice(0, maxLength)}...`;
+
     const buttonText = showAll ? 'Show less' : 'Show more ...';
     return <React.Fragment>
       <p className='mb-1'>{ value }</p>
