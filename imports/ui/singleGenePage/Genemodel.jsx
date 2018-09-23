@@ -7,6 +7,8 @@ import { scaleLinear } from 'd3-scale';
 import randomColor from 'randomcolor';
 import Color from 'color';
 
+import AttributeValue from '/imports/ui/singleGenePage/generalInfo/AttributeValue.jsx';
+
 import './genemodel.scss'
 
 const XAxis = ({ scale, numTicks, transform, seqid }) => {
@@ -51,7 +53,7 @@ const XAxis = ({ scale, numTicks, transform, seqid }) => {
   )
 }
 
-const ExonPopover = ({ showPopover, togglePopover, targetId, ID, type, start, end, phase, attributes, seq }) => {
+const IntervalPopover = ({ showPopover, togglePopover, targetId, ID, type, start, end, phase, attributes, seq }) => {
   return <Popover placement='top' isOpen={showPopover} target={targetId} toggle={togglePopover}>
     <PopoverHeader>
       { ID }
@@ -73,10 +75,12 @@ const ExonPopover = ({ showPopover, togglePopover, targetId, ID, type, start, en
               <td>{phase}</td>
             </tr>
             {
-              Object.keys(attributes).map(attribute => {
-                return <tr key={attribute}>
-                  <td>{attribute}</td>
-                  <td>{attributes[attribute]}</td>
+              Object.entries(attributes).map(([ attributeName, attributeValue ]) => {
+                return <tr key={attributeName}>
+                  <td>{attributeName}</td>
+                  <td>
+                    <AttributeValue {...{ attributeValue }}/>
+                  </td>
                 </tr>
               })
             }
@@ -84,7 +88,7 @@ const ExonPopover = ({ showPopover, togglePopover, targetId, ID, type, start, en
               <td colSpan='2'>
                 <h6>{type} sequence</h6>
                 <div className="card exon-sequence">
-                  { seq }
+                  <AttributeValue attributeValue={seq} />
                 </div>
               </td>
             </tr>
@@ -132,13 +136,12 @@ class Exon extends React.Component {
     return <React.Fragment>
       <rect className='exon' {...{ x, y, width, height, fill: fill.rgb() }} 
             id={targetId} onClick={this.togglePopover} />
-      <ExonPopover {...{targetId, ...this.props, ...this.state}} 
+      <IntervalPopover {...{targetId, ...this.props, ...this.state}} 
         togglePopover={this.togglePopover} />
     </React.Fragment>
   }
 }
 
-//const Transcript = ({ transcript, exons, scale, strand, genomeId, geneId }) => {
 class Transcript extends React.Component {
   constructor(props){
     super(props)
@@ -181,12 +184,20 @@ class Transcript extends React.Component {
         {
           exons.map(exon => <Exon key={exon.ID} {...{ genomeId, geneId, scale, ...exon }} /> )
         }
-        <ExonPopover {...{ targetId, showPopover, ...transcript }} togglePopover={this.togglePopover} />
+        <IntervalPopover {...{ targetId, showPopover, ...transcript }} togglePopover={this.togglePopover} />
       </React.Fragment>
     )
   }
 }
 
+/**
+ * GenemodelGroup
+ * @param  {[type]} options.gene        [description]
+ * @param  {[type]} options.transcripts [description]
+ * @param  {[type]} options.width       [description]
+ * @param  {[type]} options.scale       [description]
+ * @return {[type]}                     [description]
+ */
 const GenemodelGroup = ({gene, transcripts, width, scale}) => {
   return (
     <g className='genemodel' transform='translate(0,4)'>
@@ -204,6 +215,7 @@ const GenemodelGroup = ({gene, transcripts, width, scale}) => {
     </g>
   )
 }
+
 
 
 export default class Genemodel extends React.PureComponent {

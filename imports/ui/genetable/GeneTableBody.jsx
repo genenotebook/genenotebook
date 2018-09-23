@@ -9,11 +9,12 @@ import { Genes } from '/imports/api/genes/gene_collection.js';
 
 import { withEither } from '/imports/ui/util/uiUtil.jsx';
 
-import Genemodel from '../singleGenePage/Genemodel.jsx';
-import ProteinDomains from '../singleGenePage/ProteinDomains.jsx';
-import ExpressionPlot from '../singleGenePage/ExpressionPlot.jsx';
-import SampleSelection from '../singleGenePage/SampleSelection.jsx';
+import Genemodel from '/imports/ui/singleGenePage/Genemodel.jsx';
+import ProteinDomains from '/imports/ui/singleGenePage/ProteinDomains.jsx';
+import ExpressionPlot from '/imports/ui/singleGenePage/ExpressionPlot.jsx';
+import SampleSelection from '/imports/ui/singleGenePage/SampleSelection.jsx';
 //import Info from '../singleGenePage/Info.jsx';
+import AttributeValue from '/imports/ui/singleGenePage/generalInfo/AttributeValue.jsx';
 
 const ExpressionViz = ({ gene }) => {
   return <SampleSelection gene={gene}>
@@ -121,7 +122,7 @@ const withConditionalRendering = compose(
   withEither(hasNoResults, NoResults)
 )
 
-
+/*
 class AttributeValueArray extends React.Component {
   constructor(props){
     super(props)
@@ -160,7 +161,8 @@ class AttributeValueArray extends React.Component {
     </ul>
   }
 }
-
+*/
+/*
 class AttributeValueSingle extends React.Component {
   constructor(props){
     super(props);
@@ -191,18 +193,18 @@ class AttributeValueSingle extends React.Component {
     </React.Fragment>
   }
 }
-
+*/
 const GeneLink = ({ geneId }) => {
   return <a className='genelink' title={geneId} 
     href={`${Meteor.absoluteUrl()}gene/${geneId}`}>
     { geneId }
   </a>
 }
-
+/*
 const isArray = ({ attributeValue }) => {
   return Array.isArray(attributeValue) && attributeValue.length > 1
 }
-
+*/
 /*
 export const AttributeValue = ({ attributeValue }) => {
   return Array.isArray(attributeValue) && attributeValue.length > 1 ?
@@ -210,9 +212,9 @@ export const AttributeValue = ({ attributeValue }) => {
     String(attributeValue)
 }
 */
-
+/*
 export const AttributeValue = withEither(isArray, AttributeValueArray)(AttributeValueSingle);
-
+*/
 const AttributeColumn = ({ attributeName, attributeValue, geneId }) => {
   return <td data-label={attributeName}>
     {

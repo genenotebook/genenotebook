@@ -14,7 +14,7 @@ import { withEither } from '/imports/ui/util/uiUtil.jsx';
 
 import NotFound from '/imports/ui/main/NotFound.jsx';
 
-import Info from './Info.jsx';
+import GeneralInfo from './generalInfo/GeneralInfo.jsx';
 import Genemodel from './Genemodel.jsx';
 import Seq from './Seq.jsx';
 import ProteinDomains from './ProteinDomains.jsx'; 
@@ -99,7 +99,7 @@ class SingleGenePage extends React.Component {
               >Interproscan</button>*/}
             <ul className="nav nav-tabs card-header-tabs">
               <li className="nav-item">
-                <a className="nav-link active" href="#info">Info</a>
+                <a className="nav-link active" href="#general-info">General Information</a>
               </li>
               <li className="nav-item">
                 <a className="nav-link" href="#genemodel">Gene model</a>
@@ -119,7 +119,7 @@ class SingleGenePage extends React.Component {
             </ul>
           </div>
           <div className="card-body">
-            <Info key={hash(gene.attributes)} gene={gene} genome={genome} />
+            <GeneralInfo key={hash(gene.attributes)} gene={gene} genome={genome} />
             <section id='genemodel'>
               <hr/>
               <h3>Genemodel</h3>
