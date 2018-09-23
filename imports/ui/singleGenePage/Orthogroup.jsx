@@ -86,11 +86,17 @@ const Tree = ({ tree, size, geneIds }) => {
     <div className='card tree'>
       <ContainerDimensions>
         {
-          ({width, height}) =>{
-            const svgHeight = size * 12;
+          ({ width }) => {
+            const margin = {
+              top: 10,
+              bottom: 10,
+              left: 20,
+              right: 310
+            };
+            const height = size * 12;
             const treeMap = cluster()
-              .size([svgHeight, width - 300])
-              .separation((node1,node2) => { return 1 })
+              .size([height - margin.top - margin.bottom, width - margin.left - margin.right])
+              .separation(_ => 1)
             const treeRoot = hierarchy(tree, node => node.branchset);
 
             const treeData = treeMap(treeRoot).sum(node => node.branchLength);
@@ -98,8 +104,8 @@ const Tree = ({ tree, size, geneIds }) => {
             
 
             return (
-              <svg width={width - 10} height={svgHeight}>
-                <g transform={`translate(10,0)`}>
+              <svg width={width} height={height}>
+                <g transform={`translate(${margin.left},${margin.top})`}>
                   {
                     nodes.map(node => {
                       return <React.Fragment key={`${node.x}_${node.y}`}>
@@ -108,10 +114,6 @@ const Tree = ({ tree, size, geneIds }) => {
                       </React.Fragment>
                     })
                   }
-                  {/*
-                  <TreeBranches nodes={nodes} />
-                  <TreeNodes nodes={nodes} />
-                */}
                 </g>
               </svg>
             )

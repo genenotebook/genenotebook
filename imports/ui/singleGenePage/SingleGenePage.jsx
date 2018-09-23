@@ -15,8 +15,8 @@ import { withEither } from '/imports/ui/util/uiUtil.jsx';
 import NotFound from '/imports/ui/main/NotFound.jsx';
 
 import Info from './Info.jsx';
-import GenemodelContainer from './Genemodel.jsx';
-import SeqContainer from './Seq.jsx';
+import Genemodel from './Genemodel.jsx';
+import Seq from './Seq.jsx';
 import ProteinDomains from './ProteinDomains.jsx'; 
 import Orthogroup from './Orthogroup.jsx';
 
@@ -102,13 +102,16 @@ class SingleGenePage extends React.Component {
                 <a className="nav-link active" href="#info">Info</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#gene-model">Gene model</a>
+                <a className="nav-link" href="#genemodel">Gene model</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#sequence">Sequence</a>
+                <a className="nav-link" href="#sequence">Coding Sequence</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#protein-domains">Protein domains</a>
+                <a className="nav-link" href="#protein-domains">Protein Domains</a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link" href="#orthogroup">Orthogroup</a>
               </li>
               <li className="nav-item">
                 <a className="nav-link" href="#expression">Expression</a>
@@ -120,9 +123,9 @@ class SingleGenePage extends React.Component {
             <section id='genemodel'>
               <hr/>
               <h3>Genemodel</h3>
-              <GenemodelContainer gene={gene} />
+              <Genemodel gene={gene} />
             </section>
-            <SeqContainer gene={gene} />
+            <Seq gene={gene} />
             <section id='protein-domains'>
               <hr />
               <h3>Protein domains</h3>

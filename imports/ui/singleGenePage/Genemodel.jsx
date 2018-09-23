@@ -226,6 +226,8 @@ export default class Genemodel extends React.PureComponent {
 
   render(){
     const { gene, resizable } = this.props;
+    const { width } = this.state;
+
     const geneLength = gene.end - gene.start;
     const padding = Math.round(.1 * geneLength);
     const start = Math.max(0, gene.start - padding)
@@ -233,15 +235,27 @@ export default class Genemodel extends React.PureComponent {
 
     const transcripts = gene.subfeatures.filter(subfeature => subfeature.type === 'mRNA');
 
-    const scale = scaleLinear().domain([start,end]).range([.05 * this.state.width, .90 * this.state.width])
+    const height = 14 * transcripts.length + 46;
+
+    const margin = {
+      top: 10,
+      bottom: 10,
+      left: 10,
+      right: 10
+    };
+
+    const scale = scaleLinear()
+      .domain([ start,end ])
+      .range([ margin.left, width - margin.right ])
+    
     return (
-      <div id="genemodel-card" className='card genemodel px-0 pb-0'>
-        <svg width={this.state.width} height={14 * transcripts.length + 46} className='genemodel-container'>
-          <GenemodelGroup gene={gene} transcripts={transcripts} width={this.state.width} scale={scale}/>
+      <div id="genemodel" className='card genemodel'>
+        <svg width={width} height={height} className='genemodel-container'>
+          <GenemodelGroup gene={gene} transcripts={transcripts} width={width} scale={scale}/>
           <XAxis 
             scale={scale} 
             numTicks='2' 
-            transform={`translate(0,${ 14 * transcripts.length + 22})`}
+            transform={`translate(0,${ height - 22})`}
             seqid={gene.seqid}/>
           <defs>
             <marker id='arrowEnd' markerWidth='15' markerHeight='10' refX='0' refY='5' orient='auto'>
