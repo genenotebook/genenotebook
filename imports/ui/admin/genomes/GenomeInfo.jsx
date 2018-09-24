@@ -25,7 +25,7 @@ class EditGenomeInfo extends React.PureComponent {
 
   togglePublic = () => {
     this.setState({
-      public: !this.state.public
+      isPublic: !this.state.isPublic
     })
   }
 
@@ -53,7 +53,7 @@ class EditGenomeInfo extends React.PureComponent {
   render(){
     const { toggleEdit } = this.props;
     const { _id: genomeId, name: genomeName, organism, 
-      description, permissions, public: isPublic,
+      description, permissions, isPublic,
       annotationTrack = {} } = this.state;
     const { name: annotationName, blastDb } = annotationTrack;
     const hasChanges = !isEqual(this.state, this.props.genome);
@@ -152,7 +152,7 @@ class EditGenomeInfo extends React.PureComponent {
   }
 }
 
-const GenomeInfoLine = ({ _id: genomeId, name: genomeName, organism, public: isPublic,
+const GenomeInfoLine = ({ _id: genomeId, name: genomeName, organism, isPublic,
   description, permissions, annotationTrack = {}, toggleEdit }) => {
   
   const { name: annotationName, blastDb } = annotationTrack;

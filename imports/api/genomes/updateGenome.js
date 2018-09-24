@@ -24,7 +24,7 @@ export const updateGenome = new ValidatedMethod({
   applyOptions: {
     noRetry: true
   },
-  run({ _id, name, organism, description, permissions, public }){
+  run({ _id, name, organism, description, permissions,isPublic }){
     if (! this.userId) {
       throw new Meteor.Error('not-authorized');
     }
@@ -40,7 +40,7 @@ export const updateGenome = new ValidatedMethod({
         organism,
         description,
         permissions,
-        public
+        isPublic
       }
     })
   }

@@ -81,6 +81,11 @@ const withConditionalRendering = compose(
   withTracker(searchTracker)
 )
 
+/**
+ * Dynamic table for displaying gene information with columns that can be queried and configured
+ * @param { array } [attributes] array of gene attributes that will be shown as columns
+ * @kind {class}
+ */
 class GeneTable extends React.PureComponent {
   constructor(props){
     super(props)
@@ -207,8 +212,6 @@ class GeneTable extends React.PureComponent {
     const { limit, query, sort, currentQueryCount, selectedGenes,
     selectedAllGenes, selectedColumns, selectedVisualization,
     showDownloadDialog, dummy } = this.state;
-
-    console.log(query)
     
     const headerOptions = { selectedColumns, selectedGenes, selectedAllGenes,
       toggleSelectAllGenes: this.toggleSelectAllGenes, selectedVisualization,

@@ -58,7 +58,7 @@ const genomeSchema = new SimpleSchema({
 	'permissions.$': {
 		type: String
 	},
-	public: {
+	isPublic: {
 		type: Boolean,
 		label: 'Publicly available genome'
 	},

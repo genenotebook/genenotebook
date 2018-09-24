@@ -18,7 +18,7 @@ const availableGenomes =  publication => {
   const genomeIds = genomeCollection.find({ 
       $or: [
        { permissions: { $in: roles } },
-       { public: true }
+       { isPublic: true }
       ]
     }).map(genome => genome._id)
   return genomeIds
@@ -134,7 +134,7 @@ Meteor.publish({
   genomes () {
     const publication = this;
     if (!publication.userId){
-      return genomeCollection.find({ public: true });
+      return genomeCollection.find({ isPublic: true });
     } else {
       const roles = Roles.getRolesForUser(publication.userId);
       const permissions = { $in: roles };
