@@ -23,16 +23,23 @@ const Loading = ({ transcriptId, x ,y }) => {
 
 const isNotFound = ({ gene }) => typeof gene === 'undefined';
 
-const NotFound = ({ transcriptId }) => {
+const NotFound = ({ transcriptId, x ,y }) => {
   return <g>
-    <circle cy={x} cx={y} r='5' />
+    <circle cy={x} cx={y} r='5' style={{ fill: 'lightgrey' }}/>
     <foreignObject width='300' height='10' x={y + 10} y={x - 15}>
       <span style={{fontSize: 10}}>{transcriptId}</span>
     </foreignObject>
   </g>
 }
 
-
+/**
+ * Orthogroup phylogenetic tree tipnode with reactive data link for genes in the database
+ * @param  {String} options.transcriptId [description]
+ * @param  {Object} options.gene         [description]
+ * @param  {Number} options.x            [description]
+ * @param  {Number} options.y            [description]
+ * @return {Stateless React Component}                      [description]
+ */
 const OrthogroupTipNode = ({ transcriptId, gene, x, y }) => {
   const { genomeId } = gene;
   const fill = randomColor({ seed: genomeId + genomeId.slice(3) });
@@ -47,6 +54,12 @@ const OrthogroupTipNode = ({ transcriptId, gene, x, y }) => {
   </g>
 }
 
+/**
+ * [description]
+ * @param  {Object}    options.data  Phylogenetic tree node data
+ * @param  {...[Object]} options.props [description]
+ * @return {Object}                  [description]
+ */
 const geneLinkDataTracker = ({ data, ...props }) => {
   const transcriptId = data.name;
   const geneSub = Meteor.subscribe('singleGene', { transcriptId });
