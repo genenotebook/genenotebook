@@ -13,8 +13,8 @@ import { genomeSequenceCollection, genomeCollection } from '/imports/api/genomes
 import { ExperimentInfo, Transcriptomes } from '/imports/api/transcriptomes/transcriptome_collection.js';
 
 
-const availableGenomes =  publication => {
-  const roles = Roles.getRolesForUser(publication.userId);
+const availableGenomes =  ({ userId }) => {
+  const roles = Roles.getRolesForUser(userId);
   const genomeIds = genomeCollection.find({ 
       $or: [
        { permissions: { $in: roles } },
@@ -122,7 +122,7 @@ Meteor.publish({
   downloads (downloadId) {
     const publication = this;
     const roles = publication.userId ? Roles.getRolesForUser(publication.userId) : ['public'];
-    return Downloads.findOne({ID: downloadId, permission: {$in: roles} });
+    return Downloads.findOne({ID: downloadId, permission: { $in: roles } });
   },
   jobQueue () {
     const publication = this;

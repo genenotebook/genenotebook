@@ -11,9 +11,7 @@ import { withEither } from '/imports/ui/util/uiUtil.jsx';
 
 import Genemodel from '/imports/ui/singleGenePage/Genemodel.jsx';
 import ProteinDomains from '/imports/ui/singleGenePage/ProteinDomains.jsx';
-import ExpressionPlot from '/imports/ui/singleGenePage/ExpressionPlot.jsx';
-import SampleSelection from '/imports/ui/singleGenePage/SampleSelection.jsx';
-//import Info from '../singleGenePage/Info.jsx';
+import GeneExpression from '/imports/ui/singleGenePage/geneExpression/GeneExpression.jsx';
 import AttributeValue from '/imports/ui/singleGenePage/generalInfo/AttributeValue.jsx';
 
 const ExpressionViz = ({ gene }) => {
@@ -25,7 +23,7 @@ const ExpressionViz = ({ gene }) => {
 const VISUALIZATIONS = {
   'Gene model': Genemodel,
   'Protein domains': ProteinDomains,
-  'ExpressionPlot': ExpressionViz
+  'Gene expression': GeneExpression
 }
 
 /**
@@ -122,99 +120,13 @@ const withConditionalRendering = compose(
   withEither(hasNoResults, NoResults)
 )
 
-/*
-class AttributeValueArray extends React.Component {
-  constructor(props){
-    super(props)
-    this.state = {
-      showAll: false
-    }
-  }
-  toggleShowAll = event => {
-    event.preventDefault();
-    this.setState({
-      showAll: !this.state.showAll
-    });
-  }
-  render(){
-    const maxLength = 2;
-    const { showAll } = this.state;
-    const { attributeValue } = this.props;
-    const values = showAll ? attributeValue : attributeValue.slice(0,maxLength);
-    const buttonText = showAll ? 'Show less' : 'Show more ...';
-    return <ul className='list-group list-group-flush'>
-      {
-        values.map(value => {
-          return <li key={value} className='list-group-item py-0 px-0'>
-            { value }
-          </li>
-        })
-      }
-      {
-        attributeValue.length > maxLength &&
-        <li className='list-group-item py-0 px-0'>
-          <a className='px-3' href='#' onClick={this.toggleShowAll}>
-            <small>{ buttonText }</small>
-          </a>
-        </li>
-      }
-    </ul>
-  }
-}
-*/
-/*
-class AttributeValueSingle extends React.Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      showAll: false
-    };
-  }
-  toggleShowAll = event => {
-    event.preventDefault();
-    this.setState({
-      showAll: !this.state.showAll
-    })
-  }
-  render(){
-    const maxLength = 100;
-    const { showAll } = this.state;
-    const attributeValue = String(this.props.attributeValue);
-    const value = showAll ? attributeValue : attributeValue.slice(0, maxLength);
-    const buttonText = showAll ? 'Show less' : 'Show more ...';
-    return <React.Fragment>
-      <p className='mb-1'>{ value }</p>
-      {
-        attributeValue.length > maxLength &&
-        <a className='px-3 py-0' href='#' onClick={this.toggleShowAll}>
-          <small>{ buttonText }</small>
-        </a>
-      }
-    </React.Fragment>
-  }
-}
-*/
 const GeneLink = ({ geneId }) => {
   return <a className='genelink' title={geneId} 
     href={`${Meteor.absoluteUrl()}gene/${geneId}`}>
     { geneId }
   </a>
 }
-/*
-const isArray = ({ attributeValue }) => {
-  return Array.isArray(attributeValue) && attributeValue.length > 1
-}
-*/
-/*
-export const AttributeValue = ({ attributeValue }) => {
-  return Array.isArray(attributeValue) && attributeValue.length > 1 ?
-    <AttributeValueArray {...{ attributeValue }} /> :
-    String(attributeValue)
-}
-*/
-/*
-export const AttributeValue = withEither(isArray, AttributeValueArray)(AttributeValueSingle);
-*/
+
 const AttributeColumn = ({ attributeName, attributeValue, geneId }) => {
   return <td data-label={attributeName}>
     {
@@ -247,34 +159,25 @@ const GeneTableRow = ({ gene, selectedColumns, selectedAllGenes, selectedGenes,
 
   const DataVisualization = VISUALIZATIONS[selectedVisualization];
 
-  return (
-    <tr>
-      {
-        [...selectedColumns].map(attributeName => {
-          const attribute = selectedAttributes[attributeName]
-          const attributeValue = dot.pick(attribute.query, gene)
-          return <AttributeColumn key={attributeName}
-            {...{ attributeName, attributeValue, geneId: gene.ID }} />
-        })
-      }
-      <td data-label={selectedVisualization} style={{width: '20rem'}}>
-        <DataVisualization gene={gene} resizable={true} />
-        {/*<SampleSelection gene={gene}>
-          <ExpressionPlot />
-        </SampleSelection>*/}
-        
-      </td>
-      <td>
-        <button 
-          type="button" 
-          className="btn btn-sm btn-outline-dark pull-right px-1 py-0"
-          id={gene.ID}
-          onClick={updateSelection.bind(this)} >
-          <span id={gene.ID} className='icon-check' aria-hidden="true" style={{color}} />
-        </button>
-      </td>
-    </tr>
-  )
+  return <tr>
+    {
+      [...selectedColumns].map(attributeName => {
+        const attribute = selectedAttributes[attributeName]
+        const attributeValue = dot.pick(attribute.query, gene)
+        return <AttributeColumn key={attributeName}
+          {...{ attributeName, attributeValue, geneId: gene.ID }} />
+      })
+    }
+    <td data-label={selectedVisualization} style={{width: '20rem'}}>
+      <DataVisualization gene={gene} resizable={true} height={100} />        
+    </td>
+    <td>
+      <button type="button" className="btn btn-sm btn-outline-dark pull-right px-1 py-0"
+        id={gene.ID} onClick={updateSelection.bind(this)} >
+        <span id={gene.ID} className='icon-check' aria-hidden="true" style={{color}} />
+      </button>
+    </td>
+  </tr>
 }
 
 

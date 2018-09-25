@@ -20,8 +20,9 @@ import Seq from './Seq.jsx';
 import ProteinDomains from './ProteinDomains.jsx'; 
 import Orthogroup from './Orthogroup.jsx';
 
-import SampleSelection from './SampleSelection.jsx'; 
-import ExpressionPlot from './ExpressionPlot.jsx';
+import SampleSelection from './geneExpression/SampleSelection.jsx'; 
+import ExpressionPlot from './geneExpression/ExpressionPlot.jsx';
+import GeneExpression from './geneExpression/GeneExpression.jsx';
 
 const Loading = () => {
   return (
@@ -127,21 +128,13 @@ class SingleGenePage extends React.Component {
             </section>
             <Seq gene={gene} />
             <section id='protein-domains'>
-              <hr />
-              <h3>Protein domains</h3>
-              <ProteinDomains gene={gene} />
+              <ProteinDomains gene={gene} showHeader={true} />
             </section>
             <section id='orthogroup'>
-              <hr />
-              <h3>Orthogroup</h3>
-              <Orthogroup gene={gene} />
+              <Orthogroup gene={gene} showHeader={true} />
             </section>
             <section id='expression'>
-              <hr />
-              <h3>Expression</h3>
-              <SampleSelection gene={gene}>
-                <ExpressionPlot/>
-              </SampleSelection>
+              <GeneExpression gene={gene} showHeader={true}/>
             </section>
           </div>
           <div className="card-footer text-muted">

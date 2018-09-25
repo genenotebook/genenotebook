@@ -9,12 +9,14 @@ import { Genes } from '/imports/api/genes/gene_collection.js';
 
 import { withEither } from '/imports/ui/util/uiUtil.jsx';
 
+import './orthogroup.scss';
 
 const isLoading = ({ loading }) => loading;
 
 const Loading = ({ transcriptId, x ,y }) => {
+  const style = { fill: 'lightgrey' };
   return <g>
-    <circle cy={x} cx={y} r='5' />
+    <circle cy={x} cx={y} r='5' style={style} />
     <foreignObject width='300' height='10' x={y + 10} y={x - 15}>
       <span style={{fontSize: 10}}> ...{transcriptId} </span>
     </foreignObject>
@@ -24,8 +26,9 @@ const Loading = ({ transcriptId, x ,y }) => {
 const isNotFound = ({ gene }) => typeof gene === 'undefined';
 
 const NotFound = ({ transcriptId, x ,y }) => {
+  const style = { fill: 'lightgrey' };
   return <g>
-    <circle cy={x} cx={y} r='5' style={{ fill: 'lightgrey' }}/>
+    <circle cy={x} cx={y} r='5' style={style} />
     <foreignObject width='300' height='10' x={y + 10} y={x - 15}>
       <span style={{fontSize: 10}}>{transcriptId}</span>
     </foreignObject>
@@ -40,12 +43,12 @@ const NotFound = ({ transcriptId, x ,y }) => {
  * @param  {Number} options.y            [description]
  * @return {Stateless React Component}                      [description]
  */
-const OrthogroupTipNode = ({ transcriptId, gene, x, y }) => {
+const OrthogroupTipNode = ({ transcriptId, gene, x, y, chronogram }) => {
   const { genomeId } = gene;
   const fill = randomColor({ seed: genomeId + genomeId.slice(3) });
   const style = { fill };
-  return <g>
-    <circle cy={x} cx={y} r='4.5' style={style}/>
+  return <g className='tipnode'>
+    <circle className='orthogroup-node' cy={x} cx={y} r='4.5' style={style}/>
     <foreignObject width='300' height='10' x={y + 10} y={x - 13}>
       <a href={`${Meteor.absoluteUrl()}gene/${gene.ID}`} style={{fontSize: 10}}>
         {transcriptId} {gene.attributes.Name}

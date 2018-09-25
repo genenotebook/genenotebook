@@ -45,7 +45,6 @@ const attributeTracker = ({ searchAttributes, searchValue }) => {
  * @return {[type]}                    [description]
  */
 const searchTracker = ({ attributes, searchAttributes, searchValue }) => {
-  console.log(searchAttributes, searchValue)
   const query = { $or: [] };
   attributes
     .filter(({ name }) => new RegExp(name).test(searchAttributes) )

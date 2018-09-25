@@ -1,6 +1,16 @@
 import React from 'react';
 
 /**
+ * Round a number to floating point precision [n] (https://stackoverflow.com/a/46854785/6573438)
+ * @param  {Number} x Number to be rounded
+ * @param  {Number} n Floating point precision
+ * @return {Number}   Rounded Number
+ */
+export const round = (x, n) => {
+  return parseFloat(Math.round(x * Math.pow(10, n)) / Math.pow(10, n)).toFixed(n)
+};
+
+/**
  * Higher order component for conditional rendering, to be used with compose
  * https://www.robinwieruch.de/gentle-introduction-higher-order-components/
  * @param  {Function}   conditionalRenderingFn Function returning a boolean for condional rendering

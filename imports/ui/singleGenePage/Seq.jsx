@@ -7,53 +7,43 @@ import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdow
 
 import './seq.scss';
 
-const Controls = (props) => {
+const Controls = ({ seqType, selectSeqType, transcripts, selectTranscript, selectedTranscript }) => {
   const seqTypes = ['nucl','prot']
-  return (
-    <div>
-      <div className="btn-group btn-group-sm sequence-toggle float-right" role="group">
-        {
-          seqTypes.map(seqType => {
-            const active = seqType === props.seqType ? 'active' : 'border';
-            return (
-              <button
-                key={seqType}
-                type="button"
-                className={`btn btn-outline-dark px-2 py-0 ${active}`}
-                onClick={props.selectSeqType.bind(this,seqType)}
-              >
-                {seqType === 'prot' ? 'Protein' : 'Nucleotide'}
-              </button>
-            )
+  return <div>
+    <div className="btn-group btn-group-sm sequence-toggle float-right" role="group">
+      {
+        seqTypes.map(sType => {
+          const active = sType === seqType ? 'active' : 'border';
+          const label = sType === 'prot' ? 'Protein' : 'Nucleotide';
+          return <button key={sType} id={sType} type="button" onClick={selectSeqType}
+              className={`btn btn-outline-dark px-2 py-0 ${active}`}>
+              { label }
+            </button>
+        })
+      }
+    </div>
+
+    <div className="btn-group btn-group-sm float-right">
+      <Dropdown>
+        <DropdownButton className="btn btn-sm btn-outline-dark dropdown-toggle px-2 py-0 border">
+          { selectedTranscript }
+        </DropdownButton>
+        <DropdownMenu>
+        <h6 className='dropdown-header'>Select transcript</h6>
+        { 
+          transcripts.map( transcript => {
+            return <li key={transcript}>
+              <a href="#" id={transcript} className="select-transcript-seq dropdown-item" 
+                onClick={selectTranscript} >
+                { transcript }
+              </a>
+            </li>
           })
         }
-      </div>
-
-      <div className="btn-group btn-group-sm float-right">
-        <Dropdown>
-          <DropdownButton className="btn btn-sm btn-outline-dark dropdown-toggle px-2 py-0 border">
-            { props.selectedTranscript }
-          </DropdownButton>
-          <DropdownMenu>
-          <h6 className='dropdown-header'>Select transcript</h6>
-          { 
-            props.transcripts.map( transcript => {
-              return (
-                <li key={transcript}>
-                  <a href="#" 
-                    className="select-transcript-seq dropdown-item" 
-                    onClick={props.selectTranscript.bind(this,transcript)} >
-                    { transcript }
-                  </a>
-                </li>
-              )
-            })
-          }
-          </DropdownMenu>
-        </Dropdown>
-      </div>
+        </DropdownMenu>
+      </Dropdown>
     </div>
-  )
+  </div>
 }
 
 export default class SeqContainer extends React.Component {
@@ -65,9 +55,11 @@ export default class SeqContainer extends React.Component {
       return transcript.ID
     }).sort()
 
+    const selectedTranscript = transcripts[0];
+
     this.state = {
-      selectedTranscript: transcripts[0],
-      transcripts: transcripts,
+      selectedTranscript,
+      transcripts,
       seqType: 'nucl',
       showAll: false
     }
@@ -80,43 +72,40 @@ export default class SeqContainer extends React.Component {
     })
   }
 
-  selectTranscript = (transcriptId) => {
-    this.setState({selectedTranscript: transcriptId})
+  selectTranscript = event => {
+    const selectedTranscript = event.target.id;
+    this.setState({ selectedTranscript })
   }
 
-  selectSeqType = (seqType) => {
-    this.setState({seqType: seqType})
+  selectSeqType = event => {
+    const seqType = event.target.id;
+    this.setState({ seqType });
   }
 
   render(){
     const maxLength = 300;
     const { showAll, selectedTranscript, transcripts, seqType } = this.state;
-    const sequences = getGeneSequences(this.props.gene);
-    const sequence = find(sequences, { ID: this.state.selectedTranscript });
+    const { gene } = this.props;
+    const sequences = getGeneSequences(gene);
+    const sequence = find(sequences, { ID: selectedTranscript });
     const showSequence = showAll ? sequence[seqType] : sequence[seqType].slice(0, maxLength) + '...';
     const buttonText = showAll ? 'Show less' : 'Show more ...';
 
-    return (
-      <div id="sequence">
-        <hr />
-        <Controls 
-          selectedTranscript = { selectedTranscript } 
-          selectTranscript = { this.selectTranscript }
-          transcripts = { transcripts }
-          seqType = { seqType }
-          selectSeqType = { this.selectSeqType }
-        />
-        <h3>Coding Sequence</h3>
-        <div className="card seq-container">
-          <p className="seq"> 
-            >{ selectedTranscript } <br/> 
-            { showSequence }
-          </p>
-          <a href='#' onClick={this.toggleShowAll}>
-            <small>{ buttonText }</small>
-          </a>
-        </div>
+    return <div id="sequence">
+      <hr />
+      <Controls selectedTranscript = { selectedTranscript } 
+        selectTranscript = { this.selectTranscript } transcripts = { transcripts }
+        seqType = { seqType } selectSeqType = { this.selectSeqType } />
+      <h3>Coding Sequence</h3>
+      <div className="card seq-container">
+        <p className="seq"> 
+          >{ selectedTranscript } <br/> 
+          { showSequence }
+        </p>
+        <a href='#' onClick={this.toggleShowAll}>
+          <small>{ buttonText }</small>
+        </a>
       </div>
-    )
+    </div>
   }
 }

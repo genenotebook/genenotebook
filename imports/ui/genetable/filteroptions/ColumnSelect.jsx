@@ -33,7 +33,7 @@ const ColumnSelect = ({ attributes, selectedColumns, toggleColumnSelect, selecte
         {
           VISUALIZATIONS.map(visualization => {
             const checked = selectedVisualization === visualization;
-            const disabled = visualization === 'Gene expression';
+            const disabled = false;//visualization === 'Gene expression';
             return <div key={`${visualization} ${checked}`} className='form-check'>
               <input type='radio' className='form-check-input' id={visualization}
                 checked={checked} disabled={disabled} onChange={toggleVisualization} />

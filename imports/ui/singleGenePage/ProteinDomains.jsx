@@ -195,13 +195,8 @@ const InterproGroup = ({interproId, sourceGroups, transform, scale}) => {
       {
         Object.entries(sourceGroups).map((sourceGroup, sourceIndex) => {
           const [source, domains] = sourceGroup;
-          return <SourceGroup 
-            key={source}
-            source={source}
-            domains={domains}
-            transform={`translate(0,${sourceIndex * 10})`}
-            index={sourceIndex}
-            scale={scale} />
+          return <SourceGroup key={source} source={source} domains={domains}
+            transform={`translate(0,${sourceIndex * 10})`} index={sourceIndex} scale={scale} />
         })
       }
     </g>
@@ -232,12 +227,20 @@ const hasNoProteinDomains = ({ gene }) => {
   return proteinDomains.length === 0
 }
 
-const NoProteinDomains = () => {
-  return <div className="card protein-domains px-1 pt-1 mb-0">
-    <div className="alert alert-dark mx-1 mt-1" role="alert">
-      <p className="text-center text-muted mb-0">No protein domains found</p>
+const NoProteinDomains = ({ showHeader }) => {
+  return <React.Fragment>
+    {
+      showHeader && <React.Fragment>
+        <hr />
+        <h3>Protein domains</h3>
+      </React.Fragment>
+    }
+    <div className="card protein-domains px-1 pt-1 mb-0">
+      <div className="alert alert-dark mx-1 mt-1" role="alert">
+        <p className="text-center text-muted mb-0">No protein domains found</p>
+      </div>
     </div>
-  </div>
+  </React.Fragment>
 }
 
 const withConditionalRendering = compose(
@@ -263,7 +266,7 @@ class ProteinDomains extends React.Component {
   }
 
   render(){
-    const { gene, resizable } = this.props;
+    const { gene, resizable, showHeader } = this.props;
     //get sequence to determine length
     const sequences = getGeneSequences(gene);
     //interproscan results should be on transcripts
@@ -291,6 +294,11 @@ class ProteinDomains extends React.Component {
       bottom: 10,
       left: 20,
       right: 20
+    };
+
+    const style = {
+      marginLeft: margin.left,
+      marginTop: margin.top
     }
 
     const svgWidth = this.state.width - margin.left - margin.right;
@@ -298,15 +306,15 @@ class ProteinDomains extends React.Component {
       margin.top + margin.bottom + 40;
     const scale = scaleLinear().domain([0, transcriptSize]).range([0, svgWidth])
     let domainCount = 0;
-    return (
+    return <React.Fragment>
+      {
+        showHeader && <React.Fragment>
+          <hr />
+          <h3>Protein domains</h3>
+        </React.Fragment>
+      }
       <div className="card protein-domains px-0">
-        <svg 
-          width={svgWidth} 
-          height={svgHeight}
-          style={{
-            marginLeft: margin.left,
-            marginTop: margin.top
-          }} >
+        <svg width={svgWidth} height={svgHeight} style={style}>
           <XAxis scale={scale} numTicks={5} transform='translate(0,10)' 
             seqid={transcript.ID}/>
           <g className='domains' transform='translate(0,40)'>
@@ -317,12 +325,8 @@ class ProteinDomains extends React.Component {
               const yTransform = ((index + 1) * 30) + (domainCount * 10);
               const transform = `translate(0,${yTransform})`;
               domainCount += Object.entries(sourceGroups).length;
-              return <InterproGroup 
-                key={interproId} 
-                interproId={interproId} 
-                sourceGroups={sourceGroups} 
-                transform={transform}
-                scale={scale} />
+              return <InterproGroup key={interproId} interproId={interproId} 
+                sourceGroups={sourceGroups} transform={transform} scale={scale} />
             })
           }
           </g>
@@ -331,7 +335,7 @@ class ProteinDomains extends React.Component {
           resizable && <ReactResizeDetector handleWidth onResize={this.onResize} />
         }
       </div>
-    )
+    </React.Fragment>
   }
 }
 

@@ -51,10 +51,8 @@ const labelFromQuery = ({ queryKey, queryValue }) => {
  * @param  {[type]} query [description]
  * @return {[type]}       [description]
  */
-const stateFromQuery = query => {
-  console.log(query)
-  const queryKey = Object.keys(query)[0];
-  const queryValue = query[queryKey];
+const stateFromQuery = attributeQuery => {
+  const [queryKey, queryValue] = Object.entries(attributeQuery)[0];
 
   let queryLabel;
   switch(queryKey){
@@ -77,7 +75,7 @@ const stateFromQuery = query => {
       console.error(`Unknown query: {${queryKey}:${queryValue}}`)
       break
   }
-  const state = { queryLabel : { label: queryLabel, value: queryLabel }, queryValue };
+  const state = { queryLabel : { label: queryLabel, value: queryLabel }, queryValue, attributeQuery };
   if (queryKey === '$not'){
     state.queryValue = queryValue['$regex'];
   }
@@ -139,7 +137,6 @@ class HeaderElement extends React.Component {
     super(props)
     const { query, attribute, ...otherProps } = props;
     const attributeQuery = getAttributeQuery({ query, attribute });
-    console.log(attributeQuery)
     if (typeof attributeQuery !== 'undefined'){
       this.state = stateFromQuery(attributeQuery);
     } else {
@@ -156,7 +153,7 @@ class HeaderElement extends React.Component {
 
   updateQueryLabel = selection => {
     const { attribute, query, updateQuery, ...props } = this.props
-    const queryLabel = selection//selection ? selection.label : 'None';
+    const queryLabel = selection;
 
     this.setState({
       queryLabel,
@@ -178,6 +175,15 @@ class HeaderElement extends React.Component {
     const sort = newSortOrder === 'None' ? undefined : { [attribute.query]: newSortOrder };
     this.setState({ sortOrder: newSortOrder });
     updateSort(sort)
+  }
+
+  hasQuery = () => {
+    return typeof this.state.attributeQuery !== 'undefined'
+  }
+
+  hasSort = () => {
+    const { sort, attribute } = this.props;
+    return sort && sort.hasOwnProperty(attribute.query)
   }
 
   hasNewQuery = () => {
@@ -210,9 +216,9 @@ class HeaderElement extends React.Component {
 
   render(){
     const { query, attribute, sort,  ...props} = this.props;
-    const attributeQuery = getAttributeQuery({ query, attribute });
-    const hasQuery = typeof attributeQuery !== 'undefined';
-    const hasSort = sort && sort.hasOwnProperty(attribute.query);
+    const { queryLabel, queryValue } = this.state;
+    const hasQuery = this.hasQuery();
+    const hasSort = this.hasSort();
     const buttonClass = hasQuery || hasSort ? 'btn-success' : 'btn-outline-dark';
     const orientation = attribute.name === 'Gene ID' ? 'left' : 'right';
     const colStyle = attribute.name === 'Gene ID' ? { width: '10rem' } : {};
@@ -230,7 +236,7 @@ class HeaderElement extends React.Component {
                 <div className="form-check">
                   {
                     [1, -1].map(sortOrder => {
-                      const checked = sort && sort[attribute.query] === sortOrder;//this.state.sortOrder === sortOrder;
+                      const checked = sort && sort[attribute.query] === sortOrder;
                       return (
                         <div key={`${sortOrder}-${checked}`}>
                           <input className="form-check-input" 
@@ -250,23 +256,19 @@ class HeaderElement extends React.Component {
               <div className="dropdown-divider" />
               <div className={`query-wrapper pb-1 mb-1 ${hasQuery ? 'has-query' : ''}`}>
                 <h6 className="dropdown-header">Filter:</h6>
-                <Select
-                  className='form-control-sm pb-5' 
-                  value={this.state.queryLabel}
-                  options={QUERY_TYPES}
-                  onChange={this.updateQueryLabel} />
+                <Select className='form-control-sm pb-5' value={queryLabel}
+                  options={QUERY_TYPES} onChange={this.updateQueryLabel} />
                 {
-                  ['None','Present','Not present'].indexOf(this.state.queryLabel.label) < 0 ?
-                  <textarea 
-                    className="form-control" 
-                    onChange={this.updateQueryValue} 
-                    value={this.state.queryValue} /> :
+                  ['None','Present','Not present'].indexOf(queryLabel.label) < 0 ?
+                  <textarea className="form-control" onChange={this.updateQueryValue} 
+                    value={queryValue} /> :
                   null
                 }
               </div>
               {
                 this.hasNewQuery() ?
-                <button type='button' className='btn btn-sm btn-block btn-outline-success' onClick={this.updateQuery}>
+                <button type='button' className='btn btn-sm btn-block btn-outline-success' 
+                  onClick={this.updateQuery}>
                   Update filter
                 </button> :
                 null
@@ -277,10 +279,6 @@ class HeaderElement extends React.Component {
       </th>
     )
   }
-}
-
-const resize = width => {
-  //console.log('Table header resize',width)
 }
 
 /**
@@ -313,12 +311,14 @@ const GeneTableHeader = ({ selectedColumns, attributes, selectedGenes,
           })
         }
         <th scope="col">
-          <button className='btn btn-sm btn-outline-dark px-2 py-0 btn-block genetable-dropdown' disabled>{ selectedVisualization }</button>
-          {/*<ReactResizeDetector handleWidth onResize={resize} />*/}
+          <button className='btn btn-sm btn-outline-dark px-2 py-0 btn-block genetable-dropdown' disabled>
+            { selectedVisualization }
+          </button>
         </th>
         <th scope="col" style={{width: '10px'}}>
           <div className="pull-right">
-            <button type="button" className="btn btn-outline-dark btn-sm px-1 py-0" onClick={toggleSelectAllGenes}>
+            <button type="button" className="btn btn-outline-dark btn-sm px-1 py-0" 
+              onClick={toggleSelectAllGenes}>
               <span className='icon-check' aria-hidden="true" style={{color: checkBoxColor}} />
             </button>
           </div>

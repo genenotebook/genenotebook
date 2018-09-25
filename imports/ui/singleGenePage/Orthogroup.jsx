@@ -43,32 +43,18 @@ const withConditionalRendering = compose(
   withEither(hasNoOrthogroup, NoOrthogroup)
 )
 
-const TreeBranches = ({ nodes, chronogram = true }) => {
-  const offset = chronogram ? 0 : 50;
-  const multiplier = chronogram ? 1 : 2;
+const TreeBranch = ({ node, chronogram }) => {
+  const offset = chronogram ? 0 : 20;
+  const multiplier = chronogram ? 1 : -10;
   const value = chronogram ? 'y' : 'value';
-  const style = {fill: 'none', stroke: 'black', strokeWidth: 1};
-  return nodes.map(node => {
-    const d = `
-      M${offset + (node.parent[value] * multiplier)},${node.parent.x} 
-      L${offset + (node.parent[value] * multiplier)},${node.x} 
-      L${offset + (node[value] * multiplier)},${node.x}`;
-    return <path key={d} d={d} style={style}/>
-  })
-}
-
-const TreeBranch = ({ node, chronogram = true}) => {
-  const offset = chronogram ? 0 : 50;
-  const multiplier = chronogram ? 1 : 2;
-  const value = chronogram ? 'y' : 'value';
-  const style = {fill: 'none', stroke: 'black', strokeWidth: 1};
+  const style = { fill: 'none', stroke: 'black', strokeWidth: 1 };
   const d = `M${offset + (node.parent[value] * multiplier)},${node.parent.x} 
       L${offset + (node.parent[value] * multiplier)},${node.x} 
       L${offset + (node[value] * multiplier)},${node.x}`;
   return <path {...{ d, style }} />
 }
 
-const InternalNode = ({ data = { name: ''}, x, y }) => {
+const InternalNode = ({ data = { name: ''}, x, y, chronogram }) => {
   const nodeLabel = data.name;
   return <text x={y + 3} y={x + 3} fontSize='10'>
     { nodeLabel }
@@ -81,7 +67,7 @@ const TreeNode = ({ node }) => {
     <InternalNode {...node} />
 }
 
-const Tree = ({ tree, size, geneIds }) => {
+const Tree = ({ tree, size, geneIds, chronogram = true }) => {
   return (
     <div className='card tree'>
       <ContainerDimensions>
@@ -95,12 +81,20 @@ const Tree = ({ tree, size, geneIds }) => {
             };
             const height = size * 12;
             const treeMap = cluster()
-              .size([height - margin.top - margin.bottom, width - margin.left - margin.right])
+              .size([ height - margin.top - margin.bottom, width - margin.left - margin.right ])
               .separation(_ => 1)
-            const treeRoot = hierarchy(tree, node => node.branchset);
+            
+            const treeRoot = hierarchy(tree, node => node.branchset)
+              //.sum(node => node.branchLength)
+              //.sort((a,b) => a.value - b.value);
+
+            console.log(treeRoot);
 
             const treeData = treeMap(treeRoot).sum(node => node.branchLength);
-            const nodes = treeData.descendants().filter(node => node.parent);
+
+            //console.log(treeData);
+
+            const nodes = treeRoot.descendants().filter(node => node.parent);
             
 
             return (
@@ -109,8 +103,8 @@ const Tree = ({ tree, size, geneIds }) => {
                   {
                     nodes.map(node => {
                       return <React.Fragment key={`${node.x}_${node.y}`}>
-                        <TreeBranch node={node} />
-                        <TreeNode node={node} />
+                        <TreeBranch {...{ node, chronogram }} />
+                        <TreeNode {...{ node, chronogram }} />
                       </React.Fragment>
                     })
                   }
@@ -124,11 +118,17 @@ const Tree = ({ tree, size, geneIds }) => {
   )
 }
 
-const Orthogroup = ({ orthogroup }) => {
+const Orthogroup = ({ orthogroup, showHeader = false }) => {
   const { size, tree, geneIds } = parseNewick(orthogroup.tree);
   orthogroup.tree = tree;
   return <div id="orthogroup">
-      <Tree {...orthogroup} />
+    {
+      showHeader && <React.Fragment>
+        <hr />
+        <h3>Orthogroup</h3>
+      </React.Fragment>
+    }
+    <Tree {...orthogroup} />
   </div>
 }
 
