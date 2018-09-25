@@ -4,7 +4,7 @@
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/genenotebook/badges/version.svg)](https://anaconda.org/bioconda/genenotebook)[![Anaconda-Server Badge](https://anaconda.org/bioconda/genenotebook/badges/latest_release_date.svg)](https://anaconda.org/bioconda/genenotebook)[![Anaconda-Server Badge](https://anaconda.org/bioconda/genenotebook/badges/platforms.svg)](https://anaconda.org/bioconda/genenotebook)
 
 ![GeneNoteBook example screenshot](https://github.com/genenotebook/genenotebook.github.io/blob/7ec82fd11ea57d06e26cbccdcd5b28598c0bf47e/assets/images/genenotebook.png)
-##Getting started
+###### Getting started
 
 Install using conda
 
