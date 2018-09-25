@@ -1,33 +1,31 @@
-[![Anaconda-Server Badge](https://anaconda.org/bioconda/genenotebook/badges/version.svg)](https://anaconda.org/bioconda/genenotebook)[![Anaconda-Server Badge](https://anaconda.org/bioconda/genenotebook/badges/latest_release_date.svg)](https://anaconda.org/bioconda/genenotebook)[![Anaconda-Server Badge](https://anaconda.org/bioconda/genenotebook/badges/platforms.svg)](https://anaconda.org/bioconda/genenotebook)
 # GeneNoteBook
-## A collaborative notebook for genes and genomes
-#### Full documentation is at http://genenotebook.github.io/
-----
+## A collaborative notebook for comparative genomics
+###### Full documentation is at http://genenotebook.github.io/
+[![Anaconda-Server Badge](https://anaconda.org/bioconda/genenotebook/badges/version.svg)](https://anaconda.org/bioconda/genenotebook)[![Anaconda-Server Badge](https://anaconda.org/bioconda/genenotebook/badges/latest_release_date.svg)](https://anaconda.org/bioconda/genenotebook)[![Anaconda-Server Badge](https://anaconda.org/bioconda/genenotebook/badges/platforms.svg)](https://anaconda.org/bioconda/genenotebook)
 
 ![GeneNoteBook example screenshot](https://github.com/genenotebook/genenotebook.github.io/blob/7ec82fd11ea57d06e26cbccdcd5b28598c0bf47e/assets/images/genenotebook.png)
-### Requirements:
+##Getting started
 
-* node.js >= 8.9.4 (on mac: ```brew install node```, on linux: ```apt-get install nodejs```)
-* mongodb >= 3.4 (on mac: ```brew install mongodb```, on linux: ```apt-get install mongodb```)
-* meteor (```curl https://install.meteor.com/ | sh```) 
-
-
-To run a small example in development mode:
-
-Install dependencies and fire up meteor in development mode
+Install using conda
 
 ```
-meteor npm install --save
-meteor
+conda install -c bioconda genenotebook
 ```
 
-Load test data
+Fire up genenotebook
 
 ```
-node scripts/add_test_data.sh
+genenotebook run --port 3000
+```
+
+Add data
+
+```
+genenotebook add genome -u <username> -p <password> --port 3000 -n <genome name> [genome.fasta]
+genenotebook add annotation -u <username> -p <password> --port 3000 -g <genome name> [annotation.gff3]
 ```
 
 Navigate to http://localhost:3000
 
-Browse genomes, genomic annotations and expression levels. Update functionality, version history.
+Browse genomes, genomic annotations and expression levels. Curate annotations, version history.
 
