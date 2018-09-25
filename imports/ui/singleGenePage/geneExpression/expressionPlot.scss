@@ -1,0 +1,8 @@
+circle.expression {
+  stroke: black;
+  &:hover {
+    cursor: pointer;
+    stroke: #007bff;
+    stroke-width: 2px;
+  }
+}
