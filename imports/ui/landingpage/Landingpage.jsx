@@ -31,7 +31,7 @@ class GeneNumber extends React.Component {
 
   render(){
     const { geneNumber } = this.state;
-    const { public: isPublic } = this.props;
+    const { isPublic } = this.props;
     return <div className="btn-group" role="group">
       <button type='button' className='btn btn-sm btn-outline-dark px-2 py-0' disabled>
         {

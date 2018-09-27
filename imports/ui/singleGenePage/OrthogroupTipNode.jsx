@@ -17,7 +17,7 @@ const Loading = ({ transcriptId, x ,y }) => {
   const style = { fill: 'lightgrey' };
   return <g>
     <circle cy={x} cx={y} r='5' style={style} />
-    <foreignObject width='300' height='10' x={y + 10} y={x - 15}>
+    <foreignObject width='300' height='20' x={y + 10} y={x - 13}>
       <span style={{fontSize: 10}}> ...{transcriptId} </span>
     </foreignObject>
   </g>
@@ -29,7 +29,7 @@ const NotFound = ({ transcriptId, x ,y }) => {
   const style = { fill: 'lightgrey' };
   return <g>
     <circle cy={x} cx={y} r='5' style={style} />
-    <foreignObject width='300' height='10' x={y + 10} y={x - 15}>
+    <foreignObject width='300' height='20' x={y + 10} y={x - 13}>
       <span style={{fontSize: 10}}>{transcriptId}</span>
     </foreignObject>
   </g>
@@ -49,7 +49,7 @@ const OrthogroupTipNode = ({ transcriptId, gene, x, y, chronogram }) => {
   const style = { fill };
   return <g className='tipnode'>
     <circle className='orthogroup-node' cy={x} cx={y} r='4.5' style={style}/>
-    <foreignObject width='300' height='10' x={y + 10} y={x - 13}>
+    <foreignObject width='300' height='20' x={y + 10} y={x - 13}>
       <a href={`${Meteor.absoluteUrl()}gene/${gene.ID}`} style={{fontSize: 10}}>
         {transcriptId} {gene.attributes.Name}
       </a>
