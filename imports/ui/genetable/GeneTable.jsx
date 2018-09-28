@@ -226,7 +226,7 @@ class GeneTable extends React.PureComponent {
     
     return <div className='container-fluid px-0 mx-0 genetable'>
       <div className='table-responsive'>
-        <div className="card my-2">
+        <div className="card genetable-wrapper my-2">
           <div className="card-header d-flex justify-content-between px-1 py-1">
             <FilterOptions 
               toggleColumnSelect={this.toggleColumnSelect}

@@ -14,6 +14,8 @@ import ProteinDomains from '/imports/ui/singleGenePage/ProteinDomains.jsx';
 import GeneExpression from '/imports/ui/singleGenePage/geneExpression/GeneExpression.jsx';
 import AttributeValue from '/imports/ui/singleGenePage/generalInfo/AttributeValue.jsx';
 
+import './geneTableBody.scss';
+
 const ExpressionViz = ({ gene }) => {
   return <SampleSelection gene={gene}>
     <ExpressionPlot />
@@ -169,7 +171,7 @@ const GeneTableRow = ({ gene, selectedColumns, selectedAllGenes, selectedGenes,
       })
     }
     <td data-label={selectedVisualization} style={{width: '20rem'}}>
-      <DataVisualization gene={gene} resizable={true} height={100} />        
+      <DataVisualization gene={gene} resizable={true} height={100} />
     </td>
     <td>
       <button type="button" className="btn btn-sm btn-outline-dark pull-right px-1 py-0"
@@ -201,7 +203,7 @@ class GeneTableBody extends React.PureComponent {
   render(){
     const { genes, ...props } = this.props;
     return (
-      <tbody>
+      <tbody className='genetable-body'>
         {
           genes.map(gene => {
             return <GeneTableRow key={gene.ID} gene={gene} {...props} />

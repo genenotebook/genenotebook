@@ -85,18 +85,11 @@ const Tree = ({ tree, size, geneIds, chronogram = true }) => {
               .separation(_ => 1)
             
             const treeRoot = hierarchy(tree, node => node.branchset)
-              //.sum(node => node.branchLength)
-              //.sort((a,b) => a.value - b.value);
-
-            console.log(treeRoot);
 
             const treeData = treeMap(treeRoot).sum(node => node.branchLength);
 
-            //console.log(treeData);
-
-            const nodes = treeRoot.descendants().filter(node => node.parent);
+            const nodes = treeData.descendants().filter(node => node.parent);
             
-
             return (
               <svg width={width} height={height}>
                 <g transform={`translate(${margin.left},${margin.top})`}>

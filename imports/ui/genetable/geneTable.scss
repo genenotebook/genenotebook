@@ -1,10 +1,12 @@
+.genetable-wrapper {
+  min-height: 50rem;
+}
+
 .genetable{
   .query-count:disabled {
     opacity: 1 !important;
   }
   word-break: normal;
-
-  min-height: 30rem;
   @media only screen and (max-width: 200px){
     table, thead, tbody, th, td, tr { 
       /* Force table to not be like tables anymore */

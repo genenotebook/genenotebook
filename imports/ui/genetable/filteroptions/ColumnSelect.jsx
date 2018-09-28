@@ -4,7 +4,6 @@ import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdow
 import { VISUALIZATIONS } from '/imports/ui/genetable/GeneTable.jsx';
 
 const ColumnSelect = ({ attributes, selectedColumns, toggleColumnSelect, selectedVisualization, toggleVisualization }) => {
-  console.log(selectedVisualization)
   return (
     <Dropdown>
       <DropdownButton className='btn btn-sm btn-outline-dark dropdown-toggle px-2 py-0 border'>
