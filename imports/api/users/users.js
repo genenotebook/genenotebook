@@ -16,10 +16,10 @@ export const updateUserInfo = new ValidatedMethod({
     if (! this.userId) {
       throw new Meteor.Error('not-authorized');
     }
-    if (! Roles.userIsInRole(this.userId,'admin')){
+    if (! Roles.userIsInRole(this.userId, 'admin') && userId !== this.userId){
       throw new Meteor.Error('not-authorized');
     }
 
-    Meteor.users.update({_id: userId},update);
+    Meteor.users.update({ _id: userId }, update);
   }
 })

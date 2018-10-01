@@ -61,20 +61,16 @@ Meteor.publish({
       publication.stop()
     }
 
-    if (!Roles.userIsInRole(publication.userId, 'admin')){
-      publication.stop()
-    };
-
-    return Meteor.users.find({});
+    if (Roles.userIsInRole(publication.userId, 'admin')){
+      return Meteor.users.find({});
+    } else {
+      return Meteor.users.find({ _id: publication.userId })
+    }
   },
   roles(){
     const publication = this;
     
     if (!publication.userId){
-      publication.stop()
-    };
-
-    if (!Roles.userIsInRole(publication.userId, 'admin')){
       publication.stop()
     };
 

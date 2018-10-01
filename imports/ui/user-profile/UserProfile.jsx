@@ -6,33 +6,37 @@ import { Roles } from 'meteor/alanning:roles';
 import { updateUserInfo } from '/imports/api/users/users.js';
 
 import React from 'react';
+import { compose } from 'recompose';
 import { Creatable as Select } from 'react-select';
 import update from 'immutability-helper';
-import pick from 'lodash/pick';
-import { isEqual }from 'lodash';
+//import pick from 'lodash/pick';
+import { isEqual, pick }from 'lodash';
 import { diff } from 'rus-diff';
+
+import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
 import './user-profile.scss';
 
 
-const UserProfileButtons = (props) => {
-  const buttons = isEqual(props.oldState, props.newState) ?
+const UserProfileButtons = ({ oldState, newState, resetPassword, deleteAccount, 
+  saveChanges, cancelChanges}) => {
+  const buttons = isEqual(oldState, newState) ?
   (
-    <div className="user-profile-buttons">
-      <button type="button" className="btn btn-warning" onClick={props.resetPassword}>
+    <div className="btn-group" role='group'>
+      <button type="button" className="btn btn-sm btn-outline-dark border" onClick={resetPassword}>
         Reset password
       </button>
-      <button type="button" className="btn btn-danger" onClick={props.deleteAccount}>
-        Delete account
+      <button type="button" className="btn btn-sm btn-danger" onClick={deleteAccount}>
+        <span className='icon-cancel'/> Delete account
       </button>
     </div>
   ) :
   (
-    <div className='user-profile-buttons'>
-      <button type="button" className="btn btn-success" onClick={props.saveChanges}>
+    <div className='btn-group' role='group'>
+      <button type="button" className="btn btn-success" onClick={saveChanges}>
         Save changes
       </button>
-      <button type="button" className="btn btn-danger" onClick={props.cancelChanges}>
+      <button type="button" className="btn btn-danger" onClick={cancelChanges}>
         Cancel
       </button>
     </div>
@@ -40,36 +44,123 @@ const UserProfileButtons = (props) => {
   return buttons
 }
 
-const UserRoles = (props) => {
-  return (
-    <div className="form-group">
-      <label htmlFor="groups" className="control-label">User roles</label>
-      <Select
-        name='user-role-select'
-        value={props.userRoles}
-        options={props.allRoles.map(role => { return {value: role, label: role} })}
-        onChange={props.onChange}
-        multi={true}
-        disabled={!props.isAdmin}
-      />
-    </div>
-  )
+const UserRoles = ({ roles, existingRoles, onChange, isAdmin, editing }) => {
+  console.log(isAdmin)
+  return <div className="form-group col-md-6">
+    <label htmlFor="groups" className="control-label">User roles</label>
+    <Select className='custom-select-sm py-0' name='user-role-select'
+      value={roles.map(role => { return { value: role, label: role } })}
+      options={existingRoles.map(role => { return { value: role.name, label: role.name } })}
+      onChange={onChange} isMulti isDisabled={!isAdmin} />
+  </div>
 }
+
+const UserName = ({ username, onChange, editing }) => {
+  return <div className="form-group col-md-6">
+    <label htmlFor="username" className="control-label">Username</label>
+    <input 
+      type="text" 
+      className="form-control form-control-sm" 
+      id="username"
+      onChange={onChange} 
+      value={username} />
+      <small id="emailHelp" className="form-text text-muted">
+        Your username will be visible to other users and must be unique. <b>required</b>
+      </small>
+  </div>
+}
+
+const Profile = ({ first_name, last_name, onChange, editing }) => {
+  return <div className='form-row'>
+    <div className="form-group col-md-6">
+      <label htmlFor="firstname" className="control-label">First name</label>
+      <input 
+        type="text" 
+        className="form-control form-control-sm" 
+        id="firstname" 
+        onChange={onChange}
+        value={first_name}
+        placeholder="First name" />
+    </div>
+    <div className="form-group col-md-6">
+      <label htmlFor="lastname" className="control-label">Last name</label>
+      <input 
+        type="text" 
+        className="form-control form-control-sm" 
+        id="lastname" 
+        onChange={onChange}
+        value={last_name}
+        placeholder="Last name" />
+    </div>
+  </div>
+}
+
+const EmailAddress = ({ emails, onChange, editing }) => {
+  return emails.map( (email, i) => {
+    //start counting at 1
+    let index = i + 1;
+    return <div className="form-group" key={`email${index}`}>
+      <label htmlFor={`email${index}`} className="control-label">
+        {`Email address ${index}`}
+      </label>
+      <input type="email" className="form-control form-control-sm" id={`email${index}`} 
+        onChange={onChange} value={email.address} />
+    </div>
+  })
+}
+
+const ResetPassword = () => {
+  return <React.Fragment>
+    RESET password
+    <hr />
+  </React.Fragment>
+}
+
+const dataTracker = () => {
+  const userId = FlowRouter.getParam('_id');
+
+  const userSub = Meteor.subscribe('users');
+  const userProfile = userId ? Meteor.users.findOne({_id: userId}) : Meteor.user();
+  const user = pick(userProfile, ['_id','username', 'emails', 'profile', 'roles']);
+
+  const roleSub = Meteor.subscribe('roles');
+  const existingRoles = Meteor.roles.find({}).fetch();
+
+  const loading = !roleSub.ready() || !userSub.ready();
+
+  return { user, loading, existingRoles }
+}
+
+const withConditionalRendering = compose(
+  withTracker(dataTracker),
+  withEither(isLoading, Loading)
+)
+
 
 class UserProfile extends React.Component {
   constructor(props) {
     super(props);
-    console.log('constructing user profile component')
-    this.state = this.props.user
+    this.state = this.props.user;
+    Object.assign(this.state, {
+      resetPassword: false,
+      editing: false
+    })
   }
 
-  componentWillReceiveProps(nextProps){
-    this.setState(nextProps.user)
+  static getDerivedStateFromProps = ({ user }, state) => {
+    return null
+    //return isEqual(user, state) ? null : user;
   }
+  /*componentWillReceiveProps(nextProps){
+    this.setState(nextProps.user)
+  }*/
 
   resetPassword = (event) => {
     event.preventDefault();
-    alert('This currently does nothing')
+    this.setState({
+      resetPassword: !this.state.resetPassword
+    })
+    //alert('This currently does nothing')
     console.log('resetPassword');
   }
 
@@ -81,12 +172,9 @@ class UserProfile extends React.Component {
 
   saveChanges = (event) => {
     event.preventDefault();
-    const updateQuery = diff(this.props.user,this.state);
-    console.log(updateQuery);
-    console.log(this.props)
-    updateUserInfo.call({
-      userId: this.props.user._id,
-      update: updateQuery
+    const { _id: userId, roles, profile, emails } = this.state;
+    updateUserInfo.call({ userId, roles, profile, emails }, (err, res) => {
+      if (err) alert(err)
     })
   }
 
@@ -108,7 +196,7 @@ class UserProfile extends React.Component {
         const index = parseInt(name[name.length - 1]);
         const emails = this.state.emails.slice(); //empty slice to copy email array and not modify state
         emails[index] = value;
-        this.setState({emails: emails})
+        this.setState({ emails: emails })
         break
       case 'firstname':
         this.setState({
@@ -132,106 +220,65 @@ class UserProfile extends React.Component {
   }
 
   updateRoles = newRoles => {
-    const newState = update(this.state, {
-      roles: {
-        $set: newRoles.map( role => role.value)
-      }
+    const roles = newRoles.map( role => role.value);
+    
+    if (roles.indexOf('registered') < 0){
+      roles.push('registered');
+    }
+
+    if (roles.indexOf('admin') < 0 && this.isAdmin()){
+      roles.push('admin');
+    }
+
+    this.setState({ roles })
+  }
+
+  isAdmin = () => {
+    return Roles.userIsInRole(Meteor.userId(),'admin');
+  }
+
+  toggleEdit = () => {
+    this.setState({
+      editing: !this.state.editing
     })
-    this.setState(newState)
   }
 
   render(){
-    return (
-      this.props.loading ?
-      <div className='user-profile'>LOADING</div> :
+    const { username, profile, emails, resetPassword,
+      editing, roles } = this.state;
+    const { existingRoles } = this.props;
+    const isAdmin = this.isAdmin();
 
-      <div className="user-profile container">
-        <form className="user-profile card">
-          <div className="card-header">
-            <h3>User profile</h3>
-          </div>
-          <div className="card-body">
-            <div className="form-group">
-              <label htmlFor="username" className="control-label">Username</label>
-              <input 
-                type="text" 
-                className="form-control form-control-sm" 
-                id="username"
-                onChange={this.handleChange} 
-                value={this.state.username} />
-                <small id="emailHelp" className="form-text text-muted">
-                  Your username will be visible to other users and must be unique. <b>required</b>
-                </small>
-            </div>
-            <div className="form-group">
-              <label htmlFor="firstname" className="control-label">First name</label>
-              <input 
-                type="text" 
-                className="form-control form-control-sm" 
-                id="firstname" 
-                onChange={this.handleChange}
-                value={this.state.profile.first_name}
-                placeholder="First name" />
-            </div>
-            <div className="form-group">
-              <label htmlFor="lastname" className="control-label">Last name</label>
-              <input 
-                type="text" 
-                className="form-control form-control-sm" 
-                id="lastname" 
-                onChange={this.handleChange}
-                value={this.state.profile.last_name}
-                placeholder="Last name" />
-            </div>
-            {
-              this.state.emails.map( (email, i) => {
-                //start counting at 1
-                let index = i + 1;
-                return (
-                  <div className="form-group" key={`email${index}`}>
-                    <label htmlFor={`email${index}`} className="control-label">{`Email address ${index}`}</label>
-                    <input 
-                      type="email" 
-                      className="form-control form-control-sm" 
-                      id={`email${index}`} 
-                      onChange={this.handleChange}
-                      value={email.address} />
-                  </div>
-                )
-              })
-            }
-            <UserRoles 
-              userRoles = {this.state.roles}
-              allRoles = {this.props.allRoles}
-              isAdmin = {Roles.userIsInRole(Meteor.userId()),'admin'} 
-              onChange = {this.updateRoles} />
-          </div>
-          <div className="card-footer">
-            <UserProfileButtons 
-              oldState = {this.props.user}
-              newState = {this.state}
-              cancelChanges = {this.cancelChanges}
-              saveChanges = {this.saveChanges}
-              resetPassword = {this.resetPassword}
-              deleteAccount = {this.deleteAccount}/>
-          </div>
-        </form>
-      </div>
-    )
+    return <div className="user-profile card">
+      <img className="mb-4 rounded-circle" src="logo.svg" alt="" width="50" height="50" />
+      <h1 className="h3 mb-3 font-weight-normal">User Profile</h1>
+      <button className='btn btn-sm btn-outline-dark border px-2 py-0 float-right' 
+        type='button' onClick={this.toggleEdit}>
+        <span className='icon-pencil' /> Edit profile
+      </button>
+      <form className="card-body" onSubmit={null}>
+        <hr />
+        <div className='form-row'>
+          <UserName {...{ username, editing }} onChange={this.handleChange} />
+          <UserRoles {...{ roles, existingRoles, isAdmin, editing }}
+            onChange={this.updateRoles} />
+        </div>
+        <Profile {...{ editing, ...profile } } onChange={this.handleChange} />
+        <EmailAddress emails={emails} onChange={this.handleChange} />
+        <hr />
+        {
+          resetPassword && <ResetPassword />
+        }
+        <UserProfileButtons 
+          oldState = {this.props.user}
+          newState = {this.state}
+          cancelChanges = {this.cancelChanges}
+          saveChanges = {this.saveChanges}
+          resetPassword = {this.resetPassword}
+          deleteAccount = {this.deleteAccount}/>
+      </form>
+    </div>
   }
 }
 
-export default withTracker(props => {
-  const subscription = Meteor.subscribe('users');
-  const userId = FlowRouter.getParam('_id');
-  const userProfile = userId ? Meteor.users.findOne({_id: userId}) : Meteor.user();
-  const allRoles = Meteor.users.find({}).fetch().reduce((roles, user) => {
-    return roles.concat(user.roles)
-  },[])
-  const uniqueRoles = [...new Set(allRoles)]
-   return {
-    user: pick(userProfile, ['_id','username', 'emails', 'profile', 'roles']),
-    loading: !subscription.ready(),
-    allRoles: uniqueRoles
-   }
-})(UserProfile);
+export default withConditionalRendering(UserProfile);
