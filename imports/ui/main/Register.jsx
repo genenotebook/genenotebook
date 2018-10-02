@@ -7,84 +7,52 @@ import React from 'react';
 import './register.scss';
 
 const UsernameInput = ({ userName, validUsername, handleChange }) => {
-  return (
-    <div className='input-group username' >
-      <div className="input-group-prepend">
-        <span className='input-group-text'>
-          <span className="icon-user" />
-        </span>
-      </div>
-      <input 
-        type="text" 
-        className="form-control" 
-        placeholder="Username" 
-        id="username"  
-        pattern="^[a-zA-Z0-9]+$" 
-        title="Only letters and numbers"
-        onChange = {handleChange}
-        value = {userName}
-        required autoFocus />
+  return  <div className='input-group username' >
+    <div className="input-group-prepend">
+      <span className='input-group-text'>
+        <span className="icon-user" />
+      </span>
     </div>
-  )
+    <input type="text" className="form-control" placeholder="Username" 
+      id="username" pattern="^[a-zA-Z0-9]+$" title="Only letters and numbers"
+      onChange={handleChange} value={userName} required autoFocus />
+  </div>
 }
 
 const EmailInput = ({ email, validEmail, handleChange }) => {
-  return (
-    <div className='input-group email'>
-      <div className="input-group-prepend">
-        <span className='input-group-text'>
-          <span className="icon-at" />
-        </span>
-      </div>
-      <input 
-        type="email" 
-        className="form-control" 
-        placeholder="Email" 
-        id="email" 
-        onChange = {handleChange}
-        value = {email}
-        required />
+  return <div className='input-group email'>
+    <div className="input-group-prepend">
+      <span className='input-group-text'>
+        <span className="icon-at" />
+      </span>
     </div>
-  )
+    <input type="email" className="form-control" placeholder="Email" 
+      id="email" onChange={handleChange} value={email} required />
+  </div>
 }
 
 const PassWordInput = ({ password, passwordRepeat, validPassword, handleChange }) => {
-  return (
-    <React.Fragment>
-      <div className='input-group password'>
-        <div className="input-group-prepend">
-          <span className='input-group-text'>
-            <span className="icon-lock" />
-          </span>
-        </div>
-        <input 
-          type="password" 
-          className="form-control" 
-          placeholder="Password" 
-          id="password" 
-          pattern=".{8,}" 
-          title="Minimum 8 charachters"
-          onChange = {handleChange}
-          value = {password}
-          required />
+  return <React.Fragment>
+    <div className='input-group password'>
+      <div className="input-group-prepend">
+        <span className='input-group-text'>
+          <span className="icon-lock" />
+        </span>
       </div>
-      <div className='input-group password-repeat'>
-        <div className="input-group-prepend">
-          <span className='input-group-text'>
-            <span className="icon-lock" />
-          </span>
-        </div>
-        <input 
-          type="password" 
-          className="form-control" 
-          placeholder="Repeat password" 
-          id="passwordRepeat"
-          onChange = {handleChange}
-          value = {passwordRepeat} 
-          required />
+      <input type="password" className="form-control" placeholder="Password" 
+        id="password" pattern=".{8,}" title="Minimum 8 charachters"
+        onChange = {handleChange} value = {password} required />
+    </div>
+    <div className='input-group password-repeat'>
+      <div className="input-group-prepend">
+        <span className='input-group-text'>
+          <span className="icon-lock" />
+        </span>
       </div>
-    </React.Fragment>
-  )
+      <input type="password" className="form-control" placeholder="Repeat password" 
+        id="passwordRepeat" onChange = {handleChange} value = {passwordRepeat} required />
+    </div>
+  </React.Fragment>
 }
 
 export default class Register extends React.Component {
@@ -135,11 +103,12 @@ export default class Register extends React.Component {
     }
   }
 
-  handleChange = (event) => {
+  handleChange = ({ target }) => {
+    const { id, value } = target;
     this.setState({
-      [event.target.id] : event.target.value
+      [id] : value
     })
-    switch (event.target.id){
+    switch (id){
       case 'username': {
         this.setState({
           validUsername: true
@@ -168,63 +137,21 @@ export default class Register extends React.Component {
   }
 
   render(){
-    return (
-      <div className='card register'>
-        <form className="form-register text-center" onSubmit={this.handleSubmit}>
-          <img className="mb-4 rounded-circle" src="logo.svg" alt="" width="100" height="100" />
-          <h1 className="h3 mb-3 font-weight-normal">Create GeneNoteBook Account</h1>
-          <UsernameInput {...this.state} handleChange={this.handleChange} />
-          <EmailInput {...this.state} handleChange={this.handleChange} />
-          <PassWordInput {...this.state} handleChange={this.handleChange} />
-          <button 
-            className={`btn btn-lg btn-block ${ this.filledInAllFields() ? 'btn-success' : 'btn-outline-success' }`} 
-            type="submit"
-            disabled = { !this.filledInAllFields() }>
-            {
-              this.filledInAllFields() ? 'Sign up' : 'Please fill in all fields'
-            }
-          </button>
-        </form>
-      </div>
-    )
+    const btnClass = this.filledInAllFields() ? 'btn-success' : 'btn-outline-success';
+    return <div className='card register'>
+      <form className="form-register text-center" onSubmit={this.handleSubmit}>
+        <img className="mb-4 rounded-circle" src="logo.svg" alt="" width="100" height="100" />
+        <h1 className="h3 mb-3 font-weight-normal">Create GeneNoteBook Account</h1>
+        <UsernameInput {...this.state} handleChange={this.handleChange} />
+        <EmailInput {...this.state} handleChange={this.handleChange} />
+        <PassWordInput {...this.state} handleChange={this.handleChange} />
+        <button className={`btn btn-lg btn-block ${ btnClass }`} 
+          type="submit" disabled={ !this.filledInAllFields() }>
+          {
+            this.filledInAllFields() ? 'Sign up' : 'Please fill in all fields'
+          }
+        </button>
+      </form>
+    </div>
   }
 }
-
-/*
-export default withTracker(props => {
-  return {}
-})(Register);
-*/
-
-{/*
-  <div className="row justify-content-center">
-    <div className="col-3">
-    <h1 className="text-center login-title">Create new Genebook account</h1>
-      <div className="register">
-        <form className="form-register" onSubmit={this.submit} >
-          <UsernameInput 
-            userName = {this.state.username} 
-            validUsername = {this.state.validUsername}
-            handleChange = {this.handleChange} />
-          <EmailInput 
-            email = {this.state.email} 
-            validEmail = {this.state.validEmail}
-            handleChange = {this.handleChange} />
-          <PassWordInput 
-            password = {this.state.password} 
-            passwordRepeat = {this.state.passwordRepeat} 
-            validPassword = {this.state.validPassword}
-            handleChange = {this.handleChange} />
-          <button 
-            className={`btn btn-lg btn-block ${ this.filledInAllFields() ? 'btn-success' : 'btn-outline-success' }`} 
-            type="submit"
-            disabled = { !this.filledInAllFields() }>
-            {
-              this.filledInAllFields() ? 'Sign up' : 'Please fill in all fields'
-            }
-          </button>
-        </form>
-      </div>
-    </div>
-  </div>
-*/}

@@ -1,9 +1,10 @@
 .user-profile {
   @media screen and (min-width: 376px){
-    width: 75%;
+    width: 50%;
   }
   float: none;
-  margin: 0 auto;
+  margin: auto;
+  margin-top: 1rem;
   h3 {
     text-align: center
   }
@@ -15,3 +16,14 @@
   margin: 0 auto;
 }
 
+
+#newPassword {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+#newPasswordRepeat {
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+}

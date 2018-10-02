@@ -15,55 +15,48 @@ import { diff } from 'rus-diff';
 
 import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
+import { ResetPassword } from './ResetPassword.jsx';
+
 import './user-profile.scss';
 
-
-const UserProfileButtons = ({ oldState, newState, resetPassword, deleteAccount, 
-  saveChanges, cancelChanges}) => {
-  const buttons = isEqual(oldState, newState) ?
-  (
-    <div className="btn-group" role='group'>
-      <button type="button" className="btn btn-sm btn-outline-dark border" onClick={resetPassword}>
-        Reset password
-      </button>
-      <button type="button" className="btn btn-sm btn-danger" onClick={deleteAccount}>
-        <span className='icon-cancel'/> Delete account
-      </button>
-    </div>
-  ) :
-  (
-    <div className='btn-group' role='group'>
-      <button type="button" className="btn btn-success" onClick={saveChanges}>
-        Save changes
-      </button>
-      <button type="button" className="btn btn-danger" onClick={cancelChanges}>
-        Cancel
+const UserProfileButtons = ({ editing, toggleEdit, saveChanges, cancelChanges, hasChanges }) => {
+  if (editing) {
+    return <div className='btn-group' role='group'>
+      { hasChanges && 
+        <button className='btn btn-sm btn-success px-2 py-0' type='button'
+          onClick={saveChanges}>
+          <span className='icon-floppy' /> Save changes
+        </button>
+      }
+      <button className='btn btn-sm btn-outline-dark border px-2 py-0' 
+        type='button' onClick={cancelChanges}>
+        <span className='icon-cancel' /> Cancel
       </button>
     </div>
-  )
-  return buttons
+  } else {
+    return <button className='btn btn-sm btn-outline-dark border px-2 py-0' 
+      type='button' onClick={toggleEdit}>
+      <span className='icon-pencil' /> Edit profile
+    </button>
+  }
 }
 
 const UserRoles = ({ roles, existingRoles, onChange, isAdmin, editing }) => {
-  console.log(isAdmin)
   return <div className="form-group col-md-6">
     <label htmlFor="groups" className="control-label">User roles</label>
-    <Select className='custom-select-sm py-0' name='user-role-select'
+    <Select className='custom-select-sm pt-0' name='user-role-select'
       value={roles.map(role => { return { value: role, label: role } })}
       options={existingRoles.map(role => { return { value: role.name, label: role.name } })}
-      onChange={onChange} isMulti isDisabled={!isAdmin} />
+      onChange={onChange} isMulti isDisabled={!isAdmin || !editing} />
   </div>
 }
 
 const UserName = ({ username, onChange, editing }) => {
   return <div className="form-group col-md-6">
     <label htmlFor="username" className="control-label">Username</label>
-    <input 
-      type="text" 
-      className="form-control form-control-sm" 
-      id="username"
-      onChange={onChange} 
-      value={username} />
+    <input type="text" className="form-control form-control-sm" 
+      id="username" onChange={onChange} value={username} disabled={!editing}
+      pattern="^[a-zA-Z0-9]+$" title="Only letters and numbers" />
       <small id="emailHelp" className="form-text text-muted">
         Your username will be visible to other users and must be unique. <b>required</b>
       </small>
@@ -74,23 +67,15 @@ const Profile = ({ first_name, last_name, onChange, editing }) => {
   return <div className='form-row'>
     <div className="form-group col-md-6">
       <label htmlFor="firstname" className="control-label">First name</label>
-      <input 
-        type="text" 
-        className="form-control form-control-sm" 
-        id="firstname" 
-        onChange={onChange}
-        value={first_name}
-        placeholder="First name" />
+      <input type="text" className="form-control form-control-sm" 
+        id="firstname" onChange={onChange} value={first_name}
+        placeholder="First name" disabled={!editing} pattern="^[A-Za-z]+$" />
     </div>
     <div className="form-group col-md-6">
       <label htmlFor="lastname" className="control-label">Last name</label>
-      <input 
-        type="text" 
-        className="form-control form-control-sm" 
-        id="lastname" 
-        onChange={onChange}
-        value={last_name}
-        placeholder="Last name" />
+      <input type="text" className="form-control form-control-sm" 
+        id="lastname" onChange={onChange} value={last_name}
+        placeholder="Last name" disabled={!editing} pattern="^[A-Za-z]+$" />
     </div>
   </div>
 }
@@ -101,19 +86,24 @@ const EmailAddress = ({ emails, onChange, editing }) => {
     let index = i + 1;
     return <div className="form-group" key={`email${index}`}>
       <label htmlFor={`email${index}`} className="control-label">
-        {`Email address ${index}`}
+        Email address
       </label>
       <input type="email" className="form-control form-control-sm" id={`email${index}`} 
-        onChange={onChange} value={email.address} />
+        onChange={onChange} value={email.address} disabled={true}/>
     </div>
   })
 }
 
-const ResetPassword = () => {
-  return <React.Fragment>
-    RESET password
-    <hr />
-  </React.Fragment>
+
+
+const AdminAccountCheck = ({ _id: userId }) => {
+  if ( userId !== Meteor.userId()){
+    return <div className="alert alert-danger" role="alert">
+      This is not your own account!
+    </div> 
+  } else {
+    return null
+  }
 }
 
 const dataTracker = () => {
@@ -142,53 +132,33 @@ class UserProfile extends React.Component {
     super(props);
     this.state = this.props.user;
     Object.assign(this.state, {
-      resetPassword: false,
       editing: false
     })
   }
 
-  static getDerivedStateFromProps = ({ user }, state) => {
-    return null
-    //return isEqual(user, state) ? null : user;
-  }
-  /*componentWillReceiveProps(nextProps){
-    this.setState(nextProps.user)
-  }*/
-
-  resetPassword = (event) => {
-    event.preventDefault();
-    this.setState({
-      resetPassword: !this.state.resetPassword
-    })
-    //alert('This currently does nothing')
-    console.log('resetPassword');
-  }
-
-  deleteAccount = (event) => {
-    event.preventDefault();
-    alert('This currently does nothing')
+  deleteAccount = () => {
+    alert('This currently does nothing. Please contact your administrator if you really want to remove your account')
     console.log('deleteAccount')
   }
 
-  saveChanges = (event) => {
-    event.preventDefault();
+  saveChanges = () => {
     const { _id: userId, roles, profile, emails } = this.state;
     updateUserInfo.call({ userId, roles, profile, emails }, (err, res) => {
       if (err) alert(err)
     })
   }
 
-  cancelChanges = (event) => {
-    event.preventDefault();
-    this.setState(this.props.user);
+  cancelChanges = () => {
+    this.setState({
+      editing: false,
+      ...this.props.user
+    });
   }
   
-  handleChange = (event) => {
-    const key = event.target.id;
-    const value = event.target.value;
-    const name = event.target.name;
+  handleChange = ({ target }) => {
+    const { id, value, name } = target;
 
-    switch (key){
+    switch (id){
       case 'username':
         this.setState({username: value})
         break
@@ -243,40 +213,49 @@ class UserProfile extends React.Component {
     })
   }
 
+  hasChanges = () => {
+    const fields = ['username','profile','emails','roles'];
+    const state = pick(this.state, fields);
+    const props = pick(this.props.user, fields);
+    console.log(props, state)
+    return !isEqual(props, state);
+  }
+
   render(){
     const { username, profile, emails, resetPassword,
       editing, roles } = this.state;
-    const { existingRoles } = this.props;
+    const { existingRoles, user } = this.props;
     const isAdmin = this.isAdmin();
+    const hasChanges = this.hasChanges();
 
-    return <div className="user-profile card">
-      <img className="mb-4 rounded-circle" src="logo.svg" alt="" width="50" height="50" />
-      <h1 className="h3 mb-3 font-weight-normal">User Profile</h1>
-      <button className='btn btn-sm btn-outline-dark border px-2 py-0 float-right' 
-        type='button' onClick={this.toggleEdit}>
-        <span className='icon-pencil' /> Edit profile
-      </button>
-      <form className="card-body" onSubmit={null}>
-        <hr />
-        <div className='form-row'>
-          <UserName {...{ username, editing }} onChange={this.handleChange} />
-          <UserRoles {...{ roles, existingRoles, isAdmin, editing }}
-            onChange={this.updateRoles} />
+    return <div className="user-profile card text-center">
+      <div className='card-body'>
+        <AdminAccountCheck {...user} />
+        <div className='float-center'>
+          <img className="mb-4 rounded-circle" src="logo.svg" alt="" width="50" height="50" />
+          <h1 className="h3 mb-3 font-weight-normal">User Profile</h1>
         </div>
-        <Profile {...{ editing, ...profile } } onChange={this.handleChange} />
-        <EmailAddress emails={emails} onChange={this.handleChange} />
-        <hr />
+        <UserProfileButtons toggleEdit={this.toggleEdit} saveChanges={this.saveChanges}
+          cancelChanges={this.cancelChanges} {...{ editing, hasChanges }} />
+        <form onSubmit={this.saveChanges}>
+          <hr />
+          <div className='form-row'>
+            <UserName {...{ username, editing }} onChange={this.handleChange} />
+            <UserRoles {...{ roles, existingRoles, isAdmin, editing }}
+              onChange={this.updateRoles} />
+          </div>
+          <Profile {...{ editing, ...profile }} onChange={this.handleChange} />
+          <EmailAddress {...{ emails, editing }} onChange={this.handleChange} />
+          <hr />
+        </form>
         {
-          resetPassword && <ResetPassword />
+          editing && <ResetPassword toggleEdit={this.toggleEdit} {...user} />
         }
-        <UserProfileButtons 
-          oldState = {this.props.user}
-          newState = {this.state}
-          cancelChanges = {this.cancelChanges}
-          saveChanges = {this.saveChanges}
-          resetPassword = {this.resetPassword}
-          deleteAccount = {this.deleteAccount}/>
-      </form>
+        <button className='btn btn-sm btn-danger px-2 py-0' 
+          type='button' onClick={this.deleteAccount}>
+          <span className='icon-cancel' /> Delete account
+        </button>
+      </div>
     </div>
   }
 }
