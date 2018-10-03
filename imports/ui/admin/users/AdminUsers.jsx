@@ -28,17 +28,14 @@ const AdminUserInfo = ({ _id, username, emails, profile, createdAt, roles, ...us
   return <tr>
     <td>
       <a href={`${Meteor.absoluteUrl()}admin/user/${_id}`} > 
-        {username}
+        { username }
       </a>
     </td>
-    <td>{first_name} {last_name}</td>
-    <td>{ /*emails*/ }</td>
+    <td>{ first_name } { last_name }</td>
+    <td>{ emails[0].address }</td>
     <td>{ formatDate(createdAt) }</td>
     <td>
-      <PermissionSelect permissions={roles} disabled={true} />
-    </td>
-    <td>
-      
+      <PermissionSelect value={roles} disabled={true} />
     </td>
   </tr>
 }
@@ -55,7 +52,7 @@ class AdminUsers extends React.Component {
           <thead>
             <tr>
               {
-                ['Username','Full name','E-mail','Created at','User groups','Actions'].map(label => {
+                ['Username','Full name','E-mail','Created at','User groups'].map(label => {
                   return <th key={label} id={label}>
                     <button className='btn btn-sm btn-outline-dark px-2 py-0' disabled>
                       {label}

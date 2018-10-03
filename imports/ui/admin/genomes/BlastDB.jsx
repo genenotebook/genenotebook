@@ -57,10 +57,12 @@ class HasNoJob extends React.Component {
     const { isEditing, genomeId } = this.props;
     return (
       isEditing ?
-      <button type="button" className="btn btn-outline-success btn-sm px-2 py-0 btn-block" id={genomeId} onClick={this.makeBlastDb}>
+      <button type="button" className="btn btn-outline-primary btn-sm px-2 py-0 btn-block" 
+        id={genomeId} onClick={this.makeBlastDb}>
         Make Blast DB
       </button> :
-      <button type="button" className="btn btn-outline-secondary btn-sm px-2 py-0 btn-block" id={genomeId} disabled>
+      <button type="button" className="btn btn-outline-secondary btn-sm px-2 py-0 btn-block" 
+        id={genomeId} disabled>
         <i className="icon-block" />  No Blast DB
       </button> 
     )

@@ -30,10 +30,10 @@ const LoggedInButton = ({ isAdmin }) => {
     </DropdownButton>
     <DropdownMenu className='dropdown-menu header-menu px-2'>
       <a role="menuitem" href={`${Meteor.absoluteUrl()}profile`} className="dropdown-item featuremenu-item">
-        <span className='icon-pencil' /> Edit profile
+        <span className='icon-pencil' /> User profile
       </a>
       <a role="menuitem" className="dropdown-item featuremenu-item disabled text-muted" disabled>
-        <span className='icon-clipboard' /> My favourites
+        <span className='icon-clipboard' /> Favourites
       </a>
       <div className="dropdown-divider" />
       {

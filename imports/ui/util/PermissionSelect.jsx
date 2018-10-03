@@ -15,13 +15,23 @@ class SelectionOption extends Object {
   }
 }
 
+const customStyles = {
+  control: (base, state) => ({
+    ...base,
+    fontSize: '.8rem',
+    backGroundColor: state.isDisabled ? 'hsl(0,0%,95%)' : 'hsl(0,0%,100%)',
+    paddingTop: 0,
+    paddingBottom: 0
+  })
+}
+
 const permissionSelectDataTracker = props => {
   const roleSub = Meteor.subscribe('roles');
   const loading = !roleSub.ready();
-  const roles = Meteor.roles.find({}).fetch();
+  const options = Meteor.roles.find({}).fetch();
   return {
     loading,
-    roles,
+    options,
     ...props
   }
 }
@@ -31,14 +41,12 @@ const withConditionalRendering = compose(
   withEither(isLoading, Loading)
 )
 
-const PermissionSelect = ({ roles, permissions, updatePermissions, disabled, ...props }) => {
-  return <Select 
-      name='genome-permission-select'
-      value={permissions.map(permission => new SelectionOption(permission))}
-      options={roles.map(({ name }) => new SelectionOption(name))}
-      onChange={updatePermissions}
-      isMulti={true}
-      disabled={disabled} />
+const PermissionSelect = ({ value, options, onChange, disabled, ...props }) => {
+  return <Select name='permission-select' className=''
+      value={value.map(permission => new SelectionOption(permission))}
+      options={options.map(({ name }) => new SelectionOption(name))}
+      onChange={onChange} isMulti={true} isDisabled={disabled}
+      styles={customStyles} closeMenuOnSelect={false} />
 }
 
 export default withConditionalRendering(PermissionSelect);

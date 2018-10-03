@@ -61,13 +61,9 @@ class EditGenomeInfo extends React.PureComponent {
       <tr>
         <td>
           <div className="form-group">
-            <input 
-              type="text" 
-              className="form-control" 
-              id="name" 
-              aria-describedby="referenceName" 
-              value={ genomeName }
-              onChange={ this.updateField } />
+            <input type="text" className="form-control form-control-sm" 
+              id="name" aria-describedby="referenceName" 
+              value={ genomeName } onChange={ this.updateField } />
             <small id="referenceNameHelp" className="form-text text-muted">
               Genome names must be unique
             </small>
@@ -75,41 +71,28 @@ class EditGenomeInfo extends React.PureComponent {
         </td>
         <td>
           <div className="form-group">
-            <input 
-              type="text" 
-              className="form-control" 
-              id="organism" 
-              aria-describedby="organism" 
-              value={ organism }
-              onChange={ this.updateField } />
+            <input type="text" className="form-control form-control-sm" 
+              id="organism" aria-describedby="organism" 
+              value={ organism } onChange={ this.updateField } />
           </div>
         </td>
         <td>
           <div className="form-group">
-            <textarea 
-              className="form-control" 
-              id="description" 
-              aria-describedby="description" 
-              rows="3"
-              value={ description }
-              onChange={ this.updateField } />
+            <textarea className="form-control form-control-sm" 
+              id="description" aria-describedby="description" 
+              rows="3" value={ description } onChange={ this.updateField } />
           </div>
         </td>
         <td>
           <input type='checkbox' checked={isPublic} onChange={this.togglePublic} />
         </td>
         <td>
-          <PermissionSelect 
-            permissions={permissions}
-            updatePermissions={this.updatePermissions} 
-            disabled={isPublic} />
+          <PermissionSelect value={permissions} disabled={isPublic}
+            onChange={this.updatePermissions} />
         </td>
         <td>
-          <AnnotationInfo //{ ...genome.annotationTrack }
-            blastDb={blastDb}
-            name={annotationName}
-            genomeId={genomeId}
-            isEditing={true} />
+          <AnnotationInfo blastDb={blastDb} name={annotationName}
+            genomeId={genomeId} isEditing={true} />
         </td>
         <td>
           <table style={{width:'100%'}}>
@@ -117,28 +100,22 @@ class EditGenomeInfo extends React.PureComponent {
               <tr>
                 <td>
                   <div className='btn-group btn-group-justified'>
-                    <button
-                      type='button' 
-                      className='btn btn-outline-success btn-sm px-2 py-0'
-                      onClick={this.saveChanges}
+                    <button type='button' onClick={this.saveChanges}
+                      className='btn btn-success btn-sm px-2 py-0'
                       disabled={!hasChanges} >
                       <span className="icon-check" /> Save
                     </button>
-                    <button 
-                      type='button' 
-                      className='btn btn-outline-dark btn-sm px-2 py-0'
-                      onClick={toggleEdit} >
-                      <span className="icon-remove" /> Cancel
+                    <button type='button' onClick={toggleEdit}
+                      className='btn btn-outline-dark btn-sm px-2 py-0' >
+                      <span className="icon-cancel" /> Cancel
                     </button>
                   </div>
                 </td>
               </tr>
               <tr>
                 <td>
-                  <button 
-                    type='button' 
+                  <button type='button' onClick={ this.removeGenome }
                     className='btn btn-danger btn-sm px-2 py-0 btn-block'
-                    onClick={ this.removeGenome }
                     name={genomeId}>
                     <span className="icon-exclamation" /> Delete genome
                   </button>
@@ -164,28 +141,18 @@ const GenomeInfoLine = ({ _id: genomeId, name: genomeName, organism, isPublic,
       <input type='checkbox' checked={isPublic} disabled/>
     </td>
     <td>
-      <PermissionSelect 
-        permissions={ permissions }
-        disabled={true} />
+      <PermissionSelect value={ permissions } disabled={true} />
     </td>
     <td>
-      <AnnotationInfo //{ ...annotationTrack }
-        //annotationTrack={annotationTrack}
-        name={annotationName}
-        blastDb={blastDb}
-        genomeId={genomeId}
-        isEditing={false} />
+      <AnnotationInfo name={annotationName} blastDb={blastDb}
+        genomeId={genomeId} isEditing={false} />
     </td>
     <td>
       <div className='btn-group'>
-        <button 
-          type='button' 
-          className='btn btn-outline-dark btn-sm px-2 py-0'
-          onClick={toggleEdit}
-          name={genomeId}>
+        <button type='button' onClick={toggleEdit} name={genomeId}
+          className='btn btn-outline-dark btn-sm px-2 py-0' >
           <span className="icon-pencil" /> Edit&nbsp;
         </button>
-        
       </div>
     </td>
   </tr>

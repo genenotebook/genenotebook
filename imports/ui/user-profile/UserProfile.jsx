@@ -13,6 +13,7 @@ import update from 'immutability-helper';
 import { isEqual, pick }from 'lodash';
 import { diff } from 'rus-diff';
 
+import PermissionSelect from '/imports/ui/util/PermissionSelect.jsx';
 import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
 import { ResetPassword } from './ResetPassword.jsx';
@@ -44,10 +45,8 @@ const UserProfileButtons = ({ editing, toggleEdit, saveChanges, cancelChanges, h
 const UserRoles = ({ roles, existingRoles, onChange, isAdmin, editing }) => {
   return <div className="form-group col-md-6">
     <label htmlFor="groups" className="control-label">User roles</label>
-    <Select className='custom-select-sm pt-0' name='user-role-select'
-      value={roles.map(role => { return { value: role, label: role } })}
-      options={existingRoles.map(role => { return { value: role.name, label: role.name } })}
-      onChange={onChange} isMulti isDisabled={!isAdmin || !editing} />
+    <PermissionSelect value={roles} options={existingRoles} onChange={onChange}
+      disabled={!isAdmin || !editing} />
   </div>
 }
 
@@ -217,7 +216,6 @@ class UserProfile extends React.Component {
     const fields = ['username','profile','emails','roles'];
     const state = pick(this.state, fields);
     const props = pick(this.props.user, fields);
-    console.log(props, state)
     return !isEqual(props, state);
   }
 
