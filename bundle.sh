@@ -6,7 +6,7 @@ VERSION=$(jq -r '.version' package.json)
 
 BUNDLE_NAME="genenotebook_v$VERSION"
 
-meteor build $BUNDLE_NAME --architecture os.linux.x86_64 --server-only --directory 
+meteor build $BUNDLE_NAME --server-only --directory 
 mv $BUNDLE_NAME/bundle/* $BUNDLE_NAME 
 pushd $BUNDLE_NAME/programs/server 
 npm install 
