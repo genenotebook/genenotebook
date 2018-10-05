@@ -25,7 +25,7 @@ const NoOrthogroup = () => {
   </div>
 }
 
-const orthogroupDataTracker = ({ gene }) => {
+const orthogroupDataTracker = ({ gene, ...props }) => {
   const { orthogroupId } = gene;
   const orthoSub = Meteor.subscribe('orthogroups', orthogroupId);
   const loading = !orthoSub.ready();
@@ -33,7 +33,8 @@ const orthogroupDataTracker = ({ gene }) => {
   return {
     loading,
     gene,
-    orthogroup
+    orthogroup,
+    ...props
   }
 }
 
