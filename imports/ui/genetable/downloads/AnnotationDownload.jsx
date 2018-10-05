@@ -5,9 +5,8 @@ import React from 'react';
 
 import { previewDataTracker } from './previewDataTracker.js';
 
-const formatAttributes = interval => {
-  const attributes = interval.attributes;
-  attributes.ID = interval.ID;
+const formatAttributes = ({ attributes = {}, ID, parents }) => {
+  Object.assign(attributes, { ID, Parent: parents })
   const attributeString = Object.entries(attributes).map(attribute => {
     const [key,value] = attribute;
     return `${key}=${value}`
