@@ -12,13 +12,13 @@ import { chunk } from 'lodash';
 import { Genes } from '/imports/api/genes/gene_collection.js';
 import { Interpro } from '/imports/api/genes/interpro_collection.js'; 
 
-import { formatAttributes, debugFormatAttributes } from '/imports/api/util/util.js';
+import { parseAttributeString, debugParseAttributeString } from '/imports/api/util/util.js';
 
 const logAttributeError = ({ lineNumber, line, attributeString, error }) => {
   console.log(`Error line ${lineNumber}`)
   console.log(line.join('\t'))
   console.log(attributeString)
-  console.log(debugFormatAttributes(attributeString))
+  console.log(debugParseAttributeString(attributeString))
   throw new Meteor.Error(error)
 }
 
@@ -37,7 +37,7 @@ class InterproscanProcessor {
       if (typeof attributeString !== 'undefined'){
         let attributes;
         try {
-          attributes = formatAttributes(attributeString);
+          attributes = parseAttributeString(attributeString);
         } catch (error) {
           logAttributeError({ lineNumber: this.lineNumber, line, 
             attributeString, error });

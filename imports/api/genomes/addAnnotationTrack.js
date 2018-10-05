@@ -7,7 +7,7 @@ import Papa from 'papaparse';
 import fs from 'fs';
 import { findIndex, isEqual, isEmpty, mapValues, 
 	partition, omit } from 'lodash';
-import querystring from 'querystring';
+//import querystring from 'querystring';
 
 import { Genes, GeneSchema, SubfeatureSchema, 
 	VALID_SUBFEATURE_TYPES, VALID_INTERVAL_TYPES } from '/imports/api/genes/gene_collection.js';
@@ -16,14 +16,14 @@ import { genomeSequenceCollection, genomeCollection } from '/imports/api/genomes
 import { Tracks } from '/imports/api/genomes/track_collection.js';
 
 import { scanGeneAttributes } from '/imports/api/genes/scanGeneAttributes.js';
-import { formatAttributes } from '/imports/api/util/util.js';
+import { parseAttributeString } from '/imports/api/util/util.js';
 
 /**
  * Override the default querystring unescape function to be able to parse commas correctly in gff attributes
  * @param  {String}
  * @return {String}
  */
-querystring.unescape = uri => uri;
+//querystring.unescape = uri => uri;
 
 /**
  * Interval Class containing a single genomic interval. Every line in a gff3 file is an interval
@@ -34,7 +34,7 @@ const Interval = class Interval {
 		const [ seqid, source, type, start, end,
 			_score, strand, phase, attributeString ] = gffFields;
 		const score = String(_score);
-		const attributes = formatAttributes(attributeString);
+		const attributes = parseAttributeString(attributeString);
 		Object.assign(this, {
 			type, start, end, score, attributes
 		})

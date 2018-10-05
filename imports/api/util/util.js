@@ -1,9 +1,9 @@
 /**
- * Format gff3 attribute column into key:value object.
+ * Parse gff3 attribute column into key:value object.
  * @param  {String} attributeString Raw gff3 attribute column string
  * @return {Object}                 Key:value pairs of attributes.
  */
-export const formatAttributes = attributeString => {
+export const parseAttributeString = attributeString => {
   return attributeString.split(';').reduce((attributes, stringPart) => {
     const [key, value] = stringPart.split('=')
     if (typeof key !== 'undefined' && typeof value !== 'undefined'){
@@ -14,11 +14,11 @@ export const formatAttributes = attributeString => {
 }
 
 /**
- * Debug formatting gff3 attribute column by logging intermediate steps to console
+ * Debug parsing gff3 attribute column by logging intermediate steps to console
  * @param  {String} attributeString Raw gff3 attribute column string
  * @return {Object}                 Key:value pairs of attributes.
  */
-export const debugFormatAttributes = attributeString => {
+export const debugParseAttributeString = attributeString => {
   arr = attributeString.split(';');
   console.log(arr)
   const attributes = arr.reduce((attr, stringPart) => {
