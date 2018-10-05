@@ -53,7 +53,7 @@ const XAxis = ({ scale, numTicks, transform, seqid }) => {
   )
 }
 
-const IntervalPopover = ({ showPopover, togglePopover, targetId, ID, type, start, end, phase, attributes, seq }) => {
+const IntervalPopover = ({ showPopover, togglePopover, targetId, ID, type, start, end, phase, attributes = {}, seq }) => {
   return <Popover placement='top' isOpen={showPopover} target={targetId} toggle={togglePopover}>
     <PopoverHeader>
       { ID }
