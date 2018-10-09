@@ -27,7 +27,7 @@ class Experiment extends React.Component {
       [id]: value
     })
   }
-  submit = () => {
+  submit = event => {
     event.preventDefault();
     const { _id } = this.props;
     const { sampleName, replicaGroup, description, permissions } = this.state;

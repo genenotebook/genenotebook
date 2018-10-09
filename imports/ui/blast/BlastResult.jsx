@@ -122,8 +122,8 @@ class BlastResult extends React.Component {
   render(){
     const { job, ...props } = this.props;
     return (
-      <div className="container">
-        <div className='card py-2'>
+      <div className="container py-2">
+        <div className='card'>
           <div className='card-header'>
             <b>Blast results</b> <small> Job ID: {job._id}</small>
           </div>

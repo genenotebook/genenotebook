@@ -133,8 +133,11 @@ Meteor.publish({
       return genomeCollection.find({ isPublic: true });
     } else {
       const roles = Roles.getRolesForUser(publication.userId);
-      const permissions = { $in: roles };
-      return genomeCollection.find({ permissions })
+      return genomeCollection.find({ $or: [
+        { permissions: { $in: roles } },
+        { isPublic: true }
+        ]
+      })
     }
   },
   orthogroups (ID) {

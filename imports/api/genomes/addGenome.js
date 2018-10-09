@@ -42,6 +42,7 @@ class LineProcessor {
 		this.bulkOp = genomeSequenceCollection.rawCollection().initializeUnorderedBulkOp();
 		this.genomeId = genomeId;
 		this.permissions = permissions;
+		this.isPublic = false;
 	}
 
 	/**
@@ -50,36 +51,31 @@ class LineProcessor {
 	 * @return {None}
 	 */
 	process = line => {
+		const { genomeId, permissions, isPublic, 
+			seqPart, bulkOp } = this;
+
 		if (line[0] === '>'){
 			// process header line
-			if (this.seqPart.header.length && this.seqPart.seq.length){
-				this.seqPart.end += this.seqPart.seq.length;
-				this.bulkOp.insert({
-					header: this.seqPart.header,
-					seq: this.seqPart.seq,
-					start: this.seqPart.start,
-					end: this.seqPart.end,
-					genomeId: this.genomeId,
-					permissions: this.permissions
-				})
+			if (seqPart.header.length && seqPart.seq.length){
+				seqPart.end += seqPart.seq.length;
+				
+				const { header, seq, start, end } = seqPart;
+				bulkOp.insert({ header, seq, start, end, genomeId,
+					permissions, isPublic })
 			}
 			const header = line.substring(1).split(' ')[0];
 			this.seqPart = new SeqPart({ header });
 		} else {
 			// process sequence line
-			this.seqPart.seq += line.trim();
-			if (this.seqPart.seq.length > CHUNK_SIZE){
-				this.seqPart.end += CHUNK_SIZE;
-				this.bulkOp.insert({
-					header: this.seqPart.header,
-					seq: this.seqPart.seq.substring(0, CHUNK_SIZE),
-					start: this.seqPart.start,
-					end: this.seqPart.end,
-					genomeId: this.genomeId,
-					permissions: this.permissions
-				})
-				this.seqPart.seq = this.seqPart.seq.substring(CHUNK_SIZE);
-				this.seqPart.start += CHUNK_SIZE;
+			seqPart.seq += line.trim();
+			if (seqPart.seq.length > CHUNK_SIZE){
+				seqPart.end += CHUNK_SIZE;
+				const { header, start, end } = seqPart;
+				const seq = seqPart.seq.substring(0, CHUNK_SIZE);
+				bulkOp.insert({ header, seq, start, end, genomeId,
+					permissions, isPublic })
+				seqPart.seq = this.seqPart.seq.substring(CHUNK_SIZE);
+				seqPart.start += CHUNK_SIZE;
 			}
 		}
 	}
@@ -88,16 +84,16 @@ class LineProcessor {
 	 * @return {[type]} [description]
 	 */
 	finalize = () => {
-		this.seqPart.end += this.seqPart.seq.length;
-		this.bulkOp.insert({
-			header: this.seqPart.header,
-			seq: this.seqPart.seq,
-			start: this.seqPart.start,
-			end: this.seqPart.end,
-			genomeId: this.genomeId,
-			permissions: this.permissions
-		})
-		return this.bulkOp.execute();
+		const { genomeId, permissions, isPublic, 
+			seqPart, bulkOp } = this;
+		
+		seqPart.end += seqPart.seq.length;
+
+		const { header, seq, start, end } = seqPart;
+
+		bulkOp.insert({ header, seq, start, end, genomeId, 
+			isPublic, permissions });
+		return bulkOp.execute();
 	}
 }
 

@@ -87,7 +87,7 @@ class SingleGenePage extends React.Component {
   }
 
   render(){
-    const { gene, genome } = this.props;
+    const { gene, genome = {} } = this.props;
     return (
       <div className="container">
         <div className="card single-gene-page my-2">
@@ -138,7 +138,7 @@ class SingleGenePage extends React.Component {
             </section>
           </div>
           <div className="card-footer text-muted">
-            Gene info
+            Gene info page for {gene.ID}
           </div>
         </div>
       </div>
