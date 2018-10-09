@@ -7,7 +7,7 @@ import { compose } from 'recompose';
 import { mean, sum, groupBy } from 'lodash';
 import randomColor from 'randomcolor';
 import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
-import { scaleLinear } from 'd3-scale';
+import { scaleLinear } from 'd3';//-scale';
 
 import { ExperimentInfo, Transcriptomes } from '/imports/api/transcriptomes/transcriptome_collection.js';
 

@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - Updated meteor.js to v1.8.0
+- Cleanup package.json
 
 ## [0.1.4] 2018-10-03
 ### Added

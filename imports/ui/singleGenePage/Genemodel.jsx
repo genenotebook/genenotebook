@@ -3,7 +3,7 @@ import { withTracker } from 'meteor/react-meteor-data';
 import React from 'react';
 import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import ReactResizeDetector from 'react-resize-detector';
-import { scaleLinear } from 'd3-scale';
+import { scaleLinear } from 'd3';
 import randomColor from 'randomcolor';
 import Color from 'color';
 

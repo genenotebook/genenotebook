@@ -1,4 +1,4 @@
-import { Meteor } from 'meteor/meteor';
+/*import { Meteor } from 'meteor/meteor';
 import { Roles } from 'meteor/alanning:roles';
 
 import request from 'request';
@@ -7,11 +7,7 @@ import Future from 'fibers/future';
 import { getGeneSequences } from '/imports/api/util/util.js';
 
 import { Genes } from '/imports/api/genes/gene_collection.js'; 
-/**
- * Reverse complement a DNA string
- * @param  {String} seq [String representing DNA constisting of alphabet AaCcGgTtNn]
- * @return {String}     [String representing DNA constisting of alphabet AaCcGgTtNn, reverse complement of input]
- */
+
 const revcomp = (seq) => {
   const comp = {  
     'A':'T','a':'t',
@@ -28,11 +24,7 @@ const revcomp = (seq) => {
   return revCompSeq
 }
 
-/**
- * Convert a DNA string into a amino acid string
- * @param  {String} seq String representing DNA constisting of alphabet ACGTN
- * @return {String}     [tring representing the amino acid complement of input string
- */
+
 const translate = (seq) => {
   const trans = {
     'ACC': 'T', 'ACA': 'T', 'ACG': 'T',
@@ -226,3 +218,4 @@ Meteor.methods({
     return results
   }
 })
+*/

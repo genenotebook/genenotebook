@@ -4,8 +4,6 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import SimpleSchema from 'simpl-schema';
 import Papa from 'papaparse';
 import fs from 'fs';
-import * as _request from 'request-promise-native';
-const request = _request.default;
 
 import { chunk } from 'lodash';
 

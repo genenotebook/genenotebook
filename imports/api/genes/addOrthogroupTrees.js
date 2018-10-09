@@ -5,8 +5,6 @@ import SimpleSchema from 'simpl-schema';
 import Papa from 'papaparse';
 import glob from 'glob';
 
-import { BSON } from 'bson';
-
 import { orthogroupCollection } from '/imports/api/genes/orthogroup_collection.js';
 import { Genes } from '/imports/api/genes/gene_collection.js';
 import { parseNewick } from '/imports/api/util/util.js';
@@ -68,16 +66,6 @@ const addOrthogroupTree = ({ fileName, geneBulkOp, orthoBulkOp }) => {
       }
     })
   })
-
-  
-
-  /*geneBulkOp.find({
-    ID: { $in: geneIds }
-  }).update({
-    $set: { orthogroupId }
-  })*/
-
-  //return new BSON().calculateObjectSize(data)
 }
 
 export const addOrthogroupTrees = new ValidatedMethod({
@@ -100,19 +88,9 @@ export const addOrthogroupTrees = new ValidatedMethod({
     const orthoBulkOp = orthogroupCollection.rawCollection().initializeUnorderedBulkOp();
     return globPromise(`${folderName}/*`)
       .then(fileNames => {
-        //let size = 0;
         fileNames.forEach(fileName => {
           addOrthogroupTree({ fileName, orthoBulkOp, geneBulkOp })
         })
-        //console.log(size)
-        //const orthoBulkOpResults = orthoBulkOp.execute();
-        //const geneBulkOpResults = geneBulkOp.execute();
-
-        //return orthoBulkOpResults
-        //return executeBulkOp(geneBulkOp);
-      //})
-      //.then(geneBulkOpResults => {
-      //  return executeBulkOp(orthoBulkOp)
       })
       .catch(error  => {
         console.log(Object.keys(error))
@@ -123,39 +101,5 @@ export const addOrthogroupTrees = new ValidatedMethod({
         }
         throw new Meteor.Error(error)
       })
-
-    /*
-    })
-    
-      , (err, fileNames) => {
-      fileNames.forEach(fileName => {
-        const orthogroupId = fileName.split('/').pop().split('_')[0];
-        
-        const data = fs.readFileSync(fileName, 'utf8');
-          const { size, tree, geneIds } = parseNewick(data);
-
-          orthoBulkOp.insert({
-            ID: orthogroupId,
-            size,
-            tree,
-            genes
-          })
-          geneBulkOp.find({
-            ID: { $in: tree.geneIds }
-          }).update({
-            $set: { orthogroupId }
-          })
-
-      })
-    console.log('geneBulkOp execute')
-    const geneBulkOpResults = geneBulkOp.execute();
-    console.log(geneBulkOpResults)
-    
-    console.log('orthoBulkOp execute')
-    const orthoBulkOpResults = orthoBulkOp.execute();
-    console.log(orthoBulkOpResults)
-    })
-
-  */
   }
 })

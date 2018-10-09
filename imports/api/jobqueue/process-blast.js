@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import jobQueue from './jobqueue.js';
-import  spawn  from 'spawn-promise';//child-process-promise';
+import  spawn  from 'spawn-promise';
 
 import xml2js from 'xml2js-es6-promise';
 
@@ -36,20 +36,6 @@ jobQueue.processJobs(
     } =  job.data
 
     const dbType = DB_TYPES[blastType]
-
-    /*
-    const dbs = Tracks.find({
-      name: {
-        $in: trackNames
-      } 
-    },{
-      fields: {
-        blastdbs: 1
-      }
-    }).map(track => { 
-      return track.blastdbs[dbType]
-    }).join(' ')
-    */
    
     const dbs = genomeCollection.find({
       _id: {
@@ -77,7 +63,5 @@ jobQueue.processJobs(
         job.fail({ error })
         callback()
       })
-    //job.done(blastResult)
-    //callback()
   }
 )

@@ -1,6 +1,6 @@
 import React from 'react';
 import { compose } from 'recompose';
-import { scaleLinear } from 'd3-scale';
+import { scaleLinear } from 'd3';//-scale';
 import { groupBy } from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';
 import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';

@@ -1,7 +1,7 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
-import classNames from 'classnames';
+//import classNames from 'classnames';
 import { cloneDeep } from 'lodash';
 
 import AnnotationDownload from './AnnotationDownload.jsx';
@@ -143,21 +143,13 @@ export default class DownloadDialogModal extends React.Component {
                   <ul className="nav nav-tabs card-header-tabs">
                   {
                     Object.keys(DATATYPE_COMPONENTS).map(dataType => {
-                      return (
-                        <li key={dataType} className="nav-item">
-                          <a 
-                            className={
-                              classNames('nav-link', {
-                                'active': this.state.dataType === dataType
-                              })
-                            }
-                            id={dataType}
-                            onClick={this.selectDataType}
-                            href="#" >
-                            {dataType}
-                          </a>
-                        </li>
-                      )
+                      const active = this.state.dataType === dataType ? 'active' : '';
+                      return <li key={dataType} className="nav-item">
+                        <a className={`nav-link ${active}`} id={dataType}
+                          onClick={this.selectDataType} href="#" >
+                          {dataType}
+                        </a>
+                      </li>
                     })
                   }
                   </ul>
