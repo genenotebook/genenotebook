@@ -16,10 +16,10 @@ Accounts.onCreateUser( (options,user) => {
   return user
 })
 
-Accounts.onLogout( (options) => {
-  console.log('logout',options)
+Accounts.onLogout( ({ user, connection }) => {
+  console.log('logout',user._id)
   Meteor.users.update({
-    _id: options.user._id,
+    _id: user._id,
     'presence.status': 'online'
   },{
     $set: {
