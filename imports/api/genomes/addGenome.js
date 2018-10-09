@@ -112,7 +112,7 @@ const fastaFileToMongoDb = ({ fileName, genomeName }) => {
 			permissions: permissions,
 			description: 'description',
 			organism: 'organism',
-			public: false
+			isPublic: false
 		})
 
 		const lineReader = readline.createInterface({

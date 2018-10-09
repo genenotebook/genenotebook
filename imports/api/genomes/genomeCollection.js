@@ -34,6 +34,11 @@ const genomeSequenceSchema = new SimpleSchema({
 	},
 	'permissions.$' : {
 		type: String
+	},
+	isPublic: {
+		type: Boolean,
+		label: 'Publicly available genome',
+		optional: true
 	}
 })
 
