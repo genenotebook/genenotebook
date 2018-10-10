@@ -47,9 +47,8 @@ const addOrthogroupTree = ({ fileName, geneBulkOp, orthoBulkOp }) => {
     tree: treeNewick,
     geneIds
   }, (err, _id) => {
-    if (err) {
-      throw new Meteor.Error(err);
-    }
+    if (err) throw new Meteor.Error(err);
+    
     Genes.update({
       $or: [
         { ID: { $in: geneIds } },
@@ -61,9 +60,7 @@ const addOrthogroupTree = ({ fileName, geneBulkOp, orthoBulkOp }) => {
     },{
       multi: true 
     }, (err, nUpdated) => {
-      if (err){
-        throw new Meteor.Error(err);
-      }
+      if (err) throw new Meteor.Error(err);
     })
   })
 }
