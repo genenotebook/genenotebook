@@ -39,7 +39,7 @@ const addOrthogroupTree = ({ fileName, geneBulkOp, orthoBulkOp }) => {
   const treeNewick = fs.readFileSync(fileName, 'utf8');
   const { size, tree, geneIds } = parseNewick(treeNewick);
 
-  console.log(orthogroupId, geneIds);
+  //console.log(orthogroupId, geneIds);
 
   orthogroupCollection.insert({
     ID: orthogroupId,
