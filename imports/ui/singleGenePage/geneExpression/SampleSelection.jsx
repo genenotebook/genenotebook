@@ -85,7 +85,7 @@ class SampleSelection extends React.Component {
           <DropdownButton className="btn btn-sm btn-outline-dark dropdown-toggle px-2 py-0 border">
             Select samples
           </DropdownButton>
-          <DropdownMenu className='dropdown-menu-left'>
+          <DropdownMenu className='dropdown-menu-right'>
             <Select autoFocus menuIsOpen isMulti value={selection} closeMenuOnSelect={false} 
               hideSelectedOptions={false} options={options} onChange={this.updateSelection} 
               placeHolder='Search...' />
