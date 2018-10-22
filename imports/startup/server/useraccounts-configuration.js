@@ -30,10 +30,6 @@ Accounts.onLogout( ({ user, connection }) => {
 
 Meteor.users.allow({
   update(userId, doc, fields, modifier){
-    console.log('User update')
-    console.log(doc)
-    console.log(fields)
-    console.log(modifier)
     if (userId && Roles.userIsInRole(userId, 'admin')){
       return true
     }

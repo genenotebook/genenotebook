@@ -110,7 +110,6 @@ class GeneTable extends React.PureComponent {
       delete query.$or;
     }
     const selectedColumns = new Set(['Gene ID', ...state.selectedColumns, ...selectedAttributes]);
-    console.log('getDerivedStateFromProps', query, newQuery, oldQuery);
     return {
       query,
       selectedColumns
