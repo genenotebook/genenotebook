@@ -6,25 +6,39 @@ import React from 'react';
 
 import InactiveAccountWarning from './InactiveAccountWarning.jsx';
 import Header from './Header.jsx';
+import PageloadPopup from './PageloadPopup.jsx';
 
 class MainLayout extends React.Component {
   constructor(props){
-    super(props)
+    super(props);
+    this.state = {
+      showPageloadPopup: !Meteor.userId()
+    }
   }
-  render(){
 
-    return (
-      <div>
-        <Header />
-        <main>
-          <div className="container-fluid">
-          { 
-            this.props.content
-          }
-          </div>
-        </main>
-      </div>
-    )
+  togglePageloadPopup = () => {
+    this.setState({
+      showPageloadPopup: false
+    })
+  }
+
+  render(){
+    const { showPageloadPopup } = this.state;
+
+    return <div>
+      {
+        showPageloadPopup &&
+        <PageloadPopup togglePopup={this.togglePageloadPopup} />
+      }
+      <Header />
+      <main>
+        <div className="container-fluid">
+        { 
+          this.props.content
+        }
+        </div>
+      </main>
+    </div>
   }
 }
 
