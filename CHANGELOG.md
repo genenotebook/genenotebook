@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Fixed
 - Correctly set isPublic attribute during genome loading
+- Only admin and curator can edit genes
 
 ### Changed
 - Updated meteor.js to v1.8.0
