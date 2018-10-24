@@ -12,79 +12,89 @@ import { updateGene } from '/imports/api/genes/updateGene.js';
 
 import AttributeValue from './AttributeValue.jsx';
 
-//import { withEither } from '/imports/ui/util/uiUtil.jsx';
-//
-//import { AttributeValue } from '/imports/ui/genetable/GeneTableBody.jsx';
-
 import './generalInfo.scss';
 
-const canEdit = () => {
-  return true
+const Controls = ({ showHistory, totalVersionNumber, isEditing, toggleHistory, 
+  saveEdit, startEdit, cancelEdit }) => {
+  
+  const canEdit = Roles.userIsInRole(Meteor.userId(), ['admin', 'curator']);
+  
+  return <div>
+    {
+      showHistory &&
+      <button type="button" onClick={toggleHistory}
+        className="btn btn-outline-dark btn-sm float-right px-2 py-0 viewingHistory" >
+        <span className="icon-history" aria-hidden="true" /> Hide history
+      </button>
+    }
+    {
+      totalVersionNumber > 0 && !isEditing && !showHistory &&
+      <button type="button" onClick={toggleHistory}
+        className="btn btn-outline-dark btn-sm float-right px-2 py-0 viewingHistory" >
+        <i className="icon-history" aria-hidden="true"></i> 
+        &nbsp;Show history&nbsp;
+        <span className="badge badge-dark">{ totalVersionNumber }</span>
+      </button>
+    }
+    {
+      canEdit && !isEditing && !showHistory &&
+      <button type="button" onClick={startEdit}
+        className="btn btn-outline-dark btn-sm float-right px-2 py-0 edit border">
+        <span className="icon-pencil" aria-hidden="true" /> Edit
+      </button>
+    }
+    {
+      canEdit && isEditing && !showHistory &&
+      <div className="btn-group float-right">
+        <button type="button" onClick={saveEdit}
+          className="btn btn-outline-success px-2 py-0 btn-sm save">
+          <span className="icon-floppy" aria-hidden="true" /> Save
+        </button>
+        <button type="button" onClick={cancelEdit}
+          className="btn btn-outline-danger btn-sm px-2 py-0 cancel" >
+          <span className="icon-cancel" aria-hidden="true" /> Cancel
+        </button>
+      </div>
+    }
+  </div>
 }
 
-const Controls = (props) => {
-  return (
-    <div>
-      {
-        props.showHistory &&
-        <button type="button" className="btn btn-outline-dark btn-sm float-right px-2 py-0 viewingHistory" onClick={props.toggleHistory}>
-          <span className="icon-history" aria-hidden="true" /> Hide history
-        </button>
-      }
-      {
-        props.totalVersionNumber > 0 && !props.isEditing && !props.showHistory &&
-        <button type="button" className="btn btn-outline-dark btn-sm float-right px-2 py-0 viewingHistory" onClick={props.toggleHistory}>
-          <i className="icon-history" aria-hidden="true"></i> 
-          &nbsp;Show history&nbsp;
-          <span className="badge badge-dark">{ props.totalVersionNumber }</span>
-        </button>
-      }
-      {
-        canEdit() && !props.isEditing && !props.showHistory &&
-        <button type="button" className="btn btn-outline-dark btn-sm float-right px-2 py-0 edit border" onClick={props.startEdit}>
-          <span className="icon-pencil" aria-hidden="true" /> Edit
-        </button>
-      }
-      {
-        canEdit() && props.isEditing && !props.showHistory &&
-        <div className="btn-group float-right">
-          <button type="button" className="btn btn-outline-success px-2 py-0 btn-sm save" onClick={props.saveEdit}>
-            <span className="icon-floppy" aria-hidden="true" /> Save
-          </button>
-          <button type="button" className="btn btn-outline-danger btn-sm px-2 py-0 cancel" onClick={props.cancelEdit}>
-            <span className="icon-cancel" aria-hidden="true" /> Cancel
-          </button>
-        </div>
-      }
-    </div>
-  )
-}
+const VersionHistory = ({ currentVersionNumber, totalVersionNumber, restoreVersion, 
+  selectVersion, ...props }) => {
 
-const VersionHistory = (props) => {
-  const hasNextVersion = props.currentVersionNumber < props.totalVersionNumber;
+  const hasNextVersion = currentVersionNumber < totalVersionNumber;
   const nextText = hasNextVersion ? 'Next version' : 'No next version available';
 
-  const hasPreviousVersion = props.currentVersionNumber != 0;
+  const hasPreviousVersion = currentVersionNumber != 0;
   const previousText = hasPreviousVersion ? 'Previous version' : 'No previous version available';
   return (
     <div>
       <div className="alert alert-primary" role="alert">
-        <span className="icon-exclamation" aria-hidden="true" /> You are watching 
-        version <span className='badge badge-light'> { props.currentVersionNumber + 1 } / { props.totalVersionNumber + 1 } </span> 
+        <span className="icon-exclamation" aria-hidden="true" /> 
+        You are watching version 
+        <span className='badge badge-light'> 
+          { currentVersionNumber + 1 } / { totalVersionNumber + 1 } 
+        </span> 
         &nbsp;of this gene by user Foobar Baz { /*props.editBy*/ } at { props.editAt }&nbsp;
         { 
           Roles.userIsInRole(Meteor.userId(),'admin') &&
-          <button type='button' className="button btn-sm btn-primary px-2 py-0" onClick = {props.restoreVersion}>
+          <button type='button' className="button btn-sm btn-primary px-2 py-0" 
+          onClick = {restoreVersion}>
             Revert to this version
           </button>
         }
       </div>
       <div className="pager">
-        <button className="btn btn-sm btn-outline-dark px-2 py-0" name="previous" onClick={ props.selectVersion } disabled={!hasPreviousVersion}>
-          <span className={`${hasPreviousVersion ? 'icon-left' : 'icon-block'}`} aria-hidden="true" /> {previousText}
+        <button className="btn btn-sm btn-outline-dark px-2 py-0" name="previous" 
+          onClick={ selectVersion } disabled={!hasPreviousVersion}>
+          <span className={`${hasPreviousVersion ? 'icon-left' : 'icon-block'}`} 
+            aria-hidden="true" /> {previousText}
         </button>
-        <button className="btn btn-sm btn-outline-dark px-2 py-0 float-right" name="next" onClick={ props.selectVersion } disabled={!hasNextVersion}>
-         {nextText} <span className={`${hasNextVersion ? 'icon-right' : 'icon-block'}`} aria-hidden="true" />
+        <button className="btn btn-sm btn-outline-dark px-2 py-0 float-right" 
+          name="next" onClick={ props.selectVersion } disabled={!hasNextVersion}>
+          {nextText} 
+          <span className={`${hasNextVersion ? 'icon-right' : 'icon-block'}`} 
+            aria-hidden="true" />
         </button>
       </div>
     </div>
@@ -103,13 +113,12 @@ const AttributeInput = ({ name, value, onChange, deleteAttribute }) => {
   </div>
 }
 
-const geneInfoDataTracker = props => {
+const geneInfoDataTracker = ({ gene, ...props }) => {
   Meteor.subscribe('editHistory');
   Meteor.subscribe('attributes');
-  //Meteor.subscribe('singleGene',props.gene.ID)
 
   const editHistory = EditHistory.find({
-      ID: props.gene.ID
+      ID: gene.ID
     },{
       sort: {
         date: -1
@@ -123,9 +132,9 @@ const geneInfoDataTracker = props => {
   }).map( attribute => attribute.name)
 
   return {
-    gene: props.gene,
-    editHistory: editHistory,
-    attributeNames: attributeNames
+    gene,
+    editHistory,
+    attributeNames
   }
 }
 
