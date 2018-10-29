@@ -141,10 +141,13 @@ class UserProfile extends React.Component {
   }
 
   saveChanges = () => {
+    alert('This public instance does not allow you to change account information')
+    /*
     const { _id: userId, roles, profile, emails } = this.state;
     updateUserInfo.call({ userId, roles, profile, emails }, (err, res) => {
       if (err) alert(err)
     })
+    */
   }
 
   cancelChanges = () => {
