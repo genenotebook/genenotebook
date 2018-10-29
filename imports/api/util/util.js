@@ -46,11 +46,10 @@ export const reverseComplement = seq => {
     'G':'C','g':'c',
     'N':'N','n':'n'
   }
-  const revSeqArray = seq.split('').reverse()
-  const revCompSeqArray = revSeqArray.map(nuc => {
-    return comp[nuc]
-  })
-  const revCompSeq = revCompSeqArray.join('')
+  const seqArray = seq.split('');
+  const revSeqArray = seqArray.reverse();
+  const revCompSeqArray = revSeqArray.map(nuc => comp[nuc]);
+  const revCompSeq = revCompSeqArray.join('');
   return revCompSeq
 }
 
@@ -85,10 +84,7 @@ export const translate = (seq) => {
     'GAT': 'D'}
   const codonArray = seq.match(/.{1,3}/g)
   const pepArray = codonArray.map(codon => {
-    let aminoAcid = 'X'
-    if (codon.indexOf('N') < 0){
-      aminoAcid = trans[codon]
-    }
+    const aminoAcid = codon.indexOf('N') < 0 ? trans[codon] : 'X';
     return aminoAcid
   })
   const pep = pepArray.join('')
@@ -103,7 +99,6 @@ export const translate = (seq) => {
  *                        nucleotide sequence and protein sequence field
  */
 export const getGeneSequences = gene => {
-  //console.log(`getGeneSequences ${gene.ID}`)
   const transcripts = gene.subfeatures.filter(subfeature => { 
     return subfeature.type === 'mRNA' 
   })
@@ -175,11 +170,6 @@ export const parseNewick = newickString => {
           if (token.length > 0){
             geneIds.push(token)
           }
-          //geneIds.push(token);
-          //const geneId = token.split('.').slice(0,-1).join('.');
-          //if (geneId.length > 0){
-          //  geneIds.push(geneId)
-          //}
         } else if (previousToken === ':'){
           tree.branchLength = parseFloat(token);
         }
@@ -191,5 +181,9 @@ export const parseNewick = newickString => {
     size: .5 * (nNodes + 1)//geneIds.length
   };
 }
+
+
+
+
 
 

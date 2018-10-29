@@ -1,8 +1,11 @@
 import React from 'react';
-import { groupBy } from 'lodash';
+import { groupBy, pick, isEqual } from 'lodash';
 
 import { updateReplicaGroup } from '/imports/api/transcriptomes/updateReplicaGroup.js';
 import { updateSampleInfo } from '/imports/api/transcriptomes/updateSampleInfo.js';
+
+import PermissionSelect from '/imports/ui/util/PermissionSelect.jsx';
+
 class Experiment extends React.Component {
   constructor(props){
     super(props);
@@ -103,15 +106,19 @@ const Experiments = ({ groupExperiments, allReplicaGroups }) => {
 class ReplicaGroup extends React.Component {
   constructor(props){
     super(props);
-    const { replicaGroup } = props;
+    const { replicaGroup, groupExperiments } = props;
+    const { isPublic, permissions } = groupExperiments[0];
     this.state = {
       expand: false,
       edit: false,
-      replicaGroup
+      replicaGroup, 
+      isPublic,
+      permissions
     }
   }
 
   toggle = ({ target }) => {
+    //event.target.id can be either expand or edit, this function toggles both
     const { id } = target;
     this.setState({
       [id]: !this.state[id]
@@ -123,19 +130,49 @@ class ReplicaGroup extends React.Component {
     this.setState({ replicaGroup });
   }
 
+  updatePermissions = selection => {
+    this.setState({
+      permissions: selection.map(s => s.value)
+    })
+  }
+
+  updateIsPublic = () => {
+    this.setState({
+      isPublic: !this.state.isPublic
+    })
+  }
+
   submit = event => {
     event.preventDefault();
-    const oldName = this.props.replicaGroup;
-    const newName = this.state.replicaGroup;
-    if (oldName !== newName){
-      updateReplicaGroup.call({ oldName, newName }, (err,res) => {
+    const { replicaGroup, groupExperiments } = this.props;
+
+    const sampleIds = groupExperiments.map(exp => exp._id);
+
+    console.log(groupExperiments, sampleIds)
+
+    const initialState = {
+      replicaGroup,
+      isPublic: groupExperiments[0].isPublic,
+      permissions: groupExperiments[0].permissions
+    };
+
+    const currentState = pick(this.state, ['replicaGroup','isPublic','permissions']);
+
+    console.log({initialState, currentState, isEqual:isEqual(initialState, currentState)})
+    
+    if (!isEqual(initialState, currentState)){
+      updateReplicaGroup.call({ sampleIds, ...currentState }, (err,res) => {
         if (err) alert(err);
+        this.setState({
+          expand: false,
+          edit: false
+        })
       })
     }
   }
 
   render(){
-    const { replicaGroup, expand, edit } = this.state;
+    const { replicaGroup, expand, edit, isPublic, permissions } = this.state;
     const { groupExperiments, allReplicaGroups } = this.props;
     return <React.Fragment>
       <div className='d-flex justify-content-between'>
@@ -155,13 +192,24 @@ class ReplicaGroup extends React.Component {
             }
           </div>
 
-          <form className='form-inline d-inline-flex ml-2' onSubmit={this.submit}>
-            <div className='form-group'>
+          <form className='form d-inline-flex ml-2' onSubmit={this.submit}>
+            <div className='form-group mx-2'>
               <label htmlFor='replica-group'>Replica group</label>
-              <input type='text' className='form-control form-control-sm ml-2' 
+              <input type='text' className='form-control ml-2' 
                 id='replica-group' value={replicaGroup} size='40' title={replicaGroup}
                 onChange={this.updateReplicaGroup} disabled={!edit} />
             </div>
+            <div className='form-group mx-2'>
+              <label htmlFor='isPublic'>Public</label>
+              <input type='checkbox' className='form-control ml-2' checked={isPublic} 
+                onChange={this.updateIsPublic} disabled={!edit} />
+            </div>
+            <div className='form-group mx-2'>
+              <label htmlFor='permissions'>Permissions</label>
+              <PermissionSelect onChange={this.updatePermissions} disabled={!edit} 
+                value={permissions} className='ml-2'/>
+            </div>
+          
           </form>
         </div>
         <div>

@@ -91,11 +91,16 @@ Meteor.publish({
   geneExpression (geneId) {
     const publication = this;
     if (!publication.userId){
-      publication.stop()
+      //publication.stop()
     }
     const roles = Roles.getRolesForUser(publication.userId);
     const permissions = { $in: roles };
-    const experimentIds = ExperimentInfo.find({ permissions })
+    const isPublic = true;
+    
+    const experimentIds = ExperimentInfo.find({ $or: [
+      { permissions }, 
+      { isPublic }
+      ]})
       .fetch()
       .map(experiment => experiment._id);
     
@@ -109,11 +114,15 @@ Meteor.publish({
   experimentInfo (){
     const publication = this;
     if (!publication.userId){
-      publication.stop()
+      //publication.stop()
     }
     const roles = Roles.getRolesForUser(publication.userId);
     const permissions = { $in: roles };
-    return ExperimentInfo.find({ permissions });
+    const isPublic = true;
+    return ExperimentInfo.find({ $or: [
+      { permissions },
+      { isPublic } 
+    ]});
   },
   downloads (downloadId) {
     const publication = this;

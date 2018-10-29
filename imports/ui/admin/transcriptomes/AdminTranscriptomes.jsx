@@ -65,7 +65,6 @@ class AdminTranscriptomes extends React.Component {
 
   render(){
     const { experiments, genomes, roles } = this.props;
-    console.log(experiments)
     return (
       <div>
         <hr/>

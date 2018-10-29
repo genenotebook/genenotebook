@@ -15,13 +15,19 @@ import { ExperimentInfo } from '/imports/api/transcriptomes/transcriptome_collec
 export const updateReplicaGroup = new ValidatedMethod({
   name: 'updateReplicaGroup',
   validate: new SimpleSchema({
-    oldName: String,
-    newName: String
+    sampleIds: Array,
+    'sampleIds.$': String,
+    replicaGroup: String,
+    isPublic: Boolean,
+    permissions: Array,
+    'permissions.$':String
+    //oldName: String,
+    //newName: String
   }).validator(),
   applyOptions: {
     noRetry: true
   },
-  run({ oldName, newName }){
+  run({ sampleIds, replicaGroup, isPublic, permissions }){
     if (! this.userId) {
       throw new Meteor.Error('not-authorized');
     }
@@ -30,11 +36,15 @@ export const updateReplicaGroup = new ValidatedMethod({
     }
 
     return ExperimentInfo.update({
-      replicaGroup: oldName
+      _id: { $in: sampleIds }
     },{
       $set: {
-        replicaGroup: newName
+        replicaGroup,
+        isPublic,
+        permissions
       }
+    },{
+      multi: true
     })
   }
 })

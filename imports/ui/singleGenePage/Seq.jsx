@@ -9,7 +9,7 @@ import './seq.scss';
 
 const Controls = ({ seqType, selectSeqType, transcripts, selectTranscript, selectedTranscript }) => {
   const seqTypes = ['nucl','prot']
-  return <div>
+  return <React.Fragment>
     <div className="btn-group btn-group-sm sequence-toggle float-right" role="group">
       {
         seqTypes.map(sType => {
@@ -43,7 +43,7 @@ const Controls = ({ seqType, selectSeqType, transcripts, selectTranscript, selec
         </DropdownMenu>
       </Dropdown>
     </div>
-  </div>
+  </React.Fragment>
 }
 
 export default class SeqContainer extends React.Component {
@@ -86,6 +86,8 @@ export default class SeqContainer extends React.Component {
     const maxLength = 300;
     const { showAll, selectedTranscript, transcripts, seqType } = this.state;
     const { gene } = this.props;
+    //const transcript = find(transcripts, { ID: selectedTranscript });
+    //const showSequence = showAll ? 
     const sequences = getGeneSequences(gene);
     const sequence = find(sequences, { ID: selectedTranscript });
     const showSequence = showAll ? sequence[seqType] : sequence[seqType].slice(0, maxLength) + '...';
