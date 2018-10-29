@@ -189,7 +189,7 @@ class HeaderElement extends React.Component {
   }
 
   hasQuery = () => {
-    console.log('check hasQuery', this.state.attributeQuery)
+    //console.log('check hasQuery', this.state.attributeQuery)
     return typeof this.state.attributeQuery !== 'undefined'
   }
 
@@ -246,8 +246,8 @@ class HeaderElement extends React.Component {
     const hasNewQuery = this.hasNewQuery();
     const hasSort = this.hasSort();
 
-    console.log('hasQuery',hasQuery,query);
-    console.log('hasSort',hasSort,sort);
+    //console.log('hasQuery',hasQuery,query);
+    //console.log('hasSort',hasSort,sort);
 
     const buttonClass = hasQuery || hasSort ? 'btn-success' : 'btn-outline-dark';
     const orientation = attribute.name === 'Gene ID' ? 'left' : 'right';

@@ -20,6 +20,10 @@ const ExperimentInfoSchema = new SimpleSchema({
 		type: String,
 		label: 'Experiment description'
 	},
+	isPublic: {
+		type: Boolean,
+		label: 'Public experiment'
+	},
 	permissions: {
 		type: Array,
 		label: 'User groups that can access this experiment'

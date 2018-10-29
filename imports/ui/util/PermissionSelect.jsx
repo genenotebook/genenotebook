@@ -19,7 +19,7 @@ const customStyles = {
   control: (base, state) => ({
     ...base,
     fontSize: '.8rem',
-    backGroundColor: state.isDisabled ? 'hsl(0,0%,95%)' : 'hsl(0,0%,100%)',
+    backGroundColor: state.isDisabled ? 'hsl(0,0%,80%)' : 'hsl(0,0%,100%)',
     paddingTop: 0,
     paddingBottom: 0
   })

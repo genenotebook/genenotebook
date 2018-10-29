@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Fixed
+- Ability to set permission levels of transcriptome samples
+
+## [0.1.5] 2018-10-22
+### Fixed
 - Correctly set isPublic attribute during genome loading
+- Only admin and curator can edit genes
 
 ### Changed
 - Updated meteor.js to v1.8.0
@@ -62,7 +67,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - First GeneNoteBook version ready for use
 
-[Unreleased]: https://github.com/genenotebook/genenotebook/compare/v0.1.4...HEAD
+[Unreleased]: https://github.com/genenotebook/genenotebook/compare/v0.1.5...HEAD
+[0.1.5]: https://github.com/genenotebook/genenotebook/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/genenotebook/genenotebook/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/genenotebook/genenotebook/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/genenotebook/genenotebook/compare/v0.1.1...v0.1.2

@@ -31,7 +31,9 @@ const XAxis = ({ scale, numTicks, transform, seqid }) => {
       <line x1={range[0]} x2={range[1]} y1='5' y2='5' stroke='black'/>
       <g>
         <line x1={range[0]} x2={range[0]} y1='0' y2='5' stroke='black'/>
-        <text x={range[0]} y='-10' dy='5' textAnchor='left' fontSize='10'>{ formatNumber(start) }</text>
+        <text x={range[0]} y='-10' dy='5' textAnchor='left' fontSize='10'>
+          { formatNumber(start) }
+        </text>
       </g>
       {
         ticks.map(tick => {
@@ -39,22 +41,30 @@ const XAxis = ({ scale, numTicks, transform, seqid }) => {
           return (
             <g key={tick}>
               <line x1={pos} x2={pos} y1='0' y2='5' stroke='black' />
-              <text x={pos} y='-10' dy='5' textAnchor='middle' fontSize='10'>{ formatNumber(tick) }</text>
+              <text x={pos} y='-10' dy='5' textAnchor='middle' fontSize='10'>
+                { formatNumber(tick) }
+              </text>
             </g>
           )
         })
       }
       <g>
         <line x1 = {range[1]} x2 = {range[1]} y1 = '0' y2 = '5' stroke='black'/>
-        <text x={range[1]} y='-10' dy='5' textAnchor='end' fontSize='10'>{ formatNumber(end) }</text>
+        <text x={range[1]} y='-10' dy='5' textAnchor='end' fontSize='10'>
+          { formatNumber(end) }
+        </text>
       </g>
-      <text x={range[0]} y='15' dy='5' textAnchor='left' fontSize='11'>{seqid}</text>
+      <text x={range[0]} y='15' dy='5' textAnchor='left' fontSize='11'>
+        {seqid}
+      </text>
     </g>
   )
 }
 
-const IntervalPopover = ({ showPopover, togglePopover, targetId, ID, type, start, end, phase, attributes = {}, seq }) => {
-  return <Popover placement='top' isOpen={showPopover} target={targetId} toggle={togglePopover}>
+const IntervalPopover = ({ showPopover, togglePopover, targetId, ID, type, start, 
+  end, phase, attributes = {}, seq }) => {
+  return <Popover placement='top' isOpen={showPopover} target={targetId} 
+    toggle={togglePopover}>
     <PopoverHeader>
       { ID }
     </PopoverHeader>
@@ -108,7 +118,7 @@ class Exon extends React.Component {
   }
 
   togglePopover = () => {
-    console.log(this.props)
+    //console.log(this.props)
     this.setState({
       showPopover: !this.state.showPopover
     })
@@ -151,7 +161,7 @@ class Transcript extends React.Component {
   }
 
   togglePopover = () => {
-    console.log(this.props)
+    //console.log(this.props)
     this.setState({
       showPopover: !this.state.showPopover
     })
@@ -179,12 +189,15 @@ class Transcript extends React.Component {
     const t = strand === '+' ? 2 : -2;
     return (
       <React.Fragment>
-        <line {...{ x1, x2, y1, y2 }} stroke='black' markerEnd='url(#arrowEnd)' id={targetId}/>
-        <line {...{ x1: x1 - t, x2: x2 + t, y1, y2 }} className='transcript-hover' onClick={this.togglePopover} />
+        <line {...{ x1, x2, y1, y2 }} stroke='black' markerEnd='url(#arrowEnd)' 
+          id={targetId}/>
+        <line {...{ x1: x1 - t, x2: x2 + t, y1, y2 }} className='transcript-hover' 
+          onClick={this.togglePopover} />
         {
           exons.map(exon => <Exon key={exon.ID} {...{ genomeId, geneId, scale, ...exon }} /> )
         }
-        <IntervalPopover {...{ targetId, showPopover, ...transcript }} togglePopover={this.togglePopover} />
+        <IntervalPopover {...{ targetId, showPopover, ...transcript }} 
+          togglePopover={this.togglePopover} />
       </React.Fragment>
     )
   }
@@ -203,7 +216,9 @@ const GenemodelGroup = ({gene, transcripts, width, scale}) => {
     <g className='genemodel' transform='translate(0,4)'>
       {
         transcripts.map((transcript,index) => {
-          const exons = gene.subfeatures.filter(subfeature => subfeature.parents.indexOf(transcript.ID) >= 0)
+          const exons = gene.subfeatures.filter(subfeature => {
+            return subfeature.parents.indexOf(transcript.ID) >= 0
+          })
           const { ID: geneId, strand, genomeId } = gene;
           return (
             <g key={index} className='transcript' transform={`translate(0,${index * 14})`} >
@@ -270,8 +285,10 @@ export default class Genemodel extends React.PureComponent {
             transform={`translate(0,${ height - 22})`}
             seqid={gene.seqid}/>
           <defs>
-            <marker id='arrowEnd' markerWidth='15' markerHeight='10' refX='0' refY='5' orient='auto'>
-              <path d='M0,5 L15,5 L10,10 M10,0 L15,5' fill='none' stroke='black' strokeWidth='1'/>
+            <marker id='arrowEnd' markerWidth='15' markerHeight='10' 
+              refX='0' refY='5' orient='auto'>
+              <path d='M0,5 L15,5 L10,10 M10,0 L15,5' fill='none' stroke='black' 
+                strokeWidth='1'/>
             </marker>
           </defs>
         </svg>

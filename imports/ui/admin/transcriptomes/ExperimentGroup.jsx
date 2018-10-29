@@ -30,35 +30,33 @@ export default class ExperimentGroup extends React.Component {
           Object.entries(replicaGroups).map(entry => {
             const [groupName, groupSamples] = entry;
             const expanded = this.state.expanded.indexOf(groupName) >= 0;
-            return (
-              <li key={groupName} className='list-group-item replica-group'>
-                <input 
-                  type='submit' 
-                  className='fa btn btn-sm btn-outline-dark' 
-                  value={ expanded ? '\uf068' : '\uf067' }
-                  id={groupName}
-                  onClick={this.toggleExpand} />
-                <small className='text-muted'>&nbsp;Replica group: </small>
-                {groupName} 
-                <span className='badge badge-dark pull-right'>{groupSamples.length} samples</span>
-                
-                {
-                  expanded && 
-                  <ul className='list-group'>
-                    {
-                      groupSamples.map(sample => {
-                        return <SampleInfo 
-                          key={sample._id} 
-                          sample={sample} 
-                          allSamples={this.props.allSamples}
-                          roles={this.props.roles}
-                        />
-                      })
-                    }
-                  </ul>
-                }
-              </li>
-            )
+            return <li key={groupName} className='list-group-item replica-group'>
+              <input 
+                type='submit' 
+                className='fa btn btn-sm btn-outline-dark' 
+                value={ expanded ? '\uf068' : '\uf067' }
+                id={groupName}
+                onClick={this.toggleExpand} />
+              <small className='text-muted'>&nbsp;Replica group: </small>
+              {groupName} 
+              <span className='badge badge-dark pull-right'>{groupSamples.length} samples</span>
+              
+              {
+                expanded && 
+                <ul className='list-group'>
+                  {
+                    groupSamples.map(sample => {
+                      return <SampleInfo 
+                        key={sample._id} 
+                        sample={sample} 
+                        allSamples={this.props.allSamples}
+                        roles={this.props.roles}
+                      />
+                    })
+                  }
+                </ul>
+              }
+            </li>
           })
         }
       </ul>

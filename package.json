@@ -1,6 +1,6 @@
 {
   "name": "genenotebook",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "repository": "https://github.com/genenotebook/genenotebook",
   "description": "A portable website for browsing and querying genome sequences and annotations",
   "license": "AGPL-3.0",
@@ -58,6 +58,7 @@
     "thread-sleep": "^2.1.0",
     "try-thread-sleep": "^2.0.0",
     "utf-8-validate": "^5.0.0",
+    "webfontloader": "^1.6.28",
     "ws": "^6.0.0",
     "xml2js-es6-promise": "^1.1.1"
   }

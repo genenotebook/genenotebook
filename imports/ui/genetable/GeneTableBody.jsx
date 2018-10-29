@@ -38,7 +38,6 @@ const VISUALIZATIONS = {
  * @return {Object}                         [description]
  */
 const dataTracker = ({ query = {}, sort = {ID: 1}, limit = 40, selectedGenes, updateSelection, selectedAll }) => {
-  console.log(query,sort,limit);
   const geneSub = Meteor.subscribe('genes', { query, sort, limit });
   const loading = !geneSub.ready();
   const genes = Genes.find(query, { limit, sort }).fetch();
