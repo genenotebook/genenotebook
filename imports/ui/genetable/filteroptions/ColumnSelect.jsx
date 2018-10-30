@@ -9,7 +9,7 @@ const ColumnSelect = ({ attributes, selectedColumns, toggleColumnSelect, selecte
       <DropdownButton className='btn btn-sm btn-outline-dark dropdown-toggle px-2 py-0 border'>
         Columns&nbsp;
         <span className='badge badge-dark'>
-          {`${selectedColumns.size}/${attributes.length}`}
+          {`${selectedColumns.length}/${attributes.length}`}
         </span>
       </DropdownButton>
       <DropdownMenu>
@@ -17,7 +17,7 @@ const ColumnSelect = ({ attributes, selectedColumns, toggleColumnSelect, selecte
         {
           attributes.map(attribute => {
             const { name } = attribute;
-            const checked = selectedColumns.has(name)
+            const checked = selectedColumns.indexOf(name) >= 0
             return (
               <div key={`${name} ${checked}`} className='form-check'>
                 <input type='checkbox' className='form-check-input' id={name}

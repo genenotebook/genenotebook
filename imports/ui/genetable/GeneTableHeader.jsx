@@ -159,7 +159,8 @@ class HeaderElement extends React.Component {
     if (typeof attributeQuery !== 'undefined'){
       const newState = stateFromQuery(attributeQuery);
       return newState
-    } 
+    }
+    return null 
   }
 
   updateQueryLabel = selection => {
@@ -246,9 +247,6 @@ class HeaderElement extends React.Component {
     const hasNewQuery = this.hasNewQuery();
     const hasSort = this.hasSort();
 
-    //console.log('hasQuery',hasQuery,query);
-    //console.log('hasSort',hasSort,sort);
-
     const buttonClass = hasQuery || hasSort ? 'btn-success' : 'btn-outline-dark';
     const orientation = attribute.name === 'Gene ID' ? 'left' : 'right';
     const colStyle = attribute.name === 'Gene ID' ? { width: '10rem' } : {};
@@ -332,7 +330,11 @@ const GeneTableHeader = ({ selectedColumns, attributes, selectedGenes,
   selectedAllGenes, toggleSelectAllGenes, selectedVisualization, ...props }) => {
 
   const selectedAttributes = attributes.filter(attribute => {
-    return selectedColumns.has(attribute.name)
+    return selectedColumns.indexOf(attribute.name) >= 0
+  }).sort((a,b) => {
+    if (a.name === 'Gene ID') return -1;
+    if (b.name === 'Gene ID') return 1;
+    return ('' + a.name).localeCompare(b.name);
   })
 
   const checkBoxColor = [...selectedGenes].length || selectedAllGenes ? 'black' : 'white';
