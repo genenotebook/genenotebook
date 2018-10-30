@@ -13,7 +13,10 @@ import { withEither } from '/imports/ui/util/uiUtil.jsx';
 import Genemodel from '/imports/ui/singleGenePage/Genemodel.jsx';
 import ProteinDomains from '/imports/ui/singleGenePage/ProteinDomains.jsx';
 import GeneExpression from '/imports/ui/singleGenePage/geneExpression/GeneExpression.jsx';
-import AttributeValue from '/imports/ui/singleGenePage/generalInfo/AttributeValue.jsx';
+
+import AttributeValue from '/imports/ui/genetable/columns/AttributeValue.jsx';
+import GeneLink from '/imports/ui/genetable/columns/GeneLink.jsx';
+import GenomeName from '/imports/ui/genetable/columns/GenomeName.jsx';
 
 import './geneTableBody.scss';
 
@@ -122,21 +125,15 @@ const withConditionalRendering = compose(
   withEither(hasNoResults, NoResults)
 )
 
-const GeneLink = ({ geneId }) => {
-  return <a className='genelink' title={geneId} 
-    href={`${Meteor.absoluteUrl()}gene/${geneId}`}>
-    { geneId }
-  </a>
-}
-
 const AttributeColumn = ({ attributeName, attributeValue, geneId }) => {
-  return <td data-label={attributeName}>
-    {
-      attributeName === 'Gene ID' ?
-      <GeneLink {...{ geneId }} /> :
-      attributeValue && <AttributeValue {...{ attributeValue }} />
-    }
-  </td>
+  switch(attributeName){
+    case 'Gene ID': return <GeneLink geneId={geneId} />;
+    case 'Genome': return <GenomeName genomeId={attributeValue} />;
+    default: return <AttributeValue attributeValue={attributeValue} /> 
+  }
+  /*attributeName === 'Gene ID' ?
+  <GeneLink {...{ geneId }} /> :
+  attributeValue && <AttributeValue {...{ attributeValue }} />*/
 }
 
 /**
@@ -164,8 +161,9 @@ const GeneTableRow = ({ gene, selectedColumns, selectedAllGenes, selectedGenes,
       }).map(attributeName => {
         const attribute = find(attributes, { name: attributeName });//selectedAttributes[attributeName]
         const attributeValue = dot.pick(attribute.query, gene)
-        return <AttributeColumn key={attributeName}
-          {...{ attributeName, attributeValue, geneId: gene.ID }} />
+        return <td key={attributeName} data-label={attributeName}>
+          <AttributeColumn {...{ attributeName, attributeValue, geneId: gene.ID }} />
+        </td>
       })
     }
     <td data-label={selectedVisualization} style={{width: '20rem'}}>

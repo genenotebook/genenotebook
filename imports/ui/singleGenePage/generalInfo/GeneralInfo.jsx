@@ -10,7 +10,7 @@ import { EditHistory } from '/imports/api/genes/edithistory_collection.js';
 import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 import { updateGene } from '/imports/api/genes/updateGene.js';
 
-import AttributeValue from './AttributeValue.jsx';
+import AttributeValue from '/imports/ui/genetable/columns/AttributeValue.jsx';
 
 import './generalInfo.scss';
 

@@ -54,6 +54,10 @@ Meteor.startup( () => {
     {
       name: 'Has changes',
       query: 'changed'
+    },
+    {
+      name: 'Genome',
+      query: 'genomeId'
     }
   ]
   permanentAttributes.forEach( ({ name, query }) => {
