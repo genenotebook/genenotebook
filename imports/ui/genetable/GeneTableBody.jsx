@@ -4,6 +4,7 @@ import { withTracker } from 'meteor/react-meteor-data';
 import React from 'react';
 import { compose } from 'recompose';
 import dot from 'dot-object';
+import { find } from 'lodash';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
 
@@ -12,7 +13,10 @@ import { withEither } from '/imports/ui/util/uiUtil.jsx';
 import Genemodel from '/imports/ui/singleGenePage/Genemodel.jsx';
 import ProteinDomains from '/imports/ui/singleGenePage/ProteinDomains.jsx';
 import GeneExpression from '/imports/ui/singleGenePage/geneExpression/GeneExpression.jsx';
-import AttributeValue from '/imports/ui/singleGenePage/generalInfo/AttributeValue.jsx';
+
+import AttributeValue from '/imports/ui/genetable/columns/AttributeValue.jsx';
+import GeneLink from '/imports/ui/genetable/columns/GeneLink.jsx';
+import GenomeName from '/imports/ui/genetable/columns/GenomeName.jsx';
 
 import './geneTableBody.scss';
 
@@ -60,7 +64,7 @@ const hasNoResults = ({ genes }) => {
  * @return {[type]}       [description]
  */
 const NoResults = ({selectedColumns, ...props}) => {
-  const colSpan = selectedColumns.size + 3;
+  const colSpan = selectedColumns.length + 3;
   return (
     <tbody>
       <tr>
@@ -91,7 +95,7 @@ const isLoading = ({genes, loading}) => {
  * @return {[type]}                            [description]
  */
 const Loading = ({selectedColumns, ...props}) => {
-  const colSpan = selectedColumns.size + 3;
+  const colSpan = selectedColumns.length + 3;
   return (
     <tbody>
     {
@@ -121,21 +125,15 @@ const withConditionalRendering = compose(
   withEither(hasNoResults, NoResults)
 )
 
-const GeneLink = ({ geneId }) => {
-  return <a className='genelink' title={geneId} 
-    href={`${Meteor.absoluteUrl()}gene/${geneId}`}>
-    { geneId }
-  </a>
-}
-
 const AttributeColumn = ({ attributeName, attributeValue, geneId }) => {
-  return <td data-label={attributeName}>
-    {
-      attributeName === 'Gene ID' ?
-      <GeneLink {...{ geneId }} /> :
-      attributeValue && <AttributeValue {...{ attributeValue }} />
-    }
-  </td>
+  switch(attributeName){
+    case 'Gene ID': return <GeneLink geneId={geneId} />;
+    case 'Genome': return <GenomeName genomeId={attributeValue} />;
+    default: return <AttributeValue attributeValue={attributeValue} /> 
+  }
+  /*attributeName === 'Gene ID' ?
+  <GeneLink {...{ geneId }} /> :
+  attributeValue && <AttributeValue {...{ attributeValue }} />*/
 }
 
 /**
@@ -151,22 +149,21 @@ const GeneTableRow = ({ gene, selectedColumns, selectedAllGenes, selectedGenes,
   updateSelection, attributes, selectedVisualization, ...props }) => {
   const selected = selectedAllGenes || selectedGenes.has(gene.ID)
   const color = selected ? 'black' : 'white';
-  const selectedAttributes = attributes.filter(attribute => {
-    return selectedColumns.has(attribute.name)
-  }).reduce((obj, attribute) => {
-    obj[attribute.name] = attribute
-    return obj
-  },{})
 
   const DataVisualization = VISUALIZATIONS[selectedVisualization];
 
   return <tr>
     {
-      [...selectedColumns].map(attributeName => {
-        const attribute = selectedAttributes[attributeName]
+      selectedColumns.sort((a,b) => {
+        if ( a === 'Gene ID' ) return -1;
+        if ( b === 'Gene ID' ) return 1;
+        return ('' + a).localeCompare(b);
+      }).map(attributeName => {
+        const attribute = find(attributes, { name: attributeName });//selectedAttributes[attributeName]
         const attributeValue = dot.pick(attribute.query, gene)
-        return <AttributeColumn key={attributeName}
-          {...{ attributeName, attributeValue, geneId: gene.ID }} />
+        return <td key={attributeName} data-label={attributeName}>
+          <AttributeColumn {...{ attributeName, attributeValue, geneId: gene.ID }} />
+        </td>
       })
     }
     <td data-label={selectedVisualization} style={{width: '20rem'}}>

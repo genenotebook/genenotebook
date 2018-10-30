@@ -95,7 +95,7 @@ class GeneTable extends React.PureComponent {
       currentQueryCount: '...',
       selectedGenes: new Set(),
       selectedAllGenes: false,
-      selectedColumns: new Set(),
+      selectedColumns: [],
       selectedVisualization: VISUALIZATIONS[0],
       showDownloadDialog: false,
       dummy: 0
@@ -103,6 +103,22 @@ class GeneTable extends React.PureComponent {
   }
 
   static getDerivedStateFromProps =  (props, state) => {
+    const { dummy, query: oldQuery } = state;
+    const { query: newQuery, currentQueryCount, selectedAttributes } = props;
+    if (dummy <= 0) {
+      const query = Object.assign({}, oldQuery, newQuery);
+      if (isEmpty(newQuery)){
+        delete query.$or;
+      }
+      const selectedColumns = new Set(['Gene ID', ...state.selectedColumns, ...selectedAttributes]);
+      return {
+        dummy: 1,
+        query,
+        selectedColumns:[...selectedColumns]
+      }
+    }
+    return null
+    /*
     const { query: newQuery, currentQueryCount, selectedAttributes } = props;
     const { query: oldQuery } = state;
     const query = Object.assign({}, oldQuery, newQuery);
@@ -110,10 +126,16 @@ class GeneTable extends React.PureComponent {
       delete query.$or;
     }
     const selectedColumns = new Set(['Gene ID', ...state.selectedColumns, ...selectedAttributes]);
+    
+    console.log({props,state})
+
+    //console.log(query)
+    //console.log(selectedColumns)
+
     return {
       query,
       selectedColumns
-    }
+    }*/
   }
 
   componentDidUpdate = (prevProps, prevState) => {
@@ -188,14 +210,16 @@ class GeneTable extends React.PureComponent {
 
   toggleColumnSelect = event => {
     const {checked, id, ...target} = event.target;
-    this.setState(({ selectedColumns , ...oldState }) => {
+    this.setState(oldState => {
+      const selectedColumns = new Set(oldState.selectedColumns)
       if (selectedColumns.has(id)){
         selectedColumns.delete(id)
       } else {
         selectedColumns.add(id)
       }
+      selectedColumns.add('Gene ID');
       return { 
-        selectedColumns: cloneDeep(selectedColumns) 
+        selectedColumns: [...selectedColumns]
       }
     })
   }

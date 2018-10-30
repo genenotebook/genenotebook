@@ -7,7 +7,7 @@ import { scaleLinear } from 'd3';
 import randomColor from 'randomcolor';
 import Color from 'color';
 
-import AttributeValue from '/imports/ui/singleGenePage/generalInfo/AttributeValue.jsx';
+import AttributeValue from '/imports/ui/genetable/columns/AttributeValue.jsx';
 
 import './genemodel.scss'
 
