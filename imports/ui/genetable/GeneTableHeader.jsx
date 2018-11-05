@@ -149,7 +149,8 @@ class HeaderElement extends React.Component {
       sortOrder: 'None',
       dummy: 0,
       queryLabel: { label: 'None', value: 'None' },
-      queryValue: ''
+      queryValue: '',
+      queryLoading: false
     };
   }
 
@@ -158,6 +159,7 @@ class HeaderElement extends React.Component {
     const attributeQuery = getAttributeQuery({ query, attribute });
     if (typeof attributeQuery !== 'undefined'){
       const newState = stateFromQuery(attributeQuery);
+      newState.queryLoading = false;
       return newState
     }
     return null 
@@ -225,7 +227,9 @@ class HeaderElement extends React.Component {
     } else {
       newQuery[attribute.query] = queryFromLabel({ queryLabel, queryValue });
     }
-
+    this.setState({
+      queryLoading: true
+    })
     updateQuery(newQuery)
   }
 
@@ -237,6 +241,7 @@ class HeaderElement extends React.Component {
       queryLabel: { label: 'None', value: 'None' },
       queryValue: '',
       attributeQuery: undefined,
+      //queryLoading: true,
       dummy: this.state.dummy + 1
     }, (err, res) => {
       updateQuery(newQuery);
@@ -245,12 +250,12 @@ class HeaderElement extends React.Component {
 
   render(){
     const { query, attribute, sort,  ...props} = this.props;
-    const { queryLabel, queryValue } = this.state;
+    const { queryLabel, queryValue, queryLoading } = this.state;
     const hasQuery = this.hasQuery();
     const hasNewQuery = this.hasNewQuery();
     const hasSort = this.hasSort();
 
-    const buttonClass = hasQuery || hasSort ? 'btn-success' : 'btn-outline-dark';
+    const buttonClass = hasQuery || hasSort || queryLoading ? 'btn-success' : 'btn-outline-dark';
     const orientation = attribute.name === 'Gene ID' ? 'left' : 'right';
     const colStyle = attribute.name === 'Gene ID' ? { width: '10rem' } : {};
     
@@ -259,6 +264,9 @@ class HeaderElement extends React.Component {
         <button className={`btn btn-sm px-2 py-0 genetable-dropdown ${buttonClass}`} 
           type="button" disabled>
           {attribute.name}
+          { 
+            queryLoading && <span className='icon-spin'/>
+          }
         </button>
         <Dropdown>
           <DropdownButton className={`btn btn-sm px-1 py-0 dropdown-toggle ${buttonClass}`}/>
@@ -298,10 +306,17 @@ class HeaderElement extends React.Component {
               }
             </div>
             {
-              hasNewQuery &&
+              hasNewQuery && !queryLoading &&
               <button type='button' className='btn btn-sm btn-block btn-outline-success' 
                 onClick={this.updateQuery}>
                 Update filter
+              </button>
+            }
+            {
+              queryLoading &&
+              <button type='button' className='btn btn-sm btn-block btn-success' 
+                disabled>
+                <span className='icon-spin'/> Query loading
               </button>
             }
             {
