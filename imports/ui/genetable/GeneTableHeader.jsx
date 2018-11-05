@@ -190,7 +190,6 @@ class HeaderElement extends React.Component {
   }
 
   hasQuery = () => {
-    //console.log('check hasQuery', this.state.attributeQuery)
     return typeof this.state.attributeQuery !== 'undefined'
   }
 
@@ -202,6 +201,9 @@ class HeaderElement extends React.Component {
   hasNewQuery = () => {
     const { queryLabel, queryValue } = this.state;
     const newQuery = queryFromLabel({ queryLabel, queryValue });
+
+    console.log({newQuery})
+
     const { query, attribute, ...props } = this.props;
 
     if (query.hasOwnProperty(attribute.query)){
@@ -234,7 +236,8 @@ class HeaderElement extends React.Component {
     this.setState({
       queryLabel: { label: 'None', value: 'None' },
       queryValue: '',
-      attributeQuery: undefined
+      attributeQuery: undefined,
+      dummy: this.state.dummy + 1
     }, (err, res) => {
       updateQuery(newQuery);
     })
