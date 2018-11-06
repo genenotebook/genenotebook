@@ -105,6 +105,7 @@ class GeneTable extends React.PureComponent {
   static getDerivedStateFromProps =  (props, state) => {
     const { dummy, query: oldQuery } = state;
     const { query: newQuery, currentQueryCount, selectedAttributes } = props;
+    //console.log({oldQuery,newQuery})
     if (dummy <= 0) {
       const query = Object.assign({}, oldQuery, newQuery);
       if (isEmpty(newQuery)){

@@ -88,6 +88,7 @@ Meteor.startup( () => {
     const { blastDb } = annotationTrack;
     const hasNucDb = fs.existsSync(blastDb.nucl)
     const hasProtDb = fs.existsSync(blastDb.prot)
+    console.log({blastDb,hasProtDb,hasNucDb});
     return !hasProtDb || !hasNucDb
   }).map(({ _id }) => {
     genomeCollection.update({
