@@ -19,6 +19,7 @@ program
     .option('-r, --replica-group <replica group>', 'Identifier to group samples that belong to the same experiment')
     .option('-d, --sample-description <description>','Description of the experiment')
     .action(file => {
+      if ( typeof file !== 'string' ) program.help();
       fileName = path.resolve(file);
     })
     .parse(process.argv);

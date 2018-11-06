@@ -185,8 +185,9 @@ const InterproGroup = ({interproId, sourceGroups, transform, scale}) => {
         <p style={{fontSize: '1rem', fontFamily: 'monospace', overflow: 'hidden', 
           whitespace: 'nowrap', height: 25, textOverflow: 'ellipsis', 
           wordBreak: 'break-all' }}>
-          <a href="#" className="btn btn-outline-dark px-2 py-0" 
-            style={{fontSize: '.7rem'}}>
+          <a href={`https://www.ebi.ac.uk/interpro/entry/${interproId}`} 
+            className="btn btn-outline-dark px-2 py-0" 
+            style={{fontSize: '.7rem'}} target="_blank">
             {interproId}
           </a>
           &nbsp;{ interproId !== 'Unintegrated signature' && description}
