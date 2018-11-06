@@ -5,7 +5,6 @@ import { Roles } from 'meteor/alanning:roles';
 import { Genes } from '/imports/api/genes/gene_collection.js';
 
 Accounts.onCreateUser( (options,user) => {
-  console.log('onCreateUser')
   user.roles = ['registered'];
   if (typeof user.profile === 'undefined'){
     user.profile = {
@@ -17,6 +16,7 @@ Accounts.onCreateUser( (options,user) => {
 })
 
 Accounts.onLogout( ({ user, connection }) => {
+  console.log({ user })
   console.log('logout',user._id)
   Meteor.users.update({
     _id: user._id,

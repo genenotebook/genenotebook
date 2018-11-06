@@ -26,7 +26,7 @@ const getGenomeId = data => {
 }
 
 const parseKallistoTsv = ({ fileName, sampleName, replicaGroup, 
-	description, permissions = ['admin'] }) => {
+	description, permissions = ['admin'], isPublic = false }) => {
 	return new Promise((resolve, reject) => {
 		const fileHandle = fs.readFileSync(fileName, { encoding: 'binary' });
 		const bulkOp = Transcriptomes.rawCollection().initializeUnorderedBulkOp();
@@ -39,9 +39,8 @@ const parseKallistoTsv = ({ fileName, sampleName, replicaGroup,
 			error(error, file){
 				reject(new Meteor.Error(error))
 			},
-			complete(results, file){
+			complete({ data }, file){
 				let nInserted = 0;
-				const { data } = results;
 
 				const genomeId = getGenomeId(data);
 
@@ -54,7 +53,8 @@ const parseKallistoTsv = ({ fileName, sampleName, replicaGroup,
 					sampleName,
 					replicaGroup,
 					description,
-					permissions
+					permissions,
+					isPublic
 				});
 
 				data.forEach(({ target_id, tpm, est_counts }) => {
@@ -73,7 +73,6 @@ const parseKallistoTsv = ({ fileName, sampleName, replicaGroup,
 							geneId: gene.ID,
 							tpm,
 							est_counts,
-							permissions,
 							experimentId
 						})
 					}
