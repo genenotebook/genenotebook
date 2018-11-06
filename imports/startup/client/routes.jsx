@@ -1,4 +1,4 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
+/*import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { Roles } from 'meteor/alanning:roles';
 import { Session } from 'meteor/session';
@@ -202,3 +202,4 @@ adminRoutes.route('/user/:_id', {
     })
   }
 })
+*/

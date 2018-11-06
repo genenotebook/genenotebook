@@ -98,7 +98,7 @@ const withConditionalRendering = compose(
 
 const StatsWithDataTracker = withConditionalRendering(Stats);
 
-const Landingpage = () => {
+const LandingPage = () => {
   return (
     <div className="container">
       <div className="jumbotron my-2 pb-1 pt-4 bg-light border">
@@ -178,4 +178,4 @@ const Landingpage = () => {
   )
 };
 
-export default Landingpage;
+export default LandingPage;

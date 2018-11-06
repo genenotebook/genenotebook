@@ -1,4 +1,4 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
+//import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
 //import classNames from 'classnames';
@@ -79,7 +79,7 @@ export default class DownloadDialogModal extends React.Component {
     //download genes method returns download link url
     downloadGenes.call({ query, dataType, options }, (err,res) => {
       console.log(err,res)
-      FlowRouter.redirect(`/download/${res}`)
+      //FlowRouter.redirect(`/download/${res}`)
     })
   }
 

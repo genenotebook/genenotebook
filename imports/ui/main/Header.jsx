@@ -1,9 +1,10 @@
 import { withTracker } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
 import { Roles } from 'meteor/alanning:roles';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+//import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 
 import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
 import { withEither } from '/imports/ui/util/uiUtil.jsx';
@@ -73,11 +74,14 @@ const UserButtons = withTracker(() => {
 })
 
 const routeTracker = ({ routes }) => {
+  /*
   FlowRouter.watchPathChange();
   const currentContext = FlowRouter.current();
   const activeRoute = routes.filter(route => {
     return new RegExp(route).test(currentContext.path);
   })[0];
+  */
+  const activeRoute = 'genes';
   return {
     routes,
     activeRoute
@@ -119,16 +123,33 @@ class NavBar extends React.PureComponent {
     const show = this.state.show ? 'show' : '';
     return <nav className='navbar navbar-expand-md bg-light navbar-light py-0'>
       <div className='container'>
-        <a className="navbar-brand" href={Meteor.absoluteUrl()}>
+        <NavLink to='/' className='navbar-brand' activeClassName='active'>
           <small>
             <img src={`${Meteor.absoluteUrl()}logo.svg`} alt="GeneNoteBook logo" className="navbar-logo rounded-circle" />
           </small>
-        </a>
+        </NavLink>
+        {/*<a className="navbar-brand" href={Meteor.absoluteUrl()}>
+          <small>
+            <img src={`${Meteor.absoluteUrl()}logo.svg`} alt="GeneNoteBook logo" className="navbar-logo rounded-circle" />
+          </small>
+        </a>*/}
         <button className='navbar-toggler' type='button' onClick={this.toggleShow}>
           <span className='navbar-toggler-icon' />
         </button>
         <div className={`collapse navbar-collapse justify-content-between ${show}`} id='navbar'>
-          <NavWithRouteTracker routes={['genes','blast']} />
+          <ul className='navbar-nav'>
+            <li className='nav-item'>
+              <NavLink to='/genes' className='nav-link' activeClassName='active'>
+                Genes
+              </NavLink>
+            </li>
+            <li className='nav-item'>
+              <NavLink to='/blast' className='nav-link' activeClassName='active'>
+                Blast
+              </NavLink>
+            </li>
+          </ul>
+          {/*<NavWithRouteTracker routes={['genes','blast']} />*/}
           <SearchBar />
           <UserButtons />
         </div>

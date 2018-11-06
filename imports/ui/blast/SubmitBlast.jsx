@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+//import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
 import Select from 'react-select';
@@ -210,7 +210,8 @@ class SubmitBlast extends React.Component {
       genomeIds: [...selectedGenomes]
     }, (err,res) => {
       console.log(err)
-      FlowRouter.redirect(`/blast/${res}`)
+      alert(`/blast/${res}`)
+      //FlowRouter.redirect(`/blast/${res}`)
     })
   }
 

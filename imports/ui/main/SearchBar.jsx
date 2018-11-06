@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+//import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
 import { compose } from 'recompose';
@@ -14,8 +14,9 @@ import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 import './searchBar.scss';
 
 const attributeTracker = () => {
-  FlowRouter.watchPathChange();
-  const { queryParams } = FlowRouter.current();
+  //FlowRouter.watchPathChange();
+  //const { queryParams } = FlowRouter.current();
+  const queryParams = {};
   const { attributes: _attributes, search: searchString = '' } = queryParams;
   const selectedAttributes = _attributes ? _attributes.split(',') : [];
   const attributeSub = Meteor.subscribe('attributes');
@@ -74,7 +75,7 @@ class SearchBar extends React.Component {
       const attributeString = [...selectedAttributes].join(',');
       const queryString = `attributes=${attributeString}&search=${searchString}`;
       console.log(queryString)
-      FlowRouter.go(`/genes?${queryString}`);
+      //FlowRouter.go(`/genes?${queryString}`);
     }
   }
 
@@ -82,7 +83,7 @@ class SearchBar extends React.Component {
     this.setState({
       searchString: ''
     })
-    FlowRouter.go('/genes');
+    //FlowRouter.go('/genes');
   }
 
   render(){
