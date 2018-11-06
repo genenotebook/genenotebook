@@ -41,7 +41,7 @@ const VISUALIZATIONS = {
  * @param  {Boolean} options.selectedAll     [description]
  * @return {Object}                         [description]
  */
-const dataTracker = ({ query = {}, sort = {ID: 1}, limit = 40, selectedGenes, updateSelection, selectedAll }) => {
+const dataTracker = ({ query = {}, sort = {_id: -1}, limit = 40, selectedGenes, updateSelection, selectedAll }) => {
   const geneSub = Meteor.subscribe('genes', { query, sort, limit });
   const loading = !geneSub.ready();
   const genes = Genes.find(query, { limit, sort }).fetch();

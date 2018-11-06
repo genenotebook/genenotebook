@@ -110,8 +110,7 @@ exposedRoutes.route('/download/:_id', {
       content: <Download />
     })
   }
-})
-
+});
 
 exposedRoutes.route('/download/file/:filename',{
   action(params, queryParams){
@@ -120,8 +119,6 @@ exposedRoutes.route('/download/file/:filename',{
     serverRouterClient.redirect.download(params.filename)
   }
 });
-
-
 
 exposedRoutes.route('/inactive-account', {
   name: 'inactive-account',
@@ -150,7 +147,6 @@ exposedRoutes.route('/gene/:_id', {
     })
   }
 })
-
 
 loggedInRoutes.route('/blast', {
   name: 'blast',

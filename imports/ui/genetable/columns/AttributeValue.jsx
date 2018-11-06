@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { compose } from 'recompose';
 import { withEither } from '/imports/ui/util/uiUtil.jsx';
 
 const isArray = ({ attributeValue }) => {
@@ -45,7 +45,20 @@ class AttributeValueArray extends React.Component {
   }
 }
 
-class AttributeValueSingle extends React.Component {
+const isUndefined = ({ attributeValue }) => {
+  return typeof attributeValue === 'undefined';
+}
+
+const Undefined = () => {
+  return <p className='mb-1' />
+}
+
+const withConditionalRendering = compose(
+  withEither(isUndefined, Undefined),
+  withEither(isArray, AttributeValueArray)
+)
+
+class AttributeValue extends React.Component {
   constructor(props){
     super(props);
     this.state = {
@@ -79,5 +92,4 @@ class AttributeValueSingle extends React.Component {
   }
 }
 
-const AttributeValue = withEither(isArray, AttributeValueArray)(AttributeValueSingle);
-export default AttributeValue;
+export default withConditionalRendering(AttributeValue);
