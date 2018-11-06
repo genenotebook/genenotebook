@@ -8,6 +8,7 @@ import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 
 Meteor.startup( () => {
+  //Add default users
   if ( Meteor.users.find().count() === 0 ) {
     console.log('Adding default admin user');
     const adminId = Accounts.createUser({
@@ -33,6 +34,7 @@ Meteor.startup( () => {
       });
     Roles.addUsersToRoles(guestId,['user','registered'])
   }
+
   //add some default attributes to filter on
   const permanentAttributes = [
     {
@@ -61,24 +63,28 @@ Meteor.startup( () => {
     }
   ]
   permanentAttributes.forEach( ({ name, query }) => {
-    console.log(`Adding default filter option: ${name}`)
-    attributeCollection.update({
-      name
-    },
-    {
-      $setOnInsert: {
-          name, 
-          query, 
-          defaultShow: false, 
-          defaultSearch: false, 
-          allGenomes: true 
-      }
-    },
-    {
-      upsert: true
-    })
-  })
+    const existingAttribute = attributeCollection.findOne({ name });
+    if (typeof existingAttribute === 'undefined'){
+      console.log(`Adding default filter option: ${name}`)
+      attributeCollection.update({
+        name
+      },
+      {
+        $setOnInsert: {
+            name, 
+            query, 
+            defaultShow: false, 
+            defaultSearch: false, 
+            allGenomes: true 
+        }
+      },
+      {
+        upsert: true
+      }); //end update
+    } //end if
+  })// end foreach
 
+  //Check if blast DBs exist
   genomeCollection.find({ 
     'annotationTrack.blastDb': { 
       $exists: true
@@ -88,7 +94,7 @@ Meteor.startup( () => {
     const { blastDb } = annotationTrack;
     const hasNucDb = fs.existsSync(blastDb.nucl)
     const hasProtDb = fs.existsSync(blastDb.prot)
-    console.log({blastDb,hasProtDb,hasNucDb});
+    console.log({genome,blastDb,hasProtDb,hasNucDb});
     return !hasProtDb || !hasNucDb
   }).map(({ _id }) => {
     genomeCollection.update({

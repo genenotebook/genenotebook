@@ -16,6 +16,7 @@ program
     .option('-p, --password <password>', 'GeneNoteBook admin password')
     .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
     .action(file => {
+      if ( typeof file !== 'string' ) program.help();
       fileName = path.resolve(file);
     })
     .parse(process.argv);

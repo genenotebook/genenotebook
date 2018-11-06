@@ -14,9 +14,10 @@ program
     .usage('[options] <annotation gff3 file>')
     .option('-u, --username <username>', 'GeneNoteBook admin username')
     .option('-p, --password <password>', 'GeneNoteBook admin password')
-    .option('-g, --genome-name <name>','Reference genome name on which the annotatoion should be placed')
+    .option('-n, --genome-name <name>','Reference genome name to which the annotation should be added')
     .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
     .action(file => {
+      if ( typeof file !== 'string' ) program.help();
       fileName = path.resolve(file);
     })
     .parse(process.argv);
