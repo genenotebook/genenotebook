@@ -12,6 +12,12 @@
     "bundle": "./bundle.sh",
     "dev": "NODE_OPTIONS=--max-old-space-size=8192 meteor"
   },
+  "meteor":{
+    "mainModule": {
+        "client":"client/main.jsx",
+        "server":"server/main.js"
+    }
+  },
   "dependencies": {
     "@babel/runtime": "^7.1.2",
     "asteroid": "^2.0.3",

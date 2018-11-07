@@ -8,6 +8,9 @@ import SingleGenePage from '/imports/ui/singleGenePage/SingleGenePage.jsx';
 
 import Header from './Header.jsx';
 
+//import '/imports/ui/global_stylesheets/global.scss';
+//import '/imports/ui/global_stylesheets/fontello/css/fontello.css';
+
 const App = () => {
   return <Router>
     <React.Fragment>
