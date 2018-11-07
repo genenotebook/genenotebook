@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+//import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
 import { compose } from 'recompose';
@@ -89,9 +89,10 @@ const noHits = ({ job }) => {
  * @param  {Object} props input props passed to React component
  * @return {Object}       Modified props based on Meteor reactive data
  */
-const blastDataTracker = () => {
+const blastDataTracker = ({ match }) => {
+  const { jobId } = match.params;
   const subscription = Meteor.subscribe('jobQueue');
-  const jobId = FlowRouter.getParam('_id')
+  //const jobId = FlowRouter.getParam('_id')
   return {
     loading: !subscription.ready(),
     job: jobQueue.findOne({_id: jobId})

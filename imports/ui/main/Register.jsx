@@ -1,8 +1,9 @@
 import { Accounts } from 'meteor/accounts-base';
 import { withTracker } from 'meteor/react-meteor-data';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+//import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
+import { Redirect } from 'react-router-dom';
 
 import './register.scss';
 
@@ -65,14 +66,13 @@ export default class Register extends React.Component {
       validEmail: true,
       password: '',
       passwordRepeat: '',
-      validPassword: true
+      validPassword: true,
+      redirect: false
     }
   }
 
   handleSubmit = (event) => {
     event.preventDefault();
-    alert('This public demo does not allow you to register an account')
-    /*
     const { username, email, password, passwordRepeat } = this.state;
     if (password !== passwordRepeat){
       alert('Passwords do not match!')
@@ -99,11 +99,13 @@ export default class Register extends React.Component {
             })
           }
         } else {
-          FlowRouter.redirect('/')
+          this.setState({
+            redirect: true
+          })
+          //FlowRouter.redirect('/')
         }
       })
     }
-    */
   }
 
   handleChange = ({ target }) => {
@@ -140,7 +142,14 @@ export default class Register extends React.Component {
   }
 
   render(){
-    const btnClass = this.filledInAllFields() ? 'btn-success' : 'btn-outline-success';
+    const { redirect } = this.state;
+    if ( redirect ) {
+      return <Redirect to='/' />
+    }
+
+    const filledInAllFields = this.filledInAllFields();
+    const btnClass = filledInAllFields ? 'btn-success' : 'btn-outline-success';
+    
     return <div className='card register'>
       <form className="form-register text-center" onSubmit={this.handleSubmit}>
         <img className="mb-4 rounded-circle" src="logo.svg" alt="" width="100" height="100" />
@@ -149,9 +158,9 @@ export default class Register extends React.Component {
         <EmailInput {...this.state} handleChange={this.handleChange} />
         <PassWordInput {...this.state} handleChange={this.handleChange} />
         <button className={`btn btn-lg btn-block ${ btnClass }`} 
-          type="submit" disabled={ !this.filledInAllFields() }>
+          type="submit" disabled={ !filledInAllFields }>
           {
-            this.filledInAllFields() ? 'Sign up' : 'Please fill in all fields'
+            filledInAllFields ? 'Sign up' : 'Please fill in all fields'
           }
         </button>
       </form>

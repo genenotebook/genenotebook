@@ -2,6 +2,7 @@ import { withTracker } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { compose } from 'recompose';
 import randomColor from 'randomcolor';
 
@@ -50,9 +51,9 @@ const OrthogroupTipNode = ({ transcriptId, gene, x, y, chronogram }) => {
   return <g className='tipnode'>
     <circle className='orthogroup-node' cy={x} cx={y} r='4.5' style={style}/>
     <foreignObject width='300' height='20' x={y + 10} y={x - 13}>
-      <a href={`${Meteor.absoluteUrl()}gene/${gene.ID}`} style={{fontSize: 10}}>
-        {transcriptId} {gene.attributes.Name}
-      </a>
+      <Link to={`/gene/${gene.ID}`} style={{fontSize:10}}>
+        { transcriptId } { gene.attributes.Name }
+      </Link>
     </foreignObject>
   </g>
 }

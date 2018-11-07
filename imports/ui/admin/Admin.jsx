@@ -1,7 +1,7 @@
 import { withTracker } from 'meteor/react-meteor-data';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 
 import AdminUsers from './users/AdminUsers.jsx';
 import AdminGenomes from './genomes/AdminGenomes.jsx';
@@ -26,7 +26,7 @@ const urlToName = url => {
     .join(' ')
 }
 
-const Nav = ({ pages, currentPage, changePage }) => {
+const Nav = ({ pages, changePage }) => {
   return (
     <div className="card-header">
       <h2 className="text-dark">Admin panel</h2>
@@ -34,13 +34,12 @@ const Nav = ({ pages, currentPage, changePage }) => {
         {
           pages.map(page => {
             const pageName = urlToName(page);
-            const active = page === currentPage ? 'active' : '';
             return (
               <li key={ page } role="presentation" className="nav-item">
-                <a href={ `${Meteor.absoluteUrl()}admin/${page}` } className={`nav-link ${active}`} 
-                  id={ page } onClick={changePage}> 
-                  { pageName } 
-                </a>
+                <NavLink to={`/admin/${page}`} className='nav-link' activeClassName='active'
+                  id={page} onClick={changePage}>
+                  { pageName }
+                </NavLink>
               </li>
             )
           })
@@ -63,13 +62,14 @@ class Admin extends React.Component {
   }
 
   render(){
+    const { currentPage } = this.state;
+    const pages = Object.keys(ADMIN_PAGES);
     return (
       <div className="container-fluid px-0 mx-0">
         <div className="card admin-panel my-2">
-          <Nav pages = { Object.keys(ADMIN_PAGES) } 
-            currentPage = {this.state.currentPage} changePage = {this.changePage} />
+          <Nav pages={pages} changePage={this.changePage} />
           {
-            ADMIN_PAGES[this.state.currentPage]
+            ADMIN_PAGES[currentPage]
           }
         </div>
       </div>
@@ -78,8 +78,8 @@ class Admin extends React.Component {
   }
 }
 
-export default withTracker(props => {
-  const currentPage = FlowRouter.getParam('_id');
+export default withTracker(({ match }) => {
+  const currentPage = match.params.page;
   return {
     currentPage
   }

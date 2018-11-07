@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+//import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Roles } from 'meteor/alanning:roles';
 
 import { updateUserInfo } from '/imports/api/users/users.js';
@@ -105,9 +105,8 @@ const AdminAccountCheck = ({ _id: userId }) => {
   }
 }
 
-const dataTracker = () => {
-  const userId = FlowRouter.getParam('_id');
-
+const dataTracker = ({ match }) => {
+  const { userId } = match.params;
   const userSub = Meteor.subscribe('users');
   const userProfile = userId ? Meteor.users.findOne({_id: userId}) : Meteor.user();
   const user = pick(userProfile, ['_id','username', 'emails', 'profile', 'roles']);
@@ -141,13 +140,10 @@ class UserProfile extends React.Component {
   }
 
   saveChanges = () => {
-    alert('This public instance does not allow you to change account information')
-    /*
     const { _id: userId, roles, profile, emails } = this.state;
     updateUserInfo.call({ userId, roles, profile, emails }, (err, res) => {
       if (err) alert(err)
     })
-    */
   }
 
   cancelChanges = () => {

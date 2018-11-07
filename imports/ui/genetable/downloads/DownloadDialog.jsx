@@ -1,7 +1,5 @@
-//import { FlowRouter } from 'meteor/kadira:flow-router';
-
 import React from 'react';
-//import classNames from 'classnames';
+import { Redirect } from 'react-router-dom';
 import { cloneDeep } from 'lodash';
 
 import AnnotationDownload from './AnnotationDownload.jsx';
@@ -23,7 +21,8 @@ export default class DownloadDialogModal extends React.Component {
       dataType: 'Annotations',
       downloading: false,
       queryCount: '...',
-      options: {}
+      options: {},
+      redirectTo: undefined
     }
   }
 
@@ -38,7 +37,6 @@ export default class DownloadDialogModal extends React.Component {
 
   componentWillReceiveProps = nextProps => {
     const query = DownloadDialogModal.queryFromProps(nextProps);
-    //console.log('componentWillReceiveProps query', query)
     queryCount.call({ query }, (err, res) => {
       this.setState({
         queryCount: res
@@ -47,7 +45,6 @@ export default class DownloadDialogModal extends React.Component {
   }
 
   static queryFromProps = ({ selectedAllGenes, selectedGenes, query, ...props }) => {
-    //console.log('queryFromProps selectedAllGenes', selectedAllGenes)
     return selectedAllGenes ? query : { ID: { $in: [...selectedGenes] } }
   }
 
@@ -78,8 +75,10 @@ export default class DownloadDialogModal extends React.Component {
 
     //download genes method returns download link url
     downloadGenes.call({ query, dataType, options }, (err,res) => {
-      console.log(err,res)
-      //FlowRouter.redirect(`/download/${res}`)
+      if (err) console.error(err);
+      this.setState({
+        redirectTo: res
+      })
     })
   }
 
@@ -102,9 +101,15 @@ export default class DownloadDialogModal extends React.Component {
     const { showDownloadDialog, toggleDownloadDialog, query, 
       selectedAllGenes, selectedGenes, ...props } = this.props;
 
-    const { dataType, queryCount, downloading, options, ...state } = this.state;
+    const { dataType, queryCount, downloading, options, 
+      redirectTo, ...state } = this.state;
+    
     if (!showDownloadDialog) {
       return null
+    }
+
+    if (typeof redirectTo !== 'undefined') {
+      return <Redirect to={`/download/${redirectTo}`} />
     }
 
     const downloadQuery = selectedAllGenes ? 

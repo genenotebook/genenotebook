@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const AlignmentText = (props) => {
   const hsp = props.hsp;
@@ -33,7 +34,9 @@ const HitLine = (props) => {
   const [gene, transcript] = hit.Hit_def[0].split(' ')
   return (
     <div>
-      <a href={`${Meteor.absoluteUrl()}gene/${gene}`}> {transcript} </a>
+      <Link to={`/gene/${gene}`}>
+       { transcript }
+      </Link>
       <small>
         <b>E-value:</b> {hit.Hit_hsps[0].Hsp[0].Hsp_evalue[0]}
       </small>

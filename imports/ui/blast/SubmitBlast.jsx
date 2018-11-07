@@ -1,13 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
-//import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
 import Select from 'react-select';
+import { Redirect } from 'react-router-dom';
+import { compose } from 'recompose';
 import { cloneDeep } from 'lodash';
-//import update from 'immutability-helper';
 
 import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
+import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
 import { submitBlastJob } from '/imports/api/blast/submitblastjob.js';
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
@@ -131,6 +132,25 @@ const SubmitButtons = (props) => {
   )
 }
 
+const dataTracker = () => {
+  const subscription = Meteor.subscribe('genomes');
+  const loading = !subscription.ready();
+  const genomes = genomeCollection.find({
+    'annotationTrack.blastDb': {
+      $exists: 1
+    }
+  }).fetch()
+  return {
+    loading,
+    genomes
+  }
+}
+
+const withConditionalRendering = compose(
+  withTracker(dataTracker),
+  withEither(isLoading, Loading)
+)
+
 class SubmitBlast extends React.Component {
   constructor(props){
     super(props)
@@ -138,7 +158,8 @@ class SubmitBlast extends React.Component {
       input: undefined,
       seqType: 'Nucleotide',
       dbType: 'Protein',
-      selectedGenomes: new Set()
+      selectedGenomes: new Set(),
+      redirectTo: undefined
     }
   }
 
@@ -209,16 +230,20 @@ class SubmitBlast extends React.Component {
       input: input,
       genomeIds: [...selectedGenomes]
     }, (err,res) => {
-      console.log(err)
-      alert(`/blast/${res}`)
-      //FlowRouter.redirect(`/blast/${res}`)
+      if (err) console.error(err);
+      this.setState({
+        redirectTo: res
+      })
     })
   }
 
   render(){
+    const { redirectTo } = this.state;
+    if ( typeof redirectTo !== 'undefined'){
+      return <Redirect to={`/blast/${redirectTo}`} />
+    }
+
     return (
-      this.props.loading ? 
-      <div>LOADING</div> :
       <form className="container form-group py-2" role="form" id="blast">
         <div className="card">
           <div className="card-header">Blast search</div>
@@ -277,16 +302,4 @@ class SubmitBlast extends React.Component {
   }
 }
 
-export default withTracker(props => {
-  const subscription = Meteor.subscribe('genomes');
-  const loading = !subscription.ready();
-  const genomes = genomeCollection.find({
-    'annotationTrack.blastDb': {
-      $exists: 1
-    }
-  }).fetch()
-  return {
-    loading,
-    genomes
-  }
-})(SubmitBlast)
+export default withConditionalRendering(SubmitBlast)

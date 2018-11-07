@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
+import { Redirect, Link } from 'react-router-dom';
 
 import './login.scss';
 
@@ -11,7 +11,8 @@ class Login extends React.Component {
     super(props)
     this.state = {
       username: '',
-      password: ''
+      password: '',
+      redirect: false
     }
   }
 
@@ -25,7 +26,9 @@ class Login extends React.Component {
       if (err) {
         alert(err.reason)
       } else {
-        FlowRouter.redirect(this.props.redirect)
+        this.setState({
+          redirect: true
+        })
       }
     })
   }
@@ -37,6 +40,13 @@ class Login extends React.Component {
   }
 
   render(){
+    const { redirect } = this.state;
+    const { redirectTo } = this.props;
+    
+    if (redirect) {
+      return <Redirect to={redirectTo} />
+    }
+
     return (
       <div className="card signin">
         <form className="form-signin text-center" onSubmit={this.handleSubmit}>
@@ -60,7 +70,9 @@ class Login extends React.Component {
             required />
           <button 
             className="btn btn-lg btn-primary btn-block mb-3" type="submit">Sign in</button>
-          <a href={`${Meteor.absoluteUrl()}register`} id="new-account">Create new account</a>
+          <Link to='/register' id='new-account'>
+            Create new account
+          </Link>
           <p className="mt-5 mb-3 text-muted">© 2017-2018</p>
         </form>
       </div>
@@ -70,6 +82,6 @@ class Login extends React.Component {
 
 export default withTracker(props => {
   return {
-    redirect: '/'
+    redirectTo: '/'
   }
 })(Login);
