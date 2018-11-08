@@ -85,7 +85,7 @@ const withConditionalRendering = compose(
  * @param { array } [attributes] array of gene attributes that will be shown as columns
  * @kind {class}
  */
-class GeneTable extends React.PureComponent {
+class GeneTable extends React.Component {
   constructor(props){
     super(props)
     this.state = {

@@ -1,9 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
-//import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
-import { Redirect } from 'react-router-dom';
+import { Redirect, withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 import { cloneDeep } from 'lodash';
 
@@ -14,16 +13,15 @@ import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
 import './searchBar.scss';
 
-const attributeTracker = ({ highLightSearch, search }) => {
-  //FlowRouter.watchPathChange();
-  //const { queryParams } = FlowRouter.current();
+const attributeTracker = ({ location, ...props }) => {
+  const { pathname, search, hash, state = {} } = location;
+  const { highLightSearch = false, redirected = false } = state;
+
   const query = new URLSearchParams(search);
-  const _attributes = query.get('attributes');
-  const searchString = query.get('search');
-  //console.log(query.get('attributes'))
-  //const queryParams = {};
-  //const { attributes: _attributes, search: searchString = '' } = queryParams;
-  const selectedAttributes = _attributes ? _attributes.split(',') : [];
+  const attributeString = query.get('attributes') || '';
+  const searchString = query.get('search') || '';
+
+  const selectedAttributes = attributeString.split(',');
   const attributeSub = Meteor.subscribe('attributes');
   const loading = !attributeSub.ready();
   const attributes = attributeCollection.find({}).fetch();
@@ -32,11 +30,12 @@ const attributeTracker = ({ highLightSearch, search }) => {
     attributes,
     selectedAttributes,
     searchString,
-    highLightSearch
+    highLightSearch,
   }
 }
 
 const withConditionalRendering = compose(
+  withRouter,
   withTracker(attributeTracker),
   withEither(isLoading, Loading)
 )
@@ -44,7 +43,6 @@ const withConditionalRendering = compose(
 class SearchBar extends React.Component {
   constructor(props){
     super(props)
-    console.log(props)
     const selectedAttributes = props.selectedAttributes.length ?
       props.selectedAttributes :
       props.attributes
@@ -53,12 +51,10 @@ class SearchBar extends React.Component {
     this.state = {
       selectedAttributes: new Set(selectedAttributes),
       searchString: props.searchString,
-      redirectTo: undefined
     }
   }
 
   componentDidUpdate = () => {
-    //console.log('componentDidUpdate', this.props.highLightSearch)
     if (this.props.highLightSearch) {
       this.input.focus();
     }
@@ -82,38 +78,44 @@ class SearchBar extends React.Component {
     })
   }
 
-  search = event => {
+  submit = event => {
     event.preventDefault();
+    const { history } = this.props;
     const { selectedAttributes, searchString } = this.state;
-    console.log(selectedAttributes, searchString)
     if (searchString.length && selectedAttributes.size){
-      const attributeString = [...selectedAttributes].join(',');
-      const queryString = `attributes=${attributeString}&search=${searchString}`;
-      console.log(queryString)
-      this.setState({
-        redirectTo: `/genes?${queryString}`
-      })
-      //FlowRouter.go(`/genes?${queryString}`);
+      const query = new URLSearchParams();
+      query.set('attributes', [...selectedAttributes]);
+      query.set('search', searchString);
+      const queryString = query.toString();
+      /*
+        React Router is supposed to work with the Redirect 
+        component, but I cannot figure out how to do that so 
+        I just push to the history instead.
+      */
+      history.push(`/genes?${queryString}`)
     }
   }
 
   clearSearch = () => {
+    const { history } = this.props;
     this.setState({
-      searchString: '',
-      redirectTo: '/genes'
+      searchString: ''
+    }, (err,res) => {
+      if ( err ) console.error(err);
+      /*
+        React Router is supposed to work with the Redirect 
+        component, but I cannot figure out how to do that so 
+        I just push to the history instead.
+      */
+      history.push('/genes');
     })
-    //FlowRouter.go('/genes');
   }
 
   render(){
-    const { attributes } = this.props;
-    const { selectedAttributes, searchString, redirectTo } = this.state;
+    const { attributes, currentUrl } = this.props;
+    const { selectedAttributes, searchString, redirectTo, redirected } = this.state;
 
-    if ( typeof redirectTo !== 'undefined'){
-      return <Redirect to={redirectTo} />
-    }
-
-    return <form className="form-inline search mx-auto" role="search" onSubmit={this.search}>
+    return <form className="form-inline search mx-auto" role="search" onSubmit={this.submit}>
       <div className="input-group input-group-sm">
         <div className="input-group-prepend">
           <Dropdown>
@@ -142,7 +144,7 @@ class SearchBar extends React.Component {
           placeholder="Search genes"
           value={searchString}
           onChange={this.updateSearchString}
-          onSubmit={this.search}
+          onSubmit={this.submit}
           ref={(input) => { this.input = input }} />
         { searchString &&
           <span className='input-group-addon bg-white border-left-0 border pt-1 clear-search'>

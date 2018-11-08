@@ -179,7 +179,7 @@ const GeneTableRow = ({ gene, selectedColumns, selectedAllGenes, selectedGenes,
 }
 
 
-class GeneTableBody extends React.PureComponent {
+class GeneTableBody extends React.Component {
   constructor(props){
     super(props)
   }

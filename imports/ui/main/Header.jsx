@@ -74,7 +74,7 @@ const UserButtons = withTracker(() => {
 })
 
 
-class NavBar extends React.PureComponent {
+class NavBar extends React.Component {
   constructor(props){
     super(props)
     this.state = {
@@ -90,7 +90,6 @@ class NavBar extends React.PureComponent {
 
   render(){
     const show = this.state.show ? 'show' : '';
-    const { highLightSearch, search } = this.props;
     return <nav className='navbar navbar-expand-md bg-light navbar-light py-0'>
       <div className='container'>
         <NavLink to='/' className='navbar-brand' activeClassName='active'>
@@ -114,7 +113,7 @@ class NavBar extends React.PureComponent {
               </NavLink>
             </li>
           </ul>
-          <SearchBar highLightSearch={highLightSearch} search={search}/>
+          <SearchBar />
           <UserButtons />
         </div>
       </div>
@@ -122,13 +121,10 @@ class NavBar extends React.PureComponent {
   }
 }
 
-const Header = ({ location }) => {
-  console.log(location)
-  const { state = {}, search } = location;
-  const { highLightSearch = false } = state;
+const Header = () => {
   return <header className='navigation border' role='banner'>
-    <NavBar highLightSearch={highLightSearch} search={search} />
+    <NavBar />
   </header>
 };
 
-export default withRouter(Header);
+export default Header;
