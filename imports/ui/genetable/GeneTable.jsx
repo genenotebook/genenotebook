@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
+import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 import { cloneDeep, isEqual, isEmpty } from 'lodash';
 
@@ -27,15 +28,15 @@ export const VISUALIZATIONS =['Gene model', 'Protein domains', 'Gene expression'
  * @param  {[type]} props [description]
  * @return {[type]}       [description]
  */
-const attributeTracker = ({ searchAttributes, searchValue }) => {
+const attributeTracker = ({ location, history }) => {
   const attributeSub = Meteor.subscribe('attributes');
   const loading = !attributeSub.ready();
   const attributes = attributeCollection.find({}).fetch();
   return {
     loading, 
     attributes,
-    searchAttributes,
-    searchValue
+    location,
+    history
   }
 }
 
@@ -44,12 +45,20 @@ const attributeTracker = ({ searchAttributes, searchValue }) => {
  * @param  {[type]} options.attributes [description]
  * @return {[type]}                    [description]
  */
-const searchTracker = ({ attributes, searchAttributes, searchValue }) => {
-  const query = { $or: [] };
+const searchTracker = ({ attributes, location, history }) => {
+  const { search } = location;
+  const queryString = new URLSearchParams(search);
+  
+  const attributeString = queryString.get('attributes') || '';
+  const searchAttributes = attributeString.split(',');
+  
+  const searchValue = queryString.get('search') || '';
+
+  const searchQuery = { $or: [] };
   attributes
     .filter(({ name }) => new RegExp(name).test(searchAttributes) )
     .forEach(attribute => {
-      query.$or.push({ 
+      searchQuery.$or.push({ 
         [attribute.query]: { 
           $regex: searchValue, 
           $options: 'i' 
@@ -62,14 +71,18 @@ const searchTracker = ({ attributes, searchAttributes, searchValue }) => {
       return defaultShow || defaultSearch || new RegExp(name).test(searchAttributes)
     }).map(({ name }) => name)
 
-  if (!query.$or.length) {
-    delete query.$or
+  if (!searchQuery.$or.length) {
+    delete searchQuery.$or
   }
 
   return {
     attributes,
     selectedAttributes,
-    query
+    searchAttributes,
+    searchValue,
+    searchQuery,
+    location,
+    history
   }
   
 }
@@ -98,57 +111,56 @@ class GeneTable extends React.Component {
       selectedColumns: [],
       selectedVisualization: VISUALIZATIONS[0],
       showDownloadDialog: false,
+      search: '',
       dummy: 0
     }
   }
 
   static getDerivedStateFromProps =  (props, state) => {
-    const { dummy, query: oldQuery } = state;
-    const { query: newQuery, currentQueryCount, selectedAttributes } = props;
-    //console.log({oldQuery,newQuery})
-    if (dummy <= 0) {
-      const query = Object.assign({}, oldQuery, newQuery);
-      if (isEmpty(newQuery)){
-        delete query.$or;
-      }
-      const selectedColumns = new Set(['Gene ID', ...state.selectedColumns, ...selectedAttributes]);
-      return {
-        dummy: 1,
-        query,
-        selectedColumns:[...selectedColumns]
-      }
-    }
-    return null
-    /*
-    const { query: newQuery, currentQueryCount, selectedAttributes } = props;
     const { query: oldQuery } = state;
-    const query = Object.assign({}, oldQuery, newQuery);
-    if (isEmpty(newQuery)){
-      delete query.$or;
-    }
-    const selectedColumns = new Set(['Gene ID', ...state.selectedColumns, ...selectedAttributes]);
+    const { searchQuery, selectedAttributes, location } = props;
     
-    console.log({props,state})
+    /*
+    Determine what columns to show
+     */
+    const _selectedColumns = new Set([
+      'Gene ID', 
+      ...state.selectedColumns, 
+      ...selectedAttributes
+    ]);
+    const selectedColumns = [..._selectedColumns];
+    
+    /*
+    Figure out what the query should be
+     */
+    const query = {};
 
-    //console.log(query)
-    //console.log(selectedColumns)
+    if (!isEmpty(searchQuery)) {
+      Object.assign(query, oldQuery, searchQuery);
+      return {
+        query,
+        selectedColumns
+      }
+    }
 
     return {
-      query,
       selectedColumns
-    }*/
+    }
   }
 
   componentDidUpdate = (prevProps, prevState) => {
-    if (!isEqual(this.props.query, prevProps.query)){
-      queryCount.call({ query: this.props.query }, (err,res) => {
-        const currentQueryCount = new Intl.NumberFormat().format(res);
-        this.setState({ currentQueryCount });
-      })
+    const currProps = this.props;
+    const { query } = this.state;
+    if (!isEqual(currProps.searchQuery, prevProps.searchQuery)){
+      this.getQueryCount();
     }
   }
 
   componentDidMount = () => {
+    this.getQueryCount();
+  }
+
+  getQueryCount = () => {
     const { query } = this.state;
     queryCount.call({ query }, (err,res) => {
       const currentQueryCount = new Intl.NumberFormat().format(res);
@@ -161,6 +173,8 @@ class GeneTable extends React.Component {
   }
 
   updateQuery = query => {
+    //const { selectedAttributes, history, searchAttributes, searchValue } = this.props;
+
     queryCount.call({ query }, (err,res) => {
       const currentQueryCount = new Intl.NumberFormat().format(res);
       this.setState({
@@ -231,7 +245,7 @@ class GeneTable extends React.Component {
   }
 
   render(){
-    const { attributes } = this.props;
+    const { attributes, history } = this.props;
     const { limit, query, sort, currentQueryCount, selectedGenes,
     selectedAllGenes, selectedColumns, selectedVisualization,
     showDownloadDialog, dummy } = this.state;
@@ -239,7 +253,7 @@ class GeneTable extends React.Component {
     const headerOptions = { selectedColumns, selectedGenes, selectedAllGenes,
       toggleSelectAllGenes: this.toggleSelectAllGenes, selectedVisualization,
       updateQuery: this.updateQuery, query, updateSort: this.updateSort, 
-      sort, attributes };
+      sort, attributes, history };
     
     const bodyOptions = { query, sort, limit, selectedGenes, selectedAllGenes, 
       updateSelection: this.updateSelection, selectedColumns, attributes, 

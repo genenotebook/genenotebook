@@ -15,25 +15,27 @@ import Register from './Register.jsx';
 import Header from './Header.jsx';
 
 const App = () => {
-  return <Router>
-    <React.Fragment>
-      <Header />
-      <Switch>
-        <Route exact path='/' component={LandingPage} />
-        <Route exact path='/login' component={Login} />
-        <Route exact path='/register' component={Register} />
-        <Route exact path='/genes' component={GeneTable} />
-        <Route path='/gene/:geneId' component={SingleGenePage} />
-        <Route exact path='/blast' component={SubmitBlast} />
-        <Route path='/blast/:jobId' component={BlastResult} />
-        <Route exact path='/profile' component={UserProfile} />
-        <Route exact path='/admin' render={() => <Redirect to='/admin/users' />} />
-        <Route path='/admin/user/:userId' component={UserProfile} />
-        <Route path='/admin/:page' component={Admin} />
-        <Route path='/download/:downloadId' component={Download} />
-      </Switch>
-    </React.Fragment>
-  </Router>
+  return (
+    <Router>
+      <React.Fragment>
+        <Header />
+        <Switch>
+          <Route exact path='/' component={LandingPage} />
+          <Route exact path='/login' component={Login} />
+          <Route exact path='/register' component={Register} />
+          <Route exact path='/genes' component={GeneTable} />
+          <Route path='/gene/:geneId' component={SingleGenePage} />
+          <Route exact path='/blast' component={SubmitBlast} />
+          <Route path='/blast/:jobId' component={BlastResult} />
+          <Route exact path='/profile' component={UserProfile} />
+          <Route exact path='/admin' render={() => <Redirect to='/admin/users' />} />
+          <Route path='/admin/user/:userId' component={UserProfile} />
+          <Route path='/admin/:page' component={Admin} />
+          <Route path='/download/:downloadId' component={Download} />
+        </Switch>
+      </React.Fragment>
+    </Router>
+  )
 }
 
 export default App;

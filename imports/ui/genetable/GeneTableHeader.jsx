@@ -21,6 +21,14 @@ const QUERY_TYPES = ['None', 'Present', 'Not present', 'Equals',
   }
 })
 
+class SelectionOption extends Object {
+  constructor(optionName){
+    super();
+    this.value = optionName;
+    this.label = optionName;
+  }
+}
+
 /**
  * [description]
  * @param  {[type]} options.queryKey   [description]
@@ -43,7 +51,7 @@ const labelFromQuery = ({ queryKey, queryValue }) => {
       console.error(`Unknown query: {${queryType}:${queryValue}}`)
       break
   }
-  return { label: label, value: label }
+  return new SelectionOption(label);//{ label: label, value: label }
 }
 
 /**
@@ -53,7 +61,7 @@ const labelFromQuery = ({ queryKey, queryValue }) => {
  */
 const stateFromQuery = attributeQuery => {
   const [queryKey, queryValue] = Object.entries(attributeQuery)[0];
-
+  
   let queryLabel;
   switch(queryKey){
     case '$exists':
@@ -76,10 +84,7 @@ const stateFromQuery = attributeQuery => {
       break
   }
   const state = { 
-    queryLabel : { 
-      label: queryLabel, 
-      value: queryLabel 
-    }, 
+    queryLabel: new SelectionOption(queryLabel),
     queryValue,
     attributeQuery 
   };
@@ -128,15 +133,18 @@ const queryFromLabel = ({ queryLabel: { label, value }, queryValue }) => {
 }
 
 const getAttributeQuery = ({ query, attribute }) => {
-  if (query.hasOwnProperty(attribute.query)){
+  if (query.hasOwnProperty(attribute.query)) {
     return query[attribute.query]
-  } else {
-    if (query.hasOwnProperty('$or')){
-      return query.$or.filter(searchQuery => {
-        return Object.keys(searchQuery)[0] === attribute.query
-      })[0]
-    }
   }
+
+  const destructuredQuery = {};
+
+  if (query.hasOwnProperty('$or')) {
+    query.$or.map(q => Object.assign(destructuredQuery, q))
+  }  
+  if (destructuredQuery.hasOwnProperty(attribute.query)){
+    return destructuredQuery[attribute.query]
+  } 
 }
 
 /**
@@ -148,21 +156,30 @@ class HeaderElement extends React.Component {
     this.state = {
       sortOrder: 'None',
       dummy: 0,
-      queryLabel: { label: 'None', value: 'None' },
+      queryLabel: new SelectionOption('None'),
       queryValue: '',
-      queryLoading: false
+      queryLoading: false,
+      attributeQuery: undefined
     };
   }
 
   static getDerivedStateFromProps = (props, state) => {
     const { query, attribute, ...otherProps } = props;
-    const attributeQuery = getAttributeQuery({ query, attribute });
-    if (typeof attributeQuery !== 'undefined'){
-      const newState = stateFromQuery(attributeQuery);
-      newState.queryLoading = false;
-      return newState
+    const { attributeQuery } = state;
+    const newAttributeQuery = getAttributeQuery({ query, attribute });
+
+    console.log({
+      attributeQuery,
+      newAttributeQuery
+    })
+
+    if (!isEqual(newAttributeQuery, attributeQuery)) {
+      return {
+        attributeQuery: newAttributeQuery,
+        queryLoading: false
+      }
     }
-    return null 
+    return null
   }
 
   updateQueryLabel = selection => {
@@ -204,8 +221,6 @@ class HeaderElement extends React.Component {
     const { queryLabel, queryValue } = this.state;
     const newQuery = queryFromLabel({ queryLabel, queryValue });
 
-    console.log({newQuery})
-
     const { query, attribute, ...props } = this.props;
 
     if (query.hasOwnProperty(attribute.query)){
@@ -234,23 +249,27 @@ class HeaderElement extends React.Component {
   }
 
   removeQuery = () => {
-    const { query, attribute, updateQuery } = this.props;
+    const { query, attribute, updateQuery, history } = this.props;
     const newQuery = cloneDeep(query);
+
+    console.log({ newQuery })
+
     delete newQuery[attribute.query];
+    delete newQuery.$or;
+    
     this.setState({
-      queryLabel: { label: 'None', value: 'None' },
+      queryLabel: new SelectionOption('None'),
       queryValue: '',
-      attributeQuery: undefined,
-      //queryLoading: true,
       dummy: this.state.dummy + 1
     }, (err, res) => {
       updateQuery(newQuery);
+      history.push('/genes');
     })
   }
 
   render(){
     const { query, attribute, sort,  ...props} = this.props;
-    const { queryLabel, queryValue, queryLoading } = this.state;
+    const { queryLabel, queryValue, queryLoading, dummy } = this.state;
     const hasQuery = this.hasQuery();
     const hasNewQuery = this.hasNewQuery();
     const hasSort = this.hasSort();
@@ -259,7 +278,7 @@ class HeaderElement extends React.Component {
     const orientation = attribute.name === 'Gene ID' ? 'left' : 'right';
     const colStyle = attribute.name === 'Gene ID' ? { width: '10rem' } : {};
     
-    return <th scope='col' style={{...colStyle}}>
+    return <th scope='col' style={{...colStyle}} >
       <div className='btn-group btn-group-justified'>
         <button className={`btn btn-sm px-2 py-0 genetable-dropdown ${buttonClass}`} 
           type="button" disabled>
@@ -268,66 +287,69 @@ class HeaderElement extends React.Component {
             queryLoading && <span className='icon-spin'/>
           }
         </button>
-        <Dropdown>
-          <DropdownButton className={`btn btn-sm px-1 py-0 dropdown-toggle ${buttonClass}`}/>
-          <DropdownMenu className={`dropdown-menu dropdown-menu-${orientation} px-2`}>
-            <div className={`sort-wrapper ${hasSort ? 'has-sort' : ''}`}>
-              <h6 className="dropdown-header">Sort:</h6>
-              <div className="form-check">
+        {
+          attribute.name !== 'Genome' &&
+          <Dropdown>
+            <DropdownButton className={`btn btn-sm px-1 py-0 dropdown-toggle ${buttonClass}`}/>
+            <DropdownMenu className={`dropdown-menu dropdown-menu-${orientation} px-2`}>
+              <div className={`sort-wrapper ${hasSort ? 'has-sort' : ''}`}>
+                <h6 className="dropdown-header">Sort:</h6>
+                <div className="form-check">
+                  {
+                    [1, -1].map(sortOrder => {
+                      const checked = sort && sort[attribute.query] === sortOrder;
+                      return (
+                        <div key={`${sortOrder}-${checked}`}>
+                          <input className="form-check-input" 
+                            type="checkbox" 
+                            id={sortOrder} 
+                            onChange={this.updateSortOrder}
+                            checked={checked} />
+                          <label className="form-check-label" htmlFor={sortOrder}>
+                            { sortOrder === 1 ? 'Increasing' : 'Decreasing' }
+                          </label>
+                        </div>
+                      )
+                    })
+                  }
+                </div>
+              </div>
+              <div className="dropdown-divider" />
+              <div className={`query-wrapper pb-1 mb-1 ${hasQuery ? 'has-query' : ''}`}>
+                <h6 className="dropdown-header">Filter:</h6>
+                <Select className='form-control-sm pb-5' value={queryLabel}
+                  options={QUERY_TYPES} onChange={this.updateQueryLabel} />
                 {
-                  [1, -1].map(sortOrder => {
-                    const checked = sort && sort[attribute.query] === sortOrder;
-                    return (
-                      <div key={`${sortOrder}-${checked}`}>
-                        <input className="form-check-input" 
-                          type="checkbox" 
-                          id={sortOrder} 
-                          onChange={this.updateSortOrder}
-                          checked={checked} />
-                        <label className="form-check-label" htmlFor={sortOrder}>
-                          { sortOrder === 1 ? 'Increasing' : 'Decreasing' }
-                        </label>
-                      </div>
-                    )
-                  })
+                  ['None','Present','Not present'].indexOf(queryLabel.label) < 0 ?
+                  <textarea className="form-control" onChange={this.updateQueryValue} 
+                    value={queryValue} /> :
+                  null
                 }
               </div>
-            </div>
-            <div className="dropdown-divider" />
-            <div className={`query-wrapper pb-1 mb-1 ${hasQuery ? 'has-query' : ''}`}>
-              <h6 className="dropdown-header">Filter:</h6>
-              <Select className='form-control-sm pb-5' value={queryLabel}
-                options={QUERY_TYPES} onChange={this.updateQueryLabel} />
               {
-                ['None','Present','Not present'].indexOf(queryLabel.label) < 0 ?
-                <textarea className="form-control" onChange={this.updateQueryValue} 
-                  value={queryValue} /> :
-                null
+                hasNewQuery && !queryLoading &&
+                <button type='button' className='btn btn-sm btn-block btn-outline-success' 
+                  onClick={this.updateQuery}>
+                  Update filter
+                </button>
               }
-            </div>
-            {
-              hasNewQuery && !queryLoading &&
-              <button type='button' className='btn btn-sm btn-block btn-outline-success' 
-                onClick={this.updateQuery}>
-                Update filter
-              </button>
-            }
-            {
-              queryLoading &&
-              <button type='button' className='btn btn-sm btn-block btn-success' 
-                disabled>
-                <span className='icon-spin'/> Query loading
-              </button>
-            }
-            {
-              hasQuery &&
-              <button type='button' className='btn btn-sm btn-block btn-outline-dark' 
-                onClick={this.removeQuery}>
-                <span className='icon-cancel' />Cancel filter
-              </button>
-            }
-          </DropdownMenu>
-        </Dropdown>
+              {
+                queryLoading &&
+                <button type='button' className='btn btn-sm btn-block btn-success' 
+                  disabled>
+                  <span className='icon-spin'/> Query loading
+                </button>
+              }
+              {
+                hasQuery &&
+                <button type='button' className='btn btn-sm btn-block btn-outline-dark' 
+                  onClick={this.removeQuery}>
+                  <span className='icon-cancel' />Cancel filter
+                </button>
+              }
+            </DropdownMenu>
+          </Dropdown>
+        }
       </div>
     </th>
   }

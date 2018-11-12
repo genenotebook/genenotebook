@@ -21,7 +21,7 @@ const attributeTracker = ({ location, ...props }) => {
   const attributeString = query.get('attributes') || '';
   const searchString = query.get('search') || '';
 
-  const selectedAttributes = attributeString.split(',');
+  const selectedAttributes = attributeString.split(',').filter(att => att !== '');
   const attributeSub = Meteor.subscribe('attributes');
   const loading = !attributeSub.ready();
   const attributes = attributeCollection.find({}).fetch();
