@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { compose } from 'recompose';
 
 import { queryCount } from '/imports/api/methods/queryCount.js';
@@ -98,7 +99,7 @@ const withConditionalRendering = compose(
 
 const StatsWithDataTracker = withConditionalRendering(Stats);
 
-const Landingpage = () => {
+const LandingPage = () => {
   return (
     <div className="container">
       <div className="jumbotron my-2 pb-1 pt-4 bg-light border">
@@ -113,6 +114,16 @@ const Landingpage = () => {
         {
           !Meteor.userId() && 
           <div className='btn-group mx-auto pb-3' role='group'>
+            <Link to='/register' className="btn btn-sm btn-outline-success">
+              <span className='icon-user-add' aria-hidden='true' /> Create account
+            </Link>
+            <Link to='/login' className="btn btn-sm btn-outline-primary">
+              <span className='icon-login' aria-hidden='true' /> Sign in
+            </Link>
+            <a href="http://genenotebook.github.io/" className="btn btn-sm btn-outline-dark">
+              <span className="icon-github" aria-hidden="true" /> About GeneNotebook
+            </a>
+          {/*
             <a href={`${Meteor.absoluteUrl()}register`} className="btn btn-sm btn-outline-success">
               <span className="icon-user-add" aria-hidden="true" /> Create an account
             </a>
@@ -121,7 +132,7 @@ const Landingpage = () => {
             </a>
             <a href="http://genenotebook.github.io/" className="btn btn-sm btn-outline-dark">
               <span className="icon-github" aria-hidden="true" /> About GeneNotebook
-            </a>
+            </a>*/}
           </div>
         }
       </div>
@@ -137,9 +148,13 @@ const Landingpage = () => {
             <h6 className="card-subtitle text-muted mb-2">
               Browse through a table of genes with customizable queries
             </h6>
+            {/*
             <a href={`${Meteor.absoluteUrl()}genes`} className="btn btn-outline-dark btn-sm px-2 py-0 btn-block">
               <span className="icon-list" aria-hidden="true" /> Browse
-            </a> 
+            </a> */}
+            <Link to='/genes' className="btn btn-outline-dark btn-sm px-2 py-0 btn-block">
+              <span className="icon-list" aria-hidden="true" /> Browse
+            </Link>
           </div>
         </div>
 
@@ -152,9 +167,13 @@ const Landingpage = () => {
             <h6 className="card-subtitle mb-2 text-muted">
               Search genes based on attributes like GO terms or protein domains
             </h6>
+            {/*
             <a href="#" className="btn btn-outline-dark btn-sm px-2 py-0 btn-block">
               <span className="icon-search" aria-hidden="true" /> Search
-            </a> 
+            </a> */}
+            <Link to={{ path: '/', state: {highLightSearch: true}}} className='btn btn-outline-dark btn-sm px-2 py-0 btn-block'>
+              <span className="icon-search" aria-hidden="true" /> Search
+            </Link>
           </div>
         </div>
 
@@ -167,9 +186,13 @@ const Landingpage = () => {
             <h6 className="card-subtitle mb-2 text-muted">
               BLAST your protein or DNA sequence to genome annotations 
             </h6>
+            {/*
             <a href={`${Meteor.absoluteUrl()}blast`} className="btn btn-outline-dark btn-sm px-2 py-0 btn-block">
               <span className="icon-database" aria-hidden="true" /> Blast
-            </a>
+            </a>*/}
+            <Link to='/blast' className="btn btn-outline-dark btn-sm px-2 py-0 btn-block">
+              <span className="icon-database" aria-hidden="true" /> Blast
+            </Link>
           </div>
         </div>
 
@@ -178,4 +201,4 @@ const Landingpage = () => {
   )
 };
 
-export default Landingpage;
+export default LandingPage;

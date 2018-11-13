@@ -1,9 +1,10 @@
 import { withTracker } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
 import { Roles } from 'meteor/alanning:roles';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+//import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
+import { NavLink, Link, withRouter } from 'react-router-dom';
 
 import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
 import { withEither } from '/imports/ui/util/uiUtil.jsx';
@@ -29,9 +30,9 @@ const LoggedInButton = ({ isAdmin }) => {
       <span className="icon-user" aria-hidden="true" />
     </DropdownButton>
     <DropdownMenu className='dropdown-menu header-menu px-2'>
-      <a role="menuitem" href={`${Meteor.absoluteUrl()}profile`} className="dropdown-item featuremenu-item">
+      <Link to='/profile' className="dropdown-item featuremenu-item">
         <span className='icon-pencil' /> User profile
-      </a>
+      </Link>
       <a role="menuitem" className="dropdown-item featuremenu-item disabled text-muted" disabled>
         <span className='icon-clipboard' /> Favourites
       </a>
@@ -39,9 +40,9 @@ const LoggedInButton = ({ isAdmin }) => {
       {
         isAdmin &&
         <React.Fragment>
-          <a role="menuitem" href={`${Meteor.absoluteUrl()}admin`} className="dropdown-item featuremenu-item">
+          <Link to='/admin' className="dropdown-item featuremenu-item">
             <span className="icon-cog" /> Admin settings
-          </a>
+          </Link>
           <div className="dropdown-divider" />
         </React.Fragment>
       }
@@ -56,9 +57,9 @@ const LoggedInButton = ({ isAdmin }) => {
 const LoggedInButtonWithTracker = withTracker(adminTracker)(LoggedInButton);
 
 const LoggedOutButton = () => {
-  return <a href={`${Meteor.absoluteUrl()}login`} className="btn btn-primary btn-sm" id="signin">
+  return <Link to='/login' className="btn btn-primary btn-sm" id="signin">
     <span className="icon-login" aria-hidden="true" /> Sign in
-  </a>
+  </Link>
 }
 
 const UserButtons = withTracker(() => {
@@ -72,36 +73,8 @@ const UserButtons = withTracker(() => {
   <LoggedOutButton />
 })
 
-const routeTracker = ({ routes }) => {
-  FlowRouter.watchPathChange();
-  const currentContext = FlowRouter.current();
-  const activeRoute = routes.filter(route => {
-    return new RegExp(route).test(currentContext.path);
-  })[0];
-  return {
-    routes,
-    activeRoute
-  }
-}
 
-const Nav = ({ routes, activeRoute }) => {
-  return <ul className='navbar-nav'>
-    {
-      routes.map(route => {
-        const active = route === activeRoute ? 'active' : '';
-        return <li key={route} className={`nav-item ${active}`}>
-          <a className='nav-link' href={`${Meteor.absoluteUrl()}${route}`}>
-            { route.replace(/\w/, c => c.toUpperCase()) }
-          </a>
-        </li>
-      })
-    }
-  </ul>
-}
-
-const NavWithRouteTracker = withTracker(routeTracker)(Nav);
-
-class NavBar extends React.PureComponent {
+class NavBar extends React.Component {
   constructor(props){
     super(props)
     this.state = {
@@ -119,16 +92,27 @@ class NavBar extends React.PureComponent {
     const show = this.state.show ? 'show' : '';
     return <nav className='navbar navbar-expand-md bg-light navbar-light py-0'>
       <div className='container'>
-        <a className="navbar-brand" href={Meteor.absoluteUrl()}>
+        <NavLink to='/' className='navbar-brand' activeClassName='active'>
           <small>
             <img src={`${Meteor.absoluteUrl()}logo.svg`} alt="GeneNoteBook logo" className="navbar-logo rounded-circle" />
           </small>
-        </a>
+        </NavLink>
         <button className='navbar-toggler' type='button' onClick={this.toggleShow}>
           <span className='navbar-toggler-icon' />
         </button>
         <div className={`collapse navbar-collapse justify-content-between ${show}`} id='navbar'>
-          <NavWithRouteTracker routes={['genes','blast']} />
+          <ul className='navbar-nav'>
+            <li className='nav-item'>
+              <NavLink to='/genes' className='nav-link' activeClassName='active'>
+                Genes
+              </NavLink>
+            </li>
+            <li className='nav-item'>
+              <NavLink to='/blast' className='nav-link' activeClassName='active'>
+                Blast
+              </NavLink>
+            </li>
+          </ul>
           <SearchBar />
           <UserButtons />
         </div>

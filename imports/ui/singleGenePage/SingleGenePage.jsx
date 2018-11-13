@@ -40,8 +40,9 @@ const isNotFound = ({ gene, ...props }) => {
   return typeof gene === 'undefined'
 }
 
-const geneDataTracker = () => {
-  const geneId = FlowRouter.getParam('_id');
+const geneDataTracker = ({ match }) => {
+  const { geneId } = match.params;
+  //const geneId = FlowRouter.getParam('_id');
   const geneSub = Meteor.subscribe('singleGene', { geneId });
   const gene = Genes.findOne({ ID: geneId });
 

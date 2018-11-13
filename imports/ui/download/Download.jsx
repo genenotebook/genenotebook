@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
 import { compose } from 'recompose';
@@ -57,13 +56,13 @@ const jobNotFound = ({ job }) => {
   return typeof job === 'undefined'
 }
 
-const downloadDataTracker = () => {
-  const queryHash = FlowRouter.getParam('_id');
+const downloadDataTracker = ({ match }) => {
+  const { downloadId } = match.params;
   const jobSub = Meteor.subscribe('jobQueue');
   const loading = !jobSub.ready();
   const job = jobQueue.findOne({
     type: 'download',
-    'data.queryHash': queryHash 
+    'data.queryHash': downloadId 
   });
   return {
     loading,

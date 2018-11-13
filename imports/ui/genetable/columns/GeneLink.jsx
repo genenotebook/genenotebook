@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const GeneLink = ({ geneId }) => {
-  return <a className='genelink' title={geneId} 
-    href={`${Meteor.absoluteUrl()}gene/${geneId}`}>
+  return <Link to={`/gene/${geneId}`} className='genelink' title={geneId}>
     { geneId }
-  </a>
+  </Link>
 }
 
 export default GeneLink;
