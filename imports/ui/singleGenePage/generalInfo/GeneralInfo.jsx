@@ -3,12 +3,13 @@ import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
 import find from 'lodash/find';
-import cloneDeep from 'lodash/cloneDeep';
+import { cloneDeep, isEqual } from 'lodash';
 import { diff, apply } from 'rus-diff'; 
 
 import { EditHistory } from '/imports/api/genes/edithistory_collection.js';
 import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 import { updateGene } from '/imports/api/genes/updateGene.js';
+import { getUserName } from '/imports/api/users/getUserName.js';
 
 import AttributeValue from '/imports/ui/genetable/columns/AttributeValue.jsx';
 
@@ -59,46 +60,69 @@ const Controls = ({ showHistory, totalVersionNumber, isEditing, toggleHistory,
   </div>
 }
 
-const VersionHistory = ({ currentVersionNumber, totalVersionNumber, restoreVersion, 
-  selectVersion, ...props }) => {
+class VersionHistory extends React.Component {
+  constructor(props){
+    super(props)
+    this.state = {
+      userName: '...'
+    }
+  }
 
-  const hasNextVersion = currentVersionNumber < totalVersionNumber;
-  const nextText = hasNextVersion ? 'Next version' : 'No next version available';
+  componentDidMount = () => {
+    const userId = this.props.editBy
+    getUserName.call({ userId }, (err,res) => {
+      if (err) console.error(err);
+      this.setState({
+        userName: res
+      })
+    })
+  }
 
-  const hasPreviousVersion = currentVersionNumber != 0;
-  const previousText = hasPreviousVersion ? 'Previous version' : 'No previous version available';
-  return (
-    <div>
-      <div className="alert alert-primary" role="alert">
-        <span className="icon-exclamation" aria-hidden="true" /> 
-        You are watching version 
-        <span className='badge badge-light'> 
-          { currentVersionNumber + 1 } / { totalVersionNumber + 1 } 
-        </span> 
-        &nbsp;of this gene by user Foobar Baz { /*props.editBy*/ } at { props.editAt }&nbsp;
-        { 
-          Roles.userIsInRole(Meteor.userId(),'admin') &&
-          <button type='button' className="button btn-sm btn-primary px-2 py-0" 
-          onClick = {restoreVersion}>
-            Revert to this version
+  render(){
+    const { currentVersionNumber, totalVersionNumber, 
+      restoreVersion, selectVersion, editAt, ...props } = this.props;
+    const { userName } = this.state;
+    const hasNextVersion = currentVersionNumber < totalVersionNumber;
+    const nextText = hasNextVersion ? 'Next version' : 'No next version available';
+
+    const hasPreviousVersion = currentVersionNumber != 0;
+    const previousText = hasPreviousVersion ? 'Previous version' : 'No previous version available';
+    return (
+      <div>
+        <div className="alert alert-primary d-flex justify-content-between" role="alert">
+          <div>
+            <span className="icon-exclamation" aria-hidden="true" /> 
+            You are watching version <span className='badge badge-light'> 
+              { currentVersionNumber + 1 } / { totalVersionNumber + 1 } 
+            </span> of this gene. <br/>
+          </div>
+          <div> 
+            Edit by { userName } at { editAt }. <br/>
+          </div>
+          { 
+            Roles.userIsInRole(Meteor.userId(),'admin') &&
+            <button type='button' className="button btn-sm btn-primary px-2 py-0" 
+            onClick = {restoreVersion}>
+              Revert to this version
+            </button>
+          }
+        </div>
+        <div className="pager">
+          <button className="btn btn-sm btn-outline-dark px-2 py-0" name="previous" 
+            onClick={ selectVersion } disabled={!hasPreviousVersion}>
+            <span className={`${hasPreviousVersion ? 'icon-left' : 'icon-block'}`} 
+              aria-hidden="true" /> {previousText}
           </button>
-        }
+          <button className="btn btn-sm btn-outline-dark px-2 py-0 float-right" 
+            name="next" onClick={ selectVersion } disabled={!hasNextVersion}>
+            {nextText} 
+            <span className={`${hasNextVersion ? 'icon-right' : 'icon-block'}`} 
+              aria-hidden="true" />
+          </button>
+        </div>
       </div>
-      <div className="pager">
-        <button className="btn btn-sm btn-outline-dark px-2 py-0" name="previous" 
-          onClick={ selectVersion } disabled={!hasPreviousVersion}>
-          <span className={`${hasPreviousVersion ? 'icon-left' : 'icon-block'}`} 
-            aria-hidden="true" /> {previousText}
-        </button>
-        <button className="btn btn-sm btn-outline-dark px-2 py-0 float-right" 
-          name="next" onClick={ props.selectVersion } disabled={!hasNextVersion}>
-          {nextText} 
-          <span className={`${hasNextVersion ? 'icon-right' : 'icon-block'}`} 
-            aria-hidden="true" />
-        </button>
-      </div>
-    </div>
-  )
+    )
+  }
 }
 
 const AttributeInput = ({ name, value, onChange, deleteAttribute }) => {
@@ -154,7 +178,7 @@ class Info extends React.Component {
   }
 
   selectVersion = (version) => {
-    this.setState({reversions: version})
+    this.setState({ reversions: version })
   }
 
   startEdit = () => {
@@ -166,18 +190,20 @@ class Info extends React.Component {
   saveEdit = () => {
     console.log('save edit')
     console.log(this.state)
+
+    const { newAttributeKey, newAttributeValue, attributes, newAttributes } = this.state;
+    const { gene: oldGene } = this.props;
+
+    oldGene.attributes = attributes;
     
-    const oldGene = this.props.gene;
-    oldGene.attributes = this.state.attributes;
-    
-    const newGene = cloneDeep(this.props.gene);
-    if (this.state.newAttributes){
-      newGene.attributes = this.state.newAttributes
+    const newGene = cloneDeep(oldGene);
+    if (newAttributes){
+      newGene.attributes = newAttributes
     }
     newGene.changed = true;
-    if (this.state.newAttributeKey || this.state.newAttributeValue){
-      if (!(this.state.newAttributeKey && this.state.newAttributeValue)){
-        if (!this.state.newAttributeKey){
+    if (newAttributeKey || newAttributeValue){
+      if (!(newAttributeKey && newAttributeValue)){
+        if (!newAttributeKey){
           alert('New attribute key required')
         } else {
           alert('New attribute value required!')
@@ -187,18 +213,18 @@ class Info extends React.Component {
         if (!newGene.attributes){
           newGene.attributes = {}
         }
-        newGene.attributes[this.state.newAttributeKey] = this.state.newAttributeValue;
+        newGene.attributes[newAttributeKey] = newAttributeValue;
       }
     }
 
     const update = diff(oldGene, newGene)
-    const geneId = this.props.gene.ID;
+    const geneId = oldGene.ID;
 
     console.log(update)
 
     updateGene.call({ geneId, update }, (err, res) => {
       if ( err ) {
-        console.log(err)
+        console.error(err)
         alert(err)
       }
     })
@@ -207,7 +233,7 @@ class Info extends React.Component {
     this.setState({ 
       isEditing: false,
       newAttributes: undefined,
-      attributes: this.state.newAttributes,
+      attributes: newAttributes,
       addingNewAttribute: false
     })
   }
@@ -227,22 +253,19 @@ class Info extends React.Component {
   }
 
   deleteAttribute = (key) => {
-    let attributes = this.state.newAttributes ? cloneDeep(this.state.newAttributes) : cloneDeep(this.state.attributes);
-    delete attributes[key];
-    this.setState({
-      newAttributes: attributes
-    })
+    const { newAttributes: _newAttributes, attributes } = this.state;
+    let newAttributes = _newAttributes ? cloneDeep(_newAttributes) : cloneDeep(attributes);
+    delete newAttributes[key];
+    this.setState({ newAttributes });
   }
 
   changeAttributeValue = (event) => {
     event.preventDefault();
-    const value = event.target.value;
-    const key = event.target.name;
-    let attributes = this.state.newAttributes ? this.state.newAttributes : cloneDeep(this.state.attributes);
-    attributes[key] = value;
-    this.setState({
-      newAttributes: attributes
-    })
+    const { target: { name, value }} = event;
+    const { newAttributes: _newAttributes, attributes } = this.state;
+    const newAttributes = _newAttributes ? cloneDeep(_newAttributes) : cloneDeep(attributes);
+    newAttributes[name] = value;
+    this.setState({ newAttributes });
   }
 
   startAddingAttribute = () => {
@@ -253,40 +276,43 @@ class Info extends React.Component {
 
   addNewAttributeKey = (event) => {
     const newAttributeKey = event.target.value;
-    this.setState({
-      newAttributeKey: newAttributeKey
-    })
+    this.setState({ newAttributeKey });
   }
 
   addNewAttributeValue = (event) => {
-    const addNewAttributeValue = event.target.value;
-    this.setState({
-      newAttributeValue: addNewAttributeValue
-    })
+    const newAttributeValue = event.target.value;
+    this.setState({ newAttributeValue });
   }
 
   toggleHistory = () => {
+    const { attributes } = this.props.gene;
     this.setState({
       reversions: 0,
       showHistory: !this.state.showHistory,
       newAttributes: undefined,
-      attributes: this.props.gene.attributes
+      attributes
     })
   }
 
   selectVersion = (event) => {
-    const increment = event.target.name === 'previous' ? 1 : -1
+    console.log(event.target.name)
+    const increment = event.target.name === 'previous' ? 1 : -1;
+    const { editHistory } = this.props;
+    const currentGene = cloneDeep(this.props.gene);
     const reversions = this.state.reversions + increment;
     if (0 <= reversions && reversions <= this.props.editHistory.length){
-      const gene = this.props.editHistory.slice(0, reversions).reduce( (gene,reversion) => {
-        apply(gene,JSON.parse(reversion.revert))
-        return gene
-      },cloneDeep(this.props.gene))
+      const previousGene = editHistory
+        .slice(0, reversions)
+        .reduce( (gene,reversion) => {
+          console.log({ reversion })
+          apply(gene, JSON.parse(reversion.revert))
+          return gene
+        }, currentGene )
 
-      const attributes = gene.attributes;
+      const { attributes } = previousGene;
       this.setState({
-        reversions: reversions,
-        attributes: attributes
+        reversions,
+        attributes
       })
     }
   }
@@ -296,16 +322,6 @@ class Info extends React.Component {
     const attributes = this.state.newAttributes ? this.state.newAttributes : this.state.attributes;
 
     const currentVersion = this.props.editHistory[0]
-
-    const interproDomains = gene.subfeatures.filter(sub => {
-      return sub.type === 'mRNA' && typeof sub.protein_domains !== 'undefined'
-    }).map(sub => {
-      return sub.protein_domains.filter(domain => {
-        return typeof domain.dbxref !== 'undefined'
-      }).map(domain => {
-        return domain.dbxref.filter(dbxref => /^InterPro.*/.test(dbxref))
-      })
-    })
 
     return (
       <div id="info">
