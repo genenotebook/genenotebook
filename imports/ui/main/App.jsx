@@ -15,8 +15,10 @@ import Register from './Register.jsx';
 import Header from './Header.jsx';
 
 const App = () => {
+  const urlParts = Meteor.absoluteUrl().split('/');
+  const basename = urlParts.slice(3).join('/');
   return (
-    <Router>
+    <Router basename={basename}>
       <React.Fragment>
         <Header />
         <Switch>
