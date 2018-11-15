@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { WebApp } from 'meteor/webapp';
 
 import { ServerRouter, AuthenticationRequiredError } from 'meteor/mhagmajer:server-router';
 
