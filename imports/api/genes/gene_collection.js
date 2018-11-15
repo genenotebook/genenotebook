@@ -1,7 +1,7 @@
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
-const VALID_SUBFEATURE_TYPES = ['mRNA','CDS','exon',
+const VALID_SUBFEATURE_TYPES = ['transcript','mRNA','CDS','exon',
   'five_prime_UTR','three_prime_UTR'];
 const VALID_INTERVAL_TYPES = [].concat(VALID_SUBFEATURE_TYPES, ['gene']);
 
