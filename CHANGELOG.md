@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Fixed
 - Genetable correctly infers query from URL
+- Several GFF3 parsing issues
 
 ### Added
 - Spinner indicating that gene table query is loading
