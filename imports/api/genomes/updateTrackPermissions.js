@@ -34,7 +34,7 @@ export const updateTrackPermissions = new ValidatedMethod({
       permissions.push('admin')
     }
 
-    Tracks.update({
+    return Tracks.update({
       trackName
     },{
       $set: {

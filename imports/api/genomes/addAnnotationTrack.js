@@ -165,7 +165,6 @@ const GeneModel = class GeneModel {
  * @param  {String} options.trackId            [description]
  * @return {Promise}                            [description]
  */
-//const gffFileToMongoDb = ({ fileName, genomeId, genomeSequences }) => {
 const gffFileToMongoDb = ({ fileName, genomeId, strict }) => {
 	return new Promise((resolve, reject) => {
 		const fileHandle = fs.readFileSync(fileName, { encoding: 'binary' });
@@ -184,7 +183,6 @@ const gffFileToMongoDb = ({ fileName, genomeId, strict }) => {
 			comments: '#',
 			fastMode: true,
 			error(error,file) {
-				logger.debug(error)
 				reject(error)
 			},
 			step(line, parser){

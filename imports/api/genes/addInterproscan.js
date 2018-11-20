@@ -9,14 +9,15 @@ import { chunk } from 'lodash';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
 import { Interpro } from '/imports/api/genes/interpro_collection.js'; 
+import logger from '/imports/api/util/logger.js';
 
 import { parseAttributeString, debugParseAttributeString } from '/imports/api/util/util.js';
 
 const logAttributeError = ({ lineNumber, line, attributeString, error }) => {
-  console.log(`Error line ${lineNumber}`)
-  console.log(line.join('\t'))
-  console.log(attributeString)
-  console.log(debugParseAttributeString(attributeString))
+  logger.warn(`Error line ${lineNumber}`)
+  logger.warn(line.join('\t'))
+  logger.warn(attributeString)
+  logger.warn(debugParseAttributeString(attributeString))
   throw new Meteor.Error(error)
 }
 
@@ -81,8 +82,8 @@ class InterproscanProcessor {
         this.bulkOp.find({ 'subfeatures.ID': seqId }).update(dbUpdate);
 
       } else {
-        console.log('Undefined attributes:')
-        console.log(line.join('\t'))
+        logger.warn('Undefined attributes:')
+        logger.warn(line.join('\t'))
       }
     }
   }
@@ -93,10 +94,10 @@ class InterproscanProcessor {
 }
 /*
 const scanInterproApi = interproIds => {
-  console.log(interproIds)
+  logger.log(interproIds)
   const date = new Date();
   const requests = chunk([...interproIds],10).map(ids => {
-    console.log(ids);
+    logger.log(ids);
     return request(`http://www.ebi.ac.uk/Tools/dbfetch/dbfetch/interpro/${ids.join(',')}/tab`)
   })
   Promise.all(requests).then(results => {
@@ -120,14 +121,14 @@ const scanInterproApi = interproIds => {
       })
     })
   }).catch(error => {
-    console.log(error)
+    logger.log(error)
     throw new Meteor.Error(error)
   })
 }
 */
 const parseInterproscanGff = fileName => {
   return new Promise((resolve, reject) => {
-    console.log('addInterproscan', fileName)
+    logger.log('addInterproscan', fileName)
 
     let lineNumber = 0;
 
@@ -147,12 +148,12 @@ const parseInterproscanGff = fileName => {
       step({ data }, parser){
         lineNumber += 1;
         if (lineNumber % 100 === 0){
-          console.log(`Processed ${lineNumber} lines`)
+          logger.debug(`Processed ${lineNumber} lines`)
         }
         const line = data[0];
         if (line[0][0] === '#'){
           if (/fasta/i.test(line[0])){
-            console.log('Encountered fasta section, stopped parsing')
+            logger.log('Encountered fasta section, stopped parsing')
             parser.abort()
           }
         } else {
@@ -160,9 +161,9 @@ const parseInterproscanGff = fileName => {
         }
       },
       complete(results,file) {
-        console.log('Executing bulk operation');
+        logger.log('Executing bulk operation');
         bukOpResults = lineProcessor.finalize();
-        console.log('Finished');
+        logger.log('Finished');
         resolve(bukOpResults);
       }
     })
@@ -186,7 +187,7 @@ export const addInterproscan = new ValidatedMethod({
     }
     return parseInterproscanGff(fileName)
       .catch(error => {
-        console.log(error)
+        logger.warn(error)
         throw new Meteor.Error(error)
       })
   }
