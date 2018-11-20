@@ -7,40 +7,16 @@ import Papa from 'papaparse';
 import fs from 'fs';
 import { findIndex, isEqual, isEmpty, mapValues, 
 	partition, omit } from 'lodash';
-//import querystring from 'querystring';
 
 import { Genes, GeneSchema, SubfeatureSchema, 
 	VALID_SUBFEATURE_TYPES, VALID_INTERVAL_TYPES } from '/imports/api/genes/gene_collection.js';
 import { orthogroupCollection } from '/imports/api/genes/orthogroup_collection.js';
 import { genomeSequenceCollection, genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 import { Tracks } from '/imports/api/genomes/track_collection.js';
-
+import logger from '/imports/api/util/logger.js';
 import { scanGeneAttributes } from '/imports/api/genes/scanGeneAttributes.js';
 import { parseAttributeString } from '/imports/api/util/util.js';
 
-class Logger {
-	constructor({ logging = true, warning = true }){
-		this.logging = logging;
-		this.warning = warning;
-	}
-
-	log = message => {
-		if (this.logging) console.log('## LOG: ' + message);
-	}
-
-	warn = message => {
-		if (this.warning) console.warn('## WARNING: ' + message);
-	}
-}
-
-const logger = new Logger({});
-
-/**
- * Override the default querystring unescape function to be able to parse commas correctly in gff attributes
- * @param  {String}
- * @return {String}
- */
-//querystring.unescape = uri => uri;
 
 /**
  * Interval Class containing a single genomic interval. Every line in a gff3 file is an interval
@@ -208,7 +184,7 @@ const gffFileToMongoDb = ({ fileName, genomeId, strict }) => {
 			comments: '#',
 			fastMode: true,
 			error(error,file) {
-				logger.log(error)
+				logger.debug(error)
 				reject(error)
 			},
 			step(line, parser){
