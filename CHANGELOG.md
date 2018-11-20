@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
+
+## [0.1.8] 2018-11-15
+### Fixed
+- Several GFF3 parsing issues
+
 ## [0.1.7] 2018-11-12
 ### Fixed
 - Genetable correctly infers query from URL
@@ -83,7 +88,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - First GeneNoteBook version ready for use
 
-[Unreleased]: https://github.com/genenotebook/genenotebook/compare/v0.1.7...HEAD
+[Unreleased]: https://github.com/genenotebook/genenotebook/compare/v0.1.8...HEAD
+[0.1.8]: https://github.com/genenotebook/genenotebook/compare/v0.1.7...v0.1.8
 [0.1.7]: https://github.com/genenotebook/genenotebook/compare/v0.1.6...v0.1.7
 [0.1.6]: https://github.com/genenotebook/genenotebook/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/genenotebook/genenotebook/compare/v0.1.4...v0.1.5
