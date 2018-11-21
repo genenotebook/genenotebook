@@ -5,6 +5,7 @@ import React from 'react';
 import { compose } from 'recompose';
 
 import { removeAnnotationTrack } from '/imports/api/genomes/removeAnnotationTrack.js';
+import logger from '/imports/api/util/logger.js';
 
 import { withEither } from '/imports/ui/util/uiUtil.jsx';
 
@@ -32,7 +33,7 @@ class AnnotationInfo extends React.PureComponent {
     const genomeId = event.target.id;
     removeAnnotationTrack.call({ genomeId }, (err, res) => {
       if (err) {
-        console.log(err)
+        logger.warn(err)
         alert(err)
       }
     })

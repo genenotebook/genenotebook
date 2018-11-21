@@ -6,6 +6,8 @@ import { compose } from 'recompose';
 
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 
+import logger from '/imports/api/util/logger.js';
+
 import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
 import { serverRouterClient } from '/imports/startup/client/download-routes.js';
@@ -36,19 +38,19 @@ const JobNotFound = () => {
 const isWaiting = ({ job }) => {
   const waitingStates = ['waiting','ready']
   const isWaiting = waitingStates.indexOf(job.status) > 0;
-  console.log(`check isWaiting ${isWaiting}`);
+  logger.debug(`check isWaiting ${isWaiting}`);
   return isWaiting;
 }
 
 const isRunning = ({ job }) => {
   const isRunning = job.status === 'running';
-  console.log(`check isRunning: ${isRunning}`);
+  logger.debug(`check isRunning: ${isRunning}`);
   return isRunning;
 }
 
 const isFinished = ({ job }) => {
   const isFinished = job.status === 'completed';
-  console.log(`check isFinished: ${isFinished}`);
+  logger.debug(`check isFinished: ${isFinished}`);
   return isFinished;
 }
 
@@ -87,6 +89,5 @@ const Download = ({ job }) => {
     <div>Job is ready, should begin download</div>
   )
 }
-
 
 export default withConditionalRendering(Download)

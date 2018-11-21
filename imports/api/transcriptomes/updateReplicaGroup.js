@@ -7,10 +7,10 @@ import SimpleSchema from 'simpl-schema';
 import { ExperimentInfo } from '/imports/api/transcriptomes/transcriptome_collection.js';
 
 /**
- * updateReplicaGroup validated method: Update transcriptome information and groups
- * @param  {String} options.trackName Name of the annotation track
- * @param  {String} options.dbType    Either nucl or prot
- * @return {String}                   jobId of the makeblastdb job
+ * [ValidatedMethod description]
+ * @param {[type]} {                       name:         'updateReplicaGroup',             validate: new  SimpleSchema({                     sampleIds:   Array,    'sampleIds.$': String,                                           replicaGroup: String,      isPublic: Boolean,                                               permissions:  Array,    'permissions.$':String  }).validator() [description]
+ * @param {[type]} applyOptions: {                                                         noRetry:  true                 } [description]
+ * @param {[type]} run({        sampleIds, replicaGroup, isPublic,             permissions }){                             if            (! this.userId) {                               throw new Meteor.Error('not-authorized');                        }                     if (! Roles.userIsInRole(this.userId,'admin') [description]
  */
 export const updateReplicaGroup = new ValidatedMethod({
   name: 'updateReplicaGroup',
@@ -21,8 +21,6 @@ export const updateReplicaGroup = new ValidatedMethod({
     isPublic: Boolean,
     permissions: Array,
     'permissions.$':String
-    //oldName: String,
-    //newName: String
   }).validator(),
   applyOptions: {
     noRetry: true

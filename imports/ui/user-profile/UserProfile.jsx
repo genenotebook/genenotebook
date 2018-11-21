@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
-//import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Roles } from 'meteor/alanning:roles';
 
 import { updateUserInfo } from '/imports/api/users/users.js';
@@ -9,9 +8,10 @@ import React from 'react';
 import { compose } from 'recompose';
 import { Creatable as Select } from 'react-select';
 import update from 'immutability-helper';
-//import pick from 'lodash/pick';
 import { isEqual, pick }from 'lodash';
 import { diff } from 'rus-diff';
+
+import logger from '/imports/api/util/logger.js';
 
 import PermissionSelect from '/imports/ui/util/PermissionSelect.jsx';
 import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
@@ -136,7 +136,7 @@ class UserProfile extends React.Component {
 
   deleteAccount = () => {
     alert('This currently does nothing. Please contact your administrator if you really want to remove your account')
-    console.log('deleteAccount')
+    logger.debug('deleteAccount')
   }
 
   saveChanges = () => {

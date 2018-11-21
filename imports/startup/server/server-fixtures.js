@@ -6,11 +6,12 @@ import fs from 'fs';
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
+import logger from '/imports/api/util/logger.js';
 
 Meteor.startup( () => {
   //Add default users
   if ( Meteor.users.find().count() === 0 ) {
-    console.log('Adding default admin user');
+    logger.log('Adding default admin user');
     const adminId = Accounts.createUser({
       username: 'admin',
       email: 'admin@admin.com',
@@ -22,7 +23,7 @@ Meteor.startup( () => {
     });
     Roles.addUsersToRoles(adminId,['admin','curator','user','registered']);
 
-    console.log('Adding default guest user')
+    logger.log('Adding default guest user')
     const guestId = Accounts.createUser({
         username: 'guest',
         email: 'guest@guest.com',
@@ -65,7 +66,7 @@ Meteor.startup( () => {
   permanentAttributes.forEach( ({ name, query }) => {
     const existingAttribute = attributeCollection.findOne({ name });
     if (typeof existingAttribute === 'undefined'){
-      console.log(`Adding default filter option: ${name}`)
+      logger.log(`Adding default filter option: ${name}`)
       attributeCollection.update({
         name
       },
@@ -94,7 +95,7 @@ Meteor.startup( () => {
     const { blastDb } = annotationTrack;
     const hasNucDb = fs.existsSync(blastDb.nucl)
     const hasProtDb = fs.existsSync(blastDb.prot)
-    console.log({genome,blastDb,hasProtDb,hasNucDb});
+    logger.log({genome,blastDb,hasProtDb,hasNucDb});
     return !hasProtDb || !hasNucDb
   }).map(({ _id }) => {
     genomeCollection.update({

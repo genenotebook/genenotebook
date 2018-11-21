@@ -2,6 +2,8 @@ import React from 'react';
 
 import { Creatable as Select } from 'react-select';
 
+import logger from '/imports/api/util/logger.js';
+
 class EditSample extends React.Component {
   constructor(props){
     super(props)
@@ -11,20 +13,20 @@ class EditSample extends React.Component {
   handleChange = event => {
     const key = event.target.name;
     const value = event.target.value;
-    console.log(key,value)
+    logger.debug(key,value)
     this.setState({
       [key]: value
     })
   }
 
   saveChange = event => {
-    console.log('saveChange')
+    logger.debug('saveChange')
     if (isEqual(this.state, this.props.sample)){
       this.props.toggleEdit(event)
     } else {
       const props = omit(this.state, ['track'])
       updateSampleInfo.call(props,(err,res) =>{
-        if (err) console.log(err)
+        if (err) logger.warn(err)
         this.props.toggleEdit(event);
       })
     }

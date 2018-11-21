@@ -3,6 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Roles } from 'meteor/alanning:roles';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
+import logger from '/imports/api/util/logger.js';
 
 Accounts.onCreateUser( (options,user) => {
   user.roles = ['registered'];
@@ -16,8 +17,8 @@ Accounts.onCreateUser( (options,user) => {
 })
 
 Accounts.onLogout( ({ user, connection }) => {
-  console.log({ user })
-  console.log('logout',user._id)
+  logger.debug({ user })
+  logger.debug('logout',user._id)
   Meteor.users.update({
     _id: user._id,
     'presence.status': 'online'

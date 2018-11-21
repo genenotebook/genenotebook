@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { updateAttributeInfo } from '/imports/api/genes/updateAttributeInfo.js';
+import logger from '/imports/api/util/logger.js';
 
 class EditAttributeInfo extends React.PureComponent {
   constructor(props){
@@ -24,7 +25,7 @@ class EditAttributeInfo extends React.PureComponent {
     const { defaultShow, defaultSearch } = this.state;
     updateAttributeInfo.call({ attributeId, defaultShow, defaultSearch }, (err,res) => {
       if (err) {
-        console.log(err);
+        logger.warn(err);
         alert(err);
       }
     })
@@ -34,7 +35,7 @@ class EditAttributeInfo extends React.PureComponent {
   render(){
     const { name, query, toggleEdit } = this.props;
     const { defaultShow, defaultSearch } = this.state;
-    console.log( defaultShow, defaultSearch )
+    logger.debug( defaultShow, defaultSearch )
     const hasChanges = !(defaultShow === this.props.defaultShow && defaultSearch === this.props.defaultSearch)
     return <tr>
       <td>

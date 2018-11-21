@@ -7,6 +7,7 @@ import { compose } from 'recompose';
 import { makeBlastDb } from '/imports/api/blast/makeblastdb.js';
 import { removeBlastDb } from '/imports/api/blast/removeblastdb.js';
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
+import logger from '/imports/api/util/logger.js';
 
 import { JobProgressBar } from '/imports/ui/admin/jobqueue/AdminJobqueue.jsx';
 import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
@@ -15,10 +16,10 @@ import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 class HasBlastDb extends React.Component {
   removeBlastDb = event => {
     const genomeId = event.target.id;
-    console.log('Click remove blastdb ' + genomeId)
+    logger.log('Click remove blastdb ' + genomeId)
     removeBlastDb.call({ genomeId } , (err,res) => {
       if (err){
-        console.log(err)
+        logger.warn(err)
         alert(err)
       }
     })
@@ -48,7 +49,7 @@ class HasNoJob extends React.Component {
     const genomeId = event.target.id;
     makeBlastDb.call({ genomeId }, (err,res) => {
       if ( err ){
-        console.log(err)
+        logger.warn(err)
         alert(err)
       }
     })
@@ -73,7 +74,7 @@ const makeBlastDbJobTracker = ({ genomeId, isEditing }) => {
   const jobQueueSub = Meteor.subscribe('jobQueue');
   const loading = !jobQueueSub.ready();
   const job = jobQueue.findOne({ 'data.genomeId': genomeId, status: {$ne: 'completed'} });
-  console.log(job)
+  logger.log(job)
   const hasJob = typeof job !== 'undefined' && job.status !== 'completed';
   return {
     job,
