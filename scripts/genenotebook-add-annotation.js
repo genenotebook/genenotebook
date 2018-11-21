@@ -10,17 +10,19 @@ const WebSocket = require('ws');
 let fileName;
 
 program
-    .description('Add fasta formatted reference genome to a running GeneNoteBook server')
-    .usage('[options] <annotation gff3 file>')
-    .option('-u, --username <username>', 'GeneNoteBook admin username')
-    .option('-p, --password <password>', 'GeneNoteBook admin password')
-    .option('-n, --genome-name <name>','Reference genome name to which the annotation should be added')
-    .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
-    .action(file => {
-      if ( typeof file !== 'string' ) program.help();
-      fileName = path.resolve(file);
-    })
-    .parse(process.argv);
+  .description('Add fasta formatted reference genome to a running GeneNoteBook server')
+  .usage('[options] <annotation gff3 file>')
+  .option('-u, --username <username>', 'GeneNoteBook admin username')
+  .option('-p, --password <password>', 'GeneNoteBook admin password')
+  .option('-n, --genome-name <name>','Reference genome name to which the annotation should be added')
+  .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
+  .action(file => {
+    if ( typeof file !== 'string' ) program.help();
+    fileName = path.resolve(file);
+  });
+
+program._name = 'genenotebook add annotation';
+program.parse(process.argv);
 
 const { username, password, port = 3000, genomeName } = program;
 
@@ -40,7 +42,7 @@ geneNoteBook.loginWithPassword({ username, password })
   return geneNoteBook.call('addAnnotationTrack', { fileName, genomeName })
 })
 .then(addGenomeResult => {
-  const { ok, writeErrors, writeConcernErrors, nInserted } = addGenomeResult;
+  const { result: { ok, writeErrors, writeConcernErrors, nInserted } } = addGenomeResult;
   console.log(`Succesfully added ${nInserted} genes`)
   geneNoteBook.disconnect()
 })

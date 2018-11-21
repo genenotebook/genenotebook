@@ -10,6 +10,7 @@ import { EditHistory } from '/imports/api/genes/edithistory_collection.js';
 import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 import { updateGene } from '/imports/api/genes/updateGene.js';
 import { getUserName } from '/imports/api/users/getUserName.js';
+import logger from '/imports/api/util/logger.js';
 
 import AttributeValue from '/imports/ui/genetable/columns/AttributeValue.jsx';
 
@@ -71,7 +72,7 @@ class VersionHistory extends React.Component {
   componentDidMount = () => {
     const userId = this.props.editBy
     getUserName.call({ userId }, (err,res) => {
-      if (err) console.error(err);
+      if (err) logger.warn(err);
       this.setState({
         userName: res
       })
@@ -182,14 +183,14 @@ class Info extends React.Component {
   }
 
   startEdit = () => {
-    console.log('start editing')
+    logger.debug('start editing')
     //implement logic to lock gene from being edited by others
     this.setState({ isEditing: true })
   }
 
   saveEdit = () => {
-    console.log('save edit')
-    console.log(this.state)
+    logger.debug('save edit')
+    logger.debug(this.state)
 
     const { newAttributeKey, newAttributeValue, attributes, newAttributes } = this.state;
     const { gene: oldGene } = this.props;
@@ -220,11 +221,11 @@ class Info extends React.Component {
     const update = diff(oldGene, newGene)
     const geneId = oldGene.ID;
 
-    console.log(update)
+    logger.debug(update)
 
     updateGene.call({ geneId, update }, (err, res) => {
       if ( err ) {
-        console.error(err)
+        logger.warn(err)
         alert(err)
       }
     })
@@ -239,7 +240,7 @@ class Info extends React.Component {
   }
 
   cancelEdit = () => {
-    console.log('cancel edit')
+    logger.debug('cancel edit')
     //unlock gene so it can be edited by others again
     this.setState({ 
       isEditing: false,
@@ -249,7 +250,7 @@ class Info extends React.Component {
   }
 
   restoreVersion = () => {
-    console.log('restoreVersion')
+    logger.debug('restoreVersion')
   }
 
   deleteAttribute = (key) => {
@@ -295,7 +296,7 @@ class Info extends React.Component {
   }
 
   selectVersion = (event) => {
-    console.log(event.target.name)
+    logger.debug(event.target.name)
     const increment = event.target.name === 'previous' ? 1 : -1;
     const { editHistory } = this.props;
     const currentGene = cloneDeep(this.props.gene);
@@ -304,7 +305,7 @@ class Info extends React.Component {
       const previousGene = editHistory
         .slice(0, reversions)
         .reduce( (gene,reversion) => {
-          console.log({ reversion })
+          logger.debug({ reversion })
           apply(gene, JSON.parse(reversion.revert))
           return gene
         }, currentGene )

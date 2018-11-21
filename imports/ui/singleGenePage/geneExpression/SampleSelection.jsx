@@ -7,6 +7,7 @@ import { groupBy } from 'lodash';
 import update from 'immutability-helper';
 
 import { ExperimentInfo } from '/imports/api/transcriptomes/transcriptome_collection.js';
+import logger from '/imports/api/util/logger.js';
 
 import { Dropdown, DropdownMenu, DropdownButton } from '/imports/ui/util/Dropdown.jsx';
 
@@ -67,7 +68,7 @@ class SampleSelection extends React.Component {
   }
 
   updateSelection = newSelection => {
-    console.log(newSelection)
+    logger.debug(newSelection)
     const newState = update(this.state, {
       selection: {
         $set: newSelection

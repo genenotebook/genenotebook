@@ -5,6 +5,7 @@ import { Roles } from 'meteor/alanning:roles';
 import SimpleSchema from 'simpl-schema';
 
 import { ExperimentInfo } from '/imports/api/transcriptomes/transcriptome_collection.js';
+import logger from '/imports/api/util/logger.js';
 
 /**
  * updateSampleInfo validated method: Update transcriptome information and groups
@@ -37,7 +38,7 @@ export const updateSampleInfo = new ValidatedMethod({
       permissions.push('admin')
     }
 
-    console.log({
+    logger.debug({
       _id,sampleName,replicaGroup,description,permissions
     })
 

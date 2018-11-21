@@ -8,8 +8,6 @@ import App from '/imports/ui/main/App.jsx';
 
 import '/imports/ui/global_stylesheets/global.scss';
 
-//global.Buffer = global.Buffer || require("buffer").Buffer;
-
 WebFont.load({
   google: {
     families: ['Roboto:300']

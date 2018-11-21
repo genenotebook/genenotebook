@@ -1,3 +1,5 @@
+import logger from './logger.js';
+
 /**
  * Parse gff3 attribute column into key:value object.
  * @param  {String} attributeString Raw gff3 attribute column string
@@ -14,22 +16,22 @@ export const parseAttributeString = attributeString => {
 }
 
 /**
- * Debug parsing gff3 attribute column by logging intermediate steps to console
+ * Debug parsing gff3 attribute column by logging intermediate steps to logger
  * @param  {String} attributeString Raw gff3 attribute column string
  * @return {Object}                 Key:value pairs of attributes.
  */
 export const debugParseAttributeString = attributeString => {
   arr = attributeString.split(';');
-  console.log(arr)
+  logger.debug(arr)
   const attributes = arr.reduce((attr, stringPart) => {
     const [key, value] = stringPart.split('=')
-    console.log(key,value)
+    logger.debug(key,value)
     const values = value.split('"').join('').split(',').map(decodeURIComponent)
-    console.log(values)
+    logger.debug(values)
     attr[key] = values
     return attr
   }, {})
-  console.log(attributes)
+  logger.debug(attributes)
   return attributes
 }
 

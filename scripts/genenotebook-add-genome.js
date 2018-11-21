@@ -16,11 +16,20 @@ program
   .option('-p, --password <password>', 'GeneNoteBook admin password')
   .option('-n, --name [name]','Reference genome name. Default: fasta file name')
   .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
-  .action(file => {
-      if ( typeof file !== 'string' ) program.help();
+  .action(function(file){
+    if ( typeof file !== 'string' ) program.help();
     fileName = path.resolve(file);
   })
-  .parse(process.argv);
+  .on('--help', function(){
+    console.log('');
+    console.log('  Example:');
+    console.log('');
+    console.log('    genenotebook add genome -u admin -p admin -n test testdata.fasta');
+    console.log('');
+  });
+
+program._name = 'genenotebook add genome';
+program.parse(process.argv);
 
 const { username, password, name, port = 3000 } = program;
 
@@ -42,7 +51,7 @@ geneNoteBook.loginWithPassword({ username, password })
     return geneNoteBook.call('addGenome', { fileName, genomeName })
   })
   .then(addGenomeResult => {
-    const { ok, writeErrors, writeConcernErrors, nInserted } = addGenomeResult;
+    const { result: { ok, writeErrors, writeConcernErrors, nInserted } } = addGenomeResult;
     console.log(`Succesfully added ${genomeName} genome in ${nInserted} chunks`)
     geneNoteBook.disconnect()
   })

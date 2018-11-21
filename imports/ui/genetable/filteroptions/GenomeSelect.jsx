@@ -6,6 +6,7 @@ import React from 'react';
 import { cloneDeep } from 'lodash';
 
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
+import logger from '/imports/api/util/logger.js';
 
 import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
@@ -49,7 +50,7 @@ class GenomeSelect extends React.Component {
   }
 
   open = () => {
-    console.log('open')
+    console.debug('open')
     this.setState({
       show: 'show'
     });

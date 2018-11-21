@@ -4,11 +4,13 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import SimpleSchema from 'simpl-schema';
 import Papa from 'papaparse';
 import glob from 'glob';
+import fs from 'fs';
 
 import { orthogroupCollection } from '/imports/api/genes/orthogroup_collection.js';
 import { Genes } from '/imports/api/genes/gene_collection.js';
 import { parseNewick } from '/imports/api/util/util.js';
-import fs from 'fs';
+import logger from '/imports/api/util/logger.js';
+
 
 const globPromise = (pattern, options) => {
   return new Promise((resolve, reject) => {
@@ -38,8 +40,6 @@ const addOrthogroupTree = ({ fileName, geneBulkOp, orthoBulkOp }) => {
   
   const treeNewick = fs.readFileSync(fileName, 'utf8');
   const { size, tree, geneIds } = parseNewick(treeNewick);
-
-  //console.log(orthogroupId, geneIds);
 
   orthogroupCollection.insert({
     ID: orthogroupId,
@@ -80,7 +80,7 @@ export const addOrthogroupTrees = new ValidatedMethod({
     if (! Roles.userIsInRole(this.userId, 'admin')){
       throw new Meteor.Error('not-authorized');
     }
-    console.log('addOrthogroupTrees', folderName)
+    logger.log('addOrthogroupTrees', folderName)
     const geneBulkOp = Genes.rawCollection().initializeUnorderedBulkOp();
     const orthoBulkOp = orthogroupCollection.rawCollection().initializeUnorderedBulkOp();
     return globPromise(`${folderName}/*`)
@@ -90,10 +90,10 @@ export const addOrthogroupTrees = new ValidatedMethod({
         })
       })
       .catch(error  => {
-        console.log(Object.keys(error))
+        logger.warn(Object.keys(error))
         if (error.writeErrors){
           error.writeErrors.forEach(err => {
-            console.log(err.errmsg)
+            logger.warn(err.errmsg)
           })
         }
         throw new Meteor.Error(error)

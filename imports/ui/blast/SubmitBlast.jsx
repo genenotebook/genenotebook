@@ -9,6 +9,7 @@ import { cloneDeep } from 'lodash';
 
 import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
 import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
+import logger from '/imports/api/util/logger.js';
 
 import { submitBlastJob } from '/imports/api/blast/submitblastjob.js';
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
@@ -22,7 +23,7 @@ import './submitblast.scss';
  * @return {String}     Either 'Nucleotide' or 'Protein'
  */
 function determineSeqType(seq){
-  const dna = 'cgatCGAT'
+  const dna = 'cgatnCGATN'
   let fractionDna = 0
   let i = dna.length
   while (i--){
@@ -153,13 +154,15 @@ const withConditionalRendering = compose(
 
 class SubmitBlast extends React.Component {
   constructor(props){
-    super(props)
+    super(props);
+    console.log(props)
+    const redirectTo = Meteor.userId() ? undefined : 'login';
     this.state = {
       input: undefined,
       seqType: 'Nucleotide',
       dbType: 'Protein',
       selectedGenomes: new Set(),
-      redirectTo: undefined
+      redirectTo
     }
   }
 
@@ -202,7 +205,7 @@ class SubmitBlast extends React.Component {
   selectDbType = event => {
     event.preventDefault();
     const dbType = event.target.id;
-    console.log('selectDbType',dbType)
+    logger.debug('selectDbType',dbType)
     this.setState({
       dbType: dbType
     })
@@ -230,9 +233,9 @@ class SubmitBlast extends React.Component {
       input: input,
       genomeIds: [...selectedGenomes]
     }, (err,res) => {
-      if (err) console.error(err);
+      if (err) logger.warn(err);
       this.setState({
-        redirectTo: res
+        redirectTo: `blast/${res}`
       })
     })
   }
@@ -240,7 +243,7 @@ class SubmitBlast extends React.Component {
   render(){
     const { redirectTo } = this.state;
     if ( typeof redirectTo !== 'undefined'){
-      return <Redirect to={`/blast/${redirectTo}`} />
+      return <Redirect to={{ pathname: redirectTo, from: 'blast' }}/>
     }
 
     return (

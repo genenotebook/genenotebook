@@ -5,7 +5,7 @@ import fs from 'fs';
 import zlib from 'zlib';
 
 import { getGeneSequences } from '/imports/api/util/util.js';
-
+import logger from '/imports/api/util/logger.js';
 import { Genes } from '/imports/api/genes/gene_collection.js';
 
 const DATATYPE_EXTENSIONS = {
@@ -51,7 +51,7 @@ const formatGene = ({ gene, format, options }) => {
 }
 
 const processDownload = (job, callback) => {
-  console.log(job.data)
+  logger.debug(job.data)
   const { queryHash, queryString, dataType, options } = job.data;
   const query = JSON.parse(queryString);
   const extension = DATATYPE_EXTENSIONS[dataType]
@@ -59,13 +59,15 @@ const processDownload = (job, callback) => {
 
   const fileName = `GeneNoteBook_download_${queryHash}.${extension}.gz`;
 
+  logger.log(fileName)
+
   const writeStream = fs.createWriteStream(fileName);
   const compress = zlib.createGzip();
   compress.pipe(writeStream);
 
   // the finish event is emitted when all data has been flushed from the stream
   compress.on('finish', async () => {  
-    console.log('wrote all data to file');
+    logger.log('wrote all data to file');
     job.done(fileName);
     callback();
   });

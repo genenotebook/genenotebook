@@ -4,6 +4,8 @@ import { cloneDeep, isEqual, isEmpty } from 'lodash';
 
 import ReactResizeDetector from 'react-resize-detector';
 
+import logger from '/imports/api/util/logger.js';
+
 import { SelectAll } from './SelectionOptions.jsx';
 import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
 
@@ -48,7 +50,7 @@ const labelFromQuery = ({ queryKey, queryValue }) => {
       label = 'Does not equal';
       break
     default:
-      console.error(`Unknown query: {${queryType}:${queryValue}}`)
+      logger.warn(`Unknown query: {${queryType}:${queryValue}}`)
       break
   }
   return new SelectionOption(label);//{ label: label, value: label }
@@ -80,7 +82,7 @@ const stateFromQuery = attributeQuery => {
       queryLabel = 'Does not contain';
       break
     default:
-      console.error(`Unknown query: {${queryKey}:${queryValue}}`)
+      logger.warn(`Unknown query: {${queryKey}:${queryValue}}`)
       break
   }
   const state = { 
@@ -126,7 +128,7 @@ const queryFromLabel = ({ queryLabel: { label, value }, queryValue }) => {
       query = { $not: { $regex: queryValue} }
       break
     default:
-      console.error(`Unknown label/value: ${label}/${queryValue}`)
+      logger.warn(`Unknown label/value: ${label}/${queryValue}`)
       break
   }
   return query
@@ -168,7 +170,7 @@ class HeaderElement extends React.Component {
     const { attributeQuery } = state;
     const newAttributeQuery = getAttributeQuery({ query, attribute });
 
-    console.log({
+    logger.debug({
       attributeQuery,
       newAttributeQuery
     })
@@ -252,7 +254,7 @@ class HeaderElement extends React.Component {
     const { query, attribute, updateQuery, history } = this.props;
     const newQuery = cloneDeep(query);
 
-    console.log({ newQuery })
+    logger.log({ newQuery })
 
     delete newQuery[attribute.query];
     delete newQuery.$or;

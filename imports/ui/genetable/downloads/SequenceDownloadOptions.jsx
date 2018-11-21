@@ -3,6 +3,8 @@ import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
 
+import logger from '/imports/api/util/logger.js';
+
 const dataTracker = ({ ...props }) => {
   return {
     props
@@ -48,7 +50,7 @@ class SequenceDownloadOptions extends React.Component {
     const { initialized } = this.state;
     const { options } = this.props;
     const { selectedSeqType, primaryTranscriptOnly } = options;
-    console.log(selectedSeqType, primaryTranscriptOnly)
+    logger.debug(selectedSeqType, primaryTranscriptOnly)
     return (
       initialized ?
       <form>

@@ -6,7 +6,7 @@ import { Redirect, Link } from 'react-router-dom';
 
 import './login.scss';
 
-class Login extends React.Component {
+export default class Login extends React.Component {
   constructor(props){
     super(props)
     this.state = {
@@ -41,7 +41,8 @@ class Login extends React.Component {
 
   render(){
     const { redirect } = this.state;
-    const { redirectTo } = this.props;
+    const { location } = this.props;
+    const redirectTo = location.from ? location.from : '/';
     
     if (redirect) {
       return <Redirect to={redirectTo} />
@@ -80,8 +81,8 @@ class Login extends React.Component {
   }
 }
 
-export default withTracker(props => {
+/*export default withTracker(props => {
   return {
     redirectTo: '/'
   }
-})(Login);
+})(Login);*/

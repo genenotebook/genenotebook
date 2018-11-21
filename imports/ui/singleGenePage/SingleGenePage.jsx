@@ -8,7 +8,8 @@ import hash from 'object-hash';
 
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 import { Genes } from '/imports/api/genes/gene_collection.js';
-import { genomeCollection } from '/imports/api/genomes/genomeCollection.js'; 
+import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
+import logger from '/imports/api/util/logger.js'; 
 
 import { withEither } from '/imports/ui/util/uiUtil.jsx';
 
@@ -79,7 +80,7 @@ class SingleGenePage extends React.Component {
   }
 
   runInterproscan = event => {
-    console.log(`submitting ${this.props.gene.ID} to interpro`)
+    logger.debug(`submitting ${this.props.gene.ID} to interpro`)
     const jobOptions = { geneId: this.props.gene.ID }
 
     const job = new Job(jobQueue, 'interproscan', jobOptions)

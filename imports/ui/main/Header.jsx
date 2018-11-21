@@ -94,7 +94,7 @@ class NavBar extends React.Component {
       <div className='container'>
         <NavLink to='/' className='navbar-brand' activeClassName='active'>
           <small>
-            <img src={`${Meteor.absoluteUrl()}logo.svg`} alt="GeneNoteBook logo" className="navbar-logo rounded-circle" />
+            <img src="logo.svg" alt="GeneNoteBook logo" className="navbar-logo rounded-circle" />
           </small>
         </NavLink>
         <button className='navbar-toggler' type='button' onClick={this.toggleShow}>

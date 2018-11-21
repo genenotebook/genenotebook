@@ -32,7 +32,7 @@ export const updateGenome = new ValidatedMethod({
       throw new Meteor.Error('not-authorized');
     }
 
-    genomeCollection.update({
+    return genomeCollection.update({
       _id
     },{
       $set: {
