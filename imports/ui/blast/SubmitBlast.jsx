@@ -155,6 +155,7 @@ const withConditionalRendering = compose(
 class SubmitBlast extends React.Component {
   constructor(props){
     super(props);
+    console.log(props)
     const redirectTo = Meteor.userId() ? undefined : 'login';
     this.state = {
       input: undefined,
@@ -234,7 +235,7 @@ class SubmitBlast extends React.Component {
     }, (err,res) => {
       if (err) logger.warn(err);
       this.setState({
-        redirectTo: res
+        redirectTo: `blast/${res}`
       })
     })
   }
@@ -242,7 +243,7 @@ class SubmitBlast extends React.Component {
   render(){
     const { redirectTo } = this.state;
     if ( typeof redirectTo !== 'undefined'){
-      return <Redirect to={`/blast/${redirectTo}`} />
+      return <Redirect to={{ pathname: redirectTo, from: 'blast' }}/>
     }
 
     return (

@@ -9,7 +9,7 @@ WebApp.connectHandlers.use(
     req.dynamicHead = (req.dynamicHead || '');
     //req.dynamicHead += '<meta name="test">'
     ['fontello.css','animation.css'].forEach(file => {
-      req.dynamicHead += `<link rel='stylesheet' type='text/css' href='${Meteor.absoluteUrl()}/fontello/css/${file}'>`
+      req.dynamicHead += `<link rel='stylesheet' type='text/css' href='${Meteor.absoluteUrl()}fontello/css/${file}'>`
     })
     next();
   })
