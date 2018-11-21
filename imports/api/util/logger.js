@@ -7,15 +7,15 @@ class Logger {
   }
 
   log = message => {
-    if (this.logging) console.log('## LOG: ' + message);
+    if (this.logging) console.log('## LOG: ', message);
   }
 
   warn = message => {
-    if (this.warning) console.warn('## WARNING: ' + message);
+    if (this.warning) console.warn('## WARNING: ', message);
   }
 
   debug = message => {
-    if (this.debugging) console.debug('## DEBUG: ' + message);
+    if (this.debugging) console.debug('## DEBUG: ', message);
   }
 }
 
@@ -23,6 +23,6 @@ const logging = Meteor.isProduction ? false : true;
 
 const debugging = Meteor.isDevelopment ? true : false;
 
-const logger = new Logger({ logging, debugging });
+const logger = Meteor.isDevelopment ? console : new Logger({ logging, debugging });
 
 export default logger;
