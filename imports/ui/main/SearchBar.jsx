@@ -7,6 +7,7 @@ import { compose } from 'recompose';
 import { cloneDeep } from 'lodash';
 
 import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
+import logger from '/imports/api/util/logger.js';
 
 import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
 import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
@@ -101,7 +102,7 @@ class SearchBar extends React.Component {
     this.setState({
       searchString: ''
     }, (err,res) => {
-      if ( err ) console.error(err);
+      if ( err ) logger.warn(err);
       /*
         React Router is supposed to work with the Redirect 
         component, but I cannot figure out how to do that so 

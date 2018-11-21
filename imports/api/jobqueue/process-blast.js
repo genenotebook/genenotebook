@@ -5,6 +5,7 @@ import  spawn  from 'spawn-promise';
 import xml2js from 'xml2js-es6-promise';
 
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
+import logger from '/imports/api/util/logger.js';
 
 
 /**
@@ -47,11 +48,11 @@ jobQueue.processJobs(
 
     const options = ['-db',dbs,'-outfmt','5','-num_alignments','20']
 
-    console.log(`${blastType} ${options.join(' ')} ${input.substring(0,3)}...${input.substring(input.length - 3, input.length)}`)
+    logger.debug(`${blastType} ${options.join(' ')} ${input.substring(0,3)}...${input.substring(input.length - 3, input.length)}`)
 
     spawn(blastType, options, input)
       .then( result => {
-        console.log('blast finished')
+        logger.log('blast finished')
         return xml2js(result.toString())
       })
       .then( resultJson => {
@@ -59,7 +60,7 @@ jobQueue.processJobs(
         callback()
       })
       .catch( error => {
-        console.log(error)
+        logger.log(error)
         job.fail({ error })
         callback()
       })

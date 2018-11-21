@@ -8,7 +8,7 @@ import AdminGenomes from './genomes/AdminGenomes.jsx';
 import AdminAttributes from './attributes/AdminAttributes.jsx';
 import AdminTranscriptomes from './transcriptomes/AdminTranscriptomes.jsx';
 import AdminJobqueue from './jobqueue/AdminJobqueue.jsx';
-import AdminUserGroups from './user-groups/AdminUserGroups.jsx';
+//import AdminUserGroups from './user-groups/AdminUserGroups.jsx';
 
 const ADMIN_PAGES = {
   'users': <AdminUsers />,

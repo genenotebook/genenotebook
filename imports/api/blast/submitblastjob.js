@@ -6,6 +6,7 @@ import SimpleSchema from 'simpl-schema';
 
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 import { Job } from 'meteor/vsivsi:job-collection';
+import logger from '/imports/api/util/logger.js';
 
 /**
  * submitBlastJob validated method: submits makeblastdb job to jobqueue, call this from the client
@@ -33,22 +34,15 @@ export const submitBlastJob = new ValidatedMethod({
       throw new Meteor.Error('not-authorized');
     }
 
-    console.log('submit blast job')
+    logger.debug('submit blast job')
 
     const jobOptions = { blastType, input, genomeIds, user };
 
     const job = new Job(jobQueue, 'blast', jobOptions);
 
     const jobId = job.priority('normal').save();
-    
-    /*const jobId = new Job(jobQueue, 'blast', {
-      blastType: blastType,
-      input: input,
-      genomeIds: trackNames,
-      user: Meteor.userId()
-    }).priority('normal').save()*/
 
-    console.log(jobId)
+    logger.debug(jobId)
 
     return jobId
   

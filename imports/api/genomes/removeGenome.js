@@ -6,7 +6,8 @@ import SimpleSchema from 'simpl-schema';
 
 import { genomeCollection, genomeSequenceCollection } from './genomeCollection.js';
 import { Genes } from '/imports/api/genes/gene_collection.js';
-//import { Tracks } from './track_collection.js';
+import logger from '/imports/api/util/logger.js';
+
 import { removeAnnotationTrack } from './removeAnnotationTrack.js';
 
 export const removeGenome = new ValidatedMethod({
@@ -25,27 +26,13 @@ export const removeGenome = new ValidatedMethod({
       throw new Meteor.Error('not-authorized');
     }
 
-    console.log(`Removing genome ${genomeId}`);
+    logger.log(`Removing genome ${genomeId}`);
 
     const genome = genomeCollection.findOne({ _id: genomeId });
     if (!genome) {
       throw new Meteor.Error(`Genome ${genomeId} not found`);
     }
 
-    /*
-    const tracks = Tracks.find({ reference: genomeId }).fetch();
-
-    tracks.forEach(track => {
-      removeAnnotationTrack.call({ trackId: track._id }, (err, res) => {
-        if ( err ) {
-          throw new Meteor.Error(err)
-        } 
-      })
-    })
-    
-    const nRemoved = References.remove({ referenceId: genomeId });
-    ReferenceInfo.remove({ _id: genomeId });
-    */
     genomeCollection.remove({ _id: genomeId });
     genomeSequenceCollection.remove({ genomeId });
     Genes.remove({ genomeId });

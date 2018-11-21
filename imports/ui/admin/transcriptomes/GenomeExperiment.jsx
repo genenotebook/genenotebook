@@ -3,6 +3,7 @@ import { groupBy, pick, isEqual } from 'lodash';
 
 import { updateReplicaGroup } from '/imports/api/transcriptomes/updateReplicaGroup.js';
 import { updateSampleInfo } from '/imports/api/transcriptomes/updateSampleInfo.js';
+import logger from '/imports/api/util/logger.js';
 
 import PermissionSelect from '/imports/ui/util/PermissionSelect.jsx';
 
@@ -148,7 +149,7 @@ class ReplicaGroup extends React.Component {
 
     const sampleIds = groupExperiments.map(exp => exp._id);
 
-    console.log(groupExperiments, sampleIds)
+    logger.debug(groupExperiments, sampleIds)
 
     const initialState = {
       replicaGroup,
@@ -158,7 +159,7 @@ class ReplicaGroup extends React.Component {
 
     const currentState = pick(this.state, ['replicaGroup','isPublic','permissions']);
 
-    console.log({initialState, currentState, isEqual:isEqual(initialState, currentState)})
+    logger.debug({initialState, currentState, isEqual:isEqual(initialState, currentState)})
     
     if (!isEqual(initialState, currentState)){
       updateReplicaGroup.call({ sampleIds, ...currentState }, (err,res) => {

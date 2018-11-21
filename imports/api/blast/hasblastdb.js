@@ -5,6 +5,8 @@ import { Roles } from 'meteor/alanning:roles';
 import SimpleSchema from 'simpl-schema';
 import { existsSync } from 'fs';
 
+import logger from '/imports/api/util/logger.js';
+
 /**
  * hasBlastDb validated method: checks whether blast databases exist for a given annotation track
  * @param  {String} options.trackName Name of the annotation track
@@ -33,11 +35,11 @@ export const hasBlastDb = new ValidatedMethod({
       `${cleanedTrackName}.prot.phr`
     ]
 
-    console.log(filenames)
+    logger.log(filenames)
 
     if (!this.isSimulation){
-      console.log(filenames)
-      console.log(filenames.every(existsSync))
+      logger.log(filenames)
+      logger.log(filenames.every(existsSync))
       return filenames.every(existsSync)
     }
   }

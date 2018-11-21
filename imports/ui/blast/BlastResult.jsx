@@ -6,6 +6,8 @@ import React from 'react';
 import { compose } from 'recompose';
 
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
+import logger from '/imports/api/util/logger.js';
+
 import { withEither } from '/imports/ui/util/uiUtil.jsx';
 
 import BlastResultPlot from './BlastResultPlot.jsx';
@@ -51,7 +53,7 @@ const NoHits = () => {
 }
 
 const isLoading = ({ loading }) => {
-  console.log(`check isLoading: ${loading}`)
+  logger.debug(`check isLoading: ${loading}`)
   return loading;
 }
 
@@ -62,19 +64,19 @@ const isNotFound = ({ job }) => {
 const isWaiting = ({ job }) => {
   const waitingStates = ['waiting','ready']
   const isWaiting = waitingStates.indexOf(job.status) > 0;
-  console.log(`check isWaiting ${isWaiting}`);
+  logger.debug(`check isWaiting ${isWaiting}`);
   return isWaiting;
 }
 
 const isRunning = ({ job }) => {
   const isRunning = job.status === 'running';
-  console.log(`check isRunning: ${isRunning}`);
+  logger.debug(`check isRunning: ${isRunning}`);
   return isRunning;
 }
 
 const isFinished = ({ job }) => {
   const isFinished = job.status === 'completed';
-  console.log(`check isFinished: ${isFinished}`);
+  logger.debug(`check isFinished: ${isFinished}`);
   return isFinished;
 }
 

@@ -11,6 +11,7 @@ import ExpressionDownloadOptions from './ExpressionDownloadOptions.jsx';
 
 import { downloadGenes } from '/imports/api/genes/downloadGenes.js';
 import { queryCount } from '/imports/api/methods/queryCount.js';
+import logger from '/imports/api/util/logger.js';
 
 import './DownloadDialog.scss';
 
@@ -75,7 +76,7 @@ export default class DownloadDialogModal extends React.Component {
 
     //download genes method returns download link url
     downloadGenes.call({ query, dataType, options }, (err,res) => {
-      if (err) console.error(err);
+      if (err) logger.warn(err);
       this.setState({
         redirectTo: res
       })

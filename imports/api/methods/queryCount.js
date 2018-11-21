@@ -15,14 +15,6 @@ export const queryCount = new ValidatedMethod({
     noRetry: true
   },
   run({ query }){
-    /*if (! this.userId) {
-      throw new Meteor.Error('not-authorized');
-    }
-    if (! Roles.userIsInRole(this.userId,'user')){
-      throw new Meteor.Error('not-authorized');
-    }*/
-
     return Genes.find(query).count()
-
   }
 })

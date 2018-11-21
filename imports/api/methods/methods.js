@@ -6,6 +6,7 @@ import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 import { EditHistory } from '/imports/api/genes/edithistory_collection.js';
 
 import { reverseComplement, translate, getGeneSequences } from '/imports/api/util/util.js';
+import logger from '/imports/api/util/logger.js';
 
 import hash from 'object-hash';
 
@@ -22,8 +23,8 @@ Meteor.methods({
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}
-		console.log('formatFasta')
-		console.log(query)
+		logger.debug('formatFasta')
+		logger.debug(query)
 
 		const fasta = Genes.find(query).map( (gene, index) => {
       const transcriptFasta = getGeneSequences(gene).map(transcript => {
@@ -45,7 +46,7 @@ Meteor.methods({
 				throw new Meteor.Error('removeFromViewing server method error')
 			}
 			const gene = Genes.findOne({'ID': geneId})
-			console.log(gene)
+			logger.debug(gene)
 			//if ( viewing.length === 0 ){
 				//Genes.update({ 'ID': geneId },{ $unset: { 'viewing': 1 } } )
 			//} 
@@ -68,7 +69,7 @@ Meteor.methods({
 			if (err){
 				throw new Meteor.Error('Locking gene failed')
 			}
-			console.log(`${this.userId} is editing gene ${geneId}`)
+			logger.debug(`${this.userId} is editing gene ${geneId}`)
 		})
 	},
 	/**
@@ -97,9 +98,9 @@ Meteor.methods({
 			throw new Meteor.Error('not-authorized')
 		}
 
-		console.log('allow unlock ===',gene.editing === this.userId)
+		logger.debug('allow unlock ===',gene.editing === this.userId)
 		if (gene.editing === this.userId){
-			console.log(`${this.userId} is no longer editing gene ${geneId}`)
+			logger.debug(`${this.userId} is no longer editing gene ${geneId}`)
 			Genes.update({ ID: geneId}, { $set: { editing: 'Unlocking' } }, (err,res) => {
 				if (err){
 					throw new Meteor.Error('Unlocking failed')

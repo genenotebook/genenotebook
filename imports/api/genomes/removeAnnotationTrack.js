@@ -25,7 +25,6 @@ export const removeAnnotationTrack = new ValidatedMethod({
 
     Genes.remove({ genomeId });
 
-    genomeCollection.update({ _id: genomeId }, { $unset: { annotationTrack: true } })
-    //Tracks.remove({ _id: trackId });
+    return genomeCollection.update({ _id: genomeId }, { $unset: { annotationTrack: true } })
   }
 })

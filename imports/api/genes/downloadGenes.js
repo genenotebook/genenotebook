@@ -3,13 +3,12 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method';
 
 import SimpleSchema from 'simpl-schema';
 import hash from 'object-hash';
-//import Future from 'fibers/future';
 
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 import { Job } from 'meteor/vsivsi:job-collection';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
-//import { Downloads } from '/imports/api/downloads/download_collection.js';
+import logger from '/imports/api/util/logger.js';
 
 export const downloadGenes = new ValidatedMethod({
   name: 'downloadGenes',
@@ -35,9 +34,9 @@ export const downloadGenes = new ValidatedMethod({
      * Otherwise use the cached file and increment the download count.
      * Return md5 hash of download query as download url
      */
-    console.log(`downloading ${dataType}`)
-    console.log(query);
-    console.log(options);
+    logger.log(`downloading ${dataType}`)
+    logger.log(query);
+    logger.log(options);
     
     const queryString = JSON.stringify(query);
     const optionString = JSON.stringify(options);
@@ -50,7 +49,7 @@ export const downloadGenes = new ValidatedMethod({
     const existingJob = jobQueue.findOne({ 'data.queryHash': queryHash });
 
     if (typeof existingJob === 'undefined'){
-      console.log('initiating new download job')
+      logger.debug('initiating new download job')
       const job = new Job(jobQueue, 'download', {
         queryString,
         queryHash,
