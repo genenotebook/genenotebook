@@ -154,13 +154,14 @@ const withConditionalRendering = compose(
 
 class SubmitBlast extends React.Component {
   constructor(props){
-    super(props)
+    super(props);
+    const redirectTo = Meteor.userId() ? undefined : 'login';
     this.state = {
       input: undefined,
       seqType: 'Nucleotide',
       dbType: 'Protein',
       selectedGenomes: new Set(),
-      redirectTo: undefined
+      redirectTo
     }
   }
 
