@@ -10,19 +10,22 @@ const WebSocket = require('ws');
 let fileName;
 
 program
-    .description('Add Orthogroup phylogenetic trees to a running GeneNoteBook server')
-    .usage('[options] <kallisto .tsv file>')
-    .option('-u, --username <username>', 'GeneNoteBook admin username')
-    .option('-p, --password <password>', 'GeneNoteBook admin password')
-    .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
-    .option('-s, --sample-name <sample name>', 'Unique sample name')
-    .option('-r, --replica-group <replica group>', 'Identifier to group samples that belong to the same experiment')
-    .option('-d, --sample-description <description>','Description of the experiment')
-    .action(file => {
-      if ( typeof file !== 'string' ) program.help();
-      fileName = path.resolve(file);
-    })
-    .parse(process.argv);
+  .description('Add Kallisto quantified gene expression to a running GeneNoteBook server')
+  .usage('[options] <Kallisto abundance.tsv file>')
+  .option('-u, --username <username>', 'GeneNoteBook admin username')
+  .option('-p, --password <password>', 'GeneNoteBook admin password')
+  .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
+  .option('-s, --sample-name <sample name>', 'Unique sample name')
+  .option('-r, --replica-group <replica group>', 'Identifier to group samples that belong to the same experiment')
+  .option('-d, --sample-description <description>','Description of the experiment')
+  .action(file => {
+    if ( typeof file !== 'string' ) program.help();
+    fileName = path.resolve(file);
+  });
+
+program._name = 'genenotebook add transcriptome';
+
+program.parse(process.argv);
 
 const { username, password, port = 3000 } = program;
 const sampleName = program.sampleName || fileName;
@@ -45,9 +48,8 @@ geneNoteBook.loginWithPassword({ username, password })
   return geneNoteBook.call('addTranscriptome', { fileName, sampleName, replicaGroup, description })
 })
 .then(addTranscriptomeResult => {
-  //const { ok, writeErrors, writeConcernErrors, nInserted } = addOrthogroupResult;
-  //console.log(`Succesfully added ${nInserted} orthogroup phylogenetic trees from ${folderName}`)
-  console.log(addTranscriptomeResult);
+  const { result: { ok, writeErrors, writeConcernErrors, nInserted }} = addTranscriptomeResult;
+  console.log(`Succesfully added transcriptome data for ${nInserted} genes`)
   geneNoteBook.disconnect();
 })
 .catch(error => {

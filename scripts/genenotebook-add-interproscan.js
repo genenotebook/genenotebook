@@ -10,16 +10,18 @@ const WebSocket = require('ws');
 let fileName;
 
 program
-    .description('Add Interproscan results to a running GeneNoteBook server')
-    .usage('[options] <Interproscan gff3 output file>')
-    .option('-u, --username <username>', 'GeneNoteBook admin username')
-    .option('-p, --password <password>', 'GeneNoteBook admin password')
-    .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
-    .action(file => {
-      if ( typeof file !== 'string' ) program.help();
-      fileName = path.resolve(file);
-    })
-    .parse(process.argv);
+  .description('Add InterProScan results to a running GeneNoteBook server')
+  .usage('[options] <InterProScan gff3 output file>')
+  .option('-u, --username <username>', 'GeneNoteBook admin username')
+  .option('-p, --password <password>', 'GeneNoteBook admin password')
+  .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
+  .action(file => {
+    if ( typeof file !== 'string' ) program.help();
+    fileName = path.resolve(file);
+  });
+
+program._name = 'genenotebook add interproscan';
+program.parse(process.argv);
 
 const { username, password, port = 3000 } = program;
 
@@ -39,10 +41,8 @@ geneNoteBook.loginWithPassword({ username, password })
   return geneNoteBook.call('addInterproscan', { fileName })
 })
 .then(addInterproscanResult => {
-  console.log('Finished')
-  console.log(addInterproscanResult)
-  //const { ok, writeErrors, writeConcernErrors, nInserted } = addInterproscanResult;
-  //console.log(`Succesfully added ${genomeName} genome in ${nInserted} chunks`)
+  const { result: { ok, writeErrors, writeConcernErrors, nInserted }} =  addInterproscanResult;
+  console.log(`Succesfully added ${nInserted} protein domains`);
   geneNoteBook.disconnect()
 })
 .catch(error => {

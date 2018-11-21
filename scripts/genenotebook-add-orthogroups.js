@@ -10,21 +10,23 @@ const WebSocket = require('ws');
 let folderName;
 
 program
-    .description('Add Orthogroup phylogenetic trees to a running GeneNoteBook server')
-    .usage('[options] <Folder with Orthofinder tree files>')
-    .option('-u, --username <username>', 'GeneNoteBook admin username')
-    .option('-p, --password <password>', 'GeneNoteBook admin password')
-    .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
-    .action(file => {
-        if ( typeof file !== 'string' ) program.help();
-    	folderName = path.resolve(file);
-    })
-    .parse(process.argv);
+  .description('Add Orthogroup phylogenetic trees to a running GeneNoteBook server')
+  .usage('[options] <Folder with Orthofinder tree files>')
+  .option('-u, --username <username>', 'GeneNoteBook admin username')
+  .option('-p, --password <password>', 'GeneNoteBook admin password')
+  .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
+  .action(file => {
+      if ( typeof file !== 'string' ) program.help();
+    folderName = path.resolve(file);
+  });
+
+program._name = 'genenotebook add orthogroups';
+program.parse(process.argv);
 
 const { username, password, port = 3000 } = program;
 
 if (!( folderName && username && password  )){
-	program.help()
+  program.help()
 }
 
 const endpoint = `ws://localhost:${port}/websocket`
@@ -36,14 +38,14 @@ const geneNoteBook = new Connection({ endpoint, SocketConstructor })
 
 geneNoteBook.loginWithPassword({ username, password })
 .then(loginResult => {
-	return geneNoteBook.call('addOrthogroupTrees', { folderName })
+  return geneNoteBook.call('addOrthogroupTrees', { folderName })
 })
 .then(addOrthogroupResult => {
-	const { ok, writeErrors, writeConcernErrors, nInserted } = addOrthogroupResult;
-	console.log(`Succesfully added ${nInserted} orthogroup phylogenetic trees from ${folderName}`)
-	geneNoteBook.disconnect()
+  const { result: { ok, writeErrors, writeConcernErrors, nInserted }} = addOrthogroupResult;
+  console.log(`Succesfully added ${nInserted} orthogroup phylogenetic trees from ${folderName}`)
+  geneNoteBook.disconnect()
 })
 .catch(error => {
-	console.log(error)
-	geneNoteBook.disconnect()
+  console.log(error)
+  geneNoteBook.disconnect()
 })

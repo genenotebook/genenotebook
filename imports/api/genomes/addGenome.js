@@ -167,7 +167,7 @@ export const addGenome = new ValidatedMethod({
 
 		return fastaFileToMongoDb({ fileName, genomeName })
 			.catch(error => {
-				logger.log(error);
+				logger.warn(error);
 				throw new Meteor.Error(error);
 			})
 	}
