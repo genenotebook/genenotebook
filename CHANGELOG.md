@@ -6,8 +6,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
+
+## [0.1.10]
 ### Fixed
+- CLI executables logging
 - Header logo
+- Even more font loading fixes
+- Console logging and debugging
 
 ## [0.1.9] 2018-11-21
 ### Fixed
@@ -99,7 +104,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - First GeneNoteBook version ready for use
 
-[Unreleased]: https://github.com/genenotebook/genenotebook/compare/v0.1.9...HEAD
+[Unreleased]: https://github.com/genenotebook/genenotebook/compare/v0.1.10...HEAD
+[0.1.10]: https://github.com/genenotebook/genenotebook/compare/v0.1.9...v0.1.10
 [0.1.9]: https://github.com/genenotebook/genenotebook/compare/v0.1.8...v0.1.9
 [0.1.8]: https://github.com/genenotebook/genenotebook/compare/v0.1.7...v0.1.8
 [0.1.7]: https://github.com/genenotebook/genenotebook/compare/v0.1.6...v0.1.7
