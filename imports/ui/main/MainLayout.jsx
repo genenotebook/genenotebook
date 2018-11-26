@@ -25,6 +25,9 @@ class MainLayout extends React.Component {
   render(){
     const { showPageloadPopup } = this.state;
 
+    console.log({ showPageloadPopup });
+    
+
     return <div>
       {
         showPageloadPopup &&

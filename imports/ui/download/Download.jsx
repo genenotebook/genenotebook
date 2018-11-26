@@ -10,7 +10,7 @@ import logger from '/imports/api/util/logger.js';
 
 import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
-import { serverRouterClient } from '/imports/startup/client/download-routes.js';
+import serverRouterClient from '/imports/startup/client/download-routes.js';
 
 const Waiting = () => {
   return (

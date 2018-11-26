@@ -1,28 +1,30 @@
+/* eslint-disable class-methods-use-this */
 import { Meteor } from 'meteor/meteor';
 
 class Logger {
-  constructor({ logging = true, warning = true, debugging = true }){
+  constructor({ logging = true, warning = true, debugging = true }) {
     this.logging = logging;
     this.warning = warning;
+    this.debugging = debugging;
   }
 
-  log = message => {
-    if (this.logging) console.log('## LOG: ', message);
+  get dateTime() {
+    return new Date().toISOString();
   }
 
-  warn = message => {
-    if (this.warning) console.warn('## WARNING: ', message);
+  log(message) {
+    if (this.logging) console.log('## LOG:', this.dateTime, message);
   }
 
-  debug = message => {
-    if (this.debugging) console.debug('## DEBUG: ', message);
+  warn(message) {
+    if (this.warning) console.warn('## WARNING:', this.dateTime, message);
+  }
+
+  debug(message) {
+    if (this.debugging) console.debug('## DEBUG:', this.dateTime, message);
   }
 }
 
-const logging = Meteor.isProduction ? false : true;
-
-const debugging = Meteor.isDevelopment ? true : false;
-
-const logger = Meteor.isDevelopment ? console : new Logger({ logging, debugging });
+const logger = Meteor.isDevelopment ? console : new Logger({ debugging: false });
 
 export default logger;

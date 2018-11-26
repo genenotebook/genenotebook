@@ -1,15 +1,14 @@
 import { withTracker } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
 import { Roles } from 'meteor/alanning:roles';
-//import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
-import { NavLink, Link, withRouter } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 
 import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
-import { withEither } from '/imports/ui/util/uiUtil.jsx';
 
 import SearchBar from './SearchBar.jsx';
+import PageloadPopup from './PageloadPopup.jsx';
 
 import './header.scss';
 
@@ -122,10 +121,40 @@ class NavBar extends React.Component {
   }
 }
 
+/*
 const Header = () => {
   return <header className='navigation border' role='banner'>
     <NavBar />
   </header>
 };
+*/
+
+class Header extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      showPageloadPopup: !Meteor.userId()
+    }
+  }
+
+  togglePageloadPopup = () => {
+    this.setState({
+      showPageloadPopup: false
+    })
+  }
+
+  render(){
+    const { showPageloadPopup } = this.state;
+    return <React.Fragment>
+      <header className='navigation border' role='banner'>
+        <NavBar />
+      </header>
+      {
+        showPageloadPopup &&
+        <PageloadPopup togglePopup={this.togglePageloadPopup} />
+      }
+    </React.Fragment>
+  }
+}
 
 export default Header;

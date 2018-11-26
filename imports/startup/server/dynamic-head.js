@@ -1,16 +1,20 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
-import logger from '/imports/api/util/logger.js';
-
 WebApp.connectHandlers.use(
-  Meteor.bindEnvironment(function(req, res, next){
-    logger.debug('absoluteUrl: ' + Meteor.absoluteUrl())
+  Meteor.bindEnvironment((req, res, next) => {
+    let url = Meteor.absoluteUrl();
+
+    // When running a production server, PORT must be added when running as localhost
+    if (Meteor.isProduction && /localhost/g.test(url)) {
+      const { PORT } = process.env;
+      url = url.replace(/\/$/, `:${PORT}/`);
+    }
+
     req.dynamicHead = (req.dynamicHead || '');
-    //req.dynamicHead += '<meta name="test">'
-    ['fontello.css','animation.css'].forEach(file => {
-      req.dynamicHead += `<link rel='stylesheet' type='text/css' href='${Meteor.absoluteUrl()}fontello/css/${file}'>`
-    })
+    ['fontello.css', 'animation.css'].forEach((file) => {
+      req.dynamicHead += `<link rel='stylesheet' type='text/css' href='${url}fontello/css/${file}'>`;
+    });
     next();
-  })
-)
+  }),
+);
