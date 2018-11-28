@@ -106,6 +106,9 @@ class LineProcessor {
  */
 const fastaFileToMongoDb = ({ fileName, genomeName }) => {
 	return new Promise((resolve, reject) => {
+		if (!fs.existsSync(fileName)) {
+			reject(new Meteor.Error(`${filename} is not an existing file`));
+		}
 		const permissions = ['admin'];
 
 		const genomeId = genomeCollection.insert({

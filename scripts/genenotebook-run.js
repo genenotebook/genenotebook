@@ -23,7 +23,7 @@ program.parse(process.argv);
 
 const PORT = parseInt(program.port) || 3000;
 const MONGO_URL = program.mongoUrl || 'mongodb://localhost:27017/genenotebook';
-const ROOT_URL = program.rootUrl || 'http://localhost';
+const ROOT_URL = program.rootUrl || `http://localhost:${PORT}`;
 const NODE_OPTIONS = program.nodeOptions || '--max-old-space-size=8192';
 
 Object.assign(process.env, { MONGO_URL, ROOT_URL, PORT, NODE_OPTIONS });

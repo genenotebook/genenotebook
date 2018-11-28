@@ -1,13 +1,11 @@
 import { withTracker } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
 import { Roles } from 'meteor/alanning:roles';
-//import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React from 'react';
-import { NavLink, Link, withRouter } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 
 import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
-import { withEither } from '/imports/ui/util/uiUtil.jsx';
 
 import SearchBar from './SearchBar.jsx';
 
@@ -94,7 +92,7 @@ class NavBar extends React.Component {
       <div className='container'>
         <NavLink to='/' className='navbar-brand' activeClassName='active'>
           <small>
-            <img src="logo.svg" alt="GeneNoteBook logo" className="navbar-logo rounded-circle" />
+            <img src={`${Meteor.absoluteUrl()}logo.svg`} alt="GeneNoteBook logo" className="navbar-logo rounded-circle" />
           </small>
         </NavLink>
         <button className='navbar-toggler' type='button' onClick={this.toggleShow}>
