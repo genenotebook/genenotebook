@@ -17,26 +17,18 @@ function error(msg) {
 }
 
 function startMongoDaemon(dbPath) {
-  if (!fs.existsSync(dbPath)) {
-    exec(`mkdir -p ${dbPath}`);
-  }
-
-  const dataPath = `${dbPath}/data`;
+  const dataFolderPath = `${dbPath}/data`;
+  const logFolderPath = `${dbPath}/log`;
+  exec(`mkdir -p ${dataFolderPath} ${logFolderPath}`);
   const logPath = `${dbPath}/log/mongod.log`;
 
   log(`Using DB path: ${dbPath}`);
-  log(`MongoDB data files are in ${dataPath}`);
-  log(`MongoDB log is in ${logPath}`);
+  log(`MongoDB data files are in ${dataFolderPath}`);
+  log(`MongoDB logs are is in ${logFolderPath}`);
   log('Starting MongoDB daemon');
   const MONGO_URL = 'mongodb://localhost:27017/genenotebook';
   const mongoDaemon = spawn('mongod', ['--port', '27017',
-    '--dbpath', dbPath, '--logpath', logPath]);
-
-  /*
-  mongoDaemon.on('close', (code, signal) => {
-    log(`Closed MongoDB connection (${code}) (${signal})`);
-  });
-  */
+    '--dbpath', dataFolderPath, '--logpath', logPath]);
 
   mongoDaemon.on('error', (err) => {
     error(err);
@@ -45,11 +37,7 @@ function startMongoDaemon(dbPath) {
   mongoDaemon.stderr.on('data', (data) => {
     error(data.toString('utf8'));
   });
-  /*
-  mongoDaemon.stdout.on('data', (data) => {
-    // console.log(data.toString('utf8'));
-  });
-  */
+
   const connection = {
     mongoDaemon,
     MONGO_URL,
@@ -103,9 +91,5 @@ if (program.mongoUrl) {
   const connection = startMongoDaemon(path.resolve(dbPath));
   Object.assign(opts, connection);
 }
-
-// const MONGO_URL = program.mongoUrl  || startMongoDaemon(); // 'mongodb://localhost:27017/genenotebook';
-
-// console.log(opts);
 
 setTimeout(startGeneNoteBook(opts), 100);
