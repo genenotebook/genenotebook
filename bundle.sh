@@ -21,5 +21,5 @@ pushd scripts
 npm install 
 popd 
 cp -r scripts/* $BUNDLE_NAME 
-cp -r testdata $BUNDLE_NAME 
+cp -r testdata.tgz $BUNDLE_NAME 
 cp -r LICENSE $BUNDLE_NAME 
