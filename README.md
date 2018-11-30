@@ -9,17 +9,13 @@ Install using conda
 conda install -c bioconda genenotebook
 ```
 
-GeneNoteBook has to connect to a running MongoDB daemon. To start a MongoDB daemon (please make sure `<data directory>` is an existing folder)
-
-```
-mongod --fork --logpath mongod.log --dbpath <data directory>
-```
-
 Fire up genenotebook
 
 ```
-genenotebook run --port 3000
+genenotebook run
 ```
+
+This first starts a MongoDB daemon on port 27107 and then starts a GeneNoteBook server on port 3000. Try `genenotebook run -h` for additional options on specifying specific ports and database connections.
 Navigate to http://localhost:3000
 
 :warning: The default admin account is `username: admin` `password: admin`, please change this immediately! :warning:
