@@ -1,4 +1,6 @@
+/* eslint-disable import/prefer-default-export */
 import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 import { Roles } from 'meteor/alanning:roles';
 
 import fs from 'fs';
@@ -8,15 +10,7 @@ import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 import logger from '/imports/api/util/logger.js';
 
-Meteor.startup(() => {
-  let url = Meteor.absoluteUrl();
-
-  // When running a production server, PORT must be added when running as localhost
-  if (Meteor.isProduction && /localhost/g.test(url)) {
-    const { PORT } = process.env;
-    url = url.replace(/\/$/, `:${PORT}/`);
-  }
-  logger.log(`GeneNoteBook server started, serving at ${url}`);
+const addDefaultUsers = () => {
   // Add default users
   if (Meteor.users.find().count() === 0) {
     logger.log('Adding default admin user');
@@ -43,7 +37,9 @@ Meteor.startup(() => {
     });
     Roles.addUsersToRoles(guestId,['user','registered'])
   }
+};
 
+const addDefaultAttributes = () => {
   // add some default attributes to filter on
   const permanentAttributes = [
     {
@@ -92,7 +88,9 @@ Meteor.startup(() => {
       }); // end update
     } // end if
   }); // end foreach
+};
 
+const checkBlastDbs = () => {
   // Check if blast DBs exist
   genomeCollection.find({
     'annotationTrack.blastDb': {
@@ -116,8 +114,9 @@ Meteor.startup(() => {
       },
     });
   });
+};
 
-
+const startJobQueue = () => {
   // Start the jobqueue
   jobQueue.allow({
     // Grant permission to admin only
@@ -126,4 +125,12 @@ Meteor.startup(() => {
     },
   });
   return jobQueue.startJobServer();
+};
+
+Meteor.startup(() => {
+  logger.log(`GeneNoteBook server started, serving at ${Meteor.absoluteUrl()}`);
+  addDefaultUsers();
+  addDefaultAttributes();
+  checkBlastDbs();
+  startJobQueue();
 });

@@ -12,10 +12,6 @@ WebFont.load({
   google: {
     families: ['Roboto:300']
   },
-  /*custom: {
-    families: ['fontello'],
-    urls: ['fontello/css/fontello.css', 'fontello/css/animate.css']
-  }*/
 });
 
 Meteor.startup(() => {

@@ -167,6 +167,9 @@ const GeneModel = class GeneModel {
  */
 const gffFileToMongoDb = ({ fileName, genomeId, strict }) => {
 	return new Promise((resolve, reject) => {
+		if (!fs.existsSync(fileName)) {
+			reject(new Meteor.Error(`${fileName} is not an existing file`));
+		};
 		const fileHandle = fs.readFileSync(fileName, { encoding: 'binary' });
 		let intervals = [];
 		let geneCount = 0;
