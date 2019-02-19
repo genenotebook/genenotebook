@@ -5,9 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
-## [Unreleased]
+## [0.1.13] 2018-11-29
 ### Fixed
+- DB path folder creation
+
+## [0.1.12] 2018-11-29
+### Added
+- `--db-path` option for `genenotebook run` to specify location of MongoDB datafiles when letting GeneNoteBook handle the MongoDB daemon.
+
+### Changed
+- GeneNoteBook now runs a MongoDB daemon under the hood by default, so having a running MongoDB daemon is no longer a requirement. It is still possible by specifying `--mongo-url` when executing `genenotebook run`.
+- Updated to Meteor 1.8.0.1
+
+## [0.1.11] 2018-11-28
+### Fixed
+- Header logo and font loading when running production bundle on localhost
+
+## [0.1.10] 2018-11-25
+### Fixed
+- CLI executables logging
 - Header logo
+- Even more font loading fixes
+- Console logging and debugging
 
 ## [0.1.9] 2018-11-21
 ### Fixed
@@ -99,7 +118,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - First GeneNoteBook version ready for use
 
-[Unreleased]: https://github.com/genenotebook/genenotebook/compare/v0.1.9...HEAD
+[Unreleased]: https://github.com/genenotebook/genenotebook/compare/v0.1.12...HEAD
+[0.1.12]: https://github.com/genenotebook/genenotebook/compare/v0.1.11...v0.1.12
+[0.1.11]: https://github.com/genenotebook/genenotebook/compare/v0.1.10...v0.1.11
+[0.1.10]: https://github.com/genenotebook/genenotebook/compare/v0.1.9...v0.1.10
 [0.1.9]: https://github.com/genenotebook/genenotebook/compare/v0.1.8...v0.1.9
 [0.1.8]: https://github.com/genenotebook/genenotebook/compare/v0.1.7...v0.1.8
 [0.1.7]: https://github.com/genenotebook/genenotebook/compare/v0.1.6...v0.1.7
