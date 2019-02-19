@@ -89,11 +89,12 @@ class NavBar extends React.Component {
 
   render(){
     const show = this.state.show ? 'show' : '';
+    const urlPrefix = Meteor.absoluteUrl();
     return <nav className='navbar navbar-expand-md bg-light navbar-light py-0'>
       <div className='container'>
         <NavLink to='/' className='navbar-brand' activeClassName='active'>
           <small>
-            <img src={`${Meteor.absoluteUrl()}logo.svg`} alt="GeneNoteBook logo" className="navbar-logo rounded-circle" />
+            <img src={`${urlPrefix}logo.svg`} alt="GeneNoteBook logo" className="navbar-logo rounded-circle" />
           </small>
         </NavLink>
         <button className='navbar-toggler' type='button' onClick={this.toggleShow}>
