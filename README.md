@@ -1,4 +1,7 @@
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/genenotebook/badges/version.svg)](https://anaconda.org/bioconda/genenotebook)[![Anaconda-Server Badge](https://anaconda.org/bioconda/genenotebook/badges/latest_release_date.svg)](https://anaconda.org/bioconda/genenotebook)[![Anaconda-Server Badge](https://anaconda.org/bioconda/genenotebook/badges/platforms.svg)](https://anaconda.org/bioconda/genenotebook)
+
+![Automated](https://img.shields.io/docker/cloud/automated/genenotebook/genenotebook.svg)![Build status](https://img.shields.io/docker/cloud/build/genenotebook/genenotebook.svg)
+
 > # GeneNoteBook
 > ### A collaborative notebook for comparative genomics
 Full documentation is at http://genenotebook.github.io/
