@@ -123,16 +123,6 @@ const LandingPage = () => {
             <a href="http://genenotebook.github.io/" className="btn btn-sm btn-outline-dark">
               <span className="icon-github" aria-hidden="true" /> About GeneNotebook
             </a>
-          {/*
-            <a href={`${Meteor.absoluteUrl()}register`} className="btn btn-sm btn-outline-success">
-              <span className="icon-user-add" aria-hidden="true" /> Create an account
-            </a>
-            <a href={`${Meteor.absoluteUrl()}login`} className="btn btn-sm btn-outline-primary">
-              <span className="icon-login" aria-hidden="true" /> Sign in
-            </a>
-            <a href="http://genenotebook.github.io/" className="btn btn-sm btn-outline-dark">
-              <span className="icon-github" aria-hidden="true" /> About GeneNotebook
-            </a>*/}
           </div>
         }
       </div>
@@ -148,10 +138,6 @@ const LandingPage = () => {
             <h6 className="card-subtitle text-muted mb-2">
               Browse through a table of genes with customizable queries
             </h6>
-            {/*
-            <a href={`${Meteor.absoluteUrl()}genes`} className="btn btn-outline-dark btn-sm px-2 py-0 btn-block">
-              <span className="icon-list" aria-hidden="true" /> Browse
-            </a> */}
             <Link to='/genes' className="btn btn-outline-dark btn-sm px-2 py-0 btn-block">
               <span className="icon-list" aria-hidden="true" /> Browse
             </Link>
@@ -167,10 +153,6 @@ const LandingPage = () => {
             <h6 className="card-subtitle mb-2 text-muted">
               Search genes based on attributes like GO terms or protein domains
             </h6>
-            {/*
-            <a href="#" className="btn btn-outline-dark btn-sm px-2 py-0 btn-block">
-              <span className="icon-search" aria-hidden="true" /> Search
-            </a> */}
             <Link to={{ path: '/', state: {highLightSearch: true}}} className='btn btn-outline-dark btn-sm px-2 py-0 btn-block'>
               <span className="icon-search" aria-hidden="true" /> Search
             </Link>
@@ -186,10 +168,6 @@ const LandingPage = () => {
             <h6 className="card-subtitle mb-2 text-muted">
               BLAST your protein or DNA sequence to genome annotations 
             </h6>
-            {/*
-            <a href={`${Meteor.absoluteUrl()}blast`} className="btn btn-outline-dark btn-sm px-2 py-0 btn-block">
-              <span className="icon-database" aria-hidden="true" /> Blast
-            </a>*/}
             <Link to='/blast' className="btn btn-outline-dark btn-sm px-2 py-0 btn-block">
               <span className="icon-database" aria-hidden="true" /> Blast
             </Link>

@@ -73,8 +73,8 @@ export default class Register extends React.Component {
 
   handleSubmit = (event) => {
     event.preventDefault();
-    alert('Creating accounts is disabled in this demo')
-    /*
+    //alert('Creating accounts is disabled in this demo')
+    
     const { username, email, password, passwordRepeat } = this.state;
     if (password !== passwordRepeat){
       alert('Passwords do not match!')
@@ -108,7 +108,6 @@ export default class Register extends React.Component {
         }
       })
     }
-    */
   }
 
   handleChange = ({ target }) => {

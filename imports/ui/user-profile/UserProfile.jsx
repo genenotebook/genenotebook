@@ -206,12 +206,10 @@ class UserProfile extends React.Component {
   }
 
   toggleEdit = () => {
-    alert('Changing account information is disabled in this demo')
-    /*
+    //alert('Changing account information is disabled in this demo')
     this.setState({
       editing: !this.state.editing
     })
-    */
   }
 
   hasChanges = () => {
