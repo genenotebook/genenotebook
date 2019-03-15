@@ -250,13 +250,20 @@ class GroupedSamplePlot extends React.Component {
         {
           highlight && <g className='highlight'>
             <rect x={-12.5} width={25} y={-range[0]} height={range[0] + 30} style={ highlightStyle } />
-            <rect x={-8} width={100} y={20} height={20} transform='rotate(17,25,20)' style={ highlightStyle } />
+            <rect x={-8} width={150} y={20} height={20} transform='rotate(17,25,20)' style={ highlightStyle } />
           </g>
         }
         <line x1='-20' x2='20' y1='0' y2='0' stroke='black'/>
         <line x1='0' x2='0' y1='0' y2='10' stroke='black'/>
         <text x='5' y='25' textAnchor='left' transform='rotate(17)' fontSize='10'>
-          { `${replicaGroup} (n = ${groupSamples.length})` }
+          <title>
+            { `${replicaGroup} (n = ${groupSamples.length})` }
+          </title>
+          { 
+            `${replicaGroup.slice(0, 20)}` +
+            `${replicaGroup.length > 20 ? '... ' : ' '}` +
+            `(n = ${groupSamples.length})` 
+          }
         </text>
       </g>
       <BarPlot {...{ replicaGroup, groupSamples, yScale }} />
@@ -305,6 +312,7 @@ class ExpressionPlot extends React.Component {
     const yMax = round(maxTpm + .1 * maxTpm, precision);
 
     const replicaGroups = groupBy(values, 'replicaGroup');
+    const numGroups = Object.keys(replicaGroups).length;
     const padding = {
       top: 20,
       bottom: 10,
@@ -316,18 +324,23 @@ class ExpressionPlot extends React.Component {
       .domain([0, yMax])
       .range([height - padding.top - padding.bottom, 0]);
 
-    return <div className='card expression-plot'>
-      <svg width={width} height={height + 100}>
-        <g transform={`translate(${padding.left},${padding.top})`}>
-          <YAxis scale={yScale} numTicks='4' />
-          <GroupedSamples {...{ replicaGroups, yScale }}
-            transform='translate(20,0)'/>
-        </g>
-      </svg>
-      { 
-        resizable && <ReactResizeDetector handleWidth onResize={this.onResize}  />
-      }
-    </div>
+    return (
+      <div className='card expression-plot'>
+        <div style={{ width, overflow: 'scroll' }}>
+          <svg width={170 + numGroups * 40} height={height +75}>
+            <g transform={`translate(${padding.left},${padding.top})`}>
+              <YAxis scale={yScale} numTicks='4' />
+              <GroupedSamples {...{ replicaGroups, yScale }}
+                transform='translate(20,0)'/>
+            </g>
+          </svg>
+        </div>
+        { 
+          resizable && 
+          <ReactResizeDetector handleWidth onResize={this.onResize} />
+        }
+      </div>
+    )
   }
 }
 
