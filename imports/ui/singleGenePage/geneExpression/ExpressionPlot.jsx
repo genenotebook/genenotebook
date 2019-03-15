@@ -15,9 +15,8 @@ import { withEither, round } from '/imports/ui/util/uiUtil.jsx';
 
 import './expressionPlot.scss';
 
-const expressionDataTracker = ({ gene, samples, ...props }) => {
+const expressionDataTracker = ({ gene, samples, loading, ...props }) => {
   const transcriptomeSub = Meteor.subscribe('geneExpression', gene.ID);
-  const loading = !transcriptomeSub.ready();
 
   const sampleInfo = groupBy(samples, '_id');
   const sampleIds = samples.map(sample => sample._id);
@@ -35,7 +34,7 @@ const expressionDataTracker = ({ gene, samples, ...props }) => {
   return {
     gene,
     values,
-    loading
+    loading: loading || !transcriptomeSub.ready()
   }
 }
 
@@ -44,16 +43,34 @@ const hasNoSamples = ({ samples, ...props }) => {
 }
 
 const NoSamples = () => {
-  return <div className="card expression-plot px-1 pt-1 mb-0">
-    <div className="alert alert-dark mx-1 mt-1" role="alert">
-      <p className="text-center text-muted mb-0">No expression data found</p>
+  return (
+    <div className="card expression-plot px-1 pt-1 mb-0">
+      <div className="alert alert-dark mx-1 mt-1" role="alert">
+        <p className="text-center text-muted mb-0">No expression data found</p>
+      </div>
     </div>
-  </div>
+  )
+}
+
+const isLoading = ({ loading }) => {
+  return loading
+}
+
+const Loading = () => {
+  return (
+    <div className='card expression-plot px-1 pt-1 mb-0'>
+     <div className="alert alert-light mx-1 mt-1" role="alert">
+        <p className="text-center text-muted mb-0">Loading ...</p>
+      </div>
+    </div>
+  )
 }
 
 const withConditionalRendering = compose(
+  withEither(isLoading, Loading),
   withEither(hasNoSamples, NoSamples),
-  withTracker(expressionDataTracker)
+  withTracker(expressionDataTracker),
+  withEither(isLoading, Loading)
 )
 
 const ExpressionPopover = ({ showPopover, targetId, togglePopover, ...expression }) => {
