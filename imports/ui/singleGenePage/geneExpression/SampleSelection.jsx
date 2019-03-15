@@ -91,7 +91,7 @@ class SampleSelection extends React.Component {
 
   renderChildren = () => {
     const { selection } = this.state;
-    const { replicaGroups, gene, children } = this.props;
+    const { replicaGroups, gene, children, loading } = this.props;
     const _samples = selection.map(({ value }) => {
       return replicaGroups[value].map(sample => {
         return sample
@@ -102,7 +102,8 @@ class SampleSelection extends React.Component {
     return React.Children.map(children, child => {
       return React.cloneElement(child, {
         samples,
-        gene 
+        gene,
+        loading 
       })
     })
   }
@@ -155,7 +156,7 @@ class SampleSelection extends React.Component {
       </div>
       <div>
         {
-          !loading && this.renderChildren()
+          this.renderChildren()
         }
       </div>
     </div>
