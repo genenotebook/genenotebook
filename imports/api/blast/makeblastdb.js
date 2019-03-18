@@ -3,12 +3,10 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { Roles } from 'meteor/alanning:roles';
 
 import SimpleSchema from 'simpl-schema';
-import hash from 'object-hash';
 
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 import { Job } from 'meteor/vsivsi:job-collection'
 
-import { Genes } from '/imports/api/genes/gene_collection.js';
 
 /**
  * makeBlastDb validated method: submits makeblastdb job to jobqueue, call this from the client
@@ -16,7 +14,7 @@ import { Genes } from '/imports/api/genes/gene_collection.js';
  * @param  {String} options.dbType    Either nucl or prot
  * @return {String}                   jobId of the makeblastdb job
  */
-export const makeBlastDb = new ValidatedMethod({
+const makeBlastDb = new ValidatedMethod({
   name: 'makeBlastDb',
   validate: new SimpleSchema({
     genomeId: { type: String }
@@ -43,3 +41,5 @@ export const makeBlastDb = new ValidatedMethod({
     }
   }
 })
+
+export default makeBlastDb;
