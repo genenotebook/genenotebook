@@ -13,7 +13,7 @@ import { Dropdown, DropdownMenu, DropdownButton } from '/imports/ui/util/Dropdow
 
 import './sampleSelection.scss';
 
-const dataTracker = ({ gene, children }) => {
+function dataTracker({ gene, children }) {
   const { genomeId } = gene;
   const experimentSub = Meteor.subscribe('experimentInfo');
   const loading = !experimentSub.ready();
@@ -38,10 +38,12 @@ const customStyles = {
   })
 }
 
-const DropdownIndicator = (props) => {
-  return <components.DropdownIndicator {...props}>
-    <span className='icon-search' />
-  </components.DropdownIndicator>
+function DropdownIndicator(props) {
+  return (
+    <components.DropdownIndicator {...props}>
+      <span className='icon-search' />
+    </components.DropdownIndicator>
+  )
 }
 
 class SampleSelection extends React.Component {
@@ -118,6 +120,8 @@ class SampleSelection extends React.Component {
             Select samples&nbsp;
             <span className='badge badge-dark'>
               {
+                loading ?
+                '...' :
                 `${selection.length} / ${options.length}`
               }
             </span>
