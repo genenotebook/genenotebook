@@ -15,7 +15,7 @@ import { withEither, round } from '/imports/ui/util/uiUtil.jsx';
 
 import './expressionPlot.scss';
 
-const expressionDataTracker = ({ gene, samples, loading, ...props }) => {
+function expressionDataTracker ({ gene, samples, loading, ...props }) {
   const transcriptomeSub = Meteor.subscribe('geneExpression', gene.ID);
 
   const sampleInfo = groupBy(samples, '_id');
@@ -38,11 +38,11 @@ const expressionDataTracker = ({ gene, samples, loading, ...props }) => {
   }
 }
 
-const hasNoSamples = ({ samples, ...props }) => {
+function hasNoSamples({ samples, ...props }) {
   return samples.length === 0
 }
 
-const NoSamples = () => {
+function NoSamples() {
   return (
     <div className="card expression-plot px-1 pt-1 mb-0">
       <div className="alert alert-dark mx-1 mt-1" role="alert">
@@ -52,11 +52,11 @@ const NoSamples = () => {
   )
 }
 
-const isLoading = ({ loading }) => {
+function isLoading({ loading }) {
   return loading
 }
 
-const Loading = () => {
+function Loading() {
   return (
     <div className='card expression-plot px-1 pt-1 mb-0'>
      <div className="alert alert-light mx-1 mt-1" role="alert">
@@ -73,41 +73,43 @@ const withConditionalRendering = compose(
   withEither(isLoading, Loading)
 )
 
-const ExpressionPopover = ({ showPopover, targetId, togglePopover, ...expression }) => {
+function ExpressionPopover({ showPopover, targetId, togglePopover, ...expression }) {
   const { tpm, est_counts, description, replicaGroup, sampleName } = expression;
-  return <Popover placement='top' isOpen={showPopover} 
-    target={targetId} toggle={togglePopover}>
-    <PopoverHeader>
-      { sampleName }
-    </PopoverHeader>
-    <PopoverBody className='px-0 py-0'>
-      <div className="table-responive">
-        <table className="table table-hover">
-          <tbody>
-            <tr>
-              <td>TPM</td>
-              <td>{ tpm }</td>
-            </tr>
-            <tr>
-              <td>EST counts</td>
-              <td>{ est_counts }</td>
-            </tr>
-            <tr>
-              <td>Description</td>
-              <td>{ description }</td>
-            </tr>
-            <tr>
-              <td>Replica group</td>
-              <td>{ replicaGroup }</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </PopoverBody>
-  </Popover>
+  return (
+    <Popover placement='top' isOpen={showPopover} 
+      target={targetId} toggle={togglePopover}>
+      <PopoverHeader>
+        { sampleName }
+      </PopoverHeader>
+      <PopoverBody className='px-0 py-0'>
+        <div className="table-responive">
+          <table className="table table-hover">
+            <tbody>
+              <tr>
+                <td>TPM</td>
+                <td>{ tpm }</td>
+              </tr>
+              <tr>
+                <td>EST counts</td>
+                <td>{ est_counts }</td>
+              </tr>
+              <tr>
+                <td>Description</td>
+                <td>{ description }</td>
+              </tr>
+              <tr>
+                <td>Replica group</td>
+                <td>{ replicaGroup }</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </PopoverBody>
+    </Popover>
+  )
 }
 
-const YAxis = ({ scale, numTicks }) => {
+function YAxis({ scale, numTicks }) {
   const range = scale.range();
   const [start, end] = scale.domain();
   const precision = end > 10 ? 0 : end > 1 ? 1 : 2;
@@ -119,38 +121,40 @@ const YAxis = ({ scale, numTicks }) => {
      ticks.push(start + (i * stepSize));
   }
 
-  return <g className='y-axis'>
-    <text y='-35' x={(range[1] - range[0]) / 2} fontSize='11' 
-      transform='rotate(-90)' textAnchor='middle'>
-      TPM
-    </text>
-    <line x1='0' x2='0' y1={range[0]} y2={range[1]} stroke='black'/>
-    <g>
-      <line x1='-5' x2='0' y1={range[0]} y2={range[0]} stroke='black'/>
-      <text x='-10' y={range[0]} textAnchor='end' fontSize='10'>
-        { round(start, precision) }
+  return (
+    <g className='y-axis'>
+      <text y='-35' x={(range[1] - range[0]) / 2} fontSize='11' 
+        transform='rotate(-90)' textAnchor='middle'>
+        TPM
       </text>
+      <line x1='0' x2='0' y1={range[0]} y2={range[1]} stroke='black'/>
+      <g>
+        <line x1='-5' x2='0' y1={range[0]} y2={range[0]} stroke='black'/>
+        <text x='-10' y={range[0]} textAnchor='end' fontSize='10'>
+          { round(start, precision) }
+        </text>
+      </g>
+      {
+        ticks.map(tick => {
+          const pos = scale(tick)
+          return (
+            <g key={tick}>
+              <line x1='-5' x2='0' y1={pos} y2={pos} stroke='black' />
+              <text x='-10' y={pos} textAnchor='end' fontSize='10'>
+                { round(tick, precision) }
+              </text>
+            </g>
+          )
+        })
+      }
+      <g>
+        <line x1='-5' x2='0' y1={range[1]} y2={range[1]} stroke='black'/>
+        <text x='-10' y={range[1]} textAnchor='end' fontSize='10'>
+          { round(end, precision) }
+        </text>
+      </g>
     </g>
-    {
-      ticks.map(tick => {
-        const pos = scale(tick)
-        return (
-          <g key={tick}>
-            <line x1='-5' x2='0' y1={pos} y2={pos} stroke='black' />
-            <text x='-10' y={pos} textAnchor='end' fontSize='10'>
-              { round(tick, precision) }
-            </text>
-          </g>
-        )
-      })
-    }
-    <g>
-      <line x1='-5' x2='0' y1={range[1]} y2={range[1]} stroke='black'/>
-      <text x='-10' y={range[1]} textAnchor='end' fontSize='10'>
-        { round(end, precision) }
-      </text>
-    </g>
-  </g>
+  )
 }
 
 
@@ -273,14 +277,17 @@ class GroupedSamplePlot extends React.Component {
 }
 
 const GroupedSamples = ({ replicaGroups, yScale, transform }) => {
-  return <g transform={transform}>
-    {
-      Object.entries(replicaGroups).map(([replicaGroup, groupSamples], index) => {
-        return <GroupedSamplePlot key={replicaGroup} {...{ replicaGroup, groupSamples }} 
-            yScale={yScale} transform={`translate(${index * 40},0)`} />
-      })
-    }
-  </g>
+  return (
+    <g transform={transform}>
+      {
+        Object.entries(replicaGroups).map(([replicaGroup, groupSamples], index) => {
+          return <GroupedSamplePlot key={replicaGroup} 
+            {...{ replicaGroup, groupSamples }} yScale={yScale} 
+            transform={`translate(${index * 40},0)`} />
+        })
+      }
+    </g>
+  )
 }
 
 class ExpressionPlot extends React.Component {
