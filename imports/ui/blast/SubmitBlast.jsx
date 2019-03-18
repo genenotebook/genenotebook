@@ -1,13 +1,18 @@
+/* eslint-disable react/prop-types */
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
-import Select from 'react-select';
+// import Select from 'react-select';
 import { Redirect } from 'react-router-dom';
 import { compose } from 'recompose';
 import { cloneDeep } from 'lodash';
 
-import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
+import {
+  Dropdown,
+  DropdownButton,
+  DropdownMenu,
+} from '/imports/ui/util/Dropdown.jsx';
 import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 import logger from '/imports/api/util/logger.js';
 
@@ -17,19 +22,19 @@ import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 import './submitblast.scss';
 
 /**
-* Hard coded map of sequence types to blast database types to select the appropriate blast program
-* @type {Object}
-*/
+ * Hard coded map of sequence types to blast database types to select the appropriate blast program
+ * @type {Object}
+ */
 const BLASTTYPES = {
-  'Nucleotide': {
-      'Nucleotide': 'blastn',
-      'Protein': 'blastx',
-      'Translated nucleotide': 'tblastx'
-    },
-  'Protein': {
-    'Protein': 'blastp',
-    'Translated nucleotide': 'tblastn'
-  }
+  Nucleotide: {
+    Nucleotide: 'blastn',
+    Protein: 'blastx',
+    'Translated nucleotide': 'tblastx',
+  },
+  Protein: {
+    Protein: 'blastp',
+    'Translated nucleotide': 'tblastn',
+  },
 };
 
 /**
@@ -37,16 +42,17 @@ const BLASTTYPES = {
  * @param  {String} seq Input sequence, unknown if DNA or protein
  * @return {String}     Either 'Nucleotide' or 'Protein'
  */
-function determineSeqType(seq){
-  const dna = 'cgatnCGATN'
-  let fractionDna = 0
-  let i = dna.length
-  while (i--){
-    let nuc = dna[i]
-    fractionDna += (seq.split(nuc).length - 1) / seq.length
+function determineSeqType(seq) {
+  const dna = 'cgatnCGATN';
+  let fractionDna = 0;
+
+  for (let i = dna.length; i >= 0; i -= 1) {
+    const nuc = dna[i];
+    fractionDna += (seq.split(nuc).length - 1) / seq.length;
   }
-  const seqType = fractionDna >= 0.9 ? 'Nucleotide' : 'Protein'
-  return seqType
+
+  const seqType = fractionDna >= 0.9 ? 'Nucleotide' : 'Protein';
+  return seqType;
 }
 
 /**
@@ -54,115 +60,141 @@ function determineSeqType(seq){
  * @param  {Object} props [description]
  * @return {SequenceInput}       [description]
  */
-function SequenceInput ({ value, enterSequence, seqType, selectSeqType }) {
+function SequenceInput({
+ value, enterSequence, seqType, selectSeqType 
+}) {
   return (
     <div>
-      <textarea className="form-control" rows="10" id="blast_seq" type="text" 
-        placeholder="Enter sequence" value={value} onChange={enterSequence} />
-      {
-        value &&
+      <textarea
+        className="form-control"
+        rows="10"
+        id="blast_seq"
+        type="text"
+        placeholder="Enter sequence"
+        value={value}
+        onChange={enterSequence}
+      />
+      {value && (
         <div className="btn-group pull-right">
-          <button type="button" className="btn btn-outline-secondary btn-sm disabled">This is a</button>
+          <button
+            type="button"
+            className="btn btn-outline-secondary btn-sm disabled"
+          >
+            This is a
+          </button>
           <Dropdown>
             <DropdownButton className="btn btn-secondary btn-sm dropdown-toggle">
-              <strong>{seqType}</strong> sequence
+              <strong>{seqType}</strong>
+              sequence
             </DropdownButton>
             <DropdownMenu>
-              <a className="dropdown-item" id="Protein" onClick={selectSeqType} >
+              <a className="dropdown-item" id="Protein" onClick={selectSeqType}>
                 Protein sequence
               </a>
-              <a className="dropdown-item" id="Nucleotide" onClick={selectSeqType} >
+              <a
+                className="dropdown-item"
+                id="Nucleotide"
+                onClick={selectSeqType}
+              >
                 Nucleotide sequence
               </a>
             </DropdownMenu>
           </Dropdown>
         </div>
-      }
+      )}
     </div>
-  )
+  );
 }
 
 function GenomeSelect({ genomes, selectedGenomes, toggleGenomeSelect }) {
   return (
     <div>
       <label> Select genomes: </label>
-        {
-          genomes.map(genome => {
-            const { _id: genomeId, name } = genome;
-            return (
-              <div className="form-check" key={genomeId}>
-                <input 
-                  type="checkbox" 
-                  className="form-check-input" 
-                  id={ genomeId } 
-                  checked={selectedGenomes.has(genomeId)}
-                  onChange={toggleGenomeSelect} 
-                />
-                <label className="form-check-label" htmlFor={ name }>{ name }</label>
-              </div>
-            )
-          })
-        }
+      {genomes.map((genome) => {
+        const { _id: genomeId, name } = genome;
+        return (
+          <div className="form-check" key={genomeId}>
+            <input
+              type="checkbox"
+              className="form-check-input"
+              id={genomeId}
+              checked={selectedGenomes.has(genomeId)}
+              onChange={toggleGenomeSelect}
+            />
+            <label className="form-check-label" htmlFor={name}>
+              {name}
+            </label>
+          </div>
+        );
+      })}
     </div>
-  )
+  );
 }
 
-function SubmitButtons({ selectedDbType, dbTypes, submit, blastType }) {
+function SubmitButtons({
+ selectedDbType, dbTypes, submit, blastType 
+}) {
   return (
-    <div className='btn-group'>
+    <div className="btn-group">
       <div className="btn-group">
         <Dropdown>
           <DropdownButton className="btn btn-outline-primary dropdown-toggle">
-            <strong>{selectedDbType}</strong> database
+            <strong>{selectedDbType}</strong>
+            database
           </DropdownButton>
           <DropdownMenu>
-            {
-              dbTypes.map(dbType => {
-                return (
-                    <a key={dbType} className="dropdown-item db-select" id={dbType} onClick={selectDbType}>
-                      {dbType} database
-                    </a>
-                )
-              })
-            }
+            {dbTypes.map(dbType => (
+              <a
+                key={dbType}
+                className="dropdown-item db-select"
+                id={dbType}
+                onClick={selectDbType}
+              >
+                {dbType}
+                database
+              </a>
+            ))}
           </DropdownMenu>
         </Dropdown>
       </div>
-      <div className='btn-group'>
-        <button 
-          type="button" 
-          className="btn btn-primary" 
+      <div className="btn-group">
+        <button
+          type="button"
+          className="btn btn-primary"
           id="submit-blast"
-          onClick={submit}>
-          <span className="glyphicon glyphicon-search" /> 
+          onClick={submit}
+        >
+          <span className="glyphicon glyphicon-search" />
           {blastType.toUpperCase()}
         </button>
       </div>
     </div>
-  )
+  );
 }
 
 function dataTracker() {
   const subscription = Meteor.subscribe('genomes');
   const loading = !subscription.ready();
-  const genomes = genomeCollection.find({
-    'annotationTrack.blastDb': {
-      $exists: 1
-    }
-  }).fetch()
+  const genomes = genomeCollection
+    .find({
+      'annotationTrack.blastDb': {
+        $exists: 1,
+      },
+    })
+    .fetch();
   return {
     loading,
-    genomes
-  }
+    genomes,
+  };
 }
 
 const withConditionalRendering = compose(
   withTracker(dataTracker),
-  withEither(isLoading, Loading)
-)
+  withEither(isLoading, Loading),
+);
 
 class SubmitBlast extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     const redirectTo = Meteor.userId() ? undefined : 'login';
     this.state = {
@@ -170,135 +202,145 @@ class SubmitBlast extends React.Component {
       seqType: 'Nucleotide',
       dbType: 'Protein',
       selectedGenomes: new Set(),
-      redirectTo
-    }
+      redirectTo,
+    };
   }
 
-  enterSequence = event => {
+  enterSequence = (event) => {
     event.preventDefault();
     const input = event.target.value;
-    const seqType = input ? determineSeqType(input): undefined;
+    const seqType = input ? determineSeqType(input) : undefined;
     this.setState({
-      input: input,
-      seqType: seqType
-    })
-  }
+      input,
+      seqType,
+    });
+  };
 
-  selectSeqType = event => {
+  selectSeqType = (event) => {
     event.preventDefault();
     const seqType = event.target.id;
-    const dbType = Object.keys(BLASTTYPES[seqType])[0]
+    const dbType = Object.keys(BLASTTYPES[seqType])[0];
     this.setState({
-      seqType: seqType,
-      dbType: dbType
-    })
-  }
+      seqType,
+      dbType,
+    });
+  };
 
-  selectDbType = event => {
+  selectDbType = (event) => {
     event.preventDefault();
     const dbType = event.target.id;
-    logger.debug('selectDbType',dbType)
+    logger.debug('selectDbType', dbType);
     this.setState({
-      dbType: dbType
-    })
-  }
+      dbType,
+    });
+  };
 
-  toggleGenomeSelect = event => {
+  toggleGenomeSelect = (event) => {
     const genomeId = event.target.id;
-    this.setState(prevState => {
+    this.setState((prevState) => {
       const selectedGenomes = cloneDeep(prevState.selectedGenomes);
-      if (selectedGenomes.has(genomeId)){
-        selectedGenomes.delete(genomeId)
+      if (selectedGenomes.has(genomeId)) {
+        selectedGenomes.delete(genomeId);
       } else {
-        selectedGenomes.add(genomeId)
+        selectedGenomes.add(genomeId);
       }
-      return { selectedGenomes }
-    })
-  }
+      return { selectedGenomes };
+    });
+  };
 
-  submit = event => {
+  submit = (event) => {
     event.preventDefault();
-    const { seqType, dbType, input, selectedGenomes } = this.state;
+    const {
+ seqType, dbType, input, selectedGenomes 
+} = this.state;
     const blastType = BLASTTYPES[seqType][dbType];
-    submitBlastJob.call({
-      blastType: blastType,
-      input: input,
-      genomeIds: [...selectedGenomes]
-    }, (err,res) => {
-      if (err) logger.warn(err);
-      this.setState({
-        redirectTo: `blast/${res}`
-      })
-    })
-  }
+    submitBlastJob.call(
+      {
+        blastType,
+        input,
+        genomeIds: [...selectedGenomes],
+      },
+      (err, res) => {
+        if (err) logger.warn(err);
+        this.setState({
+          redirectTo: `blast/${res}`,
+        });
+      },
+    );
+  };
 
-  render(){
-    const { redirectTo, selectedGenomes, input, seqType, dbType } = this.state;
+  render() {
+    const {
+ redirectTo, selectedGenomes, input, seqType, dbType 
+} = this.state;
     const { genomes } = this.props;
 
-    console.log({ genomes, })
-    
-    if ( typeof redirectTo !== 'undefined'){
-      return <Redirect to={{ pathname: redirectTo, from: 'blast' }}/>
+    console.log({ genomes });
+
+    if (typeof redirectTo !== 'undefined') {
+      return <Redirect to={{ pathname: redirectTo, from: 'blast' }} />;
     }
 
     return (
-      <form className="container form-group py-2" role="form" id="blast">
+      <form className="container form-group py-2" id="blast">
         <div className="card">
           <div className="card-header">Blast search</div>
           <div className="card-body">
-            <SequenceInput 
-              value = {input}
-              seqType = {seqType}
-              enterSequence = {this.enterSequence}
-              selectSeqType = {this.selectSeqType}
+            <SequenceInput
+              value={input}
+              seqType={seqType}
+              enterSequence={this.enterSequence}
+              selectSeqType={this.selectSeqType}
             />
           </div>
-            <ul className="list-group list-group-flush">
-              <li className="list-group-item">
-                <GenomeSelect 
-                  genomes = {genomes}
-                  selectedGenomes = {selectedGenomes}
-                  toggleGenomeSelect={this.toggleGenomeSelect}
-                />
-              </li>
-              <li className="list-group-item">
-                Advanced options ...
-              </li>
-            </ul>
+          <ul className="list-group list-group-flush">
+            <li className="list-group-item">
+              <GenomeSelect
+                genomes={genomes}
+                selectedGenomes={selectedGenomes}
+                toggleGenomeSelect={this.toggleGenomeSelect}
+              />
+            </li>
+            <li className="list-group-item">Advanced options ...</li>
+          </ul>
           <div className="card-footer">
             <div className="row">
               <label className="col-md-4">Search a ...</label>
               <div className="col-md-6">
-                {
-                  !input &&
-                  <button type="button" className="btn btn-outline-secondary disabled">
-                    <span className="icon-questionmark"></span> Enter sequence
+                {!input && (
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary disabled"
+                  >
+                    <span className="icon-questionmark" />
+                    Enter sequence
                   </button>
-                }
-                {
-                  input && selectedGenomes.size == 0 &&
-                  <button type="button" className="btn btn-outline-secondary disabled">
-                    <span className="icon-questionmark"></span> Select genome annotation
+                )}
+                {input && selectedGenomes.size === 0 && (
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary disabled"
+                  >
+                    <span className="icon-questionmark" />
+                    Select genome annotation
                   </button>
-                }
-                {
-                  input && selectedGenomes.size > 0 && 
-                  <SubmitButtons 
-                    selectedDbType = {dbType}
-                    dbTypes = {Object.keys(this.BLASTTYPES[seqType])}
-                    selectDbType = {this.selectDbType}
-                    blastType = {BLASTTYPES[seqType][dbType]}
-                    submit = {this.submit}
+                )}
+                {input && selectedGenomes.size > 0 && (
+                  <SubmitButtons
+                    selectedDbType={dbType}
+                    dbTypes={Object.keys(this.BLASTTYPES[seqType])}
+                    selectDbType={this.selectDbType}
+                    blastType={BLASTTYPES[seqType][dbType]}
+                    submit={this.submit}
                   />
-                }
+                )}
               </div>
             </div>
           </div>
         </div>
       </form>
-    )
+    );
   }
 }
 
-export default withConditionalRendering(SubmitBlast)
+export default withConditionalRendering(SubmitBlast);

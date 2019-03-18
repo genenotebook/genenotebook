@@ -1,5 +1,5 @@
 // This defines a starting set of data to be loaded if the app is loaded with an empty db.
-import './server-fixtures.js';
+import './fixtures/server-fixtures.js';
 
 // Set up some configuration for account creation;
 import './useraccounts-configuration.js';
