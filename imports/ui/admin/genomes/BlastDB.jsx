@@ -4,8 +4,8 @@ import { withTracker } from 'meteor/react-meteor-data';
 import React from 'react';
 import { compose } from 'recompose';
 
-import { makeBlastDb } from '/imports/api/blast/makeblastdb.js';
-import { removeBlastDb } from '/imports/api/blast/removeblastdb.js';
+import makeBlastDb from '/imports/api/blast/makeblastdb.js';
+import removeBlastDb from '/imports/api/blast/removeblastdb.js';
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 import logger from '/imports/api/util/logger.js';
 
