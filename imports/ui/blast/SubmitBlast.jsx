@@ -16,6 +16,21 @@ import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 
 import './submitblast.scss';
 
+/**
+* Hard coded map of sequence types to blast database types to select the appropriate blast program
+* @type {Object}
+*/
+const BLASTTYPES = {
+  'Nucleotide': {
+      'Nucleotide': 'blastn',
+      'Protein': 'blastx',
+      'Translated nucleotide': 'tblastx'
+    },
+  'Protein': {
+    'Protein': 'blastp',
+    'Translated nucleotide': 'tblastn'
+  }
+};
 
 /**
  * Function to determine whether a given sequence string is DNA or protein
@@ -39,31 +54,24 @@ function determineSeqType(seq){
  * @param  {Object} props [description]
  * @return {SequenceInput}       [description]
  */
-const SequenceInput = (props) => {
+function SequenceInput ({ value, enterSequence, seqType, selectSeqType }) {
   return (
     <div>
-      <textarea 
-        className="form-control" 
-        rows="10" 
-        id="blast_seq" 
-        type="text" 
-        placeholder="Enter sequence" 
-        value={props.value}
-        onChange={props.enterSequence}
-      />
+      <textarea className="form-control" rows="10" id="blast_seq" type="text" 
+        placeholder="Enter sequence" value={value} onChange={enterSequence} />
       {
-        props.value &&
+        value &&
         <div className="btn-group pull-right">
           <button type="button" className="btn btn-outline-secondary btn-sm disabled">This is a</button>
           <Dropdown>
             <DropdownButton className="btn btn-secondary btn-sm dropdown-toggle">
-              <strong>{props.seqType}</strong> sequence
+              <strong>{seqType}</strong> sequence
             </DropdownButton>
             <DropdownMenu>
-              <a className="dropdown-item" id="Protein" onClick={props.selectSeqType} >
+              <a className="dropdown-item" id="Protein" onClick={selectSeqType} >
                 Protein sequence
               </a>
-              <a className="dropdown-item" id="Nucleotide" onClick={props.selectSeqType} >
+              <a className="dropdown-item" id="Nucleotide" onClick={selectSeqType} >
                 Nucleotide sequence
               </a>
             </DropdownMenu>
@@ -74,7 +82,7 @@ const SequenceInput = (props) => {
   )
 }
 
-const GenomeSelect = ({ genomes, selectedGenomes, toggleGenomeSelect }) => {
+function GenomeSelect({ genomes, selectedGenomes, toggleGenomeSelect }) {
   return (
     <div>
       <label> Select genomes: </label>
@@ -99,19 +107,19 @@ const GenomeSelect = ({ genomes, selectedGenomes, toggleGenomeSelect }) => {
   )
 }
 
-const SubmitButtons = (props) => {
+function SubmitButtons({ selectedDbType, dbTypes, submit, blastType }) {
   return (
     <div className='btn-group'>
       <div className="btn-group">
         <Dropdown>
           <DropdownButton className="btn btn-outline-primary dropdown-toggle">
-            <strong>{props.selectedDbType}</strong> database
+            <strong>{selectedDbType}</strong> database
           </DropdownButton>
           <DropdownMenu>
             {
-              props.dbTypes.map(dbType => {
+              dbTypes.map(dbType => {
                 return (
-                    <a key={dbType} className="dropdown-item db-select" id={dbType} onClick={props.selectDbType}>
+                    <a key={dbType} className="dropdown-item db-select" id={dbType} onClick={selectDbType}>
                       {dbType} database
                     </a>
                 )
@@ -125,15 +133,16 @@ const SubmitButtons = (props) => {
           type="button" 
           className="btn btn-primary" 
           id="submit-blast"
-          onClick={props.submit}>
-          <span className="glyphicon glyphicon-search" /> {props.blastType.toUpperCase()}
+          onClick={submit}>
+          <span className="glyphicon glyphicon-search" /> 
+          {blastType.toUpperCase()}
         </button>
       </div>
     </div>
   )
 }
 
-const dataTracker = () => {
+function dataTracker() {
   const subscription = Meteor.subscribe('genomes');
   const loading = !subscription.ready();
   const genomes = genomeCollection.find({
@@ -155,7 +164,6 @@ const withConditionalRendering = compose(
 class SubmitBlast extends React.Component {
   constructor(props){
     super(props);
-    console.log(props)
     const redirectTo = Meteor.userId() ? undefined : 'login';
     this.state = {
       input: undefined,
@@ -165,22 +173,6 @@ class SubmitBlast extends React.Component {
       redirectTo
     }
   }
-
-  /**
-  * Hard coded map of sequence types to blast database types to select the appropriate blast program
-  * @type {Object}
-  */
-   BLASTTYPES = {
-    'Nucleotide': {
-        'Nucleotide': 'blastn',
-        'Protein': 'blastx',
-        'Translated nucleotide': 'tblastx'
-      },
-    'Protein': {
-      'Protein': 'blastp',
-      'Translated nucleotide': 'tblastn'
-    }
-  };
 
   enterSequence = event => {
     event.preventDefault();
@@ -195,7 +187,7 @@ class SubmitBlast extends React.Component {
   selectSeqType = event => {
     event.preventDefault();
     const seqType = event.target.id;
-    const dbType = Object.keys(this.BLASTTYPES[seqType])[0]
+    const dbType = Object.keys(BLASTTYPES[seqType])[0]
     this.setState({
       seqType: seqType,
       dbType: dbType
@@ -227,7 +219,7 @@ class SubmitBlast extends React.Component {
   submit = event => {
     event.preventDefault();
     const { seqType, dbType, input, selectedGenomes } = this.state;
-    const blastType = this.BLASTTYPES[seqType][dbType];
+    const blastType = BLASTTYPES[seqType][dbType];
     submitBlastJob.call({
       blastType: blastType,
       input: input,
@@ -241,7 +233,11 @@ class SubmitBlast extends React.Component {
   }
 
   render(){
-    const { redirectTo } = this.state;
+    const { redirectTo, selectedGenomes, input, seqType, dbType } = this.state;
+    const { genomes } = this.props;
+
+    console.log({ genomes, })
+    
     if ( typeof redirectTo !== 'undefined'){
       return <Redirect to={{ pathname: redirectTo, from: 'blast' }}/>
     }
@@ -252,8 +248,8 @@ class SubmitBlast extends React.Component {
           <div className="card-header">Blast search</div>
           <div className="card-body">
             <SequenceInput 
-              value = {this.state.input}
-              seqType = {this.state.seqType}
+              value = {input}
+              seqType = {seqType}
               enterSequence = {this.enterSequence}
               selectSeqType = {this.selectSeqType}
             />
@@ -261,8 +257,8 @@ class SubmitBlast extends React.Component {
             <ul className="list-group list-group-flush">
               <li className="list-group-item">
                 <GenomeSelect 
-                  genomes = {this.props.genomes}
-                  selectedGenomes = {this.state.selectedGenomes}
+                  genomes = {genomes}
+                  selectedGenomes = {selectedGenomes}
                   toggleGenomeSelect={this.toggleGenomeSelect}
                 />
               </li>
@@ -275,24 +271,24 @@ class SubmitBlast extends React.Component {
               <label className="col-md-4">Search a ...</label>
               <div className="col-md-6">
                 {
-                  !this.state.input &&
+                  !input &&
                   <button type="button" className="btn btn-outline-secondary disabled">
                     <span className="icon-questionmark"></span> Enter sequence
                   </button>
                 }
                 {
-                  this.state.input && this.state.selectedGenomes.size == 0 &&
+                  input && selectedGenomes.size == 0 &&
                   <button type="button" className="btn btn-outline-secondary disabled">
                     <span className="icon-questionmark"></span> Select genome annotation
                   </button>
                 }
                 {
-                  this.state.input && this.state.selectedGenomes.size > 0 && 
+                  input && selectedGenomes.size > 0 && 
                   <SubmitButtons 
-                    selectedDbType = {this.state.dbType}
-                    dbTypes = {Object.keys(this.BLASTTYPES[this.state.seqType])}
+                    selectedDbType = {dbType}
+                    dbTypes = {Object.keys(this.BLASTTYPES[seqType])}
                     selectDbType = {this.selectDbType}
-                    blastType = {this.BLASTTYPES[this.state.seqType][this.state.dbType]}
+                    blastType = {BLASTTYPES[seqType][dbType]}
                     submit = {this.submit}
                   />
                 }
