@@ -23,9 +23,9 @@ const addDefaultUsers = () => {
         last_name: 'admin',
       },
     });
-    Roles.addUsersToRoles(adminId,['admin','curator','user','registered']);
+    Roles.addUsersToRoles(adminId, ['admin', 'curator', 'user', 'registered']);
 
-    logger.log('Adding default guest user')
+    logger.log('Adding default guest user');
     const guestId = Accounts.createUser({
       username: 'guest',
       email: 'guest@guest.com',
@@ -35,7 +35,7 @@ const addDefaultUsers = () => {
         last_name: 'guest',
       },
     });
-    Roles.addUsersToRoles(guestId,['user','registered'])
+    Roles.addUsersToRoles(guestId, ['user', 'registered']);
   }
 };
 
@@ -71,49 +71,61 @@ const addDefaultAttributes = () => {
     const existingAttribute = attributeCollection.findOne({ name });
     if (typeof existingAttribute === 'undefined') {
       logger.log(`Adding default filter option: ${name}`);
-      attributeCollection.update({
-        name,
-      },
-      {
-        $setOnInsert: {
+      attributeCollection.update(
+        {
           name,
-          query,
-          defaultShow: false,
-          defaultSearch: false,
-          allGenomes: true,
         },
-      },
-      {
-        upsert: true,
-      }); // end update
+        {
+          $setOnInsert: {
+            name,
+            query,
+            defaultShow: false,
+            defaultSearch: false,
+            allGenomes: true,
+          },
+        },
+        {
+          upsert: true,
+        },
+      ); // end update
     } // end if
   }); // end foreach
 };
 
 const checkBlastDbs = () => {
   // Check if blast DBs exist
-  genomeCollection.find({
-    'annotationTrack.blastDb': {
-      $exists: true,
-    },
-  }).fetch().filter((genome) => {
-    const { annotationTrack } = genome;
-    const { blastDb } = annotationTrack;
-    const hasNucDb = fs.existsSync(blastDb.nucl);
-    const hasProtDb = fs.existsSync(blastDb.prot);
-    logger.log({
-      genome, blastDb, hasProtDb, hasNucDb,
-    });
-    return !hasProtDb || !hasNucDb;
-  }).forEach(({ _id }) => {
-    genomeCollection.update({
-      _id,
-    }, {
-      $unset: {
-        'annotationTrack.blastDb': true,
+  genomeCollection
+    .find({
+      'annotationTrack.blastDb': {
+        $exists: true,
       },
+    })
+    .fetch()
+    .filter((genome) => {
+      const { annotationTrack } = genome;
+      const { blastDb } = annotationTrack;
+      const hasNucDb = fs.existsSync(blastDb.nucl);
+      const hasProtDb = fs.existsSync(blastDb.prot);
+      logger.log({
+        genome,
+        blastDb,
+        hasProtDb,
+        hasNucDb,
+      });
+      return !hasProtDb || !hasNucDb;
+    })
+    .forEach(({ _id }) => {
+      genomeCollection.update(
+        {
+          _id,
+        },
+        {
+          $unset: {
+            'annotationTrack.blastDb': true,
+          },
+        },
+      );
     });
-  });
 };
 
 const startJobQueue = () => {
