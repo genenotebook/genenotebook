@@ -4,6 +4,7 @@ import { withTracker } from 'meteor/react-meteor-data';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
+import { Link } from 'react-router-dom';
 
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 import logger from '/imports/api/util/logger.js';
@@ -65,12 +66,6 @@ const isRunning = ({ job }) => {
   return isRunning;
 };
 
-const isFinished = ({ job }) => {
-  const isFinished = job.status === 'completed';
-  logger.debug(`check isFinished: ${isFinished}`);
-  return isFinished;
-};
-
 const noHits = ({ job }) => {
   const hits =    job.result.BlastOutput.BlastOutput_iterations[0].Iteration[0]
       .Iteration_hits[0].Hit;
@@ -109,7 +104,9 @@ function BlastResult({ job }) {
         <div className="card-header">
           <h5>BLAST results </h5>
           For job with ID&nbsp;
-          <small>{job._id}</small>
+          <small>
+            <Link to={`/genes/?blastJob=${job._id}`}>{job._id}</Link>
+          </small>
           &nbsp;Created on&nbsp;
           {job.created.toDateString()}
         </div>
