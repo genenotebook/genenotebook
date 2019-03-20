@@ -114,7 +114,7 @@ function SequenceInput({
 function GenomeSelect({ genomes, selectedGenomes, toggleGenomeSelect }) {
   return (
     <div>
-      <label> Select genomes: </label>
+      <label> Select genomes </label>
       {genomes.map((genome) => {
         const { _id: genomeId, name } = genome;
         return (
@@ -132,6 +132,11 @@ function GenomeSelect({ genomes, selectedGenomes, toggleGenomeSelect }) {
           </div>
         );
       })}
+      {genomes.length === 0 && (
+        <div className="alert alert-danger" role="alert">
+          No BLAST databases found!
+        </div>
+      )}
     </div>
   );
 }

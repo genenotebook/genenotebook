@@ -116,7 +116,6 @@ function hasNoBlastJob({ blastJob }) {
 
 function processBlastJob(Component) {
   return function({ searchQuery, blastJob, ...props }) {
-    console.log({ blastJob, props });
     const hits =      blastJob.result.BlastOutput.BlastOutput_iterations[0].Iteration[0]
         .Iteration_hits[0].Hit;
     const geneIds = hits.map((hit) => {
