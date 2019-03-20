@@ -5,14 +5,11 @@ import { Roles } from 'meteor/alanning:roles';
 import React, { useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 
-import {
-  Dropdown,
-  DropdownButton,
-  DropdownMenu,
-} from '/imports/ui/util/Dropdown.jsx';
+import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
 
 import SearchBar from './SearchBar.jsx';
 import PageloadPopup from './PageloadPopup.jsx';
+import VersionPopup from './VersionPopup.jsx';
 
 import './header.scss';
 
@@ -24,50 +21,68 @@ function adminTracker() {
 }
 
 function LoggedInButton({ isAdmin }) {
+  const [showVersionPopup, setVersionPopup] = useState(false);
   return (
-    <Dropdown>
-      <DropdownButton className="btn btn-sm btn-outline-dark dropdown-toggle border">
-        <span className="icon-user" aria-hidden="true" />
-      </DropdownButton>
-      <DropdownMenu className="dropdown-menu header-menu px-2">
-        <Link to="/profile" className="dropdown-item featuremenu-item">
-          <span className="icon-pencil" />
-{' '}
-User profile
-</Link>
-        <a
-          role="menuitem"
-          className="dropdown-item featuremenu-item disabled text-muted"
-          disabled
-        >
-          <span className="icon-clipboard" />
-{' '}
-Favourites
-</a>
-        <div className="dropdown-divider" />
-        {isAdmin && (
-          <React.Fragment>
-            <Link to="/admin" className="dropdown-item featuremenu-item">
-              <span className="icon-cog" />
-{' '}
-Admin settings
-</Link>
-            <div className="dropdown-divider" />
-          </React.Fragment>
-        )}
+    <React.Fragment>
+      {showVersionPopup && (
+        <VersionPopup
+          togglePopup={() => {
+            setVersionPopup(false);
+          }}
+        />
+      )}
+      <Dropdown>
+        <DropdownButton className="btn btn-sm btn-outline-dark dropdown-toggle border">
+          <span className="icon-user" aria-hidden="true" />
+        </DropdownButton>
+        <DropdownMenu className="dropdown-menu header-menu px-2">
+          <Link to="/profile" className="dropdown-item featuremenu-item">
+            <span className="icon-pencil" />
+            &nbsp;User profile
+          </Link>
+          <button
+            type="button"
+            role="menuitem"
+            className="dropdown-item featuremenu-item disabled text-muted"
+            disabled
+          >
+            <span className="icon-clipboard" />
+            &nbsp;Favourites
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            className="dropdown-item featuremenu-item"
+            onClick={() => {
+              setVersionPopup(true);
+            }}
+          >
+            <span className="icon-questionmark" />
+            &nbsp;About
+          </button>
+          <div className="dropdown-divider" />
+          {isAdmin && (
+            <React.Fragment>
+              <Link to="/admin" className="dropdown-item featuremenu-item">
+                <span className="icon-cog" />
+                &nbsp;Admin settings
+              </Link>
+              <div className="dropdown-divider" />
+            </React.Fragment>
+          )}
 
-        <button
-          type="button"
-          className="btn btn-outline-danger btn-sm btn-block"
-          id="signout"
-          onClick={Meteor.logout}
-        >
-          <span className="icon-logout" />
-{' '}
-Sign out
-</button>
-      </DropdownMenu>
-    </Dropdown>
+          <button
+            type="button"
+            className="btn btn-outline-danger btn-sm btn-block"
+            id="signout"
+            onClick={Meteor.logout}
+          >
+            <span className="icon-logout" />
+            &nbsp;Sign out
+          </button>
+        </DropdownMenu>
+      </Dropdown>
+    </React.Fragment>
   );
 }
 
@@ -77,9 +92,8 @@ function LoggedOutButton() {
   return (
     <Link to="/login" className="btn btn-primary btn-sm" id="signin">
       <span className="icon-login" aria-hidden="true" />
-{' '}
-Sign in
-</Link>
+      &nbsp;Sign in
+    </Link>
   );
 }
 
@@ -88,7 +102,7 @@ const UserButtons = withTracker(() => {
   return {
     isLoggedIn,
   };
-})(({ isLoggedIn }) => (isLoggedIn ? <LoggedInButtonWithTracker /> : <LoggedOutButton />),);
+})(({ isLoggedIn }) => (isLoggedIn ? <LoggedInButtonWithTracker /> : <LoggedOutButton />));
 
 function NavBar() {
   const [show, setShow] = useState(false);
@@ -115,27 +129,17 @@ function NavBar() {
           <span className="navbar-toggler-icon" />
         </button>
         <div
-          className={`collapse navbar-collapse justify-content-between ${
-            show ? 'show' : ''
-          }`}
+          className={`collapse navbar-collapse justify-content-between ${show ? 'show' : ''}`}
           id="navbar"
         >
           <ul className="navbar-nav">
             <li className="nav-item">
-              <NavLink
-                to="/genes"
-                className="nav-link"
-                activeClassName="active"
-              >
+              <NavLink to="/genes" className="nav-link" activeClassName="active">
                 Genes
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink
-                to="/blast"
-                className="nav-link"
-                activeClassName="active"
-              >
+              <NavLink to="/blast" className="nav-link" activeClassName="active">
                 Blast
               </NavLink>
             </li>
