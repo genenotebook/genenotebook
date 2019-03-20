@@ -27,7 +27,10 @@ jobQueue.processJobs(
   (job, callback) => {
     // console.log(job.data);
 
-    const { blastType, input, genomeIds } = job.data;
+    const {
+      blastType, input, genomeIds, blastOptions,
+    } = job.data;
+    const { eValue, numAlignments } = blastOptions;
 
     const dbType = DB_TYPES[blastType];
 
@@ -40,7 +43,16 @@ jobQueue.processJobs(
       .map(genome => genome.annotationTrack.blastDb[dbType])
       .join(' ');
 
-    const options = ['-db', dbs, '-outfmt', '5', '-num_alignments', '20'];
+    const options = [
+      '-db',
+      dbs,
+      '-outfmt',
+      '5',
+      '-num_alignments',
+      numAlignments,
+      '-evalue',
+      eValue,
+    ];
 
     logger.debug(
       `${blastType} ${options.join(' ')} ${input.substring(0, 3)}...${input.substring(

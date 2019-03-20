@@ -1,16 +1,16 @@
+/* eslint-disable react/forbid-prop-types */
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const AlignmentText = ({ hsp }) => {
   const queryStart = hsp['Hsp_query-from'][0];
   const hspStart = hsp['Hsp_hit-from'][0];
 
-  const queryPaddingSize =    queryStart.length >= hspStart.length
-      ? 0
-      : hspStart.length - queryStart.length;
+  // eslint-disable-next-line max-len
+  const queryPaddingSize = queryStart.length >= hspStart.length ? 0 : hspStart.length - queryStart.length;
   const midLinePaddingSize = Math.max(queryStart.length, hspStart.length);
-  const subjectPaddingSize =    hspStart.length >= queryStart.length
-      ? 0
-      : queryStart.length - hspStart.length;
+  // eslint-disable-next-line max-len
+  const subjectPaddingSize = hspStart.length >= queryStart.length ? 0 : queryStart.length - hspStart.length;
 
   const queryPadding = ' '.repeat(queryPaddingSize + 3);
   const midLinePadding = ' '.repeat(midLinePaddingSize + 9);
@@ -36,7 +36,11 @@ const AlignmentText = ({ hsp }) => {
   );
 };
 
-export default function BlastAlignment({ hit }) {
+AlignmentText.propTypes = {
+  hsp: PropTypes.object.isRequired,
+};
+
+function BlastAlignment({ hit }) {
   return (
     <ul className="list-group">
       {hit.Hit_hsps.map((_hsp) => {
@@ -50,3 +54,9 @@ export default function BlastAlignment({ hit }) {
     </ul>
   );
 }
+
+BlastAlignment.propTypes = {
+  hit: PropTypes.object.isRequired,
+};
+
+export default BlastAlignment;

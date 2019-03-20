@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-for */
 /* eslint-disable react/prop-types */
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
@@ -15,7 +16,7 @@ import {
 import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 import logger from '/imports/api/util/logger.js';
 
-import { submitBlastJob } from '/imports/api/blast/submitblastjob.js';
+import submitBlastJob from '/imports/api/blast/submitblastjob.js';
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 
 import './submitblast.scss';
@@ -74,7 +75,7 @@ function SequenceInput({
         onChange={enterSequence}
       />
       {value && (
-        <div className="btn-group pull-right">
+        <div className="btn-group">
           <button
             type="button"
             className="btn btn-outline-secondary btn-sm disabled"
@@ -113,12 +114,12 @@ function SequenceInput({
 
 function GenomeSelect({ genomes, selectedGenomes, toggleGenomeSelect }) {
   return (
-    <div>
-      <label> Select genomes </label>
+    <fieldset className="border rounded p-2 my-3">
+      <legend className="w-auto px-2 h5"> Select genomes </legend>
       {genomes.map((genome) => {
         const { _id: genomeId, name } = genome;
         return (
-          <div className="form-check" key={genomeId}>
+          <div className="form-check mb-1" key={genomeId}>
             <input
               type="checkbox"
               className="form-check-input"
@@ -137,7 +138,49 @@ function GenomeSelect({ genomes, selectedGenomes, toggleGenomeSelect }) {
           No BLAST databases found!
         </div>
       )}
-    </div>
+    </fieldset>
+  );
+}
+
+function AdvancedOptions({
+  eValue, setEValue, numAlignments, setNumAlignments,
+}) {
+  function changeEvalue(event) {
+    const newEValue = event.target.value;
+    setEValue(newEValue);
+  }
+  function changeNumAlignments(event) {
+    const newNumAlignments = event.target.value;
+    setNumAlignments(newNumAlignments);
+  }
+  return (
+    <fieldset className="border rounded p-2 mt-3">
+      <legend className="w-auto px-2 h5">
+        BLAST options
+      </legend>
+      <div className="form-row">
+        <div className="col-auto">
+          <div className="input-group input-group-sm">
+            <div className="input-group-prepend">
+              <div className="input-group-text">
+                E-value
+              </div>
+            </div>
+            <input type="text" className="form-control" value={eValue} onChange={changeEvalue} style={{ maxWidth: '4em' }} />
+          </div>
+        </div>
+        <div className="col-auto">
+          <div className="input-group input-group-sm">
+            <div className="input-group-prepend">
+              <div className="input-group-text">
+                Number of alignments
+              </div>
+            </div>
+            <input type="text" className="form-control" value={numAlignments} onChange={changeNumAlignments} style={{ maxWidth: '4em' }} />
+          </div>
+        </div>
+      </div>
+    </fieldset>
   );
 }
 
@@ -149,43 +192,49 @@ function SubmitButtons({
   blastType,
 }) {
   return (
-    <div className="btn-group">
-      <div className="btn-group">
-        <Dropdown>
-          <DropdownButton className="btn btn-outline-primary dropdown-toggle">
-            <strong>{selectedDbType}</strong>
-            database
-          </DropdownButton>
-          <DropdownMenu>
-            {dbTypes.map(dbType => (
-              <button
-                type="button"
-                key={dbType}
-                className="dropdown-item db-select"
-                id={dbType}
-                onClick={selectDbType}
-              >
-                {dbType}
-                database
-              </button>
-            ))}
-          </DropdownMenu>
-        </Dropdown>
+    <div className="form-row">
+      <div className="col-auto">
+        <div className="btn-group btn-group-sm">
+          <button type="button" className="btn btn-sm btn-secondary" disabled>
+            Search a
+          </button>
+          <Dropdown>
+            <DropdownButton className="btn btn-sm btn-outline-secondary dropdown-toggle">
+              <strong>{selectedDbType}</strong>
+              &nbsp;database
+            </DropdownButton>
+            <DropdownMenu>
+              {dbTypes.map(dbType => (
+                <button
+                  type="button"
+                  key={dbType}
+                  className="dropdown-item db-select"
+                  id={dbType}
+                  onClick={selectDbType}
+                >
+                  {dbType}
+                  &nbsp;database
+                </button>
+              ))}
+            </DropdownMenu>
+          </Dropdown>
+        </div>
       </div>
-      <div className="btn-group">
+      <div className="col-auto">
         <button
           type="button"
-          className="btn btn-primary"
+          className="btn btn-primary btn-sm"
           id="submit-blast"
           onClick={submit}
         >
-          <span className="glyphicon glyphicon-search" />
+          <span className="icon-database" />
           {blastType.toUpperCase()}
         </button>
       </div>
     </div>
   );
 }
+
 
 function dataTracker() {
   const subscription = Meteor.subscribe('genomes');
@@ -212,6 +261,9 @@ function SubmitBlast({ genomes }) {
   const [redirect, setRedirect] = useState(
     Meteor.userId() ? undefined : 'login',
   );
+
+  const [eValue, setEValue] = useState('10');
+  const [numAlignments, setNumAlignments] = useState('50');
 
   const [selectedGenomes, setSelectedGenomes] = useState(new Set());
   function toggleGenomeSelect(event) {
@@ -259,6 +311,10 @@ function SubmitBlast({ genomes }) {
         blastType,
         input,
         genomeIds: [...selectedGenomes],
+        blastOptions: {
+          eValue,
+          numAlignments,
+        },
       },
       (err, res) => {
         if (err) logger.warn(err);
@@ -282,50 +338,48 @@ function SubmitBlast({ genomes }) {
             enterSequence={enterSequence}
             selectSeqType={selectSeqType}
           />
+          <GenomeSelect
+            genomes={genomes}
+            selectedGenomes={selectedGenomes}
+            toggleGenomeSelect={toggleGenomeSelect}
+          />
+          <AdvancedOptions
+            {...{
+              eValue,
+              setEValue,
+              numAlignments,
+              setNumAlignments,
+            }}
+          />
         </div>
-        <ul className="list-group list-group-flush">
-          <li className="list-group-item">
-            <GenomeSelect
-              genomes={genomes}
-              selectedGenomes={selectedGenomes}
-              toggleGenomeSelect={toggleGenomeSelect}
+        <div className="card-footer d-flex justify-content-around">
+          {!input && (
+            <button
+              type="button"
+              className="btn btn-outline-secondary btn-sm disabled"
+            >
+              <span className="icon-questionmark" />
+              Enter sequence
+            </button>
+          )}
+          {input && selectedGenomes.size === 0 && (
+            <button
+              type="button"
+              className="btn btn-outline-secondary btn-sm disabled"
+            >
+              <span className="icon-questionmark" />
+              Select genome annotation
+            </button>
+          )}
+          {input && selectedGenomes.size > 0 && (
+            <SubmitButtons
+              selectedDbType={dbType}
+              dbTypes={Object.keys(BLASTTYPES[seqType])}
+              selectDbType={selectDbType}
+              blastType={BLASTTYPES[seqType][dbType]}
+              submit={submit}
             />
-          </li>
-          <li className="list-group-item">Advanced options ...</li>
-        </ul>
-        <div className="card-footer">
-          <div className="row">
-            <p className="col-md-4">Search a ...</p>
-            <div className="col-md-6">
-              {!input && (
-                <button
-                  type="button"
-                  className="btn btn-outline-secondary disabled"
-                >
-                  <span className="icon-questionmark" />
-                  Enter sequence
-                </button>
-              )}
-              {input && selectedGenomes.size === 0 && (
-                <button
-                  type="button"
-                  className="btn btn-outline-secondary disabled"
-                >
-                  <span className="icon-questionmark" />
-                  Select genome annotation
-                </button>
-              )}
-              {input && selectedGenomes.size > 0 && (
-                <SubmitButtons
-                  selectedDbType={dbType}
-                  dbTypes={Object.keys(BLASTTYPES[seqType])}
-                  selectDbType={selectDbType}
-                  blastType={BLASTTYPES[seqType][dbType]}
-                  submit={submit}
-                />
-              )}
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </form>

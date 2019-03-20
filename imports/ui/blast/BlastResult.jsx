@@ -95,7 +95,7 @@ function Waiting({ jobId }) {
 }
 
 Waiting.propTypes = {
-  jobId: PropTypes.object.isRequired,
+  jobId: PropTypes.string.isRequired,
 };
 
 function Running({ jobId }) {
@@ -139,7 +139,7 @@ function Running({ jobId }) {
 }
 
 Running.propTypes = {
-  jobId: PropTypes.object.isRequired,
+  jobId: PropTypes.string.isRequired,
 };
 
 function NotFound({ jobId }) {
@@ -155,16 +155,23 @@ function NotFound({ jobId }) {
 }
 
 NotFound.propTypes = {
-  jobId: PropTypes.object.isRequired,
+  jobId: PropTypes.string.isRequired,
 };
 
-function NoHits() {
+function NoHits({ job }) {
   return (
     <JobStatus>
-      <h2 className="text-center"> No BLAST hits found</h2>
+      <React.Fragment>
+        <h2 className="text-center"> No BLAST hits found</h2>
+        <BlastJobInfo job={job} />
+      </React.Fragment>
     </JobStatus>
   );
 }
+
+NoHits.propTypes = {
+  job: PropTypes.object.isRequired,
+};
 
 function isLoading({ loading }) {
   return loading;
@@ -184,7 +191,7 @@ function isRunning({ job }) {
 }
 
 function noHits({ job }) {
-  const { result } = job;
+  const { result = {} } = job;
   const { hits } = result;
   return typeof hits === 'undefined';
 }
@@ -346,7 +353,7 @@ function BlastResult({ job }) {
             />
           </div>
           <h5>
-            { hits.length }
+            <span className="badge badge-primary align-top">{ hits.length }</span>
             &nbsp;BLAST results
           </h5>
           For job with ID&nbsp;
@@ -356,7 +363,9 @@ function BlastResult({ job }) {
           &nbsp;Created on&nbsp;
           {job.created.toDateString()}
         </div>
-        <MainViz job={job} />
+        <div className="px-4 pt-3">
+          <MainViz job={job} />
+        </div>
         <BlastResultList
           blastResult={job.result}
           RenderComponent={HIT_INFO[hitInfo]}
