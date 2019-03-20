@@ -13,12 +13,26 @@
     "complete_build": "npm install && npm run bundle",
     "dev": "NODE_OPTIONS=--max-old-space-size=8192 meteor run",
     "dev_production": "NODE_OPTIONS=--max-old-space-size=8192 meteor run --production",
-    "reset": "meteor reset"
+    "reset": "meteor reset",
+    "lint": "eslint imports"
   },
   "meteor": {
     "mainModule": {
       "client": "client/main.jsx",
       "server": "server/main.js"
+    }
+  },
+  "eslintConfig": {
+    "extends": "@meteorjs/eslint-config-meteor",
+    "settings": {
+      "import/resolver": {
+        "meteor": {
+          "extensions": [
+            ".js",
+            ".jsx"
+          ]
+        }
+      }
     }
   },
   "dependencies": {
@@ -50,6 +64,7 @@
     "meteor-node-stubs": "^0.4.0",
     "object-hash": "^1.3.1",
     "papaparse": "^4.6.3",
+    "prop-types": "^15.7.2",
     "randomcolor": "^0.5.4",
     "react": "^16.8.4",
     "react-container-dimensions": "^1.4.1",
@@ -73,11 +88,14 @@
     "xml2js-es6-promise": "^1.1.1"
   },
   "devDependencies": {
-    "eslint": "^5.15.1",
+    "@meteorjs/eslint-config-meteor": "^1.0.5",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.15.2",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-import-resolver-meteor": "^0.4.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-meteor": "^5.1.0",
     "eslint-plugin-react": "^7.12.4"
   }
 }

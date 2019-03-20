@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Loading indicator for expression plots
 
+### Fixed
+- Expression plots now display scroll on overflow
+
 ## [0.1.13] 2018-11-29
 ### Fixed
 - DB path folder creation

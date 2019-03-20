@@ -1,15 +1,14 @@
 // This defines a starting set of data to be loaded if the app is loaded with an empty db.
-import './server-fixtures.js';
+import './fixtures/server-fixtures.js';
 
 // Set up some configuration for account creation;
-import './useraccounts-configuration.js'; 
+import './useraccounts-configuration.js';
 
 // Start server side routing for downloads
 import './download-routes.js';
 
 // Dynamic head to add correct css imports when using Meteor.absoluteUrl()
 import './dynamic-head.js';
-
 
 // This file configures the Accounts package to define the UI of the reset password email.
 // import '../imports/startup/server/reset-password-email.js';

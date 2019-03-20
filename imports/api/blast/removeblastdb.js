@@ -12,7 +12,7 @@ import logger from '/imports/api/util/logger.js';
  * @param  {String} options.trackName Name of the annotation track
  * @return {Bool}                     jobqueue
  */
-export const removeBlastDb = new ValidatedMethod({
+const removeBlastDb = new ValidatedMethod({
   name: 'removeBlastDb',
   validate: new SimpleSchema({
     genomeId: { type: String }
@@ -39,3 +39,5 @@ export const removeBlastDb = new ValidatedMethod({
     })
   }
 })
+
+export default removeBlastDb;

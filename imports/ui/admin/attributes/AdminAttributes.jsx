@@ -1,3 +1,5 @@
+/* eslint-disable react/prop-types */
+import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
@@ -20,63 +22,69 @@ const attributeDataTracker = () => {
   return {
     attributes,
     genomes,
-    loading
-  }
-}
+    loading,
+  };
+};
 
 const withConditionalRendering = compose(
   withTracker(attributeDataTracker),
-  withEither(isLoading, Loading)
-)
+  withEither(isLoading, Loading),
+);
 
 class AdminAttributes extends React.Component {
-  constructor(props){
-    super(props)
-  }
-
   scanAttributes = (event) => {
     event.preventDefault();
-    this.props.genomes.forEach(({ _id: genomeId }) => {
+    const { genomes } = this.props;
+    genomes.forEach(({ _id: genomeId }) => {
       scanGeneAttributes.call({ genomeId });
-    })
-  }
+    });
+  };
 
-  render(){
-    const { attributes, ...props } = this.props;
+  render() {
+    const { attributes } = this.props;
     return (
       <div>
-        <hr/>
-        <button type='button' className='btn btn-warning' onClick={this.scanAttributes}>
-          <span className="icon-exclamation" aria-hidden="true"/> Scan all genes for attributes
+        <hr />
+        <button
+          type="button"
+          className="btn btn-warning"
+          onClick={this.scanAttributes}
+        >
+          <span className="icon-exclamation" aria-hidden="true" />
+          Scan all genes for attributes
         </button>
-        <hr/>
+        <hr />
         <table className="table table-hover table-sm">
           <thead>
-          <tr>
-            {
-              ['Name','Query','Display default','Search default','Actions'].map(label => {
-                return <th key={label} scope='col'>
-                  <button type='button' className='btn btn-sm btn-outline-dark py-0 px-2' disabled>
-                    { label }
+            <tr>
+              {[
+                'Name',
+                'Query',
+                'Display default',
+                'Search default',
+                'Actions',
+              ].map(label => (
+                <th key={label} scope="col">
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-outline-dark py-0 px-2"
+                    disabled
+                  >
+                    {label}
                   </button>
                 </th>
-              })
-            }
-          </tr>
-        </thead>
-        <tbody>
-        {
-          attributes.map(attribute => {
-            return <AttributeInfo key={attribute._id} {...attribute} />
-          })
-        }
-        </tbody>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {attributes.map(attribute => (
+              <AttributeInfo key={attribute._id} {...attribute} />
+            ))}
+          </tbody>
         </table>
       </div>
-    )
+    );
   }
 }
 
 export default withConditionalRendering(AdminAttributes);
-
-
