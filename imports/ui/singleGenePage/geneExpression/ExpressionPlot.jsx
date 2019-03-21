@@ -1,8 +1,11 @@
+/* eslint-disable react/forbid-prop-types */
+/* eslint-disable camelcase */
 /* eslint-disable react/no-multi-comp */
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
-import React from 'react';
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import ReactResizeDetector from 'react-resize-detector';
 import { compose } from 'recompose';
 import { mean, sum, groupBy } from 'lodash';
@@ -11,7 +14,6 @@ import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import { scaleLinear } from 'd3'; // -scale';
 
 import {
-  ExperimentInfo,
   Transcriptomes,
 } from '/imports/api/transcriptomes/transcriptome_collection.js';
 
@@ -20,7 +22,7 @@ import { withEither, round } from '/imports/ui/util/uiUtil.jsx';
 import './expressionPlot.scss';
 
 function expressionDataTracker({
- gene, samples, loading, ...props 
+  gene, samples, loading,
 }) {
   const transcriptomeSub = Meteor.subscribe('geneExpression', gene.ID);
 
@@ -46,7 +48,7 @@ function expressionDataTracker({
   };
 }
 
-function hasNoSamples({ samples, ...props }) {
+function hasNoSamples({ samples }) {
   return samples.length === 0;
 }
 
@@ -88,8 +90,8 @@ function ExpressionPopover({
   ...expression
 }) {
   const {
- tpm, est_counts, description, replicaGroup, sampleName 
-} = expression;
+    tpm, est_counts, description, replicaGroup, sampleName,
+  } = expression;
   return (
     <Popover
       placement="top"
@@ -177,60 +179,47 @@ function YAxis({ scale, numTicks }) {
   );
 }
 
-class ExpressionDot extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      showPopover: false,
-    };
-  }
-
-  togglePopover = () => {
-    this.setState({
-      showPopover: !this.state.showPopover,
-    });
-  };
-
-  render() {
-    const { yScale, ...sample } = this.props;
-    const { showPopover } = this.state;
-    const targetId = `x${sample._id}`;
-    return (
-      <React.Fragment>
-        <circle
-          className="expression"
-          id={targetId}
-          cx="0"
-          cy={yScale(sample.tpm)}
-          r="4"
-          strokeWidth="1"
-          fill="white"
-          onClick={this.togglePopover}
-        />
-        <ExpressionPopover
-          {...{ targetId, showPopover, ...sample }}
-          togglePopover={this.togglePopover}
-        />
-      </React.Fragment>
-    );
-  }
+function ExpressionDot({ yScale, ...sample }) {
+  const [showPopover, setPopover] = useState(false);
+  function togglePopover() { setPopover(!showPopover); }
+  const targetId = `x${sample._id}`;
+  return (
+    <React.Fragment>
+      <circle
+        className="expression"
+        id={targetId}
+        cx="0"
+        cy={yScale(sample.tpm)}
+        r="4"
+        strokeWidth="1"
+        fill="white"
+        onClick={togglePopover}
+      />
+      <ExpressionPopover
+        {...{ targetId, showPopover, ...sample }}
+        togglePopover={togglePopover}
+      />
+    </React.Fragment>
+  );
 }
 
-const DotPlot = ({ replicaGroup, groupSamples, yScale }) => (
-  <g className="dotplot">
-    {groupSamples.map(sample => (
-      <ExpressionDot key={sample._id} {...{ yScale, ...sample }} />
-    ))}
-  </g>
-);
+function DotPlot({ groupSamples, yScale }) {
+  return (
+    <g className="dotplot">
+      {groupSamples.map(sample => (
+        <ExpressionDot key={sample._id} {...{ yScale, ...sample }} />
+      ))}
+    </g>
+  );
+}
 
-const BarPlot = ({ replicaGroup, groupSamples, yScale }) => {
+function BarPlot({ replicaGroup, groupSamples, yScale }) {
   const tpm = groupSamples.map(sample => sample.tpm);
   const meanVal = mean(tpm);
   const width = 20;
 
   const stdDev = Math.sqrt(
-    sum(groupSamples.map(sample => Math.pow(sample.tpm - meanVal, 2))),
+    sum(groupSamples.map(sample => (sample.tpm - meanVal) ** 2)),
   );
 
   const stdErr = stdDev / Math.sqrt(groupSamples.length);
@@ -274,158 +263,129 @@ const BarPlot = ({ replicaGroup, groupSamples, yScale }) => {
       />
     </g>
   );
+}
+
+function GroupedSamplePlot({
+  replicaGroup, groupSamples, yScale, transform,
+}) {
+  const [highlight, setHighlight] = useState(false);
+  const range = yScale.range();
+  const highlightStyle = { stroke: 'none', fill: '#d9d9d9' };
+  return (
+    <g
+      transform={transform}
+      onMouseOver={() => { setHighlight(true); }}
+      onFocus={() => { setHighlight(true); }}
+      onMouseOut={() => { setHighlight(false); }}
+      onBlur={() => { setHighlight(false); }}
+    >
+      <g transform={`translate(0,${range[0]})`}>
+        {highlight && (
+          <g className="highlight">
+            <rect
+              x={-12.5}
+              width={25}
+              y={-range[0]}
+              height={range[0] + 30}
+              style={highlightStyle}
+            />
+            <rect
+              x={-184}
+              width={150}
+              y={14}
+              height={28}
+              transform="rotate(-45,-25,-20)"
+              style={highlightStyle}
+            />
+          </g>
+        )}
+        <line x1="-20" x2="20" y1="0" y2="0" stroke="black" />
+        <line x1="0" x2="0" y1="0" y2="10" stroke="black" />
+        <text
+          x="-12"
+          y="17"
+          textAnchor="end"
+          transform="rotate(-45)"
+          fontSize="10"
+        >
+          <title>{`${replicaGroup} (n = ${groupSamples.length})`}</title>
+          {`${replicaGroup.slice(0, 20)}`
+            + `${replicaGroup.length > 20 ? '... ' : ' '}`
+            + `(n = ${groupSamples.length})`}
+        </text>
+      </g>
+      <BarPlot {...{ replicaGroup, groupSamples, yScale }} />
+      <DotPlot {...{ replicaGroup, groupSamples, yScale }} />
+    </g>
+  );
+}
+
+function GroupedSamples({ replicaGroups, yScale, transform }) {
+  return (
+    <g transform={transform}>
+      {Object.entries(replicaGroups).map(
+        ([replicaGroup, groupSamples], index) => (
+          <GroupedSamplePlot
+            key={replicaGroup}
+            {...{ replicaGroup, groupSamples }}
+            yScale={yScale}
+            transform={`translate(${index * 40},0)`}
+          />
+        ),
+      )}
+    </g>
+  );
+}
+
+function ExpressionPlot({ values, resizable, height }) {
+  const [width, setWidth] = useState(250);
+  const tpm = values.map(value => value.tpm);
+  tpm.push(1);
+  const maxTpm = Math.max(...tpm);
+  const precision = maxTpm > 10 ? 0 : maxTpm > 1 ? 1 : 2;
+  const yMax = round(maxTpm + 0.1 * maxTpm, precision);
+
+  const replicaGroups = groupBy(values, 'replicaGroup');
+  const numGroups = Object.keys(replicaGroups).length;
+  const padding = {
+    top: 20,
+    bottom: 10,
+    left: 50,
+    right: 10,
+  };
+
+  const yScale = scaleLinear()
+    .domain([0, yMax])
+    .range([height - padding.top - padding.bottom, 0]);
+
+  return (
+    <div className="card expression-plot">
+      <div style={{ width, overflowX: 'scroll' }}>
+        <svg width={170 + numGroups * 40} height={height + 125}>
+          <g transform={`translate(${padding.left},${padding.top})`}>
+            <YAxis scale={yScale} numTicks="4" />
+            <GroupedSamples
+              {...{ replicaGroups, yScale }}
+              transform="translate(20,0)"
+            />
+          </g>
+        </svg>
+      </div>
+      {resizable && (
+        <ReactResizeDetector handleWidth onResize={(newWidth) => { setWidth(newWidth); }} />
+      )}
+    </div>
+  );
+}
+
+ExpressionPlot.defaultProps = {
+  resizable: true,
+  height: 250,
 };
 
-class GroupedSamplePlot extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      highlight: false,
-    };
-  }
-
-  highlight = () => {
-    this.setState({
-      highlight: true,
-    });
-  };
-
-  lowlight = () => {
-    this.setState({
-      highlight: false,
-    });
-  };
-
-  render() {
-    const {
- replicaGroup, groupSamples, yScale, transform 
-} = this.props;
-    const { highlight } = this.state;
-    const range = yScale.range();
-    const highlightStyle = { stroke: 'none', fill: '#d9d9d9' };
-    return (
-      <g
-        transform={transform}
-        onMouseOver={this.highlight}
-        onMouseOut={this.lowlight}
-      >
-        <g transform={`translate(0,${range[0]})`}>
-          {highlight && (
-            <g className="highlight">
-              <rect
-                x={-12.5}
-                width={25}
-                y={-range[0]}
-                height={range[0] + 30}
-                style={highlightStyle}
-              />
-              <rect
-                x={-8}
-                width={150}
-                y={20}
-                height={20}
-                transform="rotate(17,25,20)"
-                style={highlightStyle}
-              />
-            </g>
-          )}
-          <line x1="-20" x2="20" y1="0" y2="0" stroke="black" />
-          <line x1="0" x2="0" y1="0" y2="10" stroke="black" />
-          <text
-            x="5"
-            y="25"
-            textAnchor="left"
-            transform="rotate(17)"
-            fontSize="10"
-          >
-            <title>{`${replicaGroup} (n = ${groupSamples.length})`}</title>
-            {`${replicaGroup.slice(0, 20)}`
-              + `${replicaGroup.length > 20 ? '... ' : ' '}`
-              + `(n = ${groupSamples.length})`}
-          </text>
-        </g>
-        <BarPlot {...{ replicaGroup, groupSamples, yScale }} />
-        <DotPlot {...{ replicaGroup, groupSamples, yScale }} />
-      </g>
-    );
-  }
-}
-
-const GroupedSamples = ({ replicaGroups, yScale, transform }) => (
-  <g transform={transform}>
-    {Object.entries(replicaGroups).map(
-      ([replicaGroup, groupSamples], index) => (
-        <GroupedSamplePlot
-          key={replicaGroup}
-          {...{ replicaGroup, groupSamples }}
-          yScale={yScale}
-          transform={`translate(${index * 40},0)`}
-        />
-      ),
-    )}
-  </g>
-);
-
-class ExpressionPlot extends React.Component {
-  static defaultProps = {
-    resizable: true,
-    height: 250,
-  };
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      width: 250,
-    };
-  }
-
-  onResize = (width) => {
-    this.setState({
-      width,
-    });
-  };
-
-  render() {
-    const { values, resizable, height } = this.props;
-    const { width } = this.state;
-    const tpm = values.map(value => value.tpm);
-    tpm.push(1);
-    const maxTpm = Math.max(...tpm);
-    const precision = maxTpm > 10 ? 0 : maxTpm > 1 ? 1 : 2;
-    const yMax = round(maxTpm + 0.1 * maxTpm, precision);
-
-    const replicaGroups = groupBy(values, 'replicaGroup');
-    const numGroups = Object.keys(replicaGroups).length;
-    const padding = {
-      top: 20,
-      bottom: 10,
-      left: 50,
-      right: 10,
-    };
-
-    const yScale = scaleLinear()
-      .domain([0, yMax])
-      .range([height - padding.top - padding.bottom, 0]);
-
-    return (
-      <div className="card expression-plot">
-        <div style={{ width, overflow: 'scroll' }}>
-          <svg width={170 + numGroups * 40} height={height + 75}>
-            <g transform={`translate(${padding.left},${padding.top})`}>
-              <YAxis scale={yScale} numTicks="4" />
-              <GroupedSamples
-                {...{ replicaGroups, yScale }}
-                transform="translate(20,0)"
-              />
-            </g>
-          </svg>
-        </div>
-        {resizable && (
-          <ReactResizeDetector handleWidth onResize={this.onResize} />
-        )}
-      </div>
-    );
-  }
-}
-
+ExpressionPlot.propTypes = {
+  values: PropTypes.array.isRequired,
+  resizable: PropTypes.bool,
+  height: PropTypes.number,
+};
 export default withConditionalRendering(ExpressionPlot);
