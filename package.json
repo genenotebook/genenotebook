@@ -14,7 +14,8 @@
     "dev": "NODE_OPTIONS=--max-old-space-size=8192 meteor run",
     "dev_production": "NODE_OPTIONS=--max-old-space-size=8192 meteor run --production",
     "reset": "meteor reset",
-    "lint": "eslint imports"
+    "lint": "eslint imports",
+    "postversion": "pushd scripts && npm version $(jq .version ../package.json) && popd"
   },
   "meteor": {
     "mainModule": {
