@@ -1,6 +1,6 @@
 {
   "name": "genenotebook",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "repository": "https://github.com/genenotebook/genenotebook",
   "description": "A portable website for browsing and querying genome sequences and annotations",
   "license": "AGPL-3.0",
