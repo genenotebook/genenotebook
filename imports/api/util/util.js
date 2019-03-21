@@ -6,15 +6,17 @@ import logger from '/imports/api/util/logger.js';
  * @param  {String} attributeString Raw gff3 attribute column string
  * @return {Object}                 Key:value pairs of attributes.
  */
-export const parseAttributeString = (attributeString) => {
-  return attributeString.split(';').reduce((attributes, stringPart) => {
-    const [key, value] = stringPart.split('=')
-    if (typeof key !== 'undefined' && typeof value !== 'undefined') {
-      attributes[key] = value.split('"').join('').split(',').map(decodeURIComponent);
-    }
-    return attributes;
-  }, {});
-};
+export const parseAttributeString = attributeString => attributeString.split(';').reduce((attributes, stringPart) => {
+  const [key, value] = stringPart.split('=');
+  if (typeof key !== 'undefined' && typeof value !== 'undefined') {
+    attributes[key] = value
+      .split('"')
+      .join('')
+      .split(',')
+      .map(decodeURIComponent);
+  }
+  return attributes;
+}, {});
 
 /**
  * Debug parsing gff3 attribute column by logging intermediate steps to logger
@@ -25,9 +27,13 @@ export const debugParseAttributeString = (attributeString) => {
   const arr = attributeString.split(';');
   logger.debug(arr);
   const attributes = arr.reduce((attr, stringPart) => {
-    const [key, value] = stringPart.split('=')
+    const [key, value] = stringPart.split('=');
     logger.debug(key, value);
-    const values = value.split('"').join('').split(',').map(decodeURIComponent);
+    const values = value
+      .split('"')
+      .join('')
+      .split(',')
+      .map(decodeURIComponent);
     logger.debug(values);
     attr[key] = values;
     return attr;
@@ -133,7 +139,7 @@ export const translate = (seq) => {
     CTC: 'L',
     GAT: 'D',
   };
-  const codonArray = seq.match(/.{1,3}/g)
+  const codonArray = seq.match(/.{1,3}/g);
   const pepArray = codonArray.map((codon) => {
     const aminoAcid = codon.indexOf('N') < 0 ? trans[codon] : 'X';
     return aminoAcid;
@@ -141,7 +147,6 @@ export const translate = (seq) => {
   const pep = pepArray.join('');
   return pep;
 };
-
 
 /**
  * Get nucleotide and protein sequences of all transcripts for a single gene (using CDS subfeatures)
@@ -152,7 +157,11 @@ export const translate = (seq) => {
 export const getGeneSequences = (gene) => {
   const transcripts = gene.subfeatures.filter(subfeature => subfeature.type === 'mRNA');
   const sequences = transcripts.map((transcript) => {
-    const cdsArray = gene.subfeatures.filter(subfeature => subfeature.parents.indexOf(transcript.ID) >= 0 && subfeature.type === 'CDS').sort((a, b) => a.start - b.start);
+    const cdsArray = gene.subfeatures
+      .filter(
+        subfeature => subfeature.parents.indexOf(transcript.ID) >= 0 && subfeature.type === 'CDS',
+      )
+      .sort((a, b) => a.start - b.start);
 
     const rawSeq = cdsArray.map(cds => cds.seq).join('');
 
@@ -178,7 +187,7 @@ export const parseNewick = (newickString) => {
   // Adapted from Jason Davies https://github.com/jasondavies/newick.js
   const ancestors = [];
   const tokens = newickString.split(/\s*(;|\(|\)|,|:)\s*/);
-  const geneIds = []
+  const geneIds = [];
   let tree = {};
   let subtree = {};
   let nNodes = 0;
@@ -202,11 +211,7 @@ export const parseNewick = (newickString) => {
         break;
       default:
         const previousToken = tokens[tokenIndex - 1];
-        if (
-          previousToken === '(' ||
-          previousToken === ')' ||
-          previousToken === ','
-        ) {
+        if (previousToken === '(' || previousToken === ')' || previousToken === ',') {
           tree.name = token;
           nNodes += 1;
           if (token.length > 0) {

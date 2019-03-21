@@ -10,7 +10,7 @@ import '/imports/ui/global_stylesheets/global.scss';
 
 WebFont.load({
   google: {
-    families: ['Roboto:300']
+    families: ['Roboto:300'],
   },
 });
 
