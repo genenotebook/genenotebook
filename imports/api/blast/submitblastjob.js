@@ -14,37 +14,45 @@ import logger from '/imports/api/util/logger.js';
  * @param  {String} options.dbType    Either nucl or prot
  * @return {String}                   jobId of the makeblastdb job
  */
-export const submitBlastJob = new ValidatedMethod({
+const submitBlastJob = new ValidatedMethod({
   name: 'submitBlastJob',
   validate: new SimpleSchema({
     blastType: { type: String },
     input: { type: String },
     genomeIds: { type: Array },
-    'genomeIds.$': { type: String }
+    'genomeIds.$': { type: String },
+    blastOptions: { type: Object },
+    'blastOptions.eValue': { type: String },
+    'blastOptions.numAlignments': { type: String },
   }).validator(),
   applyOptions: {
-    noRetry: true
+    noRetry: true,
   },
-  run({ blastType, input, genomeIds }){
+  run({
+    blastType, input, genomeIds, blastOptions,
+  }) {
     const user = this.userId;
-    if (! user) {
+    if (!user) {
       throw new Meteor.Error('not-authorized');
     }
-    if (! Roles.userIsInRole(user,'user')){
+    if (!Roles.userIsInRole(user, 'user')) {
       throw new Meteor.Error('not-authorized');
     }
 
-    logger.debug('submit blast job')
+    logger.debug('submit blast job');
 
-    const jobOptions = { blastType, input, genomeIds, user };
+    const jobOptions = {
+      blastType, input, genomeIds, user, blastOptions,
+    };
 
     const job = new Job(jobQueue, 'blast', jobOptions);
 
     const jobId = job.priority('normal').save();
 
-    logger.debug(jobId)
+    logger.debug(jobId);
 
-    return jobId
-  
-  }
-})
+    return jobId;
+  },
+});
+
+export default submitBlastJob;

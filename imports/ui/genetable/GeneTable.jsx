@@ -2,11 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
-import { withRouter } from 'react-router-dom';
+// import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 import { cloneDeep, isEqual, isEmpty } from 'lodash';
 
 import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
+import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 
 import { queryCount } from '/imports/api/methods/queryCount.js';
 
@@ -21,7 +22,11 @@ import DownloadDialogModal from './downloads/DownloadDialog.jsx';
 
 import './geneTable.scss';
 
-export const VISUALIZATIONS =['Gene model', 'Protein domains', 'Gene expression'];
+export const VISUALIZATIONS = [
+  'Gene model',
+  'Protein domains',
+  'Gene expression',
+];
 
 /**
  * [description]
@@ -33,12 +38,12 @@ const attributeTracker = ({ location, history }) => {
   const loading = !attributeSub.ready();
   const attributes = attributeCollection.find({}).fetch();
   return {
-    loading, 
+    loading,
     attributes,
     location,
-    history
-  }
-}
+    history,
+  };
+};
 
 /**
  * [description]
@@ -48,31 +53,32 @@ const attributeTracker = ({ location, history }) => {
 const searchTracker = ({ attributes, location, history }) => {
   const { search } = location;
   const queryString = new URLSearchParams(search);
-  
+
   const attributeString = queryString.get('attributes') || '';
   const searchAttributes = attributeString.split(',');
-  
+
   const searchValue = queryString.get('search') || '';
 
   const searchQuery = { $or: [] };
   attributes
-    .filter(({ name }) => new RegExp(name).test(searchAttributes) )
-    .forEach(attribute => {
-      searchQuery.$or.push({ 
-        [attribute.query]: { 
-          $regex: searchValue, 
-          $options: 'i' 
-        }
-      })
+    .filter(({ name }) => new RegExp(name).test(searchAttributes))
+    .forEach((attribute) => {
+      searchQuery.$or.push({
+        [attribute.query]: {
+          $regex: searchValue,
+          $options: 'i',
+        },
+      });
     });
 
   const selectedAttributes = attributes
-    .filter(({ defaultShow, defaultSearch, name }) => {
-      return defaultShow || defaultSearch || new RegExp(name).test(searchAttributes)
-    }).map(({ name }) => name)
+    .filter(
+      ({ defaultShow, defaultSearch, name }) => defaultShow || defaultSearch || new RegExp(name).test(searchAttributes),
+    )
+    .map(({ name }) => name);
 
   if (!searchQuery.$or.length) {
-    delete searchQuery.$or
+    delete searchQuery.$or;
   }
 
   return {
@@ -82,16 +88,45 @@ const searchTracker = ({ attributes, location, history }) => {
     searchValue,
     searchQuery,
     location,
-    history
-  }
-  
+    history,
+  };
+};
+
+function blastJobTracker({ location, ...props }) {
+  const { search } = location;
+  const queryString = new URLSearchParams(search);
+  const jobId = queryString.get('blastJob');
+  if (!jobId) return { ...props };
+
+  const subscription = Meteor.subscribe('jobQueue');
+  const loading = subscription.ready();
+  const blastJob = jobQueue.findOne({ _id: jobId });
+
+  return {
+    loading,
+    location,
+    blastJob,
+    ...props,
+  };
 }
 
-const withConditionalRendering = compose(
-  withTracker(attributeTracker),
-  withEither(isLoading, Loading),
-  withTracker(searchTracker)
-)
+function hasNoBlastJob({ blastJob }) {
+  return typeof blastJob === 'undefined';
+}
+
+function processBlastJob(Component) {
+  return function({ searchQuery, blastJob, ...props }) {
+    const hits =      blastJob.result.BlastOutput.BlastOutput_iterations[0].Iteration[0]
+        .Iteration_hits[0].Hit;
+    const geneIds = hits.map((hit) => {
+      const geneId = hit.Hit_def[0].split(' ')[0];
+      return geneId;
+    });
+
+    searchQuery.ID = { $in: geneIds }; // eslint-disable-line no-param-reassign
+    return <Component searchQuery={searchQuery} {...props} />;
+  };
+}
 
 /**
  * Dynamic table for displaying gene information with columns that can be queried and configured
@@ -99,8 +134,8 @@ const withConditionalRendering = compose(
  * @kind {class}
  */
 class GeneTable extends React.Component {
-  constructor(props){
-    super(props)
+  constructor(props) {
+    super(props);
     this.state = {
       limit: 20,
       query: {},
@@ -112,24 +147,25 @@ class GeneTable extends React.Component {
       selectedVisualization: VISUALIZATIONS[0],
       showDownloadDialog: false,
       search: '',
-      dummy: 0
-    }
+      dummy: 0,
+    };
   }
 
-  static getDerivedStateFromProps =  (props, state) => {
+  static getDerivedStateFromProps = (props, state) => {
     const { query: oldQuery } = state;
-    const { searchQuery, selectedAttributes, location } = props;
-    
+    const { searchQuery, selectedAttributes } = props;
+
     /*
     Determine what columns to show
      */
+    // eslint-disable-next-line no-underscore-dangle
     const _selectedColumns = new Set([
-      'Gene ID', 
-      ...state.selectedColumns, 
-      ...selectedAttributes
+      'Gene ID',
+      ...state.selectedColumns,
+      ...selectedAttributes,
     ]);
     const selectedColumns = [..._selectedColumns];
-    
+
     /*
     Figure out what the query should be
      */
@@ -139,159 +175,206 @@ class GeneTable extends React.Component {
       Object.assign(query, oldQuery, searchQuery);
       return {
         query,
-        selectedColumns
-      }
+        selectedColumns,
+      };
     }
 
     return {
-      selectedColumns
-    }
-  }
+      selectedColumns,
+    };
+  };
 
-  componentDidUpdate = (prevProps, prevState) => {
+  componentDidUpdate = (prevProps) => {
     const currProps = this.props;
-    const { query } = this.state;
-    if (!isEqual(currProps.searchQuery, prevProps.searchQuery)){
+    // const { query } = this.state;
+    if (!isEqual(currProps.searchQuery, prevProps.searchQuery)) {
       this.getQueryCount();
     }
-  }
+  };
 
   componentDidMount = () => {
     this.getQueryCount();
-  }
+  };
 
   getQueryCount = () => {
     const { query } = this.state;
-    queryCount.call({ query }, (err,res) => {
+    queryCount.call({ query }, (err, res) => {
       const currentQueryCount = new Intl.NumberFormat().format(res);
       this.setState({ currentQueryCount });
-    })
-  }
+    });
+  };
 
-  updateScrollLimit = limit => {
+  updateScrollLimit = (limit) => {
     this.setState({ limit });
-  }
+  };
 
-  updateQuery = query => {
-    //const { selectedAttributes, history, searchAttributes, searchValue } = this.props;
+  updateQuery = (query) => {
+    // const { selectedAttributes, history, searchAttributes, searchValue } = this.props;
 
-    queryCount.call({ query }, (err,res) => {
+    queryCount.call({ query }, (err, res) => {
       const currentQueryCount = new Intl.NumberFormat().format(res);
       this.setState({
         query,
         currentQueryCount,
-        dummy: this.state.dummy + 1
-      })
-    })
-  }
-
-  updateSort = sort => {
-    this.setState({ 
-      sort: sort,
-      dummy: this.state.dummy + 1 //weird hack to force updating if sort object changes.
+        dummy: this.state.dummy + 1,
+      });
     });
-  }
+  };
 
-  updateSelection = event => {
+  updateSort = (sort) => {
+    this.setState({
+      sort,
+      dummy: this.state.dummy + 1, // weird hack to force updating if sort object changes.
+    });
+  };
+
+  updateSelection = (event) => {
     const geneId = event.target.id;
     this.setState(({ selectedGenes }) => {
-      if (!selectedGenes.has(geneId)){
-        selectedGenes.add(geneId)
+      if (!selectedGenes.has(geneId)) {
+        selectedGenes.add(geneId);
       } else {
-        selectedGenes.delete(geneId)
+        selectedGenes.delete(geneId);
       }
       return {
-        selectedGenes: cloneDeep(selectedGenes)
-      }
-    })
-  }
-
+        selectedGenes: cloneDeep(selectedGenes),
+      };
+    });
+  };
 
   toggleDownloadDialog = () => {
     this.setState({
-      showDownloadDialog: !this.state.showDownloadDialog
-    })
-  }
+      showDownloadDialog: !this.state.showDownloadDialog,
+    });
+  };
 
   toggleSelectAllGenes = () => {
-    //Set selectedAllGenes to false if a selection is made, 
-    //otherwise toggle current selectAllGenes state
-    const selectedAllGenes = this.state.selectedGenes.size > 0 ? false : !this.state.selectedAllGenes;
+    // Set selectedAllGenes to false if a selection is made,
+    // otherwise toggle current selectAllGenes state
+    const selectedAllGenes =      this.state.selectedGenes.size > 0 ? false : !this.state.selectedAllGenes;
     this.setState({
       selectedGenes: new Set(),
-      selectedAllGenes: selectedAllGenes
-    })
-  }
+      selectedAllGenes,
+    });
+  };
 
-  toggleColumnSelect = event => {
-    const {checked, id, ...target} = event.target;
-    this.setState(oldState => {
-      const selectedColumns = new Set(oldState.selectedColumns)
-      if (selectedColumns.has(id)){
-        selectedColumns.delete(id)
+  toggleColumnSelect = (event) => {
+    const { id } = event.target;
+    this.setState((oldState) => {
+      const selectedColumns = new Set(oldState.selectedColumns);
+      if (selectedColumns.has(id)) {
+        selectedColumns.delete(id);
       } else {
-        selectedColumns.add(id)
+        selectedColumns.add(id);
       }
       selectedColumns.add('Gene ID');
-      return { 
-        selectedColumns: [...selectedColumns]
-      }
-    })
-  }
+      return {
+        selectedColumns: [...selectedColumns],
+      };
+    });
+  };
 
-  toggleVisualization = event => {
+  toggleVisualization = (event) => {
     const selectedVisualization = event.target.id;
     this.setState({ selectedVisualization });
-  }
+  };
 
-  render(){
+  render() {
     const { attributes, history } = this.props;
-    const { limit, query, sort, currentQueryCount, selectedGenes,
-    selectedAllGenes, selectedColumns, selectedVisualization,
-    showDownloadDialog, dummy } = this.state;
-    
-    const headerOptions = { selectedColumns, selectedGenes, selectedAllGenes,
-      toggleSelectAllGenes: this.toggleSelectAllGenes, selectedVisualization,
-      updateQuery: this.updateQuery, query, updateSort: this.updateSort, 
-      sort, attributes, history };
-    
-    const bodyOptions = { query, sort, limit, selectedGenes, selectedAllGenes, 
-      updateSelection: this.updateSelection, selectedColumns, attributes, 
-      selectedVisualization, updateScrollLimit: this.updateScrollLimit };
+    const {
+      limit,
+      query,
+      sort,
+      currentQueryCount,
+      selectedGenes,
+      selectedAllGenes,
+      selectedColumns,
+      selectedVisualization,
+      showDownloadDialog,
+    } = this.state;
 
-    const downloadOptions = { selectedGenes, showDownloadDialog, selectedAllGenes,
-      query, toggleDownloadDialog: this.toggleDownloadDialog };
-    
-    return <div className='container-fluid px-0 mx-0 genetable'>
-      <div className='table-responsive'>
-        <div className="card genetable-wrapper my-2">
-          <div className="card-header d-flex justify-content-between px-1 py-1">
-            <FilterOptions 
-              toggleColumnSelect={this.toggleColumnSelect}
-              toggleVisualization={this.toggleVisualization}
-              updateQuery={this.updateQuery} 
-              {...this.props} {...this.state} />
-            <button type='button' className='btn btn-sm btn-outline-dark px-2 mx-2 py-0 border query-count' disabled>
-              <span className='badge badge-dark'>
-                { currentQueryCount }
-              </span> query results
-            </button>
-            <SelectionOptions 
-              toggleSelectAllGenes={this.toggleSelectAllGenes} 
-              toggleDownloadDialog={this.toggleDownloadDialog}
-              {...this.props} {...this.state} />
+    const headerOptions = {
+      selectedColumns,
+      selectedGenes,
+      selectedAllGenes,
+      toggleSelectAllGenes: this.toggleSelectAllGenes,
+      selectedVisualization,
+      updateQuery: this.updateQuery,
+      query,
+      updateSort: this.updateSort,
+      sort,
+      attributes,
+      history,
+    };
+
+    const bodyOptions = {
+      query,
+      sort,
+      limit,
+      selectedGenes,
+      selectedAllGenes,
+      updateSelection: this.updateSelection,
+      selectedColumns,
+      attributes,
+      selectedVisualization,
+      updateScrollLimit: this.updateScrollLimit,
+    };
+
+    const downloadOptions = {
+      selectedGenes,
+      showDownloadDialog,
+      selectedAllGenes,
+      query,
+      toggleDownloadDialog: this.toggleDownloadDialog,
+    };
+
+    return (
+      <div className="container-fluid px-0 mx-0 genetable">
+        <div className="table-responsive">
+          <div className="card genetable-wrapper my-2">
+            <div className="card-header d-flex justify-content-between px-1 py-1">
+              <FilterOptions
+                toggleColumnSelect={this.toggleColumnSelect}
+                toggleVisualization={this.toggleVisualization}
+                updateQuery={this.updateQuery}
+                {...this.props}
+                {...this.state}
+              />
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-dark px-2 mx-2 py-0 border query-count"
+                disabled
+              >
+                <span className="badge badge-dark">{currentQueryCount}</span>
+                &nbsp;query results
+              </button>
+              <SelectionOptions
+                toggleSelectAllGenes={this.toggleSelectAllGenes}
+                toggleDownloadDialog={this.toggleDownloadDialog}
+                {...this.props}
+                {...this.state}
+              />
+            </div>
+            <table className="genetable table table-hover table-sm">
+              <GeneTableHeader {...headerOptions} />
+              <GeneTableBody {...bodyOptions} />
+            </table>
           </div>
-          <table className='genetable table table-hover table-sm'>
-            <GeneTableHeader {...headerOptions} />
-            <GeneTableBody {...bodyOptions} />
-          </table>
         </div>
+        <DownloadDialogModal {...downloadOptions} />
       </div>
-      <DownloadDialogModal {...downloadOptions} />
-    </div>
+    );
   }
 }
 
+const withConditionalRendering = compose(
+  withTracker(attributeTracker),
+  withEither(isLoading, Loading),
+  withTracker(searchTracker),
+  withTracker(blastJobTracker),
+  withEither(isLoading, Loading),
+  withEither(hasNoBlastJob, GeneTable),
+  processBlastJob,
+);
 
 export default withConditionalRendering(GeneTable);
-

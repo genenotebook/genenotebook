@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
-import find from 'lodash/find';
+// import find from 'lodash/find';
 import { cloneDeep, isEqual } from 'lodash';
 import { diff, apply } from 'rus-diff'; 
 
@@ -67,7 +67,7 @@ class VersionHistory extends React.Component {
     this.state = {
       userName: '...'
     }
-  }
+  } 
 
   componentDidMount = () => {
     const userId = this.props.editBy
