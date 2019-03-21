@@ -330,8 +330,8 @@ class GeneTable extends React.Component {
 
     return (
       <div className="container-fluid px-0 mx-0 genetable">
-        <div className="table-responsive">
-          <div className="card genetable-wrapper my-2">
+        <div className="table-responsive h-80">
+          <div className="card genetable-wrapper h-100 my-2">
             <div className="card-header d-flex justify-content-between px-1 py-1">
               <FilterOptions
                 toggleColumnSelect={this.toggleColumnSelect}

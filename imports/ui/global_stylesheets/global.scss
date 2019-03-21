@@ -1,13 +1,14 @@
 @import "{}/node_modules/bootstrap/scss/bootstrap.scss";
-//@import "{}/public/fontello/css/fontello.css";
-//@import url('https://fonts.googleapis.com/css?family=Roboto:300');
 
-html, body {
-  font-family: 'Roboto', Arial, sans-serif;
-  font-style:normal;
+html,
+body {
+  height: 100%;
+  font-family: "Roboto", Arial, sans-serif;
+  font-style: normal;
   #loading {
-    -animation: spin .7s infinite linear;
-    -webkit-animation: spin2 .7s infinite linear;
+    animation: spin 0.7s infinite linear;
+    -animation: spin 0.7s infinite linear;
+    -webkit-animation: spin2 0.7s infinite linear;
   }
 }
 

@@ -1,17 +1,19 @@
 #!/usr/bin/env node
-'use strict';
+/* eslint-disable no-underscore-dangle, no-console */
+
 const program = require('commander');
+const pkginfo = require('./package.json');
 
 program
-  .version('0.1.13', '-v, --version')
+  .version(pkginfo.version, '-v, --version')
   .usage('[command]')
   .command('run', 'Run a GeneNoteBook server')
   .command('add [type]', 'Add data to a running GeneNoteBook server')
   .command('remove [type]', 'Remove data from a running GeneNoteBook server')
   .command('list', 'List contents of a running GeneNoteBook server');
 
-program.on('command:*', function([ command ]){
-  if ( this._execs[command] ) return;
+program.on('command:*', function([command]) {
+  if (this._execs[command]) return;
   console.warn(`Unkown genenotebook command: ${command}`);
   program.help();
 });
