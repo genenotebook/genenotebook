@@ -26,7 +26,7 @@ Navigate to http://localhost:3000
 
 Add data (for example from testdata.tgz found in this repository)
 
-> ```
-> genenotebook add genome -u admin -p admin --port 3000 -n test testdata.fasta
-> genenotebook add annotation -u admin -p admin --port 3000 -n test testdata.gff3
-> ```
+```
+genenotebook add genome -u admin -p admin --port 3000 -n test testdata.fasta
+genenotebook add annotation -u admin -p admin --port 3000 -n test testdata.gff3
+```
