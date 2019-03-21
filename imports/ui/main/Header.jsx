@@ -9,7 +9,6 @@ import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdow
 
 import SearchBar from './SearchBar.jsx';
 import PageloadPopup from './PageloadPopup.jsx';
-import VersionPopup from './VersionPopup.jsx';
 
 import './header.scss';
 
@@ -21,68 +20,46 @@ function adminTracker() {
 }
 
 function LoggedInButton({ isAdmin }) {
-  const [showVersionPopup, setVersionPopup] = useState(false);
   return (
-    <React.Fragment>
-      {showVersionPopup && (
-        <VersionPopup
-          togglePopup={() => {
-            setVersionPopup(false);
-          }}
-        />
-      )}
-      <Dropdown>
-        <DropdownButton className="btn btn-sm btn-outline-dark dropdown-toggle border">
-          <span className="icon-user" aria-hidden="true" />
-        </DropdownButton>
-        <DropdownMenu className="dropdown-menu header-menu px-2">
-          <Link to="/profile" className="dropdown-item featuremenu-item">
-            <span className="icon-pencil" />
-            &nbsp;User profile
-          </Link>
-          <button
-            type="button"
-            role="menuitem"
-            className="dropdown-item featuremenu-item disabled text-muted"
-            disabled
-          >
-            <span className="icon-clipboard" />
-            &nbsp;Favourites
-          </button>
-          <button
-            type="button"
-            role="menuitem"
-            className="dropdown-item featuremenu-item"
-            onClick={() => {
-              setVersionPopup(true);
-            }}
-          >
-            <span className="icon-questionmark" />
-            &nbsp;About
-          </button>
-          <div className="dropdown-divider" />
-          {isAdmin && (
-            <React.Fragment>
-              <Link to="/admin" className="dropdown-item featuremenu-item">
-                <span className="icon-cog" />
-                &nbsp;Admin settings
-              </Link>
-              <div className="dropdown-divider" />
-            </React.Fragment>
-          )}
-
-          <button
-            type="button"
-            className="btn btn-outline-danger btn-sm btn-block"
-            id="signout"
-            onClick={Meteor.logout}
-          >
-            <span className="icon-logout" />
-            &nbsp;Sign out
-          </button>
-        </DropdownMenu>
-      </Dropdown>
-    </React.Fragment>
+    <Dropdown>
+      <DropdownButton className="btn btn-sm btn-outline-dark dropdown-toggle border">
+        <span className="icon-user" aria-hidden="true" />
+      </DropdownButton>
+      <DropdownMenu className="dropdown-menu header-menu px-2">
+        <Link to="/profile" className="dropdown-item featuremenu-item">
+          <span className="icon-pencil" />
+          &nbsp;User profile
+        </Link>
+        <button
+          type="button"
+          role="menuitem"
+          className="dropdown-item featuremenu-item disabled text-muted"
+          disabled
+        >
+          <span className="icon-clipboard" />
+          &nbsp;Favourites
+        </button>
+        <div className="dropdown-divider" />
+        {isAdmin && (
+          <React.Fragment>
+            <Link to="/admin" className="dropdown-item featuremenu-item">
+              <span className="icon-cog" />
+              &nbsp;Admin settings
+            </Link>
+            <div className="dropdown-divider" />
+          </React.Fragment>
+        )}
+        <button
+          type="button"
+          className="btn btn-outline-danger btn-sm btn-block"
+          id="signout"
+          onClick={Meteor.logout}
+        >
+          <span className="icon-logout" />
+          &nbsp;Sign out
+        </button>
+      </DropdownMenu>
+    </Dropdown>
   );
 }
 

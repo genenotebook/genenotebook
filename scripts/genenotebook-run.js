@@ -1,11 +1,8 @@
 #!/usr/bin/env node
 /* eslint-disable no-underscore-dangle */
 
-'use strict';
-
 const program = require('commander');
 const { spawn, exec } = require('child_process');
-const fs = require('fs');
 const path = require('path');
 
 function log(msg) {
@@ -27,8 +24,14 @@ function startMongoDaemon(dbPath) {
   log(`MongoDB logs are is in ${logFolderPath}`);
   log('Starting MongoDB daemon');
   const MONGO_URL = 'mongodb://localhost:27017/genenotebook';
-  const mongoDaemon = spawn('mongod', ['--port', '27017',
-    '--dbpath', dataFolderPath, '--logpath', logPath]);
+  const mongoDaemon = spawn('mongod', [
+    '--port',
+    '27017',
+    '--dbpath',
+    dataFolderPath,
+    '--logpath',
+    logPath,
+  ]);
 
   mongoDaemon.on('error', (err) => {
     error(err);
@@ -56,19 +59,25 @@ function startGeneNoteBook(opts) {
 program
   .description('Run a GeneNoteBook server')
   .usage('[options]')
-  .option('--port [port]',
-    'Web server port on which to serve GeneNoteBook. Default: 3000')
-  .option('-m, --mongo-url [url]',
-    'URL of running MongoDB daemon. (Mutually exclusive with --dbpath)')
-  .option('-d, --db-path [path]',
+  .option('--port [port]', 'Web server port on which to serve GeneNoteBook. Default: 3000')
+  .option(
+    '-m, --mongo-url [url]',
+    'URL of running MongoDB daemon. (Mutually exclusive with --dbpath)',
+  )
+  .option(
+    '-d, --db-path [path]',
     'Folder where DB files will be stored. Default: ./data/db.'
-    + ' (Mutually exclusive with --mongo-url)')
-  .option('-r, --root-url [url]',
-    'Root URL on which GeneNoteBook will be accessed. '
-    + 'Default: http://localhost')
-  .option('-n, --node-options [option string]',
+      + ' (Mutually exclusive with --mongo-url)',
+  )
+  .option(
+    '-r, --root-url [url]',
+    'Root URL on which GeneNoteBook will be accessed. ' + 'Default: http://localhost',
+  )
+  .option(
+    '-n, --node-options [option string]',
     'Runtime settings for NodeJS formatted as double-quoted string. '
-    + 'Default: "--max-old-space-size=8192"');
+      + 'Default: "--max-old-space-size=8192"',
+  );
 
 program._name = 'genenotebook run';
 program.parse(process.argv);
