@@ -1,6 +1,6 @@
 {
   "name": "genenotebook",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "repository": "https://github.com/genenotebook/genenotebook",
   "description": "A portable website for browsing and querying genome sequences and annotations",
   "license": "AGPL-3.0",
@@ -14,7 +14,8 @@
     "dev": "NODE_OPTIONS=--max-old-space-size=8192 meteor run",
     "dev_production": "NODE_OPTIONS=--max-old-space-size=8192 meteor run --production",
     "reset": "meteor reset",
-    "lint": "eslint imports"
+    "lint": "eslint imports",
+    "postversion": "pushd scripts && npm version $(jq -r .version ../package.json) && popd"
   },
   "meteor": {
     "mainModule": {
@@ -36,9 +37,9 @@
     }
   },
   "dependencies": {
-    "@babel/runtime": "^7.3.4",
+    "@babel/runtime": "^7.4.2",
     "asteroid": "^2.0.3",
-    "bcrypt": "^3.0.4",
+    "bcrypt": "^3.0.5",
     "bootstrap": "^4.3.1",
     "buffer-shims": "^1.0.0",
     "bufferutil": "^4.0.1",
@@ -47,8 +48,8 @@
     "commander": "^2.19.0",
     "core-js": "^3.0.0",
     "core-util-is": "^1.0.2",
-    "d3": "^5.9.1",
-    "documentation": "^9.3.0",
+    "d3": "^5.9.2",
+    "documentation": "^9.3.1",
     "dot-object": "^1.7.1",
     "fibers": "^3.1.1",
     "file-type": "^10.9.0",
@@ -71,17 +72,17 @@
     "react-container-dimensions": "^1.4.1",
     "react-dom": "^16.8.4",
     "react-mounter": "^1.2.0",
-    "react-resize-detector": "^4.0.0",
+    "react-resize-detector": "^4.0.5",
     "react-router-dom": "^5.0.0",
-    "react-select": "^2.4.1",
+    "react-select": "^2.4.2",
     "reactstrap": "^7.1.0",
-    "readline-promise": "^1.0.3",
+    "readline-promise": "^1.0.4",
     "recompose": "^0.30.0",
     "rus-diff": "^1.1.0",
     "simpl-schema": "^1.5.5",
     "spawn-promise": "^0.1.8",
     "spawn-sync": "^2.0.0",
-    "thread-sleep": "^2.1.0",
+    "thread-sleep": "^2.2.0",
     "try-thread-sleep": "^2.0.0",
     "utf-8-validate": "^5.0.2",
     "webfontloader": "^1.6.28",
@@ -91,7 +92,7 @@
   "devDependencies": {
     "@meteorjs/eslint-config-meteor": "^1.0.5",
     "babel-eslint": "^10.0.1",
-    "eslint": "^5.15.2",
+    "eslint": "^5.15.3",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-import-resolver-meteor": "^0.4.0",
     "eslint-plugin-import": "^2.16.0",
