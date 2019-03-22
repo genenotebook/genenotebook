@@ -1,9 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import {
-  ServerRouter,
-  AuthenticationRequiredError,
-} from 'meteor/mhagmajer:server-router';
+import { ServerRouter } from 'meteor/mhagmajer:server-router';
 
 import fs from 'fs';
 import path from 'path';
@@ -16,9 +13,6 @@ WebApp.connectHandlers.use(
     routes: {
       download(filename) {
         logger.log(`download ${filename}`);
-        if (!this.userId) {
-          throw new AuthenticationRequiredError();
-        }
         const filePath = path.join(filename);
         const stat = fs.statSync(filePath);
 
