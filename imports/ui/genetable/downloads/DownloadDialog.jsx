@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import { cloneDeep } from 'lodash';
 
@@ -9,187 +9,150 @@ import SequenceDownloadOptions from './SequenceDownloadOptions.jsx';
 import ExpressionDownload from './ExpressionDownload.jsx';
 import ExpressionDownloadOptions from './ExpressionDownloadOptions.jsx';
 
-import { downloadGenes } from '/imports/api/genes/downloadGenes.js';
-import { queryCount } from '/imports/api/methods/queryCount.js';
-import logger from '/imports/api/util/logger.js';
+import downloadGenes from '/imports/api/genes/downloadGenes.js';
+import getQueryCount from '/imports/api/methods/getQueryCount.js';
 
 import './DownloadDialog.scss';
 
-export default class DownloadDialogModal extends React.Component {
-  constructor(props){
-    super(props)
-    this.state = {
-      dataType: 'Annotations',
-      downloading: false,
-      queryCount: '...',
-      options: {},
-      redirectTo: undefined
-    }
+const DATATYPE_COMPONENTS = {
+  Annotations: AnnotationDownload,
+  Sequences: SequenceDownload,
+  Expression: ExpressionDownload,
+};
+
+const OPTION_COMPONENTS = {
+  Annotations: AnnotationDownloadOptions,
+  Sequences: SequenceDownloadOptions,
+  Expression: ExpressionDownloadOptions,
+};
+
+function getDownloadQuery({ selectedAllGenes, selectedGenes, query }) {
+  return selectedAllGenes ? query : { ID: { $in: [...selectedGenes] } };
+}
+
+export default function DownloadDialogModal({
+  toggleDownloadDialog,
+  query,
+  selectedAllGenes,
+  selectedGenes,
+}) {
+  const [dataType, setDataType] = useState(Object.keys(DATATYPE_COMPONENTS)[0]);
+  const [downloading, setDownloading] = useState(false);
+  const [queryCount, setQueryCount] = useState('...');
+  const [options, setOptions] = useState({});
+  const [redirect, setRedirect] = useState(undefined);
+
+  if (typeof redirect !== 'undefined') {
+    return <Redirect to={`/download/${redirect}`} />;
   }
 
-  componentDidMount = () => {
-    const query = DownloadDialogModal.queryFromProps(this.props);
-    queryCount.call({ query }, (err,res) => {
-      this.setState({
-        queryCount: res
-      })
-    })
+  const downloadQuery = getDownloadQuery({
+    selectedAllGenes,
+    selectedGenes,
+    query,
+  });
+
+  function closeModal() {
+    setDownloading(false);
+    toggleDownloadDialog();
   }
 
-  componentWillReceiveProps = nextProps => {
-    const query = DownloadDialogModal.queryFromProps(nextProps);
-    queryCount.call({ query }, (err, res) => {
-      this.setState({
-        queryCount: res
-      })
-    })
+  function startDownload() {
+    setDownloading(true);
+    downloadGenes.call(
+      {
+        query: downloadQuery,
+        dataType,
+        options,
+      },
+      (err, res) => {
+        if (err) console.warn(err);
+        setRedirect(res);
+      },
+    );
   }
 
-  static queryFromProps = ({ selectedAllGenes, selectedGenes, query, ...props }) => {
-    return selectedAllGenes ? query : { ID: { $in: [...selectedGenes] } }
+  function updateOptions(optionUpdate) {
+    const newOptions = cloneDeep(options);
+    Object.assign(newOptions, optionUpdate);
+    setOptions(newOptions);
   }
 
-  updateQueryCount = ({ selectedAllGenes, selectedGenes, query, ...props }) => {
-    const downloadQuery = selectedAllGenes ? query : { ID: { $in: [...selectedGenes] } };
+  getQueryCount.call({ query: downloadQuery }, (err, res) => {
+    if (err) console.error(err);
+    setQueryCount(res);
+  });
 
-    queryCount.call({ query: downloadQuery }, (err,res) => {
-      this.setState({
-        queryCount: res
-      })
-    })
-  }
+  const OptionComponent = OPTION_COMPONENTS[dataType];
+  const DataTypeComponent = DATATYPE_COMPONENTS[dataType];
 
-  selectDataType = event => {
-    this.setState({
-      dataType: event.target.id
-    })
-  }
-
-  startDownload = event => {
-    this.setState({
-      downloading: true
-    })
-    const query = this.props.selectedAllGenes ? 
-      this.props.query : { ID: { $in: Array.from(this.props.selectedGenes) } };
-
-    const { dataType, options } = this.state;
-
-    //download genes method returns download link url
-    downloadGenes.call({ query, dataType, options }, (err,res) => {
-      if (err) logger.warn(err);
-      this.setState({
-        redirectTo: res
-      })
-    })
-  }
-
-  closeModal = event => {
-    this.setState({
-      downloading: false
-    })
-    this.props.toggleDownloadDialog()
-  }
-
-  updateOptions = newOptions => {
-    const options = cloneDeep(this.state.options);
-    Object.assign(options, newOptions);
-    this.setState({
-      options
-    });
-  }
-
-  render(){
-    const { showDownloadDialog, toggleDownloadDialog, query, 
-      selectedAllGenes, selectedGenes, ...props } = this.props;
-
-    const { dataType, queryCount, downloading, options, 
-      redirectTo, ...state } = this.state;
-    
-    if (!showDownloadDialog) {
-      return null
-    }
-
-    if (typeof redirectTo !== 'undefined') {
-      return <Redirect to={`/download/${redirectTo}`} />
-    }
-
-    const downloadQuery = selectedAllGenes ? 
-      query : { ID: { $in: Array.from(selectedGenes) } };
-
-    const DATATYPE_COMPONENTS = {
-      'Annotations': <AnnotationDownload query={downloadQuery} options={options}/>,
-      'Sequences': <SequenceDownload query={downloadQuery} options={options}/>,
-      'Expression data': <ExpressionDownload query={downloadQuery} options={options}/>
-    }
-
-    const OPTION_COMPONENTS = {
-      'Annotations': <AnnotationDownloadOptions options={options} updateOptions={this.updateOptions} />,
-      'Sequences': <SequenceDownloadOptions options={options} updateOptions={this.updateOptions} />,
-      'Expression data': <ExpressionDownloadOptions options={options} updateOptions={this.updateOptions} />
-    }
-
-    return (
-      <div>
-        <div className="backdrop" />
-        <div className="modal" role="dialog">
-          <div className="modal-dialog" role="document">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Download options</h5>
-                <button 
-                  type="button" 
-                  className="close" 
-                  aria-label="Close" 
-                  onClick={this.closeModal}>
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div className="modal-body card">
-                <div className="card-header">
-                  <ul className="nav nav-tabs card-header-tabs">
-                  {
-                    Object.keys(DATATYPE_COMPONENTS).map(dataType => {
-                      const active = this.state.dataType === dataType ? 'active' : '';
-                      return <li key={dataType} className="nav-item">
-                        <a className={`nav-link ${active}`} id={dataType}
-                          onClick={this.selectDataType} href="#" >
-                          {dataType}
-                        </a>
+  return (
+    <div>
+      <div className="backdrop" />
+      <div className="modal" role="dialog">
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Download options</h5>
+              <button type="button" className="close" aria-label="Close" onClick={closeModal}>
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div className="modal-body card">
+              <div className="card-header">
+                <ul className="nav nav-tabs card-header-tabs">
+                  {Object.keys(DATATYPE_COMPONENTS).map((dataTypeOption) => {
+                    const active = dataType === dataTypeOption ? 'active' : '';
+                    return (
+                      <li key={dataTypeOption} className="nav-item">
+                        <button
+                          type="button"
+                          className={`nav-link ${active}`}
+                          id={dataTypeOption}
+                          onClick={() => {
+                            setDataType(dataTypeOption);
+                            setOptions({});
+                          }}
+                          href="#"
+                        >
+                          {dataTypeOption}
+                        </button>
                       </li>
-                    })
-                  }
-                  </ul>
-                </div>
+                    );
+                  })}
+                </ul>
+              </div>
               <p className="card-body">
-                Downloading {dataType} data for {queryCount} genes. <br/>
+                Downloading&nbsp;
+                {dataType}
+                &nbsp;data for&nbsp;
+                {queryCount}
+                &nbsp;genes.
+                <br />
                 Please select further options below.
               </p>
-              {
-                DATATYPE_COMPONENTS[dataType]
-              }
+              <DataTypeComponent query={downloadQuery} options={options} />
+
               <div className="card-body">
-              {
-                OPTION_COMPONENTS[dataType]
-              }
+                <OptionComponent options={options} updateOptions={updateOptions} />
               </div>
               <div className="modal-footer">
-                {
-                  downloading ? 
+                {downloading ? (
                   <button type="button" className="btn btn-success" disabled>
-                    <span className="icon-spin"/> Preparing download URL
-                  </button> :
-                  <button 
-                    type="button" 
-                    className="btn btn-success" 
-                    onClick={this.startDownload}>
+                    <span className="icon-spin" />
+                    &nbsp;Preparing download URL
+                  </button>
+                ) : (
+                  <button type="button" className="btn btn-success" onClick={startDownload}>
                     Download
                   </button>
-                }
-                <button 
-                  type="button" 
-                  className="btn btn-outline-danger" 
-                  data-dismiss="modal" 
-                  onClick={this.closeModal}>
+                )}
+                <button
+                  type="button"
+                  className="btn btn-outline-danger"
+                  data-dismiss="modal"
+                  onClick={closeModal}
+                >
                   Close
                 </button>
               </div>
@@ -198,6 +161,5 @@ export default class DownloadDialogModal extends React.Component {
         </div>
       </div>
     </div>
-    )
-  }
+  );
 }

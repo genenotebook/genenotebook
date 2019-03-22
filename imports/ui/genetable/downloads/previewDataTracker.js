@@ -2,15 +2,17 @@ import { Meteor } from 'meteor/meteor';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
 
-export const previewDataTracker = ({ query, ...props }) => {
+function previewDataTracker({ query, ...props }) {
   const limit = 3;
-  const geneSub = Meteor.subscribe('genes', {query, limit});
+  const geneSub = Meteor.subscribe('genes', { query, limit });
   const loading = !geneSub.ready();
-  const previewGenes = Genes.find(query, {limit: 3}).fetch();
+  const previewGenes = Genes.find(query, { limit }).fetch();
   return {
     loading,
     previewGenes,
     query,
-    ...props
-  }
-};
+    ...props,
+  };
+}
+
+export default previewDataTracker;

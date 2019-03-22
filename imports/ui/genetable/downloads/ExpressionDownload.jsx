@@ -1,9 +1,14 @@
 import React from 'react';
 
-const ExpressionDownload = props => {
+function ExpressionDownload() {
   return (
-    <div></div>
-  )
+    <div className="card download-preview">
+      <div className="card-body">
+        <h4 className="card-title">Download preview</h4>
+        ... Dowload preview is not available for expression data ...
+      </div>
+    </div>
+  );
 }
 
-export default ExpressionDownload
+export default ExpressionDownload;

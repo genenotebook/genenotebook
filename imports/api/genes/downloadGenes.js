@@ -7,58 +7,59 @@ import hash from 'object-hash';
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 import { Job } from 'meteor/vsivsi:job-collection';
 
-import { Genes } from '/imports/api/genes/gene_collection.js';
 import logger from '/imports/api/util/logger.js';
 
-export const downloadGenes = new ValidatedMethod({
+const downloadGenes = new ValidatedMethod({
   name: 'downloadGenes',
   validate: new SimpleSchema({
-    query: { 
+    query: {
       type: Object,
-      blackbox: true 
+      blackbox: true,
     },
-    dataType: { 
-      type: String 
+    dataType: {
+      type: String,
     },
     options: {
       type: Object,
-      blackbox: true
-    }
+      blackbox: true,
+    },
   }).validator(),
   applyOptions: {
-    noRetry: true
+    noRetry: true,
   },
-  run({ query, dataType, options }){
+  run({ query, dataType, options }) {
     /**
-     * If the query has not been used before, create a new file from it. 
+     * If the query has not been used before, create a new file from it.
      * Otherwise use the cached file and increment the download count.
      * Return md5 hash of download query as download url
      */
-    logger.log(`downloading ${dataType}`)
+    logger.log(`downloading ${dataType}`);
     logger.log(query);
     logger.log(options);
-    
+
     const queryString = JSON.stringify(query);
     const optionString = JSON.stringify(options);
 
     const queryHash = hash(`${queryString}${dataType}${optionString}`);
 
-    if (! this.userId) {
+    if (!this.userId) {
       throw new Meteor.Error('not-authorized');
     }
     const existingJob = jobQueue.findOne({ 'data.queryHash': queryHash });
 
-    if (typeof existingJob === 'undefined'){
-      logger.debug('initiating new download job')
+    if (typeof existingJob === 'undefined') {
+      logger.debug('initiating new download job');
       const job = new Job(jobQueue, 'download', {
         queryString,
         queryHash,
         dataType,
-        options
+        options,
       });
       job.priority('high').save();
     }
 
-    return queryHash
-  }
-})
+    return queryHash;
+  },
+});
+
+export default downloadGenes;

@@ -15,10 +15,10 @@ fi
 meteor build $BUNDLE_NAME --server-only --directory 
 mv $BUNDLE_NAME/bundle/* $BUNDLE_NAME 
 pushd $BUNDLE_NAME/programs/server 
-npm install 
+meteor npm install 
 popd 
 pushd scripts 
-npm install 
+meteor npm install 
 popd 
 cp -r scripts/* $BUNDLE_NAME 
 cp -r testdata.tgz $BUNDLE_NAME 
