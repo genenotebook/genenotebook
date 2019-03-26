@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eo pipefail
+set -eox pipefail
 
 VERSION=$(jq -r '.version' package.json)
 
