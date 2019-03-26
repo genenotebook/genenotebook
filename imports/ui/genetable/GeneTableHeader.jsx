@@ -2,11 +2,8 @@ import React from 'react';
 import Select from 'react-select';
 import { cloneDeep, isEqual, isEmpty } from 'lodash';
 
-// import ReactResizeDetector from 'react-resize-detector';
-
 import logger from '/imports/api/util/logger.js';
 
-// import { SelectAll } from './SelectionOptions.jsx';
 import {
   Dropdown,
   DropdownButton,
@@ -39,76 +36,6 @@ class SelectionOption extends Object {
     this.label = optionName;
   }
 }
-
-/**
- * [description]
- * @param  {[type]} options.queryKey   [description]
- * @param  {[type]} options.queryValue [description]
- * @return {[type]}                    [description]
- */
-/*
-const labelFromQuery = ({ queryKey, queryValue }) => {
-  let label;
-  switch (queryKey) {
-    case '$exists':
-      label = queryValue ? 'Present' : 'Not present';
-      break;
-    case '$eq':
-      label = 'Equals';
-      break;
-    case '$ne':
-      label = 'Does not equal';
-      break;
-    default:
-      logger.warn(`Unknown query: {${queryType}:${queryValue}}`);
-      break;
-  }
-  return new SelectionOption(label); // { label: label, value: label }
-};
-*/
-
-/**
- * [description]
- * @param  {[type]} query [description]
- * @return {[type]}       [description]
- */
-/*
-const stateFromQuery = (attributeQuery) => {
-  const [queryKey, queryValue] = Object.entries(attributeQuery)[0];
-
-  let queryLabel;
-  switch (queryKey) {
-    case '$exists':
-      queryLabel = queryValue ? 'Present' : 'Not present';
-      break;
-    case '$eq':
-      queryLabel = 'Equals';
-      break;
-    case '$ne':
-      queryLabel = 'Does not equal';
-      break;
-    case '$regex':
-      queryLabel = 'Contains';
-      break;
-    case '$not':
-      queryLabel = 'Does not contain';
-      break;
-    default:
-      logger.warn(`Unknown query: {${queryKey}:${queryValue}}`);
-      break;
-  }
-  const state = {
-    queryLabel: new SelectionOption(queryLabel),
-    queryValue,
-    attributeQuery,
-  };
-
-  if (queryKey === '$not') {
-    state.queryValue = queryValue.$regex;
-  }
-  return state;
-};
-*/
 
 /**
  * [description]
