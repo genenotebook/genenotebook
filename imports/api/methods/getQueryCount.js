@@ -5,8 +5,8 @@ import SimpleSchema from 'simpl-schema';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
 
-export const queryCount = new ValidatedMethod({
-  name: 'queryCount',
+const getQueryCount = new ValidatedMethod({
+  name: 'getQueryCount',
   validate: new SimpleSchema({
     query: { type: Object, blackbox: true },
   }).validator({ keys: [] }),
@@ -17,3 +17,5 @@ export const queryCount = new ValidatedMethod({
     return Genes.find(query).count();
   },
 });
+
+export default getQueryCount;

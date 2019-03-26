@@ -9,7 +9,7 @@ import { cloneDeep, isEqual, isEmpty } from 'lodash';
 import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 
-import { queryCount } from '/imports/api/methods/queryCount.js';
+import getQueryCount from '/imports/api/methods/getQueryCount.js';
 
 import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
@@ -198,7 +198,7 @@ class GeneTable extends React.Component {
 
   getQueryCount = () => {
     const { query } = this.state;
-    queryCount.call({ query }, (err, res) => {
+    getQueryCount.call({ query }, (err, res) => {
       const currentQueryCount = new Intl.NumberFormat().format(res);
       this.setState({ currentQueryCount });
     });
@@ -211,7 +211,7 @@ class GeneTable extends React.Component {
   updateQuery = (query) => {
     // const { selectedAttributes, history, searchAttributes, searchValue } = this.props;
 
-    queryCount.call({ query }, (err, res) => {
+    getQueryCount.call({ query }, (err, res) => {
       const currentQueryCount = new Intl.NumberFormat().format(res);
       this.setState({
         query,
@@ -361,7 +361,9 @@ class GeneTable extends React.Component {
             </table>
           </div>
         </div>
-        <DownloadDialogModal {...downloadOptions} />
+        {
+          showDownloadDialog && <DownloadDialogModal {...downloadOptions} />
+        }
       </div>
     );
   }

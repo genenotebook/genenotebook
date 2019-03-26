@@ -3,7 +3,7 @@ import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
 
-import { previewDataTracker } from './previewDataTracker.js';
+import previewDataTracker from './previewDataTracker.js';
 
 const formatAttributes = ({ attributes = {}, ID, parents }) => {
   Object.assign(attributes, { ID, Parent: parents })

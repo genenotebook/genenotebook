@@ -33,7 +33,7 @@ import './users/users.js';
 import './users/getUserName.js';
 
 import './methods/methods.js';
-import './methods/queryCount.js';
+import './methods/getQueryCount.js';
 import './methods/list.js';
 import './methods/getVersion.js';
 

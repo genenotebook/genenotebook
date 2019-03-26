@@ -5,7 +5,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { compose } from 'recompose';
 
-import { queryCount } from '/imports/api/methods/queryCount.js';
+import getQueryCount from '/imports/api/methods/getQueryCount.js';
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 
 import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
@@ -23,7 +23,7 @@ class GeneNumber extends React.Component {
   componentDidMount = () => {
     const { _id: genomeId } = this.props;
     const query = { genomeId };
-    queryCount.call({ query }, (err,res) => {
+    getQueryCount.call({ query }, (err,res) => {
       this.setState({
         geneNumber: new Intl.NumberFormat().format(res)
       })
