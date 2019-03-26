@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.1.15] 2019-03-26
+
+### Added
+
+- Download options for annotations and gene expression
+
+### Changed
+
+- Download loading indicators
+
+### Fixed
+
+- Downloading no longer requires user to be logged in
+
 ## [0.1.14] 2019-03-21
 
 ### Added
@@ -183,7 +197,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - First GeneNoteBook version ready for use
 
-[unreleased]: https://github.com/genenotebook/genenotebook/compare/v0.1.14...HEAD
+[unreleased]: https://github.com/genenotebook/genenotebook/compare/v0.1.15...HEAD
+[0.1.15]: https://github.com/genenotebook/genenotebook/compare/v0.1.14...v0.1.15
 [0.1.14]: https://github.com/genenotebook/genenotebook/compare/v0.1.13...v0.1.14
 [0.1.13]: https://github.com/genenotebook/genenotebook/compare/v0.1.12...v0.1.13
 [0.1.12]: https://github.com/genenotebook/genenotebook/compare/v0.1.11...v0.1.12
