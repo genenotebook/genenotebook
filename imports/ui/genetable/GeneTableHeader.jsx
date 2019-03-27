@@ -100,7 +100,7 @@ class HeaderElement extends React.Component {
   }
 
   static getDerivedStateFromProps = (props, state) => {
-    const { query, attribute, ...otherProps } = props;
+    const { query, attribute } = props;
     const { attributeQuery } = state;
     const newAttributeQuery = getAttributeQuery({ query, attribute });
 
@@ -120,7 +120,7 @@ class HeaderElement extends React.Component {
 
   updateQueryLabel = (selection) => {
     const {
-      attribute, query, updateQuery, ...props
+      attribute, query, updateQuery,
     } = this.props;
     const queryLabel = selection;
 
