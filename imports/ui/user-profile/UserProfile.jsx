@@ -269,10 +269,12 @@ class UserProfile extends React.Component {
   isAdmin = () => Roles.userIsInRole(Meteor.userId(), 'admin');
 
   toggleEdit = () => {
-    // alert('Changing account information is disabled in this demo')
+    alert('Changing account information is disabled in this demo')
+    /*
     this.setState({
       editing: !this.state.editing,
-    });
+    }); 
+    */
   };
 
   hasChanges = () => {

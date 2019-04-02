@@ -130,7 +130,7 @@ function NavBar() {
 }
 
 function Header() {
-  const [showPageloadPopup, togglePageloadPopup] = useState(false);
+  const [showPageloadPopup, togglePageloadPopup] = useState(true);
   return (
     <React.Fragment>
       <header className="navigation border" role="banner">
