@@ -24,24 +24,26 @@ const App = () => {
   const basename = urlParts.slice(3).join('/');
   return (
     <Router basename={basename}>
-      <Header />
-      <main role="main" className="h-100">
-        <Switch>
-          <Route exact path="/" component={LandingPage} />
-          <Route exact path="/login" component={Login} />
-          <Route exact path="/register" component={Register} />
-          <Route exact path="/genes" component={GeneTable} />
-          <Route path="/gene/:geneId" component={SingleGenePage} />
-          <Route exact path="/blast" component={SubmitBlast} />
-          <Route path="/blast/:jobId" component={BlastResult} />
-          <Route exact path="/profile" component={UserProfile} />
-          <Route exact path="/admin" render={() => <Redirect to="/admin/users" />} />
-          <Route path="/admin/user/:userId" component={UserProfile} />
-          <Route path="/admin/:page" component={Admin} />
-          <Route path="/download/:downloadId" component={Download} />
-        </Switch>
-      </main>
-      <Footer />
+      <React.Fragment>
+        <Header />
+        <main role="main" className="h-100">
+          <Switch>
+            <Route exact path="/" component={LandingPage} />
+            <Route exact path="/login" component={Login} />
+            <Route exact path="/register" component={Register} />
+            <Route exact path="/genes" component={GeneTable} />
+            <Route path="/gene/:geneId" component={SingleGenePage} />
+            <Route exact path="/blast" component={SubmitBlast} />
+            <Route path="/blast/:jobId" component={BlastResult} />
+            <Route exact path="/profile" component={UserProfile} />
+            <Route exact path="/admin" render={() => <Redirect to="/admin/users" />} />
+            <Route path="/admin/user/:userId" component={UserProfile} />
+            <Route path="/admin/:page" component={Admin} />
+            <Route path="/download/:downloadId" component={Download} />
+          </Switch>
+        </main>
+        <Footer />
+      </React.Fragment>
     </Router>
   );
 };
