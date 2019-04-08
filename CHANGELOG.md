@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- Meteor version 1.8.1
+
+### Fixed
+
+- Base url of download links
+
 ## [0.1.15] 2019-03-26
 
 ### Added
