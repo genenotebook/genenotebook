@@ -104,11 +104,6 @@ class HeaderElement extends React.Component {
     const { attributeQuery } = state;
     const newAttributeQuery = getAttributeQuery({ query, attribute });
 
-    logger.debug({
-      attributeQuery,
-      newAttributeQuery,
-    });
-
     if (!isEqual(newAttributeQuery, attributeQuery)) {
       return {
         attributeQuery: newAttributeQuery,
@@ -119,9 +114,7 @@ class HeaderElement extends React.Component {
   };
 
   updateQueryLabel = (selection) => {
-    const {
-      attribute, query, updateQuery,
-    } = this.props;
+    const { attribute, query, updateQuery } = this.props;
     const queryLabel = selection;
 
     this.setState({
@@ -188,8 +181,6 @@ class HeaderElement extends React.Component {
       query, attribute, updateQuery, history,
     } = this.props;
     const newQuery = cloneDeep(query);
-
-    logger.log({ newQuery });
 
     delete newQuery[attribute.query];
     delete newQuery.$or;

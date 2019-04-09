@@ -11,7 +11,7 @@ const serverRouter = new ServerRouter();
 WebApp.connectHandlers.use(serverRouter.middleware);
 
 serverRouter.addPath({
-  path: '/download/:filename',
+  path: '/download/file/:filename',
   args({ filename }) {
     console.log({ filename });
     return [filename.replace(/^"|"$/g, '')];

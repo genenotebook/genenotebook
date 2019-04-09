@@ -122,11 +122,24 @@ const withConditionalRendering = compose(
 );
 
 function Download({ job }) {
+  console.log({ job });
   const fileName = job.result.value;
+  const redirectUrl = `${Meteor.absoluteUrl()}download/file/${fileName}`;
+  console.log({ redirectUrl });
+  serverRouterClient
+    .redirectTo(redirectUrl)
+    .then(redirectResult => console.log({ redirectResult }))
+    .catch(err => console.warn({ err }));
 
-  serverRouterClient.redirectTo(`${Meteor.absoluteUrl()}/download/${fileName}`);
-
-  return <div>Job is ready, should begin download</div>;
+  return (
+    <div>
+      <p>Job is ready, should begin download</p>
+      <p>
+        Direct link to the file:
+        <a href={redirectUrl}>{redirectUrl}</a>
+      </p>
+    </div>
+  );
 }
 
 Download.propTypes = {
