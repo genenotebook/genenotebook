@@ -9,7 +9,7 @@ import AttributeValue from '/imports/ui/genetable/columns/AttributeValue.jsx';
 
 import './genemodel.scss';
 
-function XAxis({
+export function XAxis({
   scale, numTicks, transform, seqid,
 }) {
   const formatNumber = new Intl.NumberFormat().format;
@@ -227,7 +227,7 @@ function Transcript({
 }
 
 export function GenemodelGroup({
-  gene, transcripts, width, scale,
+  gene, transcripts, scale,
 }) {
   return (
     <g className="genemodel" transform="translate(0,4)">
@@ -283,7 +283,7 @@ export default function Genemodel({
   return (
     <div id="genemodel" className="card genemodel">
       <svg width={width} height={height} className="genemodel-container">
-        <GenemodelGroup gene={gene} transcripts={transcripts} width={width} scale={scale} />
+        <GenemodelGroup gene={gene} transcripts={transcripts} scale={scale} />
         <XAxis
           scale={scale}
           numTicks="2"

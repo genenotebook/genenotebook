@@ -120,6 +120,11 @@ function NavBar() {
                 Blast
               </NavLink>
             </li>
+            <li className="nav-item">
+              <NavLink to="/browser" className="nav-link" activeClassName="active">
+                Genome browser
+              </NavLink>
+            </li>
           </ul>
           <SearchBar />
           <UserButtons />

@@ -13,6 +13,7 @@ import SingleGenePage from '/imports/ui/singleGenePage/SingleGenePage.jsx';
 import UserProfile from '/imports/ui/user-profile/UserProfile.jsx';
 import Admin from '/imports/ui/admin/Admin.jsx';
 import Download from '/imports/ui/download/Download.jsx';
+import Browser from '/imports/ui/browser/Browser.jsx';
 
 import Login from './Login.jsx';
 import Register from './Register.jsx';
@@ -35,6 +36,7 @@ const App = () => {
             <Route path="/gene/:geneId" component={SingleGenePage} />
             <Route exact path="/blast" component={SubmitBlast} />
             <Route path="/blast/:jobId" component={BlastResult} />
+            <Route path="/browser" component={Browser} />
             <Route exact path="/profile" component={UserProfile} />
             <Route exact path="/admin" render={() => <Redirect to="/admin/users" />} />
             <Route path="/admin/user/:userId" component={UserProfile} />
