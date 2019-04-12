@@ -292,7 +292,7 @@ function BlastResultOptions({
               <label
                 className="form-check-label"
                 onClick={() => {
-                  setMainViz(option);
+                  setHitInfo(option);
                 }}
               >
                 {option}
