@@ -40,8 +40,9 @@ class SelectionOption extends Object {
  * @param  {[type]} options.queryValue [description]
  * @return {[type]}                    [description]
  */
-function queryFromLabel({ queryLabel: { label, value }, queryValue }) {
+function queryFromLabel({ queryLabel: { label }, queryValue }) {
   let query;
+  const queryArray = queryValue.split(/\n|↵/);
   switch (label) {
     case 'None':
       query = {};
@@ -53,16 +54,16 @@ function queryFromLabel({ queryLabel: { label, value }, queryValue }) {
       query = { $exists: false };
       break;
     case 'Equals':
-      query = { $eq: queryValue };
+      query = { $in: queryArray };
       break;
     case 'Does not equal':
-      query = { $ne: queryValue };
+      query = { $nin: queryArray };
       break;
     case 'Contains':
-      query = { $regex: queryValue };
+      query = { $regex: queryArray.map(q => new RegExp(q)) };
       break;
     case 'Does not contain':
-      query = { $not: { $regex: queryValue } };
+      query = { $not: { $regex: queryArray.map(q => new RegExp(q)) } };
       break;
     default:
       logger.warn(`Unknown label/value: ${label}/${queryValue}`);
@@ -114,7 +115,6 @@ class HeaderElement extends React.Component {
   };
 
   updateQueryLabel = (selection) => {
-    const { attribute, query, updateQuery } = this.props;
     const queryLabel = selection;
 
     this.setState({
