@@ -5,16 +5,36 @@ import ColumnSelect from './ColumnSelect.jsx';
 
 import './filteroptions.scss';
 
-const FilterOptions = ({ ...props }) => {
+function FilterOptions({
+  attributes,
+  selectedColumns,
+  toggleColumnSelect,
+  selectedVisualization,
+  toggleVisualization,
+  query,
+  updateQuery,
+}) {
   return (
-    <div className='btn-group' role='group'>
-      <button className='btn btn-sm btn-outline-dark px-2 py-0 border filter-options' disabled>
+    <div className="btn-group" role="group">
+      <button
+        type="button"
+        className="btn btn-sm btn-outline-dark px-2 py-0 border filter-options"
+        disabled
+      >
         Select:
       </button>
-      <GenomeSelect {...props} />
-      <ColumnSelect {...props} />
+      <GenomeSelect {...{ query, updateQuery }} />
+      <ColumnSelect
+        {...{
+          attributes,
+          selectedColumns,
+          toggleColumnSelect,
+          selectedVisualization,
+          toggleVisualization,
+        }}
+      />
     </div>
-  )
+  );
 }
 
-export default FilterOptions
+export default FilterOptions;

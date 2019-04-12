@@ -71,7 +71,7 @@ function hasNoResults({ genes }) {
  * @return {[type]}       [description]
  */
 function NoResults({ selectedColumns, ...props }) {
-  const colSpan = selectedColumns.length + 3;
+  const colSpan = selectedColumns.size + 3;
   return (
     <tbody>
       <tr>
@@ -102,7 +102,7 @@ function isLoading({ genes, loading }) {
  * @return {[type]}                            [description]
  */
 function Loading({ selectedColumns, ...props }) {
-  const colSpan = selectedColumns.length + 3;
+  const colSpan = selectedColumns.size + 3;
   return (
     <tbody>
       {Array(10)
@@ -166,7 +166,7 @@ function GeneTableRow({
 
   return (
     <tr>
-      {selectedColumns
+      {[...selectedColumns]
         .sort((a, b) => {
           if (a === 'Gene ID') return -1;
           if (b === 'Gene ID') return 1;
@@ -208,16 +208,15 @@ function GeneTableRow({
 function GeneTableBody({
   genes, updateScrollLimit, limit, ...props
 }) {
-  function onScroll() {
-    if (
-      window.innerHeight + window.scrollY
-      >= document.body.offsetHeight - 500
-    ) {
-      updateScrollLimit(limit + 10);
-    }
-  }
-
   useEffect(() => {
+    function onScroll() {
+      if (
+        window.innerHeight + window.scrollY
+        >= document.body.offsetHeight - 500
+      ) {
+        updateScrollLimit(limit + 10);
+      }
+    }
     window.addEventListener('scroll', onScroll, false);
     function cleanup() {
       window.removeEventListener('scroll', onScroll, false);

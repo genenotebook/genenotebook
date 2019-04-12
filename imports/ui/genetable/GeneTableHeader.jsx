@@ -322,7 +322,7 @@ function GeneTableHeader({
   ...props
 }) {
   const selectedAttributes = attributes
-    .filter(attribute => selectedColumns.indexOf(attribute.name) >= 0)
+    .filter(attribute => selectedColumns.has(attribute.name))
     .sort((a, b) => {
       if (a.name === 'Gene ID') return -1;
       if (b.name === 'Gene ID') return 1;
