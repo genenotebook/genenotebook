@@ -49,7 +49,7 @@
     "core-js": "^3.0.0",
     "core-util-is": "^1.0.2",
     "d3": "^5.9.2",
-    "documentation": "^9.3.1",
+    "documentation": "^10.0.0",
     "dot-object": "^1.7.1",
     "fibers": "^3.1.1",
     "file-type": "^10.9.0",
