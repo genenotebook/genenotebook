@@ -7,37 +7,39 @@ import path from 'path';
 
 import logger from '/imports/api/util/logger.js';
 
-WebApp.connectHandlers.use(
-  ServerRouter.middleware({
-    paths: [],
-    routes: {
-      download(filename) {
-        logger.log(`download ${filename}`);
-        const filePath = path.join(filename);
-        const stat = fs.statSync(filePath);
+const serverRouter = new ServerRouter();
+WebApp.connectHandlers.use(serverRouter.middleware);
 
-        const response = this.res;
+serverRouter.addPath({
+  path: '/download/file/:filename',
+  args({ filename }) {
+    return [filename.replace(/^"|"$/g, '')];
+  },
+  async route(filename) {
+    logger.log(`download ${filename}`);
+    const filePath = path.join(filename);
+    const stat = fs.statSync(filePath);
 
-        response.writeHead(200, {
-          'Content-Type': 'application/gzip',
-          'Content-Length': stat.size,
-        });
+    const response = this.res;
 
-        const readStream = fs.createReadStream(filePath);
-        readStream.on('open', () => {
-          logger.debug('open readstream');
-          readStream.pipe(response);
-        });
+    response.writeHead(200, {
+      'Content-Type': 'application/gzip',
+      'Content-Length': stat.size,
+    });
 
-        readStream.on('error', (err) => {
-          throw new Meteor.Error(err);
-        });
+    const readStream = fs.createReadStream(filePath);
+    readStream.on('open', () => {
+      logger.debug('open readstream');
+      readStream.pipe(response);
+    });
 
-        readStream.on('close', () => {
-          logger.debug('finished readstream');
-          response.end();
-        });
-      },
-    },
-  }),
-);
+    readStream.on('error', (err) => {
+      throw new Meteor.Error(err);
+    });
+
+    readStream.on('close', () => {
+      logger.debug('finished readstream');
+      response.end();
+    });
+  },
+});

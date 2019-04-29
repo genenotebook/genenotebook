@@ -1,10 +1,6 @@
 import React from 'react';
 
-import {
-  Dropdown,
-  DropdownButton,
-  DropdownMenu,
-} from '/imports/ui/util/Dropdown.jsx';
+import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
 import { VISUALIZATIONS } from '/imports/ui/genetable/GeneTable.jsx';
 
 function ColumnSelect({
@@ -18,15 +14,13 @@ function ColumnSelect({
     <Dropdown>
       <DropdownButton className="btn btn-sm btn-outline-dark dropdown-toggle px-2 py-0 border">
         Columns&nbsp;
-        <span className="badge badge-dark">
-          {`${selectedColumns.length}/${attributes.length}`}
-        </span>
+        <span className="badge badge-dark">{`${selectedColumns.size}/${attributes.length}`}</span>
       </DropdownButton>
       <DropdownMenu>
         <h6 className="dropdown-header">Attributes</h6>
         {attributes.map((attribute) => {
           const { name } = attribute;
-          const checked = selectedColumns.indexOf(name) >= 0;
+          const checked = selectedColumns.has(name);
           return (
             <div key={`${name} ${checked}`} className="form-check">
               <input

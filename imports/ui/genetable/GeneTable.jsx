@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
-import React from 'react';
-// import { withRouter } from 'react-router-dom';
+import React, { useState } from 'react';
 import { compose } from 'recompose';
-import { cloneDeep, isEqual, isEmpty } from 'lodash';
+import { cloneDeep, isEqual } from 'lodash';
 
 import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
@@ -14,7 +13,7 @@ import getQueryCount from '/imports/api/methods/getQueryCount.js';
 import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
 import FilterOptions from './filteroptions/FilterOptions.jsx';
-import { SelectionOptions } from './SelectionOptions.jsx';
+import SelectionOptions from './SelectionOptions.jsx';
 
 import GeneTableHeader from './GeneTableHeader.jsx';
 import GeneTableBody from './GeneTableBody.jsx';
@@ -29,11 +28,11 @@ export const VISUALIZATIONS = [
 ];
 
 /**
- * [description]
- * @param  {[type]} props [description]
- * @return {[type]}       [description]
+ * Reactive data tracker to identify available gene attributes
+ * @param  {Object} props [description]
+ * @return {Object}       [description]
  */
-const attributeTracker = ({ location, history }) => {
+function attributeTracker({ location, history }) {
   const attributeSub = Meteor.subscribe('attributes');
   const loading = !attributeSub.ready();
   const attributes = attributeCollection.find({}).fetch();
@@ -43,14 +42,14 @@ const attributeTracker = ({ location, history }) => {
     location,
     history,
   };
-};
+}
 
 /**
  * [description]
  * @param  {[type]} options.attributes [description]
  * @return {[type]}                    [description]
  */
-const searchTracker = ({ attributes, location, history }) => {
+function searchTracker({ attributes, location, history }) {
   const { search } = location;
   const queryString = new URLSearchParams(search);
 
@@ -72,10 +71,11 @@ const searchTracker = ({ attributes, location, history }) => {
     });
 
   const selectedAttributes = attributes
-    .filter(
-      ({ defaultShow, defaultSearch, name }) => defaultShow || defaultSearch || new RegExp(name).test(searchAttributes),
-    )
-    .map(({ name }) => name);
+    .filter(({ defaultShow, defaultSearch, name }) => (
+      defaultShow
+        || defaultSearch
+        || new RegExp(name).test(searchAttributes)
+    )).map(({ name }) => name);
 
   if (!searchQuery.$or.length) {
     delete searchQuery.$or;
@@ -90,7 +90,7 @@ const searchTracker = ({ attributes, location, history }) => {
     location,
     history,
   };
-};
+}
 
 function blastJobTracker({ location, ...props }) {
   const { search } = location;
@@ -116,8 +116,9 @@ function hasNoBlastJob({ blastJob }) {
 
 function processBlastJob(Component) {
   return function({ searchQuery, blastJob, ...props }) {
-    const hits =      blastJob.result.BlastOutput.BlastOutput_iterations[0].Iteration[0]
-        .Iteration_hits[0].Hit;
+    const hits = blastJob.result.BlastOutput
+      .BlastOutput_iterations[0]
+      .Iteration[0].Iteration_hits[0].Hit;
     const geneIds = hits.map((hit) => {
       const geneId = hit.Hit_def[0].split(' ')[0];
       return geneId;
@@ -128,245 +129,162 @@ function processBlastJob(Component) {
   };
 }
 
-/**
- * Dynamic table for displaying gene information with columns that can be queried and configured
- * @param { array } [attributes] array of gene attributes that will be shown as columns
- * @kind {class}
- */
-class GeneTable extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      limit: 20,
-      query: {},
-      sort: undefined,
-      currentQueryCount: '...',
-      selectedGenes: new Set(),
-      selectedAllGenes: false,
-      selectedColumns: [],
-      selectedVisualization: VISUALIZATIONS[0],
-      showDownloadDialog: false,
-      search: '',
-      dummy: 0,
-    };
+function GeneTable({
+  searchQuery, selectedAttributes, attributes, history,
+}) {
+  const [limit, setLimit] = useState(20);
+  const [query, setQuery] = useState(searchQuery);
+  if (!isEqual(query, searchQuery)) {
+    setQuery(searchQuery);
+  }
+  const [sort, setSort] = useState(undefined);
+  const [queryCount, setQueryCount] = useState('...');
+  const [selectedGenes, setSelectedGenes] = useState(new Set());
+  const [allGenes, setAllGenes] = useState(false);
+  const [selectedColumns, setSelectedColumns] = useState(
+    new Set(['Gene ID', ...selectedAttributes]),
+  );
+  const [selectedViz, setSelectedViz] = useState(VISUALIZATIONS[0]);
+  const [showDownloadDialog, setShowDownloadDialog] = useState(false);
+
+  function toggleColumnSelect(event) {
+    const { id } = event.target;
+    const newSelection = cloneDeep(selectedColumns);
+    if (newSelection.has(id)) {
+      newSelection.delete(id);
+    } else {
+      newSelection.add(id);
+    }
+    setSelectedColumns(newSelection);
   }
 
-  static getDerivedStateFromProps = (props, state) => {
-    const { query: oldQuery } = state;
-    const { searchQuery, selectedAttributes } = props;
+  function toggleVisualization(event) {
+    const { id } = event.target;
+    setSelectedViz(id);
+  }
 
-    /*
-    Determine what columns to show
-     */
-    // eslint-disable-next-line no-underscore-dangle
-    const _selectedColumns = new Set([
-      'Gene ID',
-      ...state.selectedColumns,
-      ...selectedAttributes,
-    ]);
-    const selectedColumns = [..._selectedColumns];
+  function toggleDownloadDialog() {
+    setShowDownloadDialog(!showDownloadDialog);
+  }
 
-    /*
-    Figure out what the query should be
-     */
-    const query = {};
-
-    if (!isEmpty(searchQuery)) {
-      Object.assign(query, oldQuery, searchQuery);
-      return {
-        query,
-        selectedColumns,
-      };
-    }
-
-    return {
-      selectedColumns,
-    };
-  };
-
-  componentDidUpdate = (prevProps) => {
-    const currProps = this.props;
-    // const { query } = this.state;
-    if (!isEqual(currProps.searchQuery, prevProps.searchQuery)) {
-      this.getQueryCount();
-    }
-  };
-
-  componentDidMount = () => {
-    this.getQueryCount();
-  };
-
-  getQueryCount = () => {
-    const { query } = this.state;
-    getQueryCount.call({ query }, (err, res) => {
-      const currentQueryCount = new Intl.NumberFormat().format(res);
-      this.setState({ currentQueryCount });
-    });
-  };
-
-  updateScrollLimit = (limit) => {
-    this.setState({ limit });
-  };
-
-  updateQuery = (query) => {
-    // const { selectedAttributes, history, searchAttributes, searchValue } = this.props;
-
-    getQueryCount.call({ query }, (err, res) => {
-      const currentQueryCount = new Intl.NumberFormat().format(res);
-      this.setState({
-        query,
-        currentQueryCount,
-        dummy: this.state.dummy + 1,
-      });
-    });
-  };
-
-  updateSort = (sort) => {
-    this.setState({
-      sort,
-      dummy: this.state.dummy + 1, // weird hack to force updating if sort object changes.
-    });
-  };
-
-  updateSelection = (event) => {
-    const geneId = event.target.id;
-    this.setState(({ selectedGenes }) => {
-      if (!selectedGenes.has(geneId)) {
-        selectedGenes.add(geneId);
-      } else {
-        selectedGenes.delete(geneId);
-      }
-      return {
-        selectedGenes: cloneDeep(selectedGenes),
-      };
-    });
-  };
-
-  toggleDownloadDialog = () => {
-    this.setState({
-      showDownloadDialog: !this.state.showDownloadDialog,
-    });
-  };
-
-  toggleSelectAllGenes = () => {
+  function toggleSelectAllGenes() {
     // Set selectedAllGenes to false if a selection is made,
     // otherwise toggle current selectAllGenes state
-    const selectedAllGenes =      this.state.selectedGenes.size > 0 ? false : !this.state.selectedAllGenes;
-    this.setState({
-      selectedGenes: new Set(),
-      selectedAllGenes,
-    });
-  };
-
-  toggleColumnSelect = (event) => {
-    const { id } = event.target;
-    this.setState((oldState) => {
-      const selectedColumns = new Set(oldState.selectedColumns);
-      if (selectedColumns.has(id)) {
-        selectedColumns.delete(id);
-      } else {
-        selectedColumns.add(id);
-      }
-      selectedColumns.add('Gene ID');
-      return {
-        selectedColumns: [...selectedColumns],
-      };
-    });
-  };
-
-  toggleVisualization = (event) => {
-    const selectedVisualization = event.target.id;
-    this.setState({ selectedVisualization });
-  };
-
-  render() {
-    const { attributes, history } = this.props;
-    const {
-      limit,
-      query,
-      sort,
-      currentQueryCount,
-      selectedGenes,
-      selectedAllGenes,
-      selectedColumns,
-      selectedVisualization,
-      showDownloadDialog,
-    } = this.state;
-
-    const headerOptions = {
-      selectedColumns,
-      selectedGenes,
-      selectedAllGenes,
-      toggleSelectAllGenes: this.toggleSelectAllGenes,
-      selectedVisualization,
-      updateQuery: this.updateQuery,
-      query,
-      updateSort: this.updateSort,
-      sort,
-      attributes,
-      history,
-    };
-
-    const bodyOptions = {
-      query,
-      sort,
-      limit,
-      selectedGenes,
-      selectedAllGenes,
-      updateSelection: this.updateSelection,
-      selectedColumns,
-      attributes,
-      selectedVisualization,
-      updateScrollLimit: this.updateScrollLimit,
-    };
-
-    const downloadOptions = {
-      selectedGenes,
-      showDownloadDialog,
-      selectedAllGenes,
-      query,
-      toggleDownloadDialog: this.toggleDownloadDialog,
-    };
-
-    return (
-      <div className="container-fluid px-0 mx-0 genetable">
-        <div className="table-responsive h-80">
-          <div className="card genetable-wrapper h-100 my-2">
-            <div className="card-header d-flex justify-content-between px-1 py-1">
-              <FilterOptions
-                toggleColumnSelect={this.toggleColumnSelect}
-                toggleVisualization={this.toggleVisualization}
-                updateQuery={this.updateQuery}
-                {...this.props}
-                {...this.state}
-              />
-              <button
-                type="button"
-                className="btn btn-sm btn-outline-dark px-2 mx-2 py-0 border query-count"
-                disabled
-              >
-                <span className="badge badge-dark">{currentQueryCount}</span>
-                &nbsp;query results
-              </button>
-              <SelectionOptions
-                toggleSelectAllGenes={this.toggleSelectAllGenes}
-                toggleDownloadDialog={this.toggleDownloadDialog}
-                {...this.props}
-                {...this.state}
-              />
-            </div>
-            <table className="genetable table table-hover table-sm">
-              <GeneTableHeader {...headerOptions} />
-              <GeneTableBody {...bodyOptions} />
-            </table>
-          </div>
-        </div>
-        {
-          showDownloadDialog && <DownloadDialogModal {...downloadOptions} />
-        }
-      </div>
-    );
+    const selectedAllGenes = selectedGenes.size > 0
+      ? false
+      : !allGenes;
+    setAllGenes(selectedAllGenes);
+    setSelectedGenes(new Set());
   }
+
+  function updateGeneSelection(event) {
+    const { id } = event.target;
+    const newSelection = cloneDeep(selectedGenes);
+    if (newSelection.has(id)) {
+      newSelection.delete(id);
+    } else {
+      newSelection.add(id);
+    }
+    setSelectedGenes(newSelection);
+  }
+
+  function updateSort(_sort) {
+    const newSort = cloneDeep(_sort);
+    setSort(newSort);
+  }
+
+  function updateQuery(newQuery) {
+    getQueryCount.call({ query: newQuery }, (err, res) => {
+      const currentQueryCount = new Intl.NumberFormat().format(res);
+      setQuery(newQuery);
+      setQueryCount(currentQueryCount);
+    });
+  }
+
+  getQueryCount.call({ query }, (err, res) => {
+    const currentQueryCount = new Intl.NumberFormat().format(res);
+    setQueryCount(currentQueryCount);
+  });
+
+  return (
+    <div className="container-fluid px-0 mx-0 genetable">
+      <div className="table-responsive h-80">
+        <div className="card genetable-wrapper h-100 my-2">
+          <div className="card-header d-flex justify-content-between px-1 py-1">
+            <FilterOptions
+              {...{
+                attributes,
+                selectedColumns,
+                toggleColumnSelect,
+                selectedVisualization: selectedViz,
+                toggleVisualization,
+                query,
+                updateQuery,
+              }}
+            />
+            <button
+              type="button"
+              className="btn btn-sm btn-outline-dark px-2 mx-2 py-0 border query-count"
+              disabled
+            >
+              <span className="badge badge-dark">{queryCount}</span>
+              &nbsp;query results
+            </button>
+            <SelectionOptions
+              {...{
+                selectedGenes,
+                selectedAllGenes: allGenes,
+                toggleDownloadDialog,
+                toggleSelectAllGenes,
+              }}
+            />
+          </div>
+          <table className="genetable table table-hover table-sm">
+            <GeneTableHeader {...{
+              selectedColumns,
+              selectedGenes,
+              selectedAllGenes: allGenes,
+              toggleSelectAllGenes,
+              selectedVisualization: selectedViz,
+              updateQuery,
+              query,
+              updateSort,
+              sort,
+              attributes,
+              history,
+            }}
+            />
+            <GeneTableBody {...{
+              query,
+              sort,
+              limit,
+              selectedGenes,
+              selectedAllGenes: allGenes,
+              updateSelection: updateGeneSelection,
+              selectedColumns,
+              attributes,
+              selectedVisualization: selectedViz,
+              updateScrollLimit: setLimit,
+            }}
+            />
+          </table>
+        </div>
+      </div>
+      {
+        showDownloadDialog
+          && (
+          <DownloadDialogModal {...{
+            selectedGenes,
+            showDownloadDialog,
+            selectedAllGenes: allGenes,
+            query,
+            toggleDownloadDialog,
+          }}
+          />
+          )
+        }
+    </div>
+  );
 }
 
 const withConditionalRendering = compose(

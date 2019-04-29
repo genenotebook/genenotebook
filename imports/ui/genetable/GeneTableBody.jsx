@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { compose } from 'recompose';
 import dot from 'dot-object';
 import { find } from 'lodash';
@@ -35,14 +35,14 @@ const VISUALIZATIONS = {
  * @param  {Boolean} options.selectedAll     [description]
  * @return {Object}                         [description]
  */
-const dataTracker = ({
+function dataTracker({
   query = {},
   sort = { _id: -1 },
   limit = 40,
   selectedGenes,
   updateSelection,
   selectedAll,
-}) => {
+}) {
   const geneSub = Meteor.subscribe('genes', { query, sort, limit });
   const loading = !geneSub.ready();
   const genes = Genes.find(query, { limit, sort }).fetch();
@@ -54,22 +54,24 @@ const dataTracker = ({
     updateSelection,
     selectedAll,
   };
-};
+}
 
 /**
  * [description]
  * @param  {[type]} props [description]
  * @return {[type]}       [description]
  */
-const hasNoResults = ({ genes }) => typeof genes === 'undefined' || genes.length === 0;
+function hasNoResults({ genes }) {
+  return typeof genes === 'undefined' || genes.length === 0;
+}
 
 /**
  * [description]
  * @param  {[type]} props [description]
  * @return {[type]}       [description]
  */
-const NoResults = ({ selectedColumns, ...props }) => {
-  const colSpan = selectedColumns.length + 3;
+function NoResults({ selectedColumns, ...props }) {
+  const colSpan = selectedColumns.size + 3;
   return (
     <tbody>
       <tr>
@@ -81,7 +83,7 @@ const NoResults = ({ selectedColumns, ...props }) => {
       </tr>
     </tbody>
   );
-};
+}
 
 /**
  * [description]
@@ -89,7 +91,9 @@ const NoResults = ({ selectedColumns, ...props }) => {
  * @param  {[type]} options.loading [description]
  * @return {[type]}                 [description]
  */
-const isLoading = ({ genes, loading }) => loading && genes.length === 0;
+function isLoading({ genes, loading }) {
+  return loading && genes.length === 0;
+}
 
 /**
  * [description]
@@ -97,8 +101,8 @@ const isLoading = ({ genes, loading }) => loading && genes.length === 0;
  * @param  {...[type]} options.props           [description]
  * @return {[type]}                            [description]
  */
-const Loading = ({ selectedColumns, ...props }) => {
-  const colSpan = selectedColumns.length + 3;
+function Loading({ selectedColumns, ...props }) {
+  const colSpan = selectedColumns.size + 3;
   return (
     <tbody>
       {Array(10)
@@ -114,7 +118,7 @@ const Loading = ({ selectedColumns, ...props }) => {
         ))}
     </tbody>
   );
-};
+}
 
 /**
  * [withConditionalRendering description]
@@ -126,7 +130,7 @@ const withConditionalRendering = compose(
   withEither(hasNoResults, NoResults),
 );
 
-const AttributeColumn = ({ attributeName, attributeValue, geneId }) => {
+function AttributeColumn({ attributeName, attributeValue, geneId }) {
   switch (attributeName) {
     case 'Gene ID':
       return <GeneLink geneId={geneId} />;
@@ -135,10 +139,7 @@ const AttributeColumn = ({ attributeName, attributeValue, geneId }) => {
     default:
       return <AttributeValue attributeValue={attributeValue} />;
   }
-  /* attributeName === 'Gene ID' ?
-  <GeneLink {...{ geneId }} /> :
-  attributeValue && <AttributeValue {...{ attributeValue }} /> */
-};
+}
 
 /**
  * [description]
@@ -149,7 +150,7 @@ const AttributeColumn = ({ attributeName, attributeValue, geneId }) => {
  * @param  {[type]} options.updateSelection  [description]
  * @return {[type]}                          [description]
  */
-const GeneTableRow = ({
+function GeneTableRow({
   gene,
   selectedColumns,
   selectedAllGenes,
@@ -157,8 +158,7 @@ const GeneTableRow = ({
   updateSelection,
   attributes,
   selectedVisualization,
-  ...props
-}) => {
+}) {
   const selected = selectedAllGenes || selectedGenes.has(gene.ID);
   const color = selected ? 'black' : 'white';
 
@@ -166,14 +166,14 @@ const GeneTableRow = ({
 
   return (
     <tr>
-      {selectedColumns
+      {[...selectedColumns]
         .sort((a, b) => {
           if (a === 'Gene ID') return -1;
           if (b === 'Gene ID') return 1;
-          return ('' + a).localeCompare(b);
+          return (`${a}`).localeCompare(b);
         })
         .map((attributeName) => {
-          const attribute = find(attributes, { name: attributeName }); // selectedAttributes[attributeName]
+          const attribute = find(attributes, { name: attributeName });
           const attributeValue = dot.pick(attribute.query, gene);
           return (
             <td key={attributeName} data-label={attributeName}>
@@ -203,40 +203,34 @@ const GeneTableRow = ({
       </td>
     </tr>
   );
-};
+}
 
-class GeneTableBody extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
-  componentDidMount = () => {
-    window.addEventListener('scroll', this.onScroll, false);
-  };
-
-  componentWillUnmount = () => {
-    window.removeEventListener('scroll', this.onScroll, false);
-  };
-
-  onScroll = () => {
-    if (
-      window.innerHeight + window.scrollY
-      >= document.body.offsetHeight - 500
-    ) {
-      this.props.updateScrollLimit(this.props.limit + 10);
+function GeneTableBody({
+  genes, updateScrollLimit, limit, ...props
+}) {
+  useEffect(() => {
+    function onScroll() {
+      if (
+        window.innerHeight + window.scrollY
+        >= document.body.offsetHeight - 500
+      ) {
+        updateScrollLimit(limit + 10);
+      }
     }
-  };
+    window.addEventListener('scroll', onScroll, false);
+    function cleanup() {
+      window.removeEventListener('scroll', onScroll, false);
+    }
+    return cleanup;
+  });
 
-  render() {
-    const { genes, ...props } = this.props;
-    return (
-      <tbody className="genetable-body">
-        {genes.map(gene => (
-          <GeneTableRow key={gene.ID} gene={gene} {...props} />
-        ))}
-      </tbody>
-    );
-  }
+  return (
+    <tbody className="genetable-body">
+      {genes.map(gene => (
+        <GeneTableRow key={gene.ID} gene={gene} {...props} />
+      ))}
+    </tbody>
+  );
 }
 
 export default withConditionalRendering(GeneTableBody);

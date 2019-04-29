@@ -30,7 +30,7 @@ const withConditionalRendering = compose(
 )
 
 class GenomeSelect extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props)
     this.state = {
       initialized: false,

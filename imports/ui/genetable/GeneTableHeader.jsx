@@ -40,8 +40,9 @@ class SelectionOption extends Object {
  * @param  {[type]} options.queryValue [description]
  * @return {[type]}                    [description]
  */
-function queryFromLabel({ queryLabel: { label, value }, queryValue }) {
+function queryFromLabel({ queryLabel: { label }, queryValue }) {
   let query;
+  const queryArray = queryValue.split(/\n|↵/);
   switch (label) {
     case 'None':
       query = {};
@@ -53,16 +54,16 @@ function queryFromLabel({ queryLabel: { label, value }, queryValue }) {
       query = { $exists: false };
       break;
     case 'Equals':
-      query = { $eq: queryValue };
+      query = { $in: queryArray };
       break;
     case 'Does not equal':
-      query = { $ne: queryValue };
+      query = { $nin: queryArray };
       break;
     case 'Contains':
-      query = { $regex: queryValue };
+      query = { $regex: queryArray.map(q => new RegExp(q)) };
       break;
     case 'Does not contain':
-      query = { $not: { $regex: queryValue } };
+      query = { $not: { $regex: queryArray.map(q => new RegExp(q)) } };
       break;
     default:
       logger.warn(`Unknown label/value: ${label}/${queryValue}`);
@@ -104,11 +105,6 @@ class HeaderElement extends React.Component {
     const { attributeQuery } = state;
     const newAttributeQuery = getAttributeQuery({ query, attribute });
 
-    logger.debug({
-      attributeQuery,
-      newAttributeQuery,
-    });
-
     if (!isEqual(newAttributeQuery, attributeQuery)) {
       return {
         attributeQuery: newAttributeQuery,
@@ -119,9 +115,6 @@ class HeaderElement extends React.Component {
   };
 
   updateQueryLabel = (selection) => {
-    const {
-      attribute, query, updateQuery,
-    } = this.props;
     const queryLabel = selection;
 
     this.setState({
@@ -188,8 +181,6 @@ class HeaderElement extends React.Component {
       query, attribute, updateQuery, history,
     } = this.props;
     const newQuery = cloneDeep(query);
-
-    logger.log({ newQuery });
 
     delete newQuery[attribute.query];
     delete newQuery.$or;
@@ -331,7 +322,7 @@ function GeneTableHeader({
   ...props
 }) {
   const selectedAttributes = attributes
-    .filter(attribute => selectedColumns.indexOf(attribute.name) >= 0)
+    .filter(attribute => selectedColumns.has(attribute.name))
     .sort((a, b) => {
       if (a.name === 'Gene ID') return -1;
       if (b.name === 'Gene ID') return 1;
