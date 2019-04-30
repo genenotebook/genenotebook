@@ -3,7 +3,7 @@ import { withTracker } from 'meteor/react-meteor-data';
 
 import React, { useState } from 'react';
 import { compose } from 'recompose';
-import { cloneDeep, isEqual } from 'lodash';
+import { cloneDeep, isEqual, isEmpty } from 'lodash';
 
 import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
@@ -21,11 +21,7 @@ import DownloadDialogModal from './downloads/DownloadDialog.jsx';
 
 import './geneTable.scss';
 
-export const VISUALIZATIONS = [
-  'Gene model',
-  'Protein domains',
-  'Gene expression',
-];
+export const VISUALIZATIONS = ['Gene model', 'Protein domains', 'Gene expression'];
 
 /**
  * Reactive data tracker to identify available gene attributes
@@ -71,11 +67,10 @@ function searchTracker({ attributes, location, history }) {
     });
 
   const selectedAttributes = attributes
-    .filter(({ defaultShow, defaultSearch, name }) => (
-      defaultShow
-        || defaultSearch
-        || new RegExp(name).test(searchAttributes)
-    )).map(({ name }) => name);
+    .filter(
+      ({ defaultShow, defaultSearch, name }) => defaultShow || defaultSearch || new RegExp(name).test(searchAttributes),
+    )
+    .map(({ name }) => name);
 
   if (!searchQuery.$or.length) {
     delete searchQuery.$or;
@@ -116,9 +111,7 @@ function hasNoBlastJob({ blastJob }) {
 
 function processBlastJob(Component) {
   return function({ searchQuery, blastJob, ...props }) {
-    const hits = blastJob.result.BlastOutput
-      .BlastOutput_iterations[0]
-      .Iteration[0].Iteration_hits[0].Hit;
+    const hits = blastJob.result.BlastOutput.BlastOutput_iterations[0].Iteration[0].Iteration_hits[0].Hit;
     const geneIds = hits.map((hit) => {
       const geneId = hit.Hit_def[0].split(' ')[0];
       return geneId;
@@ -134,7 +127,7 @@ function GeneTable({
 }) {
   const [limit, setLimit] = useState(20);
   const [query, setQuery] = useState(searchQuery);
-  if (!isEqual(query, searchQuery)) {
+  if (!isEqual(query, searchQuery) && !isEmpty(searchQuery)) {
     setQuery(searchQuery);
   }
   const [sort, setSort] = useState(undefined);
@@ -170,9 +163,7 @@ function GeneTable({
   function toggleSelectAllGenes() {
     // Set selectedAllGenes to false if a selection is made,
     // otherwise toggle current selectAllGenes state
-    const selectedAllGenes = selectedGenes.size > 0
-      ? false
-      : !allGenes;
+    const selectedAllGenes = selectedGenes.size > 0 ? false : !allGenes;
     setAllGenes(selectedAllGenes);
     setSelectedGenes(new Set());
   }
@@ -194,6 +185,7 @@ function GeneTable({
   }
 
   function updateQuery(newQuery) {
+    console.log({ newQuery });
     getQueryCount.call({ query: newQuery }, (err, res) => {
       const currentQueryCount = new Intl.NumberFormat().format(res);
       setQuery(newQuery);
@@ -240,49 +232,49 @@ function GeneTable({
             />
           </div>
           <table className="genetable table table-hover table-sm">
-            <GeneTableHeader {...{
-              selectedColumns,
-              selectedGenes,
-              selectedAllGenes: allGenes,
-              toggleSelectAllGenes,
-              selectedVisualization: selectedViz,
-              updateQuery,
-              query,
-              updateSort,
-              sort,
-              attributes,
-              history,
-            }}
+            <GeneTableHeader
+              {...{
+                selectedColumns,
+                selectedGenes,
+                selectedAllGenes: allGenes,
+                toggleSelectAllGenes,
+                selectedVisualization: selectedViz,
+                updateQuery,
+                query,
+                updateSort,
+                sort,
+                attributes,
+                history,
+              }}
             />
-            <GeneTableBody {...{
-              query,
-              sort,
-              limit,
-              selectedGenes,
-              selectedAllGenes: allGenes,
-              updateSelection: updateGeneSelection,
-              selectedColumns,
-              attributes,
-              selectedVisualization: selectedViz,
-              updateScrollLimit: setLimit,
-            }}
+            <GeneTableBody
+              {...{
+                query,
+                sort,
+                limit,
+                selectedGenes,
+                selectedAllGenes: allGenes,
+                updateSelection: updateGeneSelection,
+                selectedColumns,
+                attributes,
+                selectedVisualization: selectedViz,
+                updateScrollLimit: setLimit,
+              }}
             />
           </table>
         </div>
       </div>
-      {
-        showDownloadDialog
-          && (
-          <DownloadDialogModal {...{
+      {showDownloadDialog && (
+        <DownloadDialogModal
+          {...{
             selectedGenes,
             showDownloadDialog,
             selectedAllGenes: allGenes,
             query,
             toggleDownloadDialog,
           }}
-          />
-          )
-        }
+        />
+      )}
     </div>
   );
 }

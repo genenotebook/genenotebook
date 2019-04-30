@@ -9,6 +9,10 @@ import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdow
 
 import './geneTableHeader.scss';
 
+function hasOwnProperty(obj, prop) {
+  return Object.prototype.hasOwnProperty.call(obj, prop);
+}
+
 /**
  * [QUERY_TYPES description]
  * @type {Array}
@@ -73,18 +77,18 @@ function queryFromLabel({ queryLabel: { label }, queryValue }) {
 }
 
 function getAttributeQuery({ query, attribute }) {
-  if (query.hasOwnProperty(attribute.query)) {
+  if (hasOwnProperty(query, attribute.query)) {
     return query[attribute.query];
   }
 
   const destructuredQuery = {};
 
-  if (query.hasOwnProperty('$or')) {
+  if (hasOwnProperty(query, '$or')) {
     query.$or.map(q => Object.assign(destructuredQuery, q));
   }
-  if (destructuredQuery.hasOwnProperty(attribute.query)) {
-    return destructuredQuery[attribute.query];
-  }
+  // if (destructuredQuery.hasOwnProperty(attribute.query)) {
+  return destructuredQuery[attribute.query];
+  // }
 }
 
 class HeaderElement extends React.Component {
