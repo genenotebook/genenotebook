@@ -184,12 +184,16 @@ function GeneTable({
     setSort(newSort);
   }
 
-  function updateQuery(newQuery) {
-    console.log({ newQuery });
+  function updateQuery(newQuery, updateFinishedCallback) {
+    setQueryCount('...');
     getQueryCount.call({ query: newQuery }, (err, res) => {
       const currentQueryCount = new Intl.NumberFormat().format(res);
       setQuery(newQuery);
       setQueryCount(currentQueryCount);
+      if (updateFinishedCallback
+        && typeof updateFinishedCallback === 'function') {
+        updateFinishedCallback();
+      }
     });
   }
 

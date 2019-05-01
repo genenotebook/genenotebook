@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-for */
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import { cloneDeep, isEqual, isEmpty } from 'lodash';
 
@@ -11,6 +11,14 @@ import './geneTableHeader.scss';
 
 function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
+}
+
+class SelectionOption extends Object {
+  constructor(optionName) {
+    super();
+    this.value = optionName;
+    this.label = optionName;
+  }
 }
 
 /**
@@ -25,18 +33,7 @@ const QUERY_TYPES = [
   'Does not equal',
   'Contains',
   'Does not contain',
-].map(query => ({
-  label: query,
-  value: query,
-}));
-
-class SelectionOption extends Object {
-  constructor(optionName) {
-    super();
-    this.value = optionName;
-    this.label = optionName;
-  }
-}
+].map(query => new SelectionOption(query));
 
 /**
  * [description]
@@ -76,233 +73,154 @@ function queryFromLabel({ queryLabel: { label }, queryValue }) {
   return query;
 }
 
-function getAttributeQuery({ query, attribute }) {
-  if (hasOwnProperty(query, attribute.query)) {
-    return query[attribute.query];
-  }
+function HeaderElement({
+  attribute, query, updateQuery, sort, updateSort,
+}) {
+  const [queryLoading, setQueryLoading] = useState(false);
+  const [queryLabel, setQueryLabel] = useState(new SelectionOption('None'));
+  const [queryValue, setQueryValue] = useState('');
+  const attributeQuery = queryFromLabel({ queryLabel, queryValue });
 
-  const destructuredQuery = {};
-
-  if (hasOwnProperty(query, '$or')) {
-    query.$or.map(q => Object.assign(destructuredQuery, q));
-  }
-  // if (destructuredQuery.hasOwnProperty(attribute.query)) {
-  return destructuredQuery[attribute.query];
-  // }
-}
-
-class HeaderElement extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      sortOrder: 'None',
-      dummy: 0,
-      queryLabel: new SelectionOption('None'),
-      queryValue: '',
-      queryLoading: false,
-      attributeQuery: undefined,
-    };
-  }
-
-  static getDerivedStateFromProps = (props, state) => {
-    const { query, attribute } = props;
-    const { attributeQuery } = state;
-    const newAttributeQuery = getAttributeQuery({ query, attribute });
-
-    if (!isEqual(newAttributeQuery, attributeQuery)) {
-      return {
-        attributeQuery: newAttributeQuery,
-        queryLoading: false,
-      };
+  function hasNewQuery() {
+    if (hasOwnProperty(query, attribute.query)) {
+      return isEmpty(query) || !isEqual(query[attribute.query], attributeQuery);
     }
-    return null;
-  };
+    return !isEmpty(attributeQuery);
+  }
 
-  updateQueryLabel = (selection) => {
-    const queryLabel = selection;
-
-    this.setState({
-      queryLabel,
-      dummy: this.state.dummy + 1,
-    });
-  };
-
-  updateQueryValue = (event) => {
-    const queryValue = event.target.value;
-    this.setState({
-      queryValue,
-    });
-  };
-
-  updateSortOrder = (event) => {
-    const { attribute, updateSort } = this.props;
-    const sortOrder = parseInt(event.target.id);
-    const newSortOrder = sortOrder === this.state.sortOrder ? 'None' : sortOrder;
-    const sort = newSortOrder === 'None' ? undefined : { [attribute.query]: newSortOrder };
-    this.setState({ sortOrder: newSortOrder });
-    updateSort(sort);
-  };
-
-  hasQuery = () => typeof this.state.attributeQuery !== 'undefined';
-
-  hasSort = () => {
-    const { sort, attribute } = this.props;
-    return typeof sort !== 'undefined' && sort.hasOwnProperty(attribute.query);
-  };
-
-  hasNewQuery = () => {
-    const { queryLabel, queryValue } = this.state;
-    const newQuery = queryFromLabel({ queryLabel, queryValue });
-
-    const { query, attribute, ...props } = this.props;
-
-    if (query.hasOwnProperty(attribute.query)) {
-      return isEmpty(query) || !isEqual(query[attribute.query], newQuery);
-    }
-    return !isEmpty(newQuery);
-  };
-
-  updateQuery = () => {
-    const { query, attribute, updateQuery } = this.props;
-    const { queryLabel, queryValue } = this.state;
+  function triggerQueryUpdate() {
     const newQuery = cloneDeep(query);
-
     if (queryLabel.label === 'None') {
-      if (newQuery.hasOwnProperty(attribute.query)) {
+      if (hasOwnProperty(newQuery, attribute.query)) {
         delete newQuery[attribute.query];
       }
     } else {
-      newQuery[attribute.query] = queryFromLabel({ queryLabel, queryValue });
+      newQuery[attribute.query] = attributeQuery;
     }
-    this.setState({
-      queryLoading: true,
+    setQueryLoading(true);
+    updateQuery(newQuery, () => {
+      setQueryLoading(false);
     });
-    updateQuery(newQuery);
-  };
-
-  removeQuery = () => {
-    const {
-      query, attribute, updateQuery, history,
-    } = this.props;
-    const newQuery = cloneDeep(query);
-
-    delete newQuery[attribute.query];
-    delete newQuery.$or;
-
-    this.setState(
-      {
-        queryLabel: new SelectionOption('None'),
-        queryValue: '',
-        dummy: this.state.dummy + 1,
-      },
-      (err, res) => {
-        updateQuery(newQuery);
-        history.push('/genes');
-      },
-    );
-  };
-
-  render() {
-    const {
-      query, attribute, sort, ...props
-    } = this.props;
-    const {
-      queryLabel, queryValue, queryLoading, dummy,
-    } = this.state;
-    const hasQuery = this.hasQuery();
-    const hasNewQuery = this.hasNewQuery();
-    const hasSort = this.hasSort();
-
-    const buttonClass = hasQuery || hasSort || queryLoading ? 'btn-success' : 'btn-outline-dark';
-    const orientation = attribute.name === 'Gene ID' ? 'left' : 'right';
-    const colStyle = attribute.name === 'Gene ID' ? { width: '10rem' } : {};
-
-    return (
-      <th scope="col" style={{ ...colStyle }}>
-        <div className="btn-group btn-group-justified">
-          <button
-            className={`btn btn-sm px-2 py-0 genetable-dropdown ${buttonClass}`}
-            type="button"
-            disabled
-          >
-            {attribute.name}
-            {queryLoading && <span className="icon-spin" />}
-          </button>
-          {attribute.name !== 'Genome' && (
-            <Dropdown>
-              <DropdownButton className={`btn btn-sm px-1 py-0 dropdown-toggle ${buttonClass}`} />
-              <DropdownMenu className={`dropdown-menu dropdown-menu-${orientation} px-2`}>
-                <div className={`sort-wrapper ${hasSort ? 'has-sort' : ''}`}>
-                  <h6 className="dropdown-header">Sort:</h6>
-                  <div className="form-check">
-                    {[1, -1].map((sortOrder) => {
-                      const checked = sort && sort[attribute.query] === sortOrder;
-                      return (
-                        <div key={`${sortOrder}-${checked}`}>
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id={sortOrder}
-                            onChange={this.updateSortOrder}
-                            checked={checked}
-                          />
-                          <label className="form-check-label" htmlFor={sortOrder}>
-                            {sortOrder === 1 ? 'Increasing' : 'Decreasing'}
-                          </label>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-                <div className="dropdown-divider" />
-                <div className={`query-wrapper pb-1 mb-1 ${hasQuery ? 'has-query' : ''}`}>
-                  <h6 className="dropdown-header">Filter:</h6>
-                  <Select
-                    className="form-control-sm pb-5"
-                    value={queryLabel}
-                    options={QUERY_TYPES}
-                    onChange={this.updateQueryLabel}
-                  />
-                  {['None', 'Present', 'Not present'].indexOf(queryLabel.label) < 0 ? (
-                    <textarea
-                      className="form-control"
-                      onChange={this.updateQueryValue}
-                      value={queryValue}
-                    />
-                  ) : null}
-                </div>
-                {hasNewQuery && !queryLoading && (
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-block btn-outline-success"
-                    onClick={this.updateQuery}
-                  >
-                    Update filter
-                  </button>
-                )}
-                {queryLoading && (
-                  <button type="button" className="btn btn-sm btn-block btn-success" disabled>
-                    <span className="icon-spin" />
-                    &nbsp;Query loading
-                  </button>
-                )}
-                {hasQuery && (
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-block btn-outline-dark"
-                    onClick={this.removeQuery}
-                  >
-                    <span className="icon-cancel" />
-                    Cancel filter
-                  </button>
-                )}
-              </DropdownMenu>
-            </Dropdown>
-          )}
-        </div>
-      </th>
-    );
   }
+
+  function cancelQuery() {
+    setQueryLabel(new SelectionOption('None'));
+    setQueryValue('');
+    const newQuery = cloneDeep(query);
+    delete newQuery[attribute.query];
+    setQueryLoading(true);
+    updateQuery(newQuery, () => {
+      setQueryLoading(false);
+    });
+  }
+
+  function updateSortOrder(clickedSortOrder) {
+    if (sort && hasOwnProperty(sort, attribute.query)) {
+      updateSort(undefined);
+    } else {
+      updateSort({ [attribute.query]: clickedSortOrder });
+    }
+  }
+
+  const hasQuery = !isEmpty(attributeQuery);
+  const hasSort = typeof sort !== 'undefined' && hasOwnProperty(sort, attribute.query);
+
+  const buttonClass = hasQuery || hasSort || queryLoading ? 'btn-success' : 'btn-outline-dark';
+  const orientation = attribute.name === 'Gene ID' ? 'left' : 'right';
+  const colStyle = attribute.name === 'Gene ID' ? { width: '10rem' } : {};
+
+  return (
+    <th scope="col" style={{ ...colStyle }}>
+      <div className="btn-group btn-group-justified">
+        <button
+          className={`btn btn-sm px-2 py-0 genetable-dropdown ${buttonClass}`}
+          type="button"
+          disabled
+          style={{
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {queryLoading && <span className="icon-spin animate-spin" />}
+          {attribute.name}
+        </button>
+        {attribute.name !== 'Genome' && (
+          <Dropdown>
+            <DropdownButton className={`btn btn-sm px-1 py-0 dropdown-toggle ${buttonClass}`} />
+            <DropdownMenu className={`dropdown-menu dropdown-menu-${orientation} px-2`}>
+              <div className={`sort-wrapper ${hasSort ? 'has-sort' : ''}`}>
+                <h6 className="dropdown-header">Sort:</h6>
+                <div className="form-check">
+                  {[1, -1].map((sortOrder) => {
+                    const checked = sort && sort[attribute.query] === sortOrder;
+                    return (
+                      <div key={`${sortOrder}-${checked}`}>
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id={sortOrder}
+                          onChange={() => {
+                            updateSortOrder(sortOrder);
+                          }}
+                          checked={checked}
+                        />
+                        <label className="form-check-label" htmlFor={sortOrder}>
+                          {sortOrder === 1 ? 'Increasing' : 'Decreasing'}
+                        </label>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              <div className="dropdown-divider" />
+              <div className={`query-wrapper pb-1 mb-1 ${hasQuery ? 'has-query' : ''}`}>
+                <h6 className="dropdown-header">Filter:</h6>
+                <Select
+                  className="form-control-sm pb-5"
+                  value={queryLabel}
+                  options={QUERY_TYPES}
+                  onChange={setQueryLabel}
+                />
+                {['None', 'Present', 'Not present'].indexOf(queryLabel.label) < 0 ? (
+                  <textarea
+                    className="form-control"
+                    onChange={({ target }) => {
+                      setQueryValue(target.value);
+                    }}
+                    value={queryValue}
+                  />
+                ) : null}
+              </div>
+              {hasNewQuery() && !queryLoading && (
+                <button
+                  type="button"
+                  className="btn btn-sm btn-block btn-outline-success"
+                  onClick={triggerQueryUpdate}
+                >
+                  Update filter
+                </button>
+              )}
+              {queryLoading && (
+                <button type="button" className="btn btn-sm btn-block btn-success" disabled>
+                  <span className="icon-spin animate-spin" />
+                  &nbsp;Query loading
+                </button>
+              )}
+              {hasQuery && (
+                <button
+                  type="button"
+                  className="btn btn-sm btn-block btn-outline-dark"
+                  onClick={cancelQuery}
+                >
+                  <span className="icon-cancel" />
+                  Cancel filter
+                </button>
+              )}
+            </DropdownMenu>
+          </Dropdown>
+        )}
+      </div>
+    </th>
+  );
 }
 
 /**
