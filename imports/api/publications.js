@@ -10,29 +10,28 @@ import { orthogroupCollection } from '/imports/api/genes/orthogroup_collection.j
 import { EditHistory } from '/imports/api/genes/edithistory_collection.js';
 // import { Tracks } from '/imports/api/genomes/track_collection.js';
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
-import { ExperimentInfo, Transcriptomes } from '/imports/api/transcriptomes/transcriptome_collection.js';
-
+import {
+  ExperimentInfo,
+  Transcriptomes,
+} from '/imports/api/transcriptomes/transcriptome_collection.js';
 
 function availableGenomes({ userId }) {
   const roles = Roles.getRolesForUser(userId);
-  const genomeIds = genomeCollection.find({
-    $or: [
-      { permissions: { $in: roles } },
-      { isPublic: true },
-    ],
-  }).map(genome => genome._id);
+  const genomeIds = genomeCollection
+    .find({
+      $or: [{ permissions: { $in: roles } }, { isPublic: true }],
+    })
+    .map(genome => genome._id);
   return genomeIds;
 }
 
 Meteor.publish({
   genes({ query = {}, limit = 40, sort = { ID: 1 } }) {
     const publication = this;
-    
     const genomeIds = availableGenomes(publication);
 
     if (query.hasOwnProperty('genomeId')) {
-      const queryGenomeIds = query.genomeId['$in']
-        .filter(genomeId => genomeIds.includes(genomeId));
+      const queryGenomeIds = query.genomeId.$in.filter(genomeId => genomeIds.includes(genomeId));
       query.genomeId.$in = queryGenomeIds;
     } else {
       query.genomeId = { $in: genomeIds };
@@ -40,7 +39,7 @@ Meteor.publish({
 
     return Genes.find(query, { sort, limit });
   },
-  singleGene ({ geneId, transcriptId }) {
+  singleGene({ geneId, transcriptId }) {
     const publication = this;
 
     const genomeIds = availableGenomes(publication);
@@ -80,24 +79,19 @@ Meteor.publish({
     const genomeIds = availableGenomes(publication);
 
     return attributeCollection.find({
-      $or: [
-        { genomes: { $in: genomeIds } },
-        { allGenomes: true },
-      ],
+      $or: [{ genomes: { $in: genomeIds } }, { allGenomes: true }],
     });
   },
-  geneExpression (geneId) {
+  geneExpression(geneId) {
     const publication = this;
     const roles = Roles.getRolesForUser(publication.userId);
     const permissions = { $in: roles };
     const isPublic = true;
 
     const experimentIds = ExperimentInfo.find({
-      $or: [
-        { permissions },
-        { isPublic },
-      ],
-    }).fetch()
+      $or: [{ permissions }, { isPublic }],
+    })
+      .fetch()
       .map(experiment => experiment._id);
 
     return Transcriptomes.find({
@@ -107,16 +101,13 @@ Meteor.publish({
       },
     });
   },
-  experimentInfo () {
+  experimentInfo() {
     const publication = this;
     const roles = Roles.getRolesForUser(publication.userId);
     const permissions = { $in: roles };
     const isPublic = true;
     return ExperimentInfo.find({
-      $or: [
-        { permissions },
-        { isPublic },
-      ],
+      $or: [{ permissions }, { isPublic }],
     });
   },
   /* downloads (downloadId) {
@@ -124,36 +115,35 @@ Meteor.publish({
     const roles = publication.userId ? Roles.getRolesForUser(publication.userId) : ['public'];
     return Downloads.findOne({ID: downloadId, permission: { $in: roles } });
   }, */
-  jobQueue () {
+  jobQueue() {
+    /*
     const publication = this;
     if (!publication.userId) {
       publication.stop();
     }
+    */
     return jobQueue.find({});
   },
-  genomes () {
+  genomes() {
     const publication = this;
     if (!publication.userId) {
       return genomeCollection.find({ isPublic: true });
     }
     const roles = Roles.getRolesForUser(publication.userId);
     return genomeCollection.find({
-      $or: [
-        { permissions: { $in: roles } },
-        { isPublic: true },
-      ],
+      $or: [{ permissions: { $in: roles } }, { isPublic: true }],
     });
   },
-  orthogroups (ID) {
+  orthogroups(ID) {
     return orthogroupCollection.find({ ID });
   },
-  interpro () {
+  interpro() {
     if (!this.userId) {
       this.stop();
     }
     return Interpro.find({});
   },
-  editHistory () {
+  editHistory() {
     if (!this.userId) {
       this.stop();
     }

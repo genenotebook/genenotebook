@@ -42,9 +42,11 @@ const downloadGenes = new ValidatedMethod({
 
     const queryHash = hash(`${queryString}${dataType}${optionString}`);
 
+    /*
     if (!this.userId) {
       throw new Meteor.Error('not-authorized');
     }
+    */
     const existingJob = jobQueue.findOne({ 'data.queryHash': queryHash });
 
     if (typeof existingJob === 'undefined') {
