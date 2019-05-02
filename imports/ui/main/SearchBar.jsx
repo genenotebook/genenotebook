@@ -15,7 +15,9 @@ import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 import './searchBar.scss';
 
 const attributeTracker = ({ location, ...props }) => {
-  const { pathname, search, hash, state = {} } = location;
+  const {
+    pathname, search, hash, state = {},
+  } = location;
   const { highLightSearch = false, redirected = false } = state;
 
   const query = new URLSearchParams(search);
@@ -32,135 +34,150 @@ const attributeTracker = ({ location, ...props }) => {
     selectedAttributes,
     searchString,
     highLightSearch,
-  }
-}
+  };
+};
 
 const withConditionalRendering = compose(
   withRouter,
   withTracker(attributeTracker),
-  withEither(isLoading, Loading)
-)
+  withEither(isLoading, Loading),
+);
 
 class SearchBar extends React.Component {
-  constructor(props){
-    super(props)
-    const selectedAttributes = props.selectedAttributes.length ?
-      props.selectedAttributes :
-      props.attributes
+  constructor(props) {
+    super(props);
+    const selectedAttributes = props.selectedAttributes.length
+      ? props.selectedAttributes
+      : props.attributes
         .filter(attribute => attribute.defaultSearch)
-        .map(attribute => attribute.name)
+        .map(attribute => attribute.name);
     this.state = {
       selectedAttributes: new Set(selectedAttributes),
       searchString: props.searchString,
-    }
+    };
   }
 
   componentDidUpdate = () => {
     if (this.props.highLightSearch) {
       this.input.focus();
     }
-  }
+  };
 
-  toggleAttributeSelect = event => {
+  toggleAttributeSelect = (event) => {
     const attributeName = event.target.id;
     const selectedAttributes = cloneDeep(this.state.selectedAttributes);
-    if (selectedAttributes.has(attributeName)){
-      selectedAttributes.delete(attributeName)
+    if (selectedAttributes.has(attributeName)) {
+      selectedAttributes.delete(attributeName);
     } else {
-      selectedAttributes.add(attributeName)
+      selectedAttributes.add(attributeName);
     }
     this.setState({ selectedAttributes });
-  }
+  };
 
-  updateSearchString = event => {
+  updateSearchString = (event) => {
     const searchString = event.target.value;
     this.setState({
-      searchString
-    })
-  }
+      searchString,
+    });
+  };
 
-  submit = event => {
+  submit = (event) => {
     event.preventDefault();
     const { history } = this.props;
     const { selectedAttributes, searchString } = this.state;
-    if (searchString.length && selectedAttributes.size){
+    if (searchString.length && selectedAttributes.size) {
       const query = new URLSearchParams();
       query.set('attributes', [...selectedAttributes]);
-      query.set('search', searchString);
+      query.set('search', searchString.trim());
       const queryString = query.toString();
       /*
-        React Router is supposed to work with the Redirect 
-        component, but I cannot figure out how to do that so 
+        React Router is supposed to work with the Redirect
+        component, but I cannot figure out how to do that so
         I just push to the history instead.
       */
-      history.push(`/genes?${queryString}`)
+      history.push(`/genes?${queryString}`);
     }
-  }
+  };
 
   clearSearch = () => {
     const { history } = this.props;
-    this.setState({
-      searchString: ''
-    }, (err,res) => {
-      if ( err ) logger.warn(err);
-      /*
-        React Router is supposed to work with the Redirect 
-        component, but I cannot figure out how to do that so 
+    this.setState(
+      {
+        searchString: '',
+      },
+      (err, res) => {
+        if (err) logger.warn(err);
+        /*
+        React Router is supposed to work with the Redirect
+        component, but I cannot figure out how to do that so
         I just push to the history instead.
       */
-      history.push('/genes');
-    })
-  }
+        history.push('/genes');
+      },
+    );
+  };
 
-  render(){
+  render() {
     const { attributes, currentUrl } = this.props;
-    const { selectedAttributes, searchString, redirectTo, redirected } = this.state;
+    const {
+      selectedAttributes, searchString, redirectTo, redirected,
+    } = this.state;
 
-    return <form className="form-inline search mx-auto" role="search" onSubmit={this.submit}>
-      <div className="input-group input-group-sm">
-        <div className="input-group-prepend">
-          <Dropdown>
-            <DropdownButton className='btn btn-sm btn-outline-dark dropdown-toggle search-dropdown border' />
-            <DropdownMenu>
-              <h6 className='dropdown-header'>
-                Select attributes to search
-              </h6>
-              {
-                attributes.map( ({ name }) => {
+    return (
+      <form className="form-inline search mx-auto" role="search" onSubmit={this.submit}>
+        <div className="input-group input-group-sm">
+          <div className="input-group-prepend">
+            <Dropdown>
+              <DropdownButton className="btn btn-sm btn-outline-dark dropdown-toggle search-dropdown border" />
+              <DropdownMenu>
+                <h6 className="dropdown-header">Select attributes to search</h6>
+                {attributes.map(({ name }) => {
                   const checked = selectedAttributes.has(name);
-                  return <div key={`${name} ${checked}`} className='form-check px-3 pb-1' 
-                    style={{justifyContent: 'flex-start', whiteSpace: 'pre' }}>
-                    <input type='checkbox' className='form-check-input' id={name}
-                      checked={checked} onChange={this.toggleAttributeSelect} />
-                    <label className='form-check-label'>{name}</label>
-                  </div>
-                })
-              }
-            </DropdownMenu>
-          </Dropdown>
+                  return (
+                    <div
+                      key={`${name} ${checked}`}
+                      className="form-check px-3 pb-1"
+                      style={{ justifyContent: 'flex-start', whiteSpace: 'pre' }}
+                    >
+                      <input
+                        type="checkbox"
+                        className="form-check-input"
+                        id={name}
+                        checked={checked}
+                        onChange={this.toggleAttributeSelect}
+                      />
+                      <label className="form-check-label">{name}</label>
+                    </div>
+                  );
+                })}
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+          <input
+            type="text"
+            className="form-control border-right-0 border search-bar"
+            placeholder="Search genes"
+            value={searchString}
+            onChange={this.updateSearchString}
+            onSubmit={this.submit}
+            ref={(input) => {
+              this.input = input;
+            }}
+          />
+          {searchString && (
+            <span className="input-group-addon bg-white border-left-0 border pt-1 clear-search">
+              <span className="icon-cancel" onClick={this.clearSearch} />
+            </span>
+          )}
+
+          <div className="input-group-append btn-group">
+            <button type="submit" className="btn btn-sm btn-outline-dark border">
+              <span className="icon-search" />
+            </button>
+          </div>
         </div>
-        <input 
-          type="text" 
-          className="form-control border-right-0 border search-bar"
-          placeholder="Search genes"
-          value={searchString}
-          onChange={this.updateSearchString}
-          onSubmit={this.submit}
-          ref={(input) => { this.input = input }} />
-        { searchString &&
-          <span className='input-group-addon bg-white border-left-0 border pt-1 clear-search'>
-            <span className='icon-cancel' onClick={this.clearSearch} />
-          </span>
-          
-        }
-        
-        <div className="input-group-append btn-group">
-          <button type="submit" className="btn btn-sm btn-outline-dark border">
-            <span className='icon-search' />
-          </button>
-        </div>
-      </div>
-    </form>
+      </form>
+    );
   }
 }
 

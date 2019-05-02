@@ -100,8 +100,6 @@ function formatLabelValue({ attribute, query }) {
     queryValue = queryValue.join('\n');
   }
 
-  console.log(attribute.name, { queryValue, queryLabel });
-
   return [queryLabel, queryValue];
 }
 
