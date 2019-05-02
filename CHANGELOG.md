@@ -5,7 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
-## [0.1.17] 2019-05-02
+## [Unreleased]
+
+## [0.1.16] 2019-05-02
 
 ### Added
 
@@ -214,7 +216,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - First GeneNoteBook version ready for use
 
-[unreleased]: https://github.com/genenotebook/genenotebook/compare/v0.1.15...HEAD
+[unreleased]: https://github.com/genenotebook/genenotebook/compare/v0.1.16...HEAD
+[0.1.16]: https://github.com/genenotebook/genenotebook/compare/v0.1.15...v0.1.16
 [0.1.15]: https://github.com/genenotebook/genenotebook/compare/v0.1.14...v0.1.15
 [0.1.14]: https://github.com/genenotebook/genenotebook/compare/v0.1.13...v0.1.14
 [0.1.13]: https://github.com/genenotebook/genenotebook/compare/v0.1.12...v0.1.13
