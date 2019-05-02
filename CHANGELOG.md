@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
-## [Unreleased]
+## [0.1.17] 2019-05-02
 
 ### Added
 
@@ -20,6 +20,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Base url of download links
 - BLAST result options menu
+- Downloads for users that are not logged in
+- Trim whitespace search string
+- Genome selection menu
 
 ## [0.1.15] 2019-03-26
 
