@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { compose } from 'recompose';
 import { cloneDeep, isEqual, isEmpty } from 'lodash';
 
@@ -127,9 +127,12 @@ function GeneTable({
 }) {
   const [limit, setLimit] = useState(20);
   const [query, setQuery] = useState(searchQuery);
-  if (!isEqual(query, searchQuery) && !isEmpty(searchQuery)) {
-    setQuery(searchQuery);
-  }
+  useEffect(() => {
+    if (!isEqual(query, searchQuery)) {
+      setQuery(searchQuery);
+    }
+  }, [searchQuery]);
+
   const [sort, setSort] = useState(undefined);
   const [queryCount, setQueryCount] = useState('...');
   const [selectedGenes, setSelectedGenes] = useState(new Set());
@@ -185,16 +188,25 @@ function GeneTable({
   }
 
   function updateQuery(newQuery, updateFinishedCallback) {
+    console.log('updateQuery');
+    console.log({newQuery});
     setQueryCount('...');
     getQueryCount.call({ query: newQuery }, (err, res) => {
+      console.log({ res });
       const currentQueryCount = new Intl.NumberFormat().format(res);
       setQuery(newQuery);
+      console.log('query set');
       setQueryCount(currentQueryCount);
-      if (updateFinishedCallback
-        && typeof updateFinishedCallback === 'function') {
+      console.log('queryCount set');
+      if (updateFinishedCallback && typeof updateFinishedCallback === 'function') {
         updateFinishedCallback();
       }
     });
+  }
+
+  function cancelQuery() {
+    console.log('cancelQuery');
+    history.push('/genes');
   }
 
   getQueryCount.call({ query }, (err, res) => {
@@ -244,6 +256,7 @@ function GeneTable({
                 toggleSelectAllGenes,
                 selectedVisualization: selectedViz,
                 updateQuery,
+                cancelQuery,
                 query,
                 updateSort,
                 sort,

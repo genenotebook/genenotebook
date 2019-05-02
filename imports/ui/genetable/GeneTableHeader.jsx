@@ -41,52 +41,88 @@ const QUERY_TYPES = [
  * @param  {[type]} options.queryValue [description]
  * @return {[type]}                    [description]
  */
-function queryFromLabel({ queryLabel: { label }, queryValue }) {
-  let query;
-  const queryArray = queryValue.split(/\n|↵/);
-  switch (label) {
+function formatQuery({ queryLabel, queryValue }) {
+  const queryArray = queryValue.split(/\n|↵|\|/);
+  switch (queryLabel) {
     case 'None':
-      query = {};
-      break;
+      return {};
     case 'Present':
-      query = { $exists: true };
-      break;
+      return { $exists: true };
     case 'Not present':
-      query = { $exists: false };
-      break;
+      return { $exists: false };
     case 'Equals':
-      query = { $in: queryArray };
-      break;
+      return { $in: queryArray };
     case 'Does not equal':
-      query = { $nin: queryArray };
-      break;
+      return { $nin: queryArray };
     case 'Contains':
-      query = { $regex: queryArray.map(q => new RegExp(q)) };
-      break;
+      return { $regex: new RegExp(queryArray.join('|')) };
     case 'Does not contain':
-      query = { $not: { $regex: queryArray.map(q => new RegExp(q)) } };
-      break;
+      return { $not: { $regex: new RegExp(queryArray.join('|')) } };
+    case undefined:
+      return undefined;
     default:
-      logger.warn(`Unknown label/value: ${label}/${queryValue}`);
-      break;
+      logger.warn(`Unknown label/value: ${queryLabel}/${queryValue}`);
+      return undefined;
   }
-  return query;
+}
+
+function formatLabelValue({ attribute, query }) {
+  let queryLabel = 'None';
+  let queryValue = '';
+  let attributeQuery = {};
+  if (query.$or && hasOwnProperty(query.$or[0], attribute.query)) {
+    attributeQuery = query.$or[0][attribute.query];
+  } else if (hasOwnProperty(query, attribute.query)) {
+    attributeQuery = query[attribute.query];
+  }
+
+  if (hasOwnProperty(attributeQuery, '$exists')) {
+    if (attributeQuery.$exists) {
+      queryLabel = 'Present';
+    } else {
+      queryLabel = 'Not present';
+    }
+  } else if (hasOwnProperty(attributeQuery, '$in')) {
+    queryLabel = 'Equals';
+    queryValue = attributeQuery.$in;
+  } else if (hasOwnProperty(attributeQuery, '$nin')) {
+    queryLabel = 'Does not equal';
+    queryValue = attributeQuery.$nin;
+  } else if (hasOwnProperty(attributeQuery, '$regex')) {
+    queryLabel = 'Contains';
+    queryValue = attributeQuery.$regex;
+  } else if (hasOwnProperty(attributeQuery, '$not')) {
+    queryLabel = 'Does not contain';
+    queryValue = attributeQuery.$not.$regex;
+  }
+
+  if (Array.isArray(queryValue)) {
+    queryValue = queryValue.join('\n');
+  }
+
+  console.log(attribute.name, { queryValue, queryLabel });
+
+  return [queryLabel, queryValue];
 }
 
 function HeaderElement({
-  attribute, query, updateQuery, sort, updateSort,
+  attribute, query, updateQuery, cancelQuery, sort, updateSort,
 }) {
+  let [currentQueryLabel, currentQueryValue] = formatLabelValue({ attribute, query });
+  const [attributeQuery, setAttributeQuery] = useState({
+    queryLabel: currentQueryLabel,
+    queryValue: currentQueryValue,
+  });
+  const { queryLabel, queryValue } = attributeQuery;
   const [queryLoading, setQueryLoading] = useState(false);
-  const [queryLabel, setQueryLabel] = useState(new SelectionOption('None'));
-  const [queryValue, setQueryValue] = useState('');
-  const attributeQuery = queryFromLabel({ queryLabel, queryValue });
 
-  function hasNewQuery() {
-    if (hasOwnProperty(query, attribute.query)) {
-      return isEmpty(query) || !isEqual(query[attribute.query], attributeQuery);
-    }
-    return !isEmpty(attributeQuery);
-  }
+  useEffect(() => {
+    [currentQueryLabel, currentQueryValue] = formatLabelValue({ attribute, query });
+    setAttributeQuery({
+      queryLabel: currentQueryLabel,
+      queryValue: currentQueryValue,
+    });
+  }, [query]);
 
   function triggerQueryUpdate() {
     const newQuery = cloneDeep(query);
@@ -95,19 +131,8 @@ function HeaderElement({
         delete newQuery[attribute.query];
       }
     } else {
-      newQuery[attribute.query] = attributeQuery;
+      newQuery[attribute.query] = formatQuery({ ...attributeQuery }); // attributeQuery;
     }
-    setQueryLoading(true);
-    updateQuery(newQuery, () => {
-      setQueryLoading(false);
-    });
-  }
-
-  function cancelQuery() {
-    setQueryLabel(new SelectionOption('None'));
-    setQueryValue('');
-    const newQuery = cloneDeep(query);
-    delete newQuery[attribute.query];
     setQueryLoading(true);
     updateQuery(newQuery, () => {
       setQueryLoading(false);
@@ -122,7 +147,8 @@ function HeaderElement({
     }
   }
 
-  const hasQuery = !isEmpty(attributeQuery);
+  const hasQuery = currentQueryLabel !== 'None';
+  const hasNewQuery = currentQueryLabel !== queryLabel || currentQueryValue !== queryValue;
   const hasSort = typeof sort !== 'undefined' && hasOwnProperty(sort, attribute.query);
 
   const buttonClass = hasQuery || hasSort || queryLoading ? 'btn-success' : 'btn-outline-dark';
@@ -176,21 +202,29 @@ function HeaderElement({
                 <h6 className="dropdown-header">Filter:</h6>
                 <Select
                   className="form-control-sm pb-5"
-                  value={queryLabel}
+                  value={new SelectionOption(queryLabel)}
                   options={QUERY_TYPES}
-                  onChange={setQueryLabel}
+                  onChange={({ label }) => {
+                    setAttributeQuery({
+                      queryLabel: label,
+                      queryValue,
+                    });
+                  }}
                 />
-                {['None', 'Present', 'Not present'].indexOf(queryLabel.label) < 0 ? (
+                {['None', 'Present', 'Not present'].indexOf(queryLabel) < 0 ? (
                   <textarea
                     className="form-control"
                     onChange={({ target }) => {
-                      setQueryValue(target.value);
+                      setAttributeQuery({
+                        queryLabel,
+                        queryValue: target.value,
+                      });
                     }}
                     value={queryValue}
                   />
                 ) : null}
               </div>
-              {hasNewQuery() && !queryLoading && (
+              {hasNewQuery && !queryLoading && (
                 <button
                   type="button"
                   className="btn btn-sm btn-block btn-outline-success"

@@ -23,7 +23,7 @@ function XAxis({
   const ticks = [];
 
   for (let i = 1; i < numTicks; i += 1) {
-    ticks.push(start + (i * stepSize));
+    ticks.push(start + i * stepSize);
   }
 
   return (
@@ -32,26 +32,24 @@ function XAxis({
       <g>
         <line x1={range[0]} x2={range[0]} y1="0" y2="5" stroke="black" />
         <text x={range[0]} y="-10" dy="5" textAnchor="left" fontSize="10">
-          { formatNumber(start) }
+          {formatNumber(start)}
         </text>
       </g>
-      {
-        ticks.map((tick) => {
-          const pos = scale(tick);
-          return (
-            <g key={tick}>
-              <line x1={pos} x2={pos} y1="0" y2="5" stroke="black" />
-              <text x={pos} y="-10" dy="5" textAnchor="middle" fontSize="10">
-                { formatNumber(tick) }
-              </text>
-            </g>
-          );
-        })
-      }
+      {ticks.map((tick) => {
+        const pos = scale(tick);
+        return (
+          <g key={tick}>
+            <line x1={pos} x2={pos} y1="0" y2="5" stroke="black" />
+            <text x={pos} y="-10" dy="5" textAnchor="middle" fontSize="10">
+              {formatNumber(tick)}
+            </text>
+          </g>
+        );
+      })}
       <g>
         <line x1={range[1]} x2={range[1]} y1="0" y2="5" stroke="black" />
         <text x={range[1]} y="-10" dy="5" textAnchor="end" fontSize="10">
-          { formatNumber(end) }
+          {formatNumber(end)}
         </text>
       </g>
       <text x={range[0]} y="15" dy="5" textAnchor="left" fontSize="11">
@@ -62,19 +60,20 @@ function XAxis({
 }
 
 function IntervalPopover({
-  showPopover, togglePopover, targetId, ID, type, start,
-  end, phase, attributes = {}, seq,
+  showPopover,
+  togglePopover,
+  targetId,
+  ID,
+  type,
+  start,
+  end,
+  phase,
+  attributes = {},
+  seq,
 }) {
   return (
-    <Popover
-      placement="top"
-      isOpen={showPopover}
-      target={targetId}
-      toggle={togglePopover}
-    >
-      <PopoverHeader>
-        { ID }
-      </PopoverHeader>
+    <Popover placement="top" isOpen={showPopover} target={targetId} toggle={togglePopover}>
+      <PopoverHeader>{ID}</PopoverHeader>
       <PopoverBody className="px-0 py-0">
         <div className="table-responive">
           <table className="table table-hover">
@@ -95,16 +94,14 @@ function IntervalPopover({
                 <td>Phase</td>
                 <td>{phase}</td>
               </tr>
-              {
-                Object.entries(attributes).map(([attributeName, attributeValue]) => (
-                  <tr key={attributeName}>
-                    <td>{attributeName}</td>
-                    <td>
-                      <AttributeValue {...{ attributeValue }} />
-                    </td>
-                  </tr>
-                ))
-              }
+              {Object.entries(attributes).map(([attributeName, attributeValue]) => (
+                <tr key={attributeName}>
+                  <td>{attributeName}</td>
+                  <td>
+                    <AttributeValue {...{ attributeValue }} />
+                  </td>
+                </tr>
+              ))}
               <tr>
                 <td colSpan="2">
                   <h6>
@@ -152,14 +149,26 @@ function Exon({
       <rect
         className="exon"
         {...{
-          x, y, width, height, fill: fill.rgb(),
+          x,
+          y,
+          width,
+          height,
+          fill: fill.rgb(),
         }}
         id={targetId}
         onClick={togglePopover}
       />
       <IntervalPopover
         {...{
-          targetId, ID, type, start, end, phase, attributes, seq, showPopover,
+          targetId,
+          ID,
+          type,
+          start,
+          end,
+          phase,
+          attributes,
+          seq,
+          showPopover,
         }}
         togglePopover={togglePopover}
       />
@@ -193,7 +202,10 @@ function Transcript({
     <React.Fragment>
       <line
         {...{
-          x1, x2, y1, y2,
+          x1,
+          x2,
+          y1,
+          y2,
         }}
         stroke="black"
         markerEnd="url(#arrowEnd)"
@@ -201,24 +213,30 @@ function Transcript({
       />
       <line
         {...{
-          x1: x1 - t, x2: x2 + t, y1, y2,
+          x1: x1 - t,
+          x2: x2 + t,
+          y1,
+          y2,
         }}
         className="transcript-hover"
         onClick={togglePopover}
       />
-      {
-        exons.map(exon => (
-          <Exon
-            key={exon.ID}
-            {...{
-              genomeId, geneId, scale, ...exon,
-            }}
-          />
-        ))
-      }
+      {exons.map(exon => (
+        <Exon
+          key={exon.ID}
+          {...{
+            genomeId,
+            geneId,
+            scale,
+            ...exon,
+          }}
+        />
+      ))}
       <IntervalPopover
         {...{
-          targetId, showPopover, ...transcript,
+          targetId,
+          showPopover,
+          ...transcript,
         }}
         togglePopover={togglePopover}
       />
@@ -231,33 +249,29 @@ export function GenemodelGroup({
 }) {
   return (
     <g className="genemodel" transform="translate(0,4)">
-      {
-        transcripts.map((transcript, index) => {
-          const exons = gene.subfeatures
-            .filter(({ parents }) => parents.indexOf(transcript.ID) >= 0);
-          const { ID: geneId, strand, genomeId } = gene;
-          return (
-            <g
-              key={transcript.ID}
-              className="transcript"
-              transform={`translate(0,${index * 14})`}
-            >
-              <Transcript
-                {...{
-                  exons, transcript, scale, geneId, genomeId, strand,
-                }}
-              />
-            </g>
-          );
-        })
-      }
+      {transcripts.map((transcript, index) => {
+        const exons = gene.subfeatures.filter(({ parents }) => parents.indexOf(transcript.ID) >= 0);
+        const { ID: geneId, strand, genomeId } = gene;
+        return (
+          <g key={transcript.ID} className="transcript" transform={`translate(0,${index * 14})`}>
+            <Transcript
+              {...{
+                exons,
+                transcript,
+                scale,
+                geneId,
+                genomeId,
+                strand,
+              }}
+            />
+          </g>
+        );
+      })}
     </g>
   );
 }
 
-export default function Genemodel({
-  gene, resizable = true,
-}) {
+export default function Genemodel({ gene, resizable = true }) {
   const [width, setWidth] = useState(250);
 
   const geneLength = gene.end - gene.start;
@@ -278,7 +292,7 @@ export default function Genemodel({
 
   const scale = scaleLinear()
     .domain([start, end])
-    .range([margin.left, width - margin.right])
+    .range([margin.left, width - margin.right]);
 
   return (
     <div id="genemodel" className="card genemodel">
@@ -291,26 +305,19 @@ export default function Genemodel({
           seqid={gene.seqid}
         />
         <defs>
-          <marker
-            id="arrowEnd"
-            markerWidth="15"
-            markerHeight="10"
-            refX="0"
-            refY="5"
-            orient="auto"
-          >
-            <path
-              d="M0,5 L15,5 L10,10 M10,0 L15,5"
-              fill="none"
-              stroke="black"
-              strokeWidth="1"
-            />
+          <marker id="arrowEnd" markerWidth="15" markerHeight="10" refX="0" refY="5" orient="auto">
+            <path d="M0,5 L15,5 L10,10 M10,0 L15,5" fill="none" stroke="black" strokeWidth="1" />
           </marker>
         </defs>
       </svg>
-      {
-        resizable && <ReactResizeDetector handleWidth onResize={setWidth} />
-      }
+      {resizable && (
+        <ReactResizeDetector
+          handleWidth
+          onResize={(w) => {
+            setWidth(w);
+          }}
+        />
+      )}
     </div>
   );
 }
