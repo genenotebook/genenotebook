@@ -57,7 +57,7 @@
     "glob": "^7.1.4",
     "html-entities": "^1.2.1",
     "immutability-helper": "^3.0.0",
-    "install": "^0.12.2",
+    "install": "^0.13.0",
     "lodash": "^4.17.11",
     "meteor-babel-helpers": "0.0.3",
     "meteor-job": "^1.5.2",
