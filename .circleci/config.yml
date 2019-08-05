@@ -1,12 +1,10 @@
 version: 2
-machine:
-  node:
-    version: 0.10.43
-dependencies:
-  override:
-    - curl https://install.meteor.com | /bin/sh
-    - npm install
-checkout:
-  post:
-    - git submodule update --init
-run: npm run test
+jobs:
+  test:
+    docker:
+      - image: circleci/node:11.11.0
+    steps:
+      - checkout
+      - run: curl https://install.meteor.com | /bin/sh
+      - run: npm install
+      - run: npm run test
