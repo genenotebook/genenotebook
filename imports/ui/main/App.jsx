@@ -20,7 +20,7 @@ import Header from './Header.jsx';
 import Footer from './Footer.jsx';
 import NotFound from './NotFound.jsx';
 
-const App = () => {
+export default function App() {
   const urlParts = Meteor.absoluteUrl().split('/');
   const basename = urlParts.slice(3).join('/');
   return (
@@ -48,6 +48,4 @@ const App = () => {
       </React.Fragment>
     </Router>
   );
-};
-
-export default App;
+}
