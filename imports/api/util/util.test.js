@@ -1,10 +1,10 @@
-/* eslint-disable no-undef */
+/* eslint-env mocha */
 import chai from 'chai';
 
 import { parseNewick, parseAttributeString } from './util.js';
 
 describe('util', function testUtils() {
-  describe('#parseNewick', function testParseNewick() {
+  describe('parseNewick', function testParseNewick() {
     it('parses properly formatted newick strings', function properParseNewick() {
       chai.assert.equal(1, 1);
     });
@@ -15,7 +15,7 @@ describe('util', function testUtils() {
       chai.expect(badFn).to.throw();
     });
   });
-  describe('#parseAttributeString', function() {
+  describe('parseAttributeString', function() {
     it('parses properly formatted gff3 attribute strings');
   });
 });

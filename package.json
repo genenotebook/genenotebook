@@ -16,12 +16,22 @@
     "reset": "meteor reset",
     "lint": "eslint imports",
     "postversion": "pushd scripts && npm version $(jq -r .version ../package.json) && popd",
-    "test": "meteor test --once --driver-package meteortesting:mocha"
+    "test": "TEST_CLIENT=0 TEST_BROWSER_DRIVER=puppeteer BABEL_ENV=COVERAGE COVERAGE=1 COVERAGE_OUT_HTML=1 COVERAGE_APP_FOLDER=$PWD/ meteor --verbose test --once --driver-package meteortesting:mocha --raw-logs"
   },
   "meteor": {
     "mainModule": {
       "client": "client/main.jsx",
       "server": "server/main.js"
+    },
+    "testModule": "tests/main.js"
+  },
+  "babel": {
+    "env": {
+      "COVERAGE": {
+        "plugins": [
+          "istanbul"
+        ]
+      }
     }
   },
   "eslintConfig": {
@@ -93,13 +103,17 @@
   "devDependencies": {
     "@meteorjs/eslint-config-meteor": "^1.0.5",
     "babel-eslint": "^10.0.2",
+    "babel-plugin-istanbul": "^5.2.0",
     "chai": "^4.2.0",
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.14.0",
     "eslint": "^6.1.0",
     "eslint-config-airbnb": "^17.1.1",
     "eslint-import-resolver-meteor": "^0.4.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-meteor": "^6.0.0",
-    "eslint-plugin-react": "^7.14.3"
+    "eslint-plugin-react": "^7.14.3",
+    "puppeteer": "^1.19.0"
   }
 }

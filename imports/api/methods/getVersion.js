@@ -6,7 +6,7 @@ import fs from 'fs';
 
 let pkg = {};
 
-if (Meteor.isServer) {
+if (Meteor.isServer && !Meteor.isTest && !Meteor.isAppTest) {
   const { argv } = process;
   const executable = argv[1];
   const isProduction = executable
@@ -15,10 +15,12 @@ if (Meteor.isServer) {
     .pop() === 'genenotebook-run.js';
 
   const splitPosition = isProduction ? -1 : -4;
+
   const pkgFile = `${executable
     .split('/')
     .slice(0, splitPosition)
     .join('/')}/package.json`;
+
   pkg = JSON.parse(fs.readFileSync(pkgFile));
 }
 
