@@ -10,42 +10,52 @@ const WebSocket = require('ws');
 let fileName;
 
 program
-    .description('Add fasta formatted reference genome to a running GeneNoteBook server')
-    .usage('[options] <genome fasta file>')
-    .option('-u, --username <username>', 'GeneNoteBook admin username')
-    .option('-p, --password <password>', 'GeneNoteBook admin password')
-    .option('-n, --name [name]','Reference genome name. Default: fasta file name')
-    .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
-    .action(file => {
-    	fileName = path.resolve(file);
-    })
-    .parse(process.argv);
+  .description('Add fasta formatted reference genome to a running GeneNoteBook server')
+  .usage('[options] <genome fasta file>')
+  .option('-u, --username <username>', 'GeneNoteBook admin username')
+  .option('-p, --password <password>', 'GeneNoteBook admin password')
+  .option('-n, --name [name]','Reference genome name. Default: fasta file name')
+  .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
+  .action(function(file){
+    if ( typeof file !== 'string' ) program.help();
+    fileName = path.resolve(file);
+  })
+  .on('--help', function(){
+    console.log('');
+    console.log('  Example:');
+    console.log('');
+    console.log('    genenotebook add genome -u admin -p admin -n test testdata.fasta');
+    console.log('');
+  });
+
+program._name = 'genenotebook add genome';
+program.parse(process.argv);
 
 const { username, password, name, port = 3000 } = program;
 
 if (!( fileName && username && password  )){
-	program.help()
-}
+  program.help()
+};
 
 const genomeName = name || fileName.split('/').pop();
 
-const endpoint = `ws://localhost:${port}/websocket`
+const endpoint = `ws://localhost:${port}/websocket`;
 const SocketConstructor = WebSocket;
 
-const Connection = asteroid.createClass()
+const Connection = asteroid.createClass();
 
-const geneNoteBook = new Connection({ endpoint, SocketConstructor })
+const geneNoteBook = new Connection({ endpoint, SocketConstructor });
 
 geneNoteBook.loginWithPassword({ username, password })
-.then(loginResult => {
-	return geneNoteBook.call('addGenome', { fileName, genomeName })
-})
-.then(addGenomeResult => {
-	const { ok, writeErrors, writeConcernErrors, nInserted } = addGenomeResult;
-	console.log(`Succesfully added ${genomeName} genome in ${nInserted} chunks`)
-	geneNoteBook.disconnect()
-})
-.catch(error => {
-	console.log(error)
-	geneNoteBook.disconnect()
-})
+  .then(loginResult => {
+    return geneNoteBook.call('addGenome', { fileName, genomeName })
+  })
+  .then(addGenomeResult => {
+    const { result: { ok, writeErrors, writeConcernErrors, nInserted } } = addGenomeResult;
+    console.log(`Succesfully added ${genomeName} genome in ${nInserted} chunks`)
+    geneNoteBook.disconnect()
+  })
+  .catch(error => {
+    console.log(error)
+    geneNoteBook.disconnect()
+  });

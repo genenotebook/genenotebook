@@ -6,42 +6,43 @@ import React from 'react';
  * @param  {Number} n Floating point precision
  * @return {Number}   Rounded Number
  */
-export const round = (x, n) => {
-  return parseFloat(Math.round(x * Math.pow(10, n)) / Math.pow(10, n)).toFixed(n)
-};
+export function round(x, n) {
+  return parseFloat(
+    Math.round(x * (10 ** n))
+    / (10 ** n),
+  ).toFixed(n);
+}
+
 
 /**
- * Higher order component for conditional rendering, to be used with compose
- * https://www.robinwieruch.de/gentle-introduction-higher-order-components/
- * @param  {Function}   conditionalRenderingFn Function returning a boolean for condional rendering
- * @param  {Function} EitherComponent       Component to render if conditionalRenderingFn evaluates to true
- * @return {Function}                          
+ * Let conditionalRenderingFn decide wether to wrap EitherComponent or Component
+ * Used for conditional rendering of composed components
+ * @param {Function} conditionalRenderingFn
+ * @param {Function} EitherComponent
+ * @return {Function}
  */
-export const withEither = (conditionalRenderingFn, EitherComponent) => (Component) => (props) =>
-  conditionalRenderingFn(props)
-    ? <EitherComponent { ...props }/>
-    : <Component { ...props } />
-
+export const withEither = (
+  conditionalRenderingFn,
+  EitherComponent,
+) => Component => props => (conditionalRenderingFn(props) ? (
+  <EitherComponent {...props} />
+) : (
+  <Component {...props} />
+));
 
 /**
  * Helper function to see if reactive dataTracker is still loading
- * @param  {Boolean} options.loading 
- * @return {Boolean}                 
+ * @param  {Boolean} options.loading
+ * @return {Boolean}
  */
-export const isLoading = ({ loading }) => {
-  return loading
-}
+export const isLoading = ({ loading }) => loading;
 
 /**
  * Simple React Loading component
  * @return {Function} React Loading component
  */
-export const Loading = () => {
-  return (
-    <div>
-      Loading ...
-    </div>
-  )
+export function Loading() {
+  return <div className="loading">Loading ...</div>;
 }
 
 /**
@@ -49,7 +50,7 @@ export const Loading = () => {
  * @param  {[type]} date [description]
  * @return {[type]}      [description]
  */
-export const formatDate = date => {
+export const formatDate = (date) => {
   let hours = date.getHours();
   hours = hours < 10 ? `0${hours}` : hours;
   let minutes = date.getMinutes();
@@ -59,5 +60,5 @@ export const formatDate = date => {
   let day = date.getDate();
   day = day < 10 ? `0${day}` : day;
   const year = date.getFullYear();
-  return `${hours}:${minutes} ${month}/${day}/${year}`
-}
+  return `${hours}:${minutes} ${month}/${day}/${year}`;
+};

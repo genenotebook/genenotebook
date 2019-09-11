@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { compose } from 'recompose';
 
 import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
@@ -27,9 +28,9 @@ const AdminUserInfo = ({ _id, username, emails, profile, createdAt, roles, ...us
   const { first_name, last_name } = profile;
   return <tr>
     <td>
-      <a href={`${Meteor.absoluteUrl()}admin/user/${_id}`} > 
+      <Link to={`/admin/user/${_id}`}>
         { username }
-      </a>
+      </Link>
     </td>
     <td>{ first_name } { last_name }</td>
     <td>{ emails[0].address }</td>

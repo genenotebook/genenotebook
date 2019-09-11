@@ -1,5 +1,7 @@
 .*
 data/*
+db/*
+testdata/*
 api-docs
 node_modules
 production_settings.json

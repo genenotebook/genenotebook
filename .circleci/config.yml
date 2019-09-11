@@ -1,0 +1,10 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:11.15.0
+    steps:
+      - checkout
+      - run: curl https://install.meteor.com | /bin/sh
+      - run: npm install
+      - run: npm run test

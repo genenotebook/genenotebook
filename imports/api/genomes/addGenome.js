@@ -8,6 +8,7 @@ import Fiber from 'fibers';
 import Future from 'fibers/future';
 
 import { genomeCollection, genomeSequenceCollection } from '/imports/api/genomes/genomeCollection.js';
+import logger from '/imports/api/util/logger.js';
 
 /**
  * Chunk size into which DNA sequences are inserted into the database
@@ -105,6 +106,9 @@ class LineProcessor {
  */
 const fastaFileToMongoDb = ({ fileName, genomeName }) => {
 	return new Promise((resolve, reject) => {
+		if (!fs.existsSync(fileName)) {
+			reject(new Meteor.Error(`${filename} is not an existing file`));
+		}
 		const permissions = ['admin'];
 
 		const genomeId = genomeCollection.insert({
@@ -162,11 +166,11 @@ export const addGenome = new ValidatedMethod({
 			throw new Meteor.Error(`Existing genome: ${genomeName}`)
 		}
 
-		console.log(`Adding ${fileName} as genome: ${genomeName}`)
+		logger.log(`Adding ${fileName} as genome: ${genomeName}`)
 
 		return fastaFileToMongoDb({ fileName, genomeName })
 			.catch(error => {
-				console.log(error);
+				logger.warn(error);
 				throw new Meteor.Error(error);
 			})
 	}

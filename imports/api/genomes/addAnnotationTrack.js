@@ -7,42 +7,43 @@ import Papa from 'papaparse';
 import fs from 'fs';
 import { findIndex, isEqual, isEmpty, mapValues, 
 	partition, omit } from 'lodash';
-//import querystring from 'querystring';
 
 import { Genes, GeneSchema, SubfeatureSchema, 
 	VALID_SUBFEATURE_TYPES, VALID_INTERVAL_TYPES } from '/imports/api/genes/gene_collection.js';
 import { orthogroupCollection } from '/imports/api/genes/orthogroup_collection.js';
 import { genomeSequenceCollection, genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 import { Tracks } from '/imports/api/genomes/track_collection.js';
-
+import logger from '/imports/api/util/logger.js';
 import { scanGeneAttributes } from '/imports/api/genes/scanGeneAttributes.js';
 import { parseAttributeString } from '/imports/api/util/util.js';
 
-/**
- * Override the default querystring unescape function to be able to parse commas correctly in gff attributes
- * @param  {String}
- * @return {String}
- */
-//querystring.unescape = uri => uri;
 
 /**
  * Interval Class containing a single genomic interval. Every line in a gff3 file is an interval
  * @type {Interval}
  */
 const Interval = class Interval {
-	constructor({ gffFields, genomeId }){//, genomeSequences }){ //, trackId
+	constructor({ gffFields, genomeId, deriveIdFromParent = true }){//, genomeSequences }){ //, trackId
 		const [ seqid, source, type, start, end,
 			_score, strand, phase, attributeString ] = gffFields;
 		const score = String(_score);
 		const attributes = parseAttributeString(attributeString);
-		Object.assign(this, {
-			type, start, end, score, attributes
-		})
 
-		this.ID = this.attributes.ID[0];
-		delete this.attributes.ID;
+		if (!attributes.hasOwnProperty('ID')){
+			logger.warn(`The following line does not have the gff3 ID attribute:`);
+			logger.warn(`${gffFields.join('\t')}`);
+			if (deriveIdFromParent) {
+				const derivedId = `${attributes.Parent}_${type}_${start}_${end}`;
+				logger.warn(`Assigning ID based on Parent attribute ${derivedId}`);
+				attributes.ID = [derivedId];
+			}
+			
+		}
 
-		if (typeof this.attributes.Parent === 'undefined'){
+		this.ID = attributes.ID[0];
+		delete attributes.ID;
+
+		if (typeof attributes.Parent === 'undefined'){
 			//top level feature
 			Object.assign(this, {
 				seqid, source, strand, genomeId
@@ -50,9 +51,14 @@ const Interval = class Interval {
 		} else {
 			//sub feature
 			this.phase = phase;
-			this.parents = this.attributes.Parent;
-			delete this.attributes.Parent;
+			this.parents = attributes.Parent;
+			delete attributes.Parent;
 		}
+
+		Object.assign(this, {
+			type, start, end, score, attributes
+		})
+
 
 	}
 }
@@ -62,14 +68,23 @@ const Interval = class Interval {
  * @type {GeneModel}
  */
 const GeneModel = class GeneModel {
-	constructor(intervals){
-		//set parent and children values
-		
+	constructor(_intervals){
+		//filter valid interval types and set parent and children values
+		const intervals = _intervals.filter(({ type }) => {
+			const isValid = VALID_INTERVAL_TYPES.indexOf(type) >= 0;
+			if (!isValid){
+				logger.warn(`intervals of type ${type} are not supported, skipping.`)
+			}
+			return isValid
+		})
 		intervals.forEach(interval => {
+			if (interval.type === 'transcript'){
+				interval.type = 'mRNA';
+			};
 			if (interval.hasOwnProperty('parents')) {
 				interval.parents.forEach(parentId => {
 					const parentIndex = intervals.map(interval => interval.ID).indexOf(parentId);
-					const parent = intervals[parentIndex];
+					const parent = intervals[parentIndex] || {};
 					if (!parent.hasOwnProperty('children')){
 						parent.children = []
 					}
@@ -80,8 +95,7 @@ const GeneModel = class GeneModel {
 
 		//pull out gene interval
 		//https://lodash.com/docs/4.17.10#partition
-		const [genes, subfeatures] = partition(intervals, interval => typeof interval.parents === 'undefined');//interval.type === 'gene');
-		assert(genes.length === 1, `Can not make a gene model of ${genes.length} lines with type gene`);
+		const [genes, subfeatures] = partition(intervals, interval => typeof interval.parents === 'undefined');
 		const gene = genes[0]
 		Object.assign(this, gene);
 
@@ -102,12 +116,17 @@ const GeneModel = class GeneModel {
 			shiftCoordinates = Math.min(shiftCoordinates, seqPart.start);
 			return seqPart.seq
 		}).join('');
-		this.seq = genomicRegion.slice(this.start - shiftCoordinates - 1,
-			this.end - shiftCoordinates);
-		this.subfeatures.forEach(subfeature => {
-			subfeature.seq = genomicRegion.slice(subfeature.start - shiftCoordinates - 1,
-				subfeature.end - shiftCoordinates)
-		});
+		if (genomicRegion.length > 0){
+			this.seq = genomicRegion.slice(this.start - shiftCoordinates - 1,
+				this.end - shiftCoordinates);
+			this.subfeatures.forEach(subfeature => {
+				subfeature.seq = genomicRegion.slice(subfeature.start - shiftCoordinates - 1,
+					subfeature.end - shiftCoordinates)
+			});
+		} else {
+			logger.warn(`Could not find sequence for gene ${this.ID} with seqid ${this.seqid}.`+
+			 ` Make sure the sequence IDs between the genome fasta and annotation gff3 are the same.`)
+		}
 		return this
 	}
 
@@ -121,14 +140,15 @@ const GeneModel = class GeneModel {
 		if (this.type === 'gene'){
 			this.fetchGenomeSequence();
 			const validation = this.validate();
-			
 			if (validation.isValid()) {
 				bulkOp.insert(this.dataFields);
 			} else {
 				validation.validationErrors().forEach(err => {
-					console.warn(`## WARNING: ${this.ID} ${err.name} ${err.value} ${err.type}`)
+					logger.warn(`gene ${this.ID}, field ${err.name} is ${err.type}, got '${err.value}'`)
 				})
 			}
+		} else {
+			logger.warn(`Not saving top-level feature`)
 		}
 	}
 
@@ -145,18 +165,20 @@ const GeneModel = class GeneModel {
  * @param  {String} options.trackId            [description]
  * @return {Promise}                            [description]
  */
-//const gffFileToMongoDb = ({ fileName, genomeId, genomeSequences }) => {
 const gffFileToMongoDb = ({ fileName, genomeId, strict }) => {
 	return new Promise((resolve, reject) => {
+		if (!fs.existsSync(fileName)) {
+			reject(new Meteor.Error(`${fileName} is not an existing file`));
+		};
 		const fileHandle = fs.readFileSync(fileName, { encoding: 'binary' });
 		let intervals = [];
 		let geneCount = 0;
 		let lineNumber = 0;
 
-		console.log('Initializing bulk operation');
+		logger.log('Initializing bulk operation');
 		let bulkOp = Genes.rawCollection().initializeUnorderedBulkOp();
 
-		console.log(`Start reading ${fileName}`)
+		logger.log(`Start reading ${fileName}`)
 		Papa.parse(fileHandle, {
 			delimiter: '\t',
 			dynamicTyping: true,
@@ -164,7 +186,6 @@ const gffFileToMongoDb = ({ fileName, genomeId, strict }) => {
 			comments: '#',
 			fastMode: true,
 			error(error,file) {
-				console.log(error)
 				reject(error)
 			},
 			step(line, parser){
@@ -181,6 +202,7 @@ const gffFileToMongoDb = ({ fileName, genomeId, strict }) => {
 						if (!isEmpty(intervals)){
 							const gene = new GeneModel(intervals);
 							gene.saveToDb(bulkOp);
+							geneCount += 1;
 						}
 						intervals = [];
 					}
@@ -194,42 +216,34 @@ const gffFileToMongoDb = ({ fileName, genomeId, strict }) => {
 			complete(results,file) {
 				try {
 					if ( !isEmpty(intervals) ) {
-						console.log('constructing final gene')
+						logger.log('constructing final gene model')
 						const gene = new GeneModel(intervals);
 						gene.saveToDb(bulkOp);
-						/*
-						if (gene.type === 'gene'){
-							gene.fetchGenomeSequence();
-							const validation = gene.validate(GeneSchema);
-							if (validation.isValid()){
-
-							} else {
-								validation.validationErrors().forEach(err => {
-									console.warn(`## WARNING: ${gene.ID} ${err.name} ${err.value} ${err.type}`)
-								})
-							}
-							/*if (!validation.isValid()) {
-								reject(validation.validationErrors())
-							}
-							bulkOp.insert(gene.dataFields);
-							geneCount += 1;
-						}*/
+						geneCount += 1;
 					}
 
-					console.log('Executing bulk operation')
-					const result = bulkOp.execute();
-					
-					genomeCollection.update({
-						_id: genomeId
-					},{
-						$set: {
-							annotationTrack : {
-								name: fileName.split('/').pop()
+					if (bulkOp.s.currentBatch && 
+							bulkOp.s.currentBatch.operations.length) {
+						logger.log('Executing bulk operation');
+						const result = bulkOp.execute();
+						
+						genomeCollection.update({
+							_id: genomeId
+						},{
+							$set: {
+								annotationTrack : {
+									name: fileName.split('/').pop()
+								}
 							}
-						}
-					})
-					console.log(`Finished inserting ${geneCount} genes`)
-					resolve(result)
+						})
+
+						logger.log(`Finished inserting ${geneCount} genes`)
+						
+						resolve(result)
+					} else {
+						logger.warn('Empty bulk operation')
+						throw new Meteor.Error('Empty bulk operation')
+					} 
 				} catch (error) {
 					reject(error)
 				}
@@ -255,7 +269,7 @@ export const addAnnotationTrack = new ValidatedMethod({
 			throw new Meteor.Error('not-authorized');
 		}
 
-		console.log(`Adding annotation file "${fileName}" to genome "${genomeName}"`)
+		logger.log(`Adding annotation file "${fileName}" to genome "${genomeName}"`)
 
 		const existingGenome = genomeCollection.findOne({ name: genomeName })
 		if (!existingGenome){
@@ -268,13 +282,11 @@ export const addAnnotationTrack = new ValidatedMethod({
 
 		const genomeId = existingGenome._id;
 
-		return gffFileToMongoDb({ fileName, genomeId, strict }).catch(error => {
-			console.log(error);
-			throw new Meteor.Error(error);
-		}).catch(error => {
-			console.log(error);
-			throw new Meteor.Error(error);
-		})
+		return gffFileToMongoDb({ fileName, genomeId, strict })
+			.catch(error => {
+				logger.warn(error);
+				throw new Meteor.Error(error);
+			})
 	}
 })
 

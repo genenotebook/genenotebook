@@ -6,6 +6,7 @@ import SimpleSchema from 'simpl-schema';
 
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 import { Job } from 'meteor/vsivsi:job-collection';
+import logger from '/imports/api/util/logger.js';
 
 /**
  * submitBlastJob validated method: submits makeblastdb job to jobqueue, call this from the client
@@ -13,44 +14,45 @@ import { Job } from 'meteor/vsivsi:job-collection';
  * @param  {String} options.dbType    Either nucl or prot
  * @return {String}                   jobId of the makeblastdb job
  */
-export const submitBlastJob = new ValidatedMethod({
+const submitBlastJob = new ValidatedMethod({
   name: 'submitBlastJob',
   validate: new SimpleSchema({
     blastType: { type: String },
     input: { type: String },
     genomeIds: { type: Array },
-    'genomeIds.$': { type: String }
+    'genomeIds.$': { type: String },
+    blastOptions: { type: Object },
+    'blastOptions.eValue': { type: String },
+    'blastOptions.numAlignments': { type: String },
   }).validator(),
   applyOptions: {
-    noRetry: true
+    noRetry: true,
   },
-  run({ blastType, input, genomeIds }){
+  run({
+    blastType, input, genomeIds, blastOptions,
+  }) {
     const user = this.userId;
-    if (! user) {
+    if (!user) {
       throw new Meteor.Error('not-authorized');
     }
-    if (! Roles.userIsInRole(user,'user')){
+    if (!Roles.userIsInRole(user, 'user')) {
       throw new Meteor.Error('not-authorized');
     }
 
-    console.log('submit blast job')
+    logger.debug('submit blast job');
 
-    const jobOptions = { blastType, input, genomeIds, user };
+    const jobOptions = {
+      blastType, input, genomeIds, user, blastOptions,
+    };
 
     const job = new Job(jobQueue, 'blast', jobOptions);
 
     const jobId = job.priority('normal').save();
-    
-    /*const jobId = new Job(jobQueue, 'blast', {
-      blastType: blastType,
-      input: input,
-      genomeIds: trackNames,
-      user: Meteor.userId()
-    }).priority('normal').save()*/
 
-    console.log(jobId)
+    logger.debug(jobId);
 
-    return jobId
-  
-  }
-})
+    return jobId;
+  },
+});
+
+export default submitBlastJob;

@@ -3,7 +3,9 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method';
 
 import SimpleSchema from 'simpl-schema';
 import { diff, apply } from 'rus-diff'; 
-import { omit } from 'lodash';
+import { omit, cloneDeep } from 'lodash';
+
+import logger from '/imports/api/util/logger.js';
 
 import { attributeCollection } from './attributeCollection.js';
 import { Genes, GeneSchema } from './gene_collection.js';
@@ -30,22 +32,19 @@ export const updateGene = new ValidatedMethod({
     if (! Roles.userIsInRole(userId,'curator')){
       throw new Meteor.Error('not-authorized');
     }
-    console.log(`Updating gene ${geneId}`)
+    logger.debug(`Updating gene ${geneId}`)
 
     const gene = Genes.findOne({ ID: geneId });
 
     if ( typeof gene === 'undefined'){
       throw new Meteor.Error(`Gene ${geneId} not found!`)
     }
-    console.log('Update:',update)
 
-    const newGene = apply(gene, update);
+    const newGene = apply(cloneDeep(gene), update);
 
     GeneSchema.validate(omit(newGene, '_id'));
 
     const revert = diff(newGene, gene);
-
-    console.log('Revert:',revert)
 
     let newAttributes = [];
 
@@ -59,8 +58,6 @@ export const updateGene = new ValidatedMethod({
         }
       })
     }
-      
-    console.log('New attributes:', newAttributes)
 
     const revertString = JSON.stringify(revert);
 

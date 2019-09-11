@@ -1,100 +1,104 @@
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
-const VALID_SUBFEATURE_TYPES = ['mRNA','CDS','exon',
-  'five_prime_UTR','three_prime_UTR'];
+const VALID_SUBFEATURE_TYPES = [
+  'transcript',
+  'mRNA',
+  'CDS',
+  'exon',
+  'five_prime_UTR',
+  'three_prime_UTR',
+];
 const VALID_INTERVAL_TYPES = [].concat(VALID_SUBFEATURE_TYPES, ['gene']);
 
 const Genes = new Mongo.Collection('genes');
 
-//create a base schema so we can add it at multiple places
+// create a base schema so we can add it at multiple places
 const IntervalBaseSchema = new SimpleSchema({
   seq: {
     type: String,
-    label: 'Reference sequence of this feature'
+    label: 'Reference sequence of this feature',
   },
   start: {
     type: Number,
-    label: 'Start coordinate'
+    label: 'Start coordinate',
   },
   end: {
     type: Number,
-    label: 'End coordinate'
+    label: 'End coordinate',
   },
   score: {
     type: String,
     label: 'Score',
-    custom: function(){
-      if (!this.isSet){
-        return 'required'
+    custom() {
+      if (!this.isSet) {
+        return 'required';
       }
-      if (this.value === '.'){
-        return true
-      } else {
-        let parsedValue = parseFloat(this.value);
-        if (isNaN(parsedValue)){
-          return 'scoreError'
-        } else {
-          return true
-        }
+      if (this.value === '.') {
+        return true;
       }
-    }
+      const parsedValue = parseFloat(this.value);
+      // eslint-disable-next-line no-restricted-globals
+      if (isNaN(parsedValue)) {
+        return 'scoreError';
+      }
+      return true;
+    },
   },
   attributes: {
     type: Object,
     blackbox: true,
-    //index: true,
-    label: 'Any attributes'
+    // index: true,
+    label: 'Any attributes',
   },
   children: {
-    type: Array,//[String],
+    type: Array, // [String],
     optional: true,
-    label: 'Child subfeatures'
+    label: 'Child subfeatures',
   },
   'children.$': {
-    type: String
-  }
+    type: String,
+  },
 });
 
-
-//Define subfeature schema first so we can then add it to the gene schema
+// Define subfeature schema first so we can then add it to the gene schema
 const SubfeatureSchema = new SimpleSchema({
   ID: {
     type: String,
     index: true,
-    //denyUpdate: true,
-    label: 'Unique gene ID'
+    // denyUpdate: true,
+    label: 'Unique gene ID',
   },
   phase: {
-    type: SimpleSchema.oneOf(Number,String),
-    allowedValues: [0,1,2,'.'],
-    label: 'phase'
+    type: SimpleSchema.oneOf(Number, String),
+    allowedValues: [0, 1, 2, '.'],
+    label: 'phase',
   },
   type: {
     type: String,
     allowedValues: VALID_SUBFEATURE_TYPES,
-    label: 'Subfeature types'
+    label: 'Subfeature types',
   },
   parents: {
     type: Array,
-    label: 'Parent subfeatures'
+    label: 'Parent subfeatures',
   },
   'parents.$': {
-    type: String
+    type: String,
   },
   protein_domains: {
     type: Array,
     label: 'Interproscan protein domains',
-    optional: true
+    optional: true,
   },
   'protein_domains.$': {
     type: Object,
     label: 'Interproscan protein domain',
-    blackbox: true
-  }
+    blackbox: true,
+  },
 });
 
-//extend the subfeature schema with base subfeatures
+// extend the subfeature schema with base subfeatures
 SubfeatureSchema.extend(IntervalBaseSchema);
 
 const GeneSchema = new SimpleSchema({
@@ -102,76 +106,67 @@ const GeneSchema = new SimpleSchema({
     type: String,
     unique: true,
     index: true,
-    label: 'Unique gene ID'
-  },
-  type: {
-    type: String,
-    allowedValues: ['gene'],
-    label: 'Gene type'
+    label: 'Unique gene ID',
   },
   editing: {
     type: String,
-    optional: true
+    optional: true,
   },
   viewing: {
     type: Array,
-    optional: true
+    optional: true,
   },
   'viewing.$': {
-    type: String
+    type: String,
   },
   changed: {
     type: Boolean,
-    optional: true
+    optional: true,
   },
   subfeatures: {
     type: Array,
-    label: 'Array of subfeatures'
+    label: 'Array of subfeatures',
   },
   'subfeatures.$': {
     type: SubfeatureSchema,
-    label: 'Gene subfeatures'
+    label: 'Gene subfeatures',
   },
-  genomeId: { 
+  genomeId: {
     type: String,
     index: true,
-    label: 'Reference genome DB identifier (_id in genome collection)'
+    label: 'Reference genome DB identifier (_id in genome collection)',
   },
   orthogroupId: {
     type: String,
     index: true,
     optional: true,
-    label: 'Orthogroup DB identifier (_id in orthogroup collection)'
+    label: 'Orthogroup DB identifier (_id in orthogroup collection)',
   },
   seqid: {
     type: String,
-    label: 'ID of the sequence on which the gene is, e.g. chr1'
+    label: 'ID of the sequence on which the gene is, e.g. chr1',
   },
   source: {
     type: String,
-    label: 'Source of the annotation'
+    label: 'Source of the annotation',
   },
   type: {
     type: String,
     allowedValues: ['gene'],
-    label: 'Type of the top level annotation (currently only "gene" is allowed)'
+    label: 'Type of the top level annotation (currently only "gene" is allowed)',
   },
   strand: {
     type: String,
     allowedValues: ['+', '-'],
-    label: 'Strand'
-  }
+    label: 'Strand',
+  },
 });
 
-//extend the gene schema with base features
+// extend the gene schema with base features
 GeneSchema.extend(IntervalBaseSchema);
 
 Genes.attachSchema(GeneSchema);
 
-export { 
-  Genes, 
-  GeneSchema, 
-  SubfeatureSchema, 
-  VALID_SUBFEATURE_TYPES, 
-  VALID_INTERVAL_TYPES 
+export {
+  Genes, GeneSchema, SubfeatureSchema, VALID_SUBFEATURE_TYPES, VALID_INTERVAL_TYPES,
 };

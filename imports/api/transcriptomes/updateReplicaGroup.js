@@ -7,21 +7,25 @@ import SimpleSchema from 'simpl-schema';
 import { ExperimentInfo } from '/imports/api/transcriptomes/transcriptome_collection.js';
 
 /**
- * updateReplicaGroup validated method: Update transcriptome information and groups
- * @param  {String} options.trackName Name of the annotation track
- * @param  {String} options.dbType    Either nucl or prot
- * @return {String}                   jobId of the makeblastdb job
+ * [ValidatedMethod description]
+ * @param {[type]} {                       name:         'updateReplicaGroup',             validate: new  SimpleSchema({                     sampleIds:   Array,    'sampleIds.$': String,                                           replicaGroup: String,      isPublic: Boolean,                                               permissions:  Array,    'permissions.$':String  }).validator() [description]
+ * @param {[type]} applyOptions: {                                                         noRetry:  true                 } [description]
+ * @param {[type]} run({        sampleIds, replicaGroup, isPublic,             permissions }){                             if            (! this.userId) {                               throw new Meteor.Error('not-authorized');                        }                     if (! Roles.userIsInRole(this.userId,'admin') [description]
  */
 export const updateReplicaGroup = new ValidatedMethod({
   name: 'updateReplicaGroup',
   validate: new SimpleSchema({
-    oldName: String,
-    newName: String
+    sampleIds: Array,
+    'sampleIds.$': String,
+    replicaGroup: String,
+    isPublic: Boolean,
+    permissions: Array,
+    'permissions.$':String
   }).validator(),
   applyOptions: {
     noRetry: true
   },
-  run({ oldName, newName }){
+  run({ sampleIds, replicaGroup, isPublic, permissions }){
     if (! this.userId) {
       throw new Meteor.Error('not-authorized');
     }
@@ -30,11 +34,15 @@ export const updateReplicaGroup = new ValidatedMethod({
     }
 
     return ExperimentInfo.update({
-      replicaGroup: oldName
+      _id: { $in: sampleIds }
     },{
       $set: {
-        replicaGroup: newName
+        replicaGroup,
+        isPublic,
+        permissions
       }
+    },{
+      multi: true
     })
   }
 })

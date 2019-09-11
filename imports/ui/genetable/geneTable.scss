@@ -1,41 +1,54 @@
-.genetable-wrapper {
-  min-height: 50rem;
+table {
+  margin-bottom: 0 !important;
 }
 
-.genetable{
+.genetable-wrapper {
+  display: block;
+  overflow: auto;
+  margin: 0 0.5rem 0 0.5rem;
+}
+
+.genetable {
   .query-count:disabled {
     opacity: 1 !important;
   }
   word-break: normal;
-  @media only screen and (max-width: 200px){
-    table, thead, tbody, th, td, tr { 
+  @media only screen and (max-width: 200px) {
+    table,
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
       /* Force table to not be like tables anymore */
-      display: block; 
+      display: block;
     }
-    
-    thead tr { 
+
+    thead tr {
       /* Hide table headers */
       display: none;
     }
-    
-    tr { border: 1px solid #ccc; }
-    
-    td { 
+
+    tr {
+      border: 1px solid #ccc;
+    }
+
+    td {
       /* Behave  like a "row" */
       border: none;
-      border-bottom: 1px solid #eee; 
+      border-bottom: 1px solid #eee;
       position: relative;
-      padding-left: 33% !important; 
+      padding-left: 33% !important;
     }
-    
-    td:before { 
+
+    td:before {
       /* Now like a table header */
       position: absolute;
       /* Top/left values mimic padding */
       top: 6px;
       left: 6px;
-      width: 45%; 
-      padding-right: 10px; 
+      width: 45%;
+      padding-right: 10px;
       white-space: nowrap;
       /* Label the data */
       content: attr(data-label);

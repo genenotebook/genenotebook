@@ -1,41 +1,45 @@
 import { Meteor } from 'meteor/meteor';
-
-import { ServerRouter, AuthenticationRequiredError } from 'meteor/mhagmajer:server-router';
+import { WebApp } from 'meteor/webapp';
+import { ServerRouter } from 'meteor/mhagmajer:server-router';
 
 import fs from 'fs';
 import path from 'path';
 
-WebApp.connectHandlers.use(ServerRouter.middleware({
-  paths: [],
-  routes: {
-    download(filename){
-      console.log(`download ${filename}`)
-      if (!this.userId) {
-        throw new AuthenticationRequiredError();
-      }
-      const filePath = path.join(filename);
-      const stat = fs.statSync(filePath);
+import logger from '/imports/api/util/logger.js';
 
-      const response = this.res;
+const serverRouter = new ServerRouter();
+WebApp.connectHandlers.use(serverRouter.middleware);
 
-      response.writeHead(200, {
-        'Content-Type': 'application/gzip',
-        'Content-Length': stat.size
-      })
+serverRouter.addPath({
+  path: '/download/file/:filename',
+  args({ filename }) {
+    return [filename.replace(/^"|"$/g, '')];
+  },
+  async route(filename) {
+    logger.log(`download ${filename}`);
+    const filePath = path.join(filename);
+    const stat = fs.statSync(filePath);
 
-      const readStream = fs.createReadStream(filePath);
-      readStream.on('open', () => {
-        readStream.pipe(response)
-      })
+    const response = this.res;
 
-      readStream.on('error', err => {
-        throw new Meteor.Error(err)
-      })
+    response.writeHead(200, {
+      'Content-Type': 'application/gzip',
+      'Content-Length': stat.size,
+    });
 
-      readStream.on('close', () => {
-        console.log('finished readstream')
-        response.end()
-      })
-    }
-  }
-}));
+    const readStream = fs.createReadStream(filePath);
+    readStream.on('open', () => {
+      logger.debug('open readstream');
+      readStream.pipe(response);
+    });
+
+    readStream.on('error', (err) => {
+      throw new Meteor.Error(err);
+    });
+
+    readStream.on('close', () => {
+      logger.debug('finished readstream');
+      response.end();
+    });
+  },
+});

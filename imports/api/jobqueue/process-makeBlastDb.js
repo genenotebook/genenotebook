@@ -6,7 +6,7 @@ import fs from 'fs';
 import jobQueue from './jobqueue.js';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
-//import { Tracks } from '/imports/api/genomes/track_collection.js';
+import logger from '/imports/api/util/logger.js';
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 
 import { getGeneSequences } from '/imports/api/util/util.js';
@@ -14,7 +14,7 @@ import { getGeneSequences } from '/imports/api/util/util.js';
 const makeTempFiles = async ({ genomeId, job }) => {
   const geneNumber = Genes.find({ genomeId }).count()
   const stepSize = Math.round(geneNumber / 10);
-  console.log(`scanning ${geneNumber} genes`)
+  logger.log(`scanning ${geneNumber} genes`)
   
   const tempFiles = {
     nucl: `tmp_${genomeId}.nucl.fa`,
@@ -58,12 +58,12 @@ const makeBlastDb = async ({ genomeId, fastaFile, dbType }) => {
     '-in', fastaFile, 
     '-out', outFile
     ];
-  console.log(options)
+  logger.debug(options)
   return spawn('makeblastdb', options)
     .then( result => {
       let stdout = result.toString();
       if (stdout){
-        console.log(`makeblastdb stdout:${stdout}`)
+        logger.debug(`makeblastdb stdout:${stdout}`)
       }
       genomeCollection.update({
         _id: genomeId
@@ -83,9 +83,9 @@ jobQueue.processJobs(
     payload: 1
   },
   function(job, callback){
-    console.log('processing makeblastdb')
-    console.log(job.data)
+    logger.debug(job.data)
     const { genomeId } = job.data;
+    logger.log(`Processing makeblastdb ${genomeId}`)
 
     return makeTempFiles({ genomeId, job }).then(tempFiles => {
       return Promise.all([
@@ -93,11 +93,11 @@ jobQueue.processJobs(
         makeBlastDb({ dbType: 'prot', genomeId: genomeId, fastaFile: tempFiles.prot })
       ])
     }).then(dbFiles => {
-      console.log({ dbFiles });
+      logger.debug({ dbFiles });
       job.done({ dbFiles });
       callback();
     }).catch(error => {
-      console.log(error)
+      logger.warn(error)
       job.fail({ error })
     })
   }

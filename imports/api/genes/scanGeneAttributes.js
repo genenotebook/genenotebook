@@ -4,6 +4,7 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import SimpleSchema from 'simpl-schema';
 
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
+import logger from '/imports/api/util/logger.js';
 
 import { Genes } from './gene_collection.js';
 import { attributeCollection } from './attributeCollection.js';
@@ -12,7 +13,6 @@ import { attributeCollection } from './attributeCollection.js';
  * Map function for mongodb mapreduce
  */
 const mapFunction = function(){
-	printjson('map function');
 	//Use 'var' instead of 'let'! This will be executed in mongodb, which does not know 'const/let'
 	var gene = this;
 	if (typeof gene.attributes !== 'undefined'){
@@ -27,7 +27,6 @@ const mapFunction = function(){
  * @return {Object}        [description]
  */
 const reduceFunction = function(_key, values){
-	printjson('reduce function')
 	//Use 'var' instead of 'let'! This will be executed in mongodb, which does not know 'const/let'
 	const attributeKeySet = new Set()
 	values.forEach(value => {
@@ -46,15 +45,15 @@ const findNewAttributes = ({ genomeId }) => {
 		query: { genomeId }
 	}
 	//mapreduce to find all keys for all genes, this takes a while
-	console.log('mapreducing')
+	logger.debug('mapreducing')
 	return Genes.rawCollection()
 		.mapReduce(mapFunction, reduceFunction, mapReduceOptions)
 		.then(results => {
-			console.log('mapreduce finished')
+			logger.debug('mapreduce finished')
 			results.forEach( result => {
 				const attributeKeys = result.value.attributeKeys;
 				attributeKeys.forEach(attributeKey => {
-					console.log(attributeKey)
+					logger.debug(attributeKey)
 					attributeCollection.update({ 
 						name: attributeKey 
 					},{
@@ -74,13 +73,12 @@ const findNewAttributes = ({ genomeId }) => {
 			})
 		})
 		.catch(err => {
-			console.log(err)
 			throw new Meteor.Error(err)
 		})
 }
 
 const removeOldAttributes = ({ genomeId }) => {
-	console.log('Removing old attributes');
+	logger.debug('Removing old attributes');
 	const oldAttributeIds = attributeCollection.find({
 		$or: [
 			{ allGenomes: true },
@@ -93,16 +91,16 @@ const removeOldAttributes = ({ genomeId }) => {
 				$exists: true
 			}
 		}).count()
-		console.log(`${attribute.query} ${count}`)
+		logger.log(`${attribute.query} ${count}`)
 		return count === 0
 	}).map(attribute => attribute._id)
 
-	console.log(oldAttributeIds)
+	logger.log(oldAttributeIds)
 
 	const update = attributeCollection.remove({
 		_id: { $in: oldAttributeIds }
 	})
-	console.log(update)
+	logger.log(update)
 	return update
 }
 
@@ -115,7 +113,7 @@ export const scanGeneAttributes = new ValidatedMethod({
 		noRetry: true
 	},
 	run({ genomeId }){
-		console.log(`scanGeneAttributes for genome: ${genomeId}`)
+		logger.log(`scanGeneAttributes for genome: ${genomeId}`)
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}

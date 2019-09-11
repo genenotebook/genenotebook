@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { compose } from 'recompose';
 import dot from 'dot-object';
+import { find } from 'lodash';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
 
@@ -12,21 +13,18 @@ import { withEither } from '/imports/ui/util/uiUtil.jsx';
 import Genemodel from '/imports/ui/singleGenePage/Genemodel.jsx';
 import ProteinDomains from '/imports/ui/singleGenePage/ProteinDomains.jsx';
 import GeneExpression from '/imports/ui/singleGenePage/geneExpression/GeneExpression.jsx';
-import AttributeValue from '/imports/ui/singleGenePage/generalInfo/AttributeValue.jsx';
+
+import AttributeValue from '/imports/ui/genetable/columns/AttributeValue.jsx';
+import GeneLink from '/imports/ui/genetable/columns/GeneLink.jsx';
+import GenomeName from '/imports/ui/genetable/columns/GenomeName.jsx';
 
 import './geneTableBody.scss';
-
-const ExpressionViz = ({ gene }) => {
-  return <SampleSelection gene={gene}>
-    <ExpressionPlot />
-  </SampleSelection>
-} 
 
 const VISUALIZATIONS = {
   'Gene model': Genemodel,
   'Protein domains': ProteinDomains,
-  'Gene expression': GeneExpression
-}
+  'Gene expression': GeneExpression,
+};
 
 /**
  * Reactive Meteor tracker for GeneTable component
@@ -37,12 +35,25 @@ const VISUALIZATIONS = {
  * @param  {Boolean} options.selectedAll     [description]
  * @return {Object}                         [description]
  */
-const dataTracker = ({ query = {}, sort = {ID: 1}, limit = 40, selectedGenes, updateSelection, selectedAll }) => {
+function dataTracker({
+  query = {},
+  sort = { _id: -1 },
+  limit = 40,
+  selectedGenes,
+  updateSelection,
+  selectedAll,
+}) {
   const geneSub = Meteor.subscribe('genes', { query, sort, limit });
   const loading = !geneSub.ready();
   const genes = Genes.find(query, { limit, sort }).fetch();
-  
-  return { genes, loading, selectedGenes, updateSelection, selectedAll }
+
+  return {
+    genes,
+    loading,
+    selectedGenes,
+    updateSelection,
+    selectedAll,
+  };
 }
 
 /**
@@ -50,8 +61,8 @@ const dataTracker = ({ query = {}, sort = {ID: 1}, limit = 40, selectedGenes, up
  * @param  {[type]} props [description]
  * @return {[type]}       [description]
  */
-const hasNoResults = ({ genes }) => {
-  return typeof genes === 'undefined' || genes.length === 0
+function hasNoResults({ genes }) {
+  return typeof genes === 'undefined' || genes.length === 0;
 }
 
 /**
@@ -59,19 +70,19 @@ const hasNoResults = ({ genes }) => {
  * @param  {[type]} props [description]
  * @return {[type]}       [description]
  */
-const NoResults = ({selectedColumns, ...props}) => {
+function NoResults({ selectedColumns, ...props }) {
   const colSpan = selectedColumns.size + 3;
   return (
     <tbody>
       <tr>
         <td colSpan={colSpan}>
-          <div className='alert alert-danger' role='alert'>
+          <div className="alert alert-danger" role="alert">
             Your query returned no results
           </div>
         </td>
       </tr>
     </tbody>
-  )
+  );
 }
 
 /**
@@ -80,8 +91,8 @@ const NoResults = ({selectedColumns, ...props}) => {
  * @param  {[type]} options.loading [description]
  * @return {[type]}                 [description]
  */
-const isLoading = ({genes, loading}) => {
-  return loading && genes.length === 0
+function isLoading({ genes, loading }) {
+  return loading && genes.length === 0;
 }
 
 /**
@@ -90,25 +101,23 @@ const isLoading = ({genes, loading}) => {
  * @param  {...[type]} options.props           [description]
  * @return {[type]}                            [description]
  */
-const Loading = ({selectedColumns, ...props}) => {
+function Loading({ selectedColumns, ...props }) {
   const colSpan = selectedColumns.size + 3;
   return (
     <tbody>
-    {
-      Array(10).fill().map((_,i)=>{
-        return (
+      {Array(10)
+        .fill()
+        .map((_, i) => (
           <tr key={i}>
             <td colSpan={colSpan}>
-              <div className='alert alert-light' role='alert'>
+              <div className="alert alert-light" role="alert">
                 Loading...
               </div>
             </td>
           </tr>
-        )
-      })
-    }
+        ))}
     </tbody>
-  )
+  );
 }
 
 /**
@@ -118,24 +127,18 @@ const Loading = ({selectedColumns, ...props}) => {
 const withConditionalRendering = compose(
   withTracker(dataTracker),
   withEither(isLoading, Loading),
-  withEither(hasNoResults, NoResults)
-)
+  withEither(hasNoResults, NoResults),
+);
 
-const GeneLink = ({ geneId }) => {
-  return <a className='genelink' title={geneId} 
-    href={`${Meteor.absoluteUrl()}gene/${geneId}`}>
-    { geneId }
-  </a>
-}
-
-const AttributeColumn = ({ attributeName, attributeValue, geneId }) => {
-  return <td data-label={attributeName}>
-    {
-      attributeName === 'Gene ID' ?
-      <GeneLink {...{ geneId }} /> :
-      attributeValue && <AttributeValue {...{ attributeValue }} />
-    }
-  </td>
+function AttributeColumn({ attributeName, attributeValue, geneId }) {
+  switch (attributeName) {
+    case 'Gene ID':
+      return <GeneLink geneId={geneId} />;
+    case 'Genome':
+      return <GenomeName genomeId={attributeValue} />;
+    default:
+      return <AttributeValue attributeValue={attributeValue} />;
+  }
 }
 
 /**
@@ -147,71 +150,87 @@ const AttributeColumn = ({ attributeName, attributeValue, geneId }) => {
  * @param  {[type]} options.updateSelection  [description]
  * @return {[type]}                          [description]
  */
-const GeneTableRow = ({ gene, selectedColumns, selectedAllGenes, selectedGenes, 
-  updateSelection, attributes, selectedVisualization, ...props }) => {
-  const selected = selectedAllGenes || selectedGenes.has(gene.ID)
+function GeneTableRow({
+  gene,
+  selectedColumns,
+  selectedAllGenes,
+  selectedGenes,
+  updateSelection,
+  attributes,
+  selectedVisualization,
+}) {
+  const selected = selectedAllGenes || selectedGenes.has(gene.ID);
   const color = selected ? 'black' : 'white';
-  const selectedAttributes = attributes.filter(attribute => {
-    return selectedColumns.has(attribute.name)
-  }).reduce((obj, attribute) => {
-    obj[attribute.name] = attribute
-    return obj
-  },{})
 
   const DataVisualization = VISUALIZATIONS[selectedVisualization];
 
-  return <tr>
-    {
-      [...selectedColumns].map(attributeName => {
-        const attribute = selectedAttributes[attributeName]
-        const attributeValue = dot.pick(attribute.query, gene)
-        return <AttributeColumn key={attributeName}
-          {...{ attributeName, attributeValue, geneId: gene.ID }} />
-      })
-    }
-    <td data-label={selectedVisualization} style={{width: '20rem'}}>
-      <DataVisualization gene={gene} resizable={true} height={100} />
-    </td>
-    <td>
-      <button type="button" className="btn btn-sm btn-outline-dark pull-right px-1 py-0"
-        id={gene.ID} onClick={updateSelection.bind(this)} >
-        <span id={gene.ID} className='icon-check' aria-hidden="true" style={{color}} />
-      </button>
-    </td>
-  </tr>
+  return (
+    <tr>
+      {[...selectedColumns]
+        .sort((a, b) => {
+          if (a === 'Gene ID') return -1;
+          if (b === 'Gene ID') return 1;
+          return (`${a}`).localeCompare(b);
+        })
+        .map((attributeName) => {
+          const attribute = find(attributes, { name: attributeName });
+          const attributeValue = dot.pick(attribute.query, gene);
+          return (
+            <td key={attributeName} data-label={attributeName}>
+              <AttributeColumn
+                {...{ attributeName, attributeValue, geneId: gene.ID }}
+              />
+            </td>
+          );
+        })}
+      <td data-label={selectedVisualization} style={{ width: '20rem' }}>
+        <DataVisualization gene={gene} resizable height={100} />
+      </td>
+      <td>
+        <button
+          type="button"
+          className="btn btn-sm btn-outline-dark pull-right px-1 py-0"
+          id={gene.ID}
+          onClick={updateSelection.bind(this)}
+        >
+          <span
+            id={gene.ID}
+            className="icon-check"
+            aria-hidden="true"
+            style={{ color }}
+          />
+        </button>
+      </td>
+    </tr>
+  );
 }
 
-
-class GeneTableBody extends React.PureComponent {
-  constructor(props){
-    super(props)
-  }
-  componentDidMount = () => {
-    window.addEventListener('scroll', this.onScroll, false);
-  }
-
-  componentWillUnmount = () => {
-    window.removeEventListener('scroll', this.onScroll, false);
-  }
-
-  onScroll = () => {
-    if ((window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 500)){
-      this.props.updateScrollLimit(this.props.limit + 10)
+function GeneTableBody({
+  genes, updateScrollLimit, limit, ...props
+}) {
+  useEffect(() => {
+    function onScroll() {
+      if (
+        window.innerHeight + window.scrollY
+        >= document.body.offsetHeight - 500
+      ) {
+        updateScrollLimit(limit + 10);
+      }
     }
-  }
-  render(){
-    const { genes, ...props } = this.props;
-    return (
-      <tbody className='genetable-body'>
-        {
-          genes.map(gene => {
-            return <GeneTableRow key={gene.ID} gene={gene} {...props} />
-          })
-        }
-      </tbody>
-    )
-  }
+    window.addEventListener('scroll', onScroll, false);
+    function cleanup() {
+      window.removeEventListener('scroll', onScroll, false);
+    }
+    return cleanup;
+  });
+
+  return (
+    <tbody className="genetable-body">
+      {genes.map(gene => (
+        <GeneTableRow key={gene.ID} gene={gene} {...props} />
+      ))}
+    </tbody>
+  );
 }
 
-
-export default withConditionalRendering(GeneTableBody)
+export default withConditionalRendering(GeneTableBody);
