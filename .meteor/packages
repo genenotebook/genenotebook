@@ -37,7 +37,6 @@ mhagmajer:server-router
 static-html
 vsivsi:job-collection
 meteortesting:mocha
-lmieulet:meteor-coverage
 dburles:factory
 meteortesting:browser-tests
 meteortesting:mocha-core
