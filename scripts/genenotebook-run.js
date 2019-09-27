@@ -13,6 +13,13 @@ function error(msg) {
   console.error(`## ERROR: ${new Date().toISOString()} ${msg}`);
 }
 
+function checkMongoLog(logPath) {
+  let error;
+  log(logPath);
+  // error = 'ERROR';
+  return error;
+}
+
 function startMongoDaemon(dbPath, mongoPort) {
   const dataFolderPath = `${dbPath}/data`;
   const logFolderPath = `${dbPath}/log`;
@@ -47,6 +54,11 @@ function startMongoDaemon(dbPath, mongoPort) {
       .slice(5)
       .join(' ');
     log(`MongoDB message: ${msg}`);
+    const err = checkMongoLog(logPath);
+    if (err) {
+      error(err);
+      process.exit();
+    }
   });
 
   const connection = {
