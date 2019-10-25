@@ -114,6 +114,6 @@
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-meteor": "^6.0.0",
     "eslint-plugin-react": "^7.14.3",
-    "puppeteer": "^1.19.0"
+    "puppeteer": "^2.0.0"
   }
 }
