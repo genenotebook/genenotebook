@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /* eslint-disable no-underscore-dangle, global-require */
 
+const { Tail } = require('tail');
 const command = require('commander');
 const { spawn, exec } = require('child_process');
 const path = require('path');
@@ -14,10 +15,15 @@ function error(msg) {
 }
 
 function checkMongoLog(logPath) {
-  let error;
-  log(logPath);
-  // error = 'ERROR';
-  return error;
+  const tail = new Tail(logPath);
+  tail.on('line', function(line) {
+    const parts = line.split(' ');
+    const status = parts[1];
+    if (status === 'E') {
+      error(`MongoDB error: ${parts.slice(2).join(' ')}`);
+      process.exit(1);
+    }
+  });
 }
 
 function startMongoDaemon(dbPath, mongoPort) {
@@ -54,11 +60,7 @@ function startMongoDaemon(dbPath, mongoPort) {
       .slice(5)
       .join(' ');
     log(`MongoDB message: ${msg}`);
-    const err = checkMongoLog(logPath);
-    if (err) {
-      error(err);
-      process.exit();
-    }
+    checkMongoLog(logPath);
   });
 
   const connection = {
@@ -106,11 +108,11 @@ command
   .option('--port [port]', 'Web server port on which to serve GeneNoteBook. Default: 3000')
   .option(
     '-m, --mongo-url [url]',
-    'URL of running MongoDB daemon. (Mutually exclusive with --dbpath)',
+    'URL of running MongoDB daemon and database name, for example mongodb://localhost:27017/genenotebook (Mutually exclusive with --dbpath)',
   )
   .option(
     '-d, --db-path [path]',
-    'Folder where DB files will be stored. Default: ./data/db.'
+    'Folder where DB files will be stored. Default: ./db.'
       + ' (Mutually exclusive with --mongo-url)',
   )
   .option(
@@ -118,7 +120,7 @@ command
   )
   .option(
     '-r, --root-url [url]',
-    'Root URL on which GeneNoteBook will be accessed. ' + 'Default: http://localhost',
+    'Root URL on which GeneNoteBook will be accessed. Default: http://localhost',
   );
 
 command._name = 'genenotebook run';
