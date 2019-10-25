@@ -191,11 +191,10 @@ const gffFileToMongoDb = ({ fileName, genomeId, strict }) => {
 			step(line, parser){
 				lineNumber += 1;
 				try {
-					const { data } = line;
-					const [ gffFields ] = data;
+					const gffFields = line.data;
 
 					assert(gffFields.length === 9, 
-						`${gffFields} is not a correct gff line with 9 fields`);
+						`line ${lineNumber} is not a correct gff line with 9 fields: ${gffFields}`);
 					let interval = new Interval({ gffFields, genomeId })
 
 					if (typeof interval.parents === 'undefined'){
