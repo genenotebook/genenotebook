@@ -14,10 +14,12 @@ import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
 import './searchBar.scss';
 
-const attributeTracker = ({ location, ...props }) => {
+const attributeTracker = ({ location }) => {
+  console.log({ location });
   const {
-    pathname, search, hash, state = {},
+    search, state: _state = {},
   } = location;
+  const state = _state === null ? {} : _state;
   const { highLightSearch = false, redirected = false } = state;
 
   const query = new URLSearchParams(search);

@@ -41,13 +41,13 @@ function LoggedInButton({ isAdmin }) {
         </button>
         <div className="dropdown-divider" />
         {isAdmin && (
-          <React.Fragment>
+          <>
             <Link to="/admin" className="dropdown-item featuremenu-item">
               <span className="icon-cog" />
               &nbsp;Admin settings
             </Link>
             <div className="dropdown-divider" />
-          </React.Fragment>
+          </>
         )}
         <button
           type="button"
@@ -132,7 +132,7 @@ function NavBar() {
 function Header() {
   const [showPageloadPopup, togglePageloadPopup] = useState(false);
   return (
-    <React.Fragment>
+    <>
       <header className="navigation border" role="banner">
         <NavBar />
       </header>
@@ -143,7 +143,7 @@ function Header() {
           }}
         />
       )}
-    </React.Fragment>
+    </>
   );
 }
 

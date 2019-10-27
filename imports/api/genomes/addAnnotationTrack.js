@@ -190,29 +190,31 @@ const gffFileToMongoDb = ({ fileName, genomeId, strict }) => {
 			},
 			step(line, parser){
 				lineNumber += 1;
-				try {
-					const gffFields = line.data;
-
-					assert(gffFields.length === 9, 
-						`line ${lineNumber} is not a correct gff line with 9 fields: ${gffFields}`);
-					let interval = new Interval({ gffFields, genomeId })
-
-					if (typeof interval.parents === 'undefined'){
-						if (!isEmpty(intervals)){
-							const gene = new GeneModel(intervals);
-							gene.saveToDb(bulkOp);
-							geneCount += 1;
+				const gffFields = line.data;
+				console.log({ gffFields });
+				if (gffFields.length > 0 && gffFields[0] !== null) {
+					try {
+						assert(gffFields.length === 9, 
+							`line ${lineNumber} is not a correct gff line with 9 fields: ${gffFields} ${gffFields.length}`);
+						let interval = new Interval({ gffFields, genomeId })
+	
+						if (typeof interval.parents === 'undefined'){
+							if (!isEmpty(intervals)){
+								const gene = new GeneModel(intervals);
+								gene.saveToDb(bulkOp);
+								geneCount += 1;
+							}
+							intervals = [];
 						}
-						intervals = [];
+						
+						intervals.push(interval)
+	
+					} catch (error) {
+						reject(error)
 					}
-					
-					intervals.push(interval)
-
-				} catch (error) {
-					reject(error)
 				}
 			},
-			complete(results,file) {
+			complete() {
 				try {
 					if ( !isEmpty(intervals) ) {
 						logger.log('constructing final gene model')
