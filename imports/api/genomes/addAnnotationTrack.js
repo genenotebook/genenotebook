@@ -5,16 +5,11 @@ import SimpleSchema from 'simpl-schema';
 import assert from 'assert';
 import Papa from 'papaparse';
 import fs from 'fs';
-import { findIndex, isEqual, isEmpty, mapValues, 
-	partition, omit } from 'lodash';
+import { isEmpty,	partition, omit } from 'lodash';
 
-import { Genes, GeneSchema, SubfeatureSchema, 
-	VALID_SUBFEATURE_TYPES, VALID_INTERVAL_TYPES } from '/imports/api/genes/gene_collection.js';
-import { orthogroupCollection } from '/imports/api/genes/orthogroup_collection.js';
+import { Genes, GeneSchema, VALID_INTERVAL_TYPES } from '/imports/api/genes/gene_collection.js';
 import { genomeSequenceCollection, genomeCollection } from '/imports/api/genomes/genomeCollection.js';
-import { Tracks } from '/imports/api/genomes/track_collection.js';
 import logger from '/imports/api/util/logger.js';
-import { scanGeneAttributes } from '/imports/api/genes/scanGeneAttributes.js';
 import { parseAttributeString } from '/imports/api/util/util.js';
 
 
@@ -23,18 +18,23 @@ import { parseAttributeString } from '/imports/api/util/util.js';
  * @type {Interval}
  */
 const Interval = class Interval {
-	constructor({ gffFields, genomeId, deriveIdFromParent = true }){//, genomeSequences }){ //, trackId
+	constructor({ gffFields, genomeId, verbose, deriveIdFromParent = true }){
+		this.verbose = verbose;
 		const [ seqid, source, type, start, end,
 			_score, strand, phase, attributeString ] = gffFields;
 		const score = String(_score);
 		const attributes = parseAttributeString(attributeString);
 
 		if (!attributes.hasOwnProperty('ID')){
-			logger.warn(`The following line does not have the gff3 ID attribute:`);
-			logger.warn(`${gffFields.join('\t')}`);
+			if (this.verbose) {
+				logger.warn(`The following line does not have the gff3 ID attribute:`);
+				logger.warn(`${gffFields.join('\t')}`);
+			}
 			if (deriveIdFromParent) {
 				const derivedId = `${attributes.Parent}_${type}_${start}_${end}`;
-				logger.warn(`Assigning ID based on Parent attribute ${derivedId}`);
+				if (this.verbose){
+					logger.warn(`Assigning ID based on Parent attribute ${derivedId}`);
+				}
 				attributes.ID = [derivedId];
 			}
 			
@@ -58,8 +58,6 @@ const Interval = class Interval {
 		Object.assign(this, {
 			type, start, end, score, attributes
 		})
-
-
 	}
 }
 
@@ -68,11 +66,12 @@ const Interval = class Interval {
  * @type {GeneModel}
  */
 const GeneModel = class GeneModel {
-	constructor(_intervals){
+	constructor({ _intervals: intervals, verbose }){
+		this.verbose = verbose;
 		//filter valid interval types and set parent and children values
 		const intervals = _intervals.filter(({ type }) => {
 			const isValid = VALID_INTERVAL_TYPES.indexOf(type) >= 0;
-			if (!isValid){
+			if (!isValid && verbose){
 				logger.warn(`intervals of type ${type} are not supported, skipping.`)
 			}
 			return isValid
@@ -123,7 +122,7 @@ const GeneModel = class GeneModel {
 				subfeature.seq = genomicRegion.slice(subfeature.start - shiftCoordinates - 1,
 					subfeature.end - shiftCoordinates)
 			});
-		} else {
+		} else if (this.verbose){
 			logger.warn(`Could not find sequence for gene ${this.ID} with seqid ${this.seqid}.`+
 			 ` Make sure the sequence IDs between the genome fasta and annotation gff3 are the same.`)
 		}
@@ -142,18 +141,22 @@ const GeneModel = class GeneModel {
 			const validation = this.validate();
 			if (validation.isValid()) {
 				bulkOp.insert(this.dataFields);
-			} else {
+			} else if (this.verbose){
 				validation.validationErrors().forEach(err => {
 					logger.warn(`gene ${this.ID}, field ${err.name} is ${err.type}, got '${err.value}'`)
 				})
 			}
-		} else {
-			logger.warn(`Not saving top-level feature`)
+		} else if (this.verbose){
+			logger.warn(
+				`Only top level features of type gene are supported, skipping`
+			)
 		}
 	}
 
 	get dataFields() {
-		return omit(this, ['fetchGenomeSequence', 'validate','saveToDb','dataFields'])
+		return omit(this, 
+			['fetchGenomeSequence', 'validate','saveToDb','dataFields']
+		)
 	}
 }
 
@@ -165,7 +168,7 @@ const GeneModel = class GeneModel {
  * @param  {String} options.trackId            [description]
  * @return {Promise}                            [description]
  */
-const gffFileToMongoDb = ({ fileName, genomeId, strict }) => {
+const gffFileToMongoDb = ({ fileName, genomeId, verbose, strict }) => {
 	return new Promise((resolve, reject) => {
 		if (!fs.existsSync(fileName)) {
 			reject(new Meteor.Error(`${fileName} is not an existing file`));
@@ -185,22 +188,21 @@ const gffFileToMongoDb = ({ fileName, genomeId, strict }) => {
 			skipEmptyLines: true,
 			comments: '#',
 			fastMode: true,
-			error(error,file) {
+			error(error) {
 				reject(error)
 			},
-			step(line, parser){
+			step(line){
 				lineNumber += 1;
 				const gffFields = line.data;
-				console.log({ gffFields });
 				if (gffFields.length > 0 && gffFields[0] !== null) {
 					try {
 						assert(gffFields.length === 9, 
 							`line ${lineNumber} is not a correct gff line with 9 fields: ${gffFields} ${gffFields.length}`);
-						let interval = new Interval({ gffFields, genomeId })
+						let interval = new Interval({ gffFields, genomeId, verbose })
 	
 						if (typeof interval.parents === 'undefined'){
 							if (!isEmpty(intervals)){
-								const gene = new GeneModel(intervals);
+								const gene = new GeneModel({ intervals, verbose });
 								gene.saveToDb(bulkOp);
 								geneCount += 1;
 							}
@@ -257,12 +259,13 @@ export const addAnnotationTrack = new ValidatedMethod({
 	name: 'addAnnotationTrack',
 	validate: new SimpleSchema({
 		fileName: { type: String },
-		genomeName: { type: String }
+		genomeName: { type: String },
+		verbose: { type: Boolean }
 	}).validator(),
 	applyOptions: {
 		noRetry: true
 	},
-	run({ fileName, genomeName, strict = true }){
+	run({ fileName, genomeName, verbose, strict = true }){
 		if (! this.userId) {
 			throw new Meteor.Error('not-authorized');
 		}
@@ -274,7 +277,7 @@ export const addAnnotationTrack = new ValidatedMethod({
 
 		const existingGenome = genomeCollection.findOne({ name: genomeName })
 		if (!existingGenome){
-			throw new Meteor.Error(`Invalid genome name: ${genomeName}`)
+			throw new Meteor.Error(`Unknown genome name: ${genomeName}`)
 		}
 
 		if (typeof existingGenome.annotationTrack !== 'undefined'){
@@ -283,7 +286,7 @@ export const addAnnotationTrack = new ValidatedMethod({
 
 		const genomeId = existingGenome._id;
 
-		return gffFileToMongoDb({ fileName, genomeId, strict })
+		return gffFileToMongoDb({ fileName, genomeId, verbose, strict })
 			.catch(error => {
 				logger.warn(error);
 				throw new Meteor.Error(error);

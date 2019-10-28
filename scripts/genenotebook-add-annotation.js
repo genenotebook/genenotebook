@@ -18,6 +18,7 @@ program
     'Reference genome name to which the annotation should be added',
   )
   .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
+  .option('-v, --verbose', 'Verbose warnings during GFF parsing')
   .action((file) => {
     if (typeof file !== 'string') program.help();
     fileName = path.resolve(file);
@@ -27,8 +28,9 @@ program._name = 'genenotebook add annotation';
 program.parse(process.argv);
 
 const {
-  username, password, port = 3000, genomeName,
+  username, password, port = 3000, genomeName, verbose,
 } = program;
+
 
 if (!(fileName && genomeName && username && password)) {
   program.help();
@@ -43,7 +45,10 @@ const geneNoteBook = new Connection({ endpoint, SocketConstructor });
 
 geneNoteBook
   .loginWithPassword({ username, password })
-  .then(() => geneNoteBook.call('addAnnotationTrack', { fileName, genomeName }))
+  .then(() => geneNoteBook.call(
+    'addAnnotationTrack', 
+    { fileName, genomeName, verbose }
+  ))
   .then((addGenomeResult) => {
     const {
       result: { nInserted },
