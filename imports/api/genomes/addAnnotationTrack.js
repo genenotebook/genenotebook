@@ -66,7 +66,7 @@ const Interval = class Interval {
  * @type {GeneModel}
  */
 const GeneModel = class GeneModel {
-	constructor({ _intervals: intervals, verbose }){
+	constructor({ intervals: _intervals, verbose }){
 		this.verbose = verbose;
 		//filter valid interval types and set parent and children values
 		const intervals = _intervals.filter(({ type }) => {
