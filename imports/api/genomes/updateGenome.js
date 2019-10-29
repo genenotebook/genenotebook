@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { Roles } from 'meteor/alanning:roles';
 
-import SimpleSchema from 'simpl-schema';
+// import SimpleSchema from 'simpl-schema';
 
 import { genomeCollection, genomeSchema } from './genomeCollection.js';
 
@@ -18,30 +18,34 @@ import { genomeCollection, genomeSchema } from './genomeCollection.js';
  * @param {[type]} applyOptions:     {                                                    noRetry:        true             }    [description]
  * @param {[type]} run({            _id,           name,           organism, description, permissions     }){                                if            (! this.userId) {      throw new Meteor.Error('not-authorized');    }    if (! Roles.userIsInRole(this.userId, 'admin') [description]
  */
-export const updateGenome = new ValidatedMethod({
+const updateGenome = new ValidatedMethod({
   name: 'updateGenome',
   validate: genomeSchema.validator(),
   applyOptions: {
-    noRetry: true
+    noRetry: true,
   },
-  run({ _id, name, organism, description, permissions, isPublic }){
-    if (! this.userId) {
+  run({
+    _id, name, organism, description, permissions, isPublic,
+  }) {
+    if (!this.userId) {
       throw new Meteor.Error('not-authorized');
     }
-    if (! Roles.userIsInRole(this.userId, 'admin')){
+    if (!Roles.userIsInRole(this.userId, 'admin')) {
       throw new Meteor.Error('not-authorized');
     }
 
     return genomeCollection.update({
-      _id
-    },{
+      _id,
+    }, {
       $set: {
         name,
         organism,
         description,
         permissions,
-        isPublic
-      }
-    })
-  }
-})
+        isPublic,
+      },
+    });
+  },
+});
+
+export default updateGenome;
