@@ -41,7 +41,7 @@ function AdminGenomes({ genomes }) {
               'Permissions',
               'Annotation track',
               'Actions',
-            ].map(label => (
+            ].map((label) => (
               <th key={label} id={label}>
                 <button
                   type="button"
@@ -55,7 +55,7 @@ function AdminGenomes({ genomes }) {
           </tr>
         </thead>
         <tbody>
-          {genomes.map(genome => (
+          {genomes.map((genome) => (
             <GenomeInfo key={hash(genome.annotationTrack || {})} {...genome} />
           ))}
         </tbody>

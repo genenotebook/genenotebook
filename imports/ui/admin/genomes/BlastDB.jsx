@@ -14,78 +14,65 @@ import logger from '/imports/api/util/logger.js';
 import { JobProgressBar } from '/imports/ui/admin/jobqueue/AdminJobqueue.jsx';
 import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
-class HasBlastDb extends React.Component {
-  removeBlastDb = (event) => {
-    const genomeId = event.target.id;
-    logger.log(`Click remove blastdb ${genomeId}`);
-    removeBlastDb.call({ genomeId }, (err) => {
-      if (err) {
-        logger.warn(err);
-        alert(err);
-      }
-    });
-  };
-
-  render() {
-    const { isEditing, genomeId } = this.props;
-    return isEditing ? (
-      <button
-        type="button"
-        className="btn btn-outline-danger btn-sm px-2 py-0 btn-block"
-        id={genomeId}
-        onClick={this.removeBlastDb}
-      >
-        <span className="icon-exclamation" />
-        Remove Blast DBs
-      </button>
-    ) : (
-      <button
-        type="button"
-        className="btn btn-outline-success btn-sm px-2 py-0 btn-block"
-        id={genomeId}
-        disabled
-      >
-        <span className="icon-check" />
-        Blast DBs present
-      </button>
-    );
-  }
+function HasBlastDb({ isEditing, genomeId }) {
+  return isEditing ? (
+    <button
+      type="button"
+      className="btn btn-outline-danger btn-sm px-2 py-0 btn-block"
+      id={genomeId}
+      onClick={() => {
+        removeBlastDb.call({ genomeId }, (err) => {
+          if (err) {
+            logger.warn(err);
+            alert(err);
+          }
+        });
+      }}
+    >
+      <span className="icon-exclamation" />
+      Remove Blast DBs
+    </button>
+  ) : (
+    <button
+      type="button"
+      className="btn btn-outline-success btn-sm px-2 py-0 btn-block"
+      id={genomeId}
+      disabled
+    >
+      <span className="icon-check" />
+      Blast DBs present
+    </button>
+  );
 }
 
-class HasNoJob extends React.Component {
-  makeBlastDb = (event) => {
-    const genomeId = event.target.id;
-    makeBlastDb.call({ genomeId }, (err) => {
-      if (err) {
-        logger.warn(err);
-        alert(err);
-      }
-    });
-  };
-
-  render() {
-    const { isEditing, genomeId } = this.props;
-    return isEditing ? (
-      <button
-        type="button"
-        className="btn btn-outline-primary btn-sm px-2 py-0 btn-block"
-        id={genomeId}
-        onClick={this.makeBlastDb}
-      >
-        Make Blast DB
-      </button>
-    ) : (
-      <button
-        type="button"
-        className="btn btn-outline-secondary btn-sm px-2 py-0 btn-block"
-        id={genomeId}
-        disabled
-      >
-        <i className="icon-block" />
-        No Blast DB
-      </button>
-    );
-  }
+function HasNoJob({ isEditing, genomeId }) {
+  return isEditing ? (
+    <button
+      type="button"
+      className="btn btn-outline-primary btn-sm px-2 py-0 btn-block"
+      id={genomeId}
+      onClick={() => {
+        makeBlastDb.call({ genomeId }, (err) => {
+          if (err) {
+            logger.warn(err);
+            alert(err);
+          }
+        });
+      }}
+    >
+      Make Blast DB
+    </button>
+  ) : (
+    <button
+      type="button"
+      className="btn btn-outline-secondary btn-sm px-2 py-0 btn-block"
+      id={genomeId}
+      disabled
+    >
+      <i className="icon-block" />
+      No Blast DB
+    </button>
+  );
 }
 
 const makeBlastDbJobTracker = ({ genomeId, isEditing }) => {

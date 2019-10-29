@@ -3,7 +3,6 @@ import React from 'react';
 import { compose } from 'recompose';
 
 import { removeAnnotationTrack } from '/imports/api/genomes/removeAnnotationTrack.js';
-import logger from '/imports/api/util/logger.js';
 
 import { withEither } from '/imports/ui/util/uiUtil.jsx';
 
@@ -31,7 +30,7 @@ const withConditionalRendering = compose(
 );
 
 function AnnotationInfo({
- genomeId, isEditing, name, blastDb 
+  genomeId, isEditing, name, blastDb,
 }) {
   return (
     <table style={{ width: '100%' }}>
