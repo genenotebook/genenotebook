@@ -35,47 +35,6 @@ function GeneNumber({ _id: genomeId, isPublic }) {
   );
 }
 
-/*
-class GeneNumber extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      geneNumber: '...',
-    };
-  }
-
-  componentDidMount = () => {
-    const { _id: genomeId } = this.props;
-    const query = { genomeId };
-    getQueryCount.call({ query }, (err, res) => {
-      this.setState({
-        geneNumber: new Intl.NumberFormat().format(res),
-      });
-    });
-  }
-
-  render() {
-    const { geneNumber } = this.state;
-    const { isPublic } = this.props;
-    return (
-      <div className="btn-group" role="group">
-        <button type="button" className="btn btn-sm btn-outline-dark px-2 py-0" disabled>
-          {
-          isPublic
-            ? <span className="badge badge-success">Public</span>
-            : <span className="badge badge-warning">Private</span>
-        }
-        </button>
-        <button type="button" className="btn btn-sm btn-outline-dark px-2 py-0" disabled>
-          <span className="badge badge-dark">{ geneNumber }</span>
-          &nbsp;genes
-        </button>
-      </div>
-    );
-  }
-}
-*/
-
 function Stats({ genomes = [] }) {
   return (
     <ul className="list-group">

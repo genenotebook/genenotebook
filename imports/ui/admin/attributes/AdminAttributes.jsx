@@ -31,60 +31,55 @@ const withConditionalRendering = compose(
   withEither(isLoading, Loading),
 );
 
-class AdminAttributes extends React.Component {
-  scanAttributes = (event) => {
+function AdminAttributes({ attributes, genomes }) {
+  function scanAttributes(event) {
     event.preventDefault();
-    const { genomes } = this.props;
     genomes.forEach(({ _id: genomeId }) => {
       scanGeneAttributes.call({ genomeId });
     });
-  };
-
-  render() {
-    const { attributes } = this.props;
-    return (
-      <div>
-        <hr />
-        <button
-          type="button"
-          className="btn btn-warning"
-          onClick={this.scanAttributes}
-        >
-          <span className="icon-exclamation" aria-hidden="true" />
-          Scan all genes for attributes
-        </button>
-        <hr />
-        <table className="table table-hover table-sm">
-          <thead>
-            <tr>
-              {[
-                'Name',
-                'Query',
-                'Display default',
-                'Search default',
-                'Actions',
-              ].map(label => (
-                <th key={label} scope="col">
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-outline-dark py-0 px-2"
-                    disabled
-                  >
-                    {label}
-                  </button>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {attributes.map(attribute => (
-              <AttributeInfo key={attribute._id} {...attribute} />
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
   }
+  return (
+    <div>
+      <hr />
+      <button
+        type="button"
+        className="btn btn-warning"
+        onClick={scanAttributes}
+      >
+        <span className="icon-exclamation" aria-hidden="true" />
+          Scan all genes for attributes
+      </button>
+      <hr />
+      <table className="table table-hover table-sm">
+        <thead>
+          <tr>
+            {[
+              'Name',
+              'Query',
+              'Display default',
+              'Search default',
+              'Actions',
+            ].map((label) => (
+              <th key={label} scope="col">
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-dark py-0 px-2"
+                  disabled
+                >
+                  {label}
+                </button>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {attributes.map((attribute) => (
+            <AttributeInfo key={attribute._id} {...attribute} />
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }
 
 export default withConditionalRendering(AdminAttributes);
