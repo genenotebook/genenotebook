@@ -28,7 +28,7 @@ program._name = 'genenotebook add annotation';
 program.parse(process.argv);
 
 const {
-  username, password, port = 3000, genomeName, verbose,
+  username, password, port = 3000, genomeName, verbose = false,
 } = program;
 
 
@@ -46,8 +46,8 @@ const geneNoteBook = new Connection({ endpoint, SocketConstructor });
 geneNoteBook
   .loginWithPassword({ username, password })
   .then(() => geneNoteBook.call(
-    'addAnnotationTrack', 
-    { fileName, genomeName, verbose }
+    'addAnnotationTrack',
+    { fileName, genomeName, verbose },
   ))
   .then((addGenomeResult) => {
     const {
