@@ -15,7 +15,7 @@ import './landingpage.scss';
 
 function GeneNumber({ _id: genomeId, isPublic }) {
   const [geneNumber, setGeneNumber] = useState('...');
-  getQueryCount.call({ genomeId }, (err, res) => {
+  getQueryCount.call({ query: { genomeId } }, (err, res) => {
     setGeneNumber(res);
   });
   return (
