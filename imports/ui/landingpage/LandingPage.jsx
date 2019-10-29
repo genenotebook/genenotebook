@@ -80,7 +80,7 @@ function Stats({ genomes = [] }) {
   return (
     <ul className="list-group">
       {
-        genomes.map(genome => (
+        genomes.map((genome) => (
           <li key={genome._id} className="list-group-item d-flex justify-content-between">
             <div className="d-inline-block ml-4">
               { genome.name }
@@ -100,7 +100,7 @@ function Stats({ genomes = [] }) {
 }
 
 Stats.propTypes = {
-  genomes: PropTypes.shape([]),
+  genomes: PropTypes.array,
 };
 
 Stats.defaultProps = {
