@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Redirect, withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 import { cloneDeep } from 'lodash';
@@ -26,10 +26,18 @@ const attributeTracker = ({ location }) => {
   const attributeString = query.get('attributes') || '';
   const searchString = query.get('search') || '';
 
-  const selectedAttributes = attributeString.split(',').filter(att => att !== '');
   const attributeSub = Meteor.subscribe('attributes');
   const loading = !attributeSub.ready();
   const attributes = attributeCollection.find({}).fetch();
+  
+  const selAttr = attributeString.split(',')
+    .filter(attr => attr !== '');
+
+  const selectedAttributes = selAttr.length
+    ? selAttr
+    : attributes.filter(attribute => attribute.defaultSearch)
+      .map(attribute => attribute.name);
+
   return {
     loading,
     attributes,
@@ -45,6 +53,123 @@ const withConditionalRendering = compose(
   withEither(isLoading, Loading),
 );
 
+function SearchBar({ 
+  selectedAttributes: initialSelectedAttributes, 
+  searchString: initialSearchString,
+  attributes,
+  highLightSearch
+}) {
+  // const [redirect, setRedirect] = useState(false);
+  const [redirectTo, setRedirectTo] = useState('');
+  const [searchString, setSearchString] = useState(initialSearchString);
+  useEffect(() => {
+    if (searchString.length && selectedAttributes.size) {
+      const query = new URLSearchParams();
+      query.set('attributes', [...selectedAttributes]);
+      query.set('search', searchString.trim());
+      const queryString = query.toString();
+      setRedirectTo(`/genes?${queryString}`);
+      
+      //  React Router is supposed to work with the Redirect
+      //  component, but I cannot figure out how to do that so
+      //  I just push to the history instead.
+      
+      //history.push(`/genes?${queryString}`);
+    } else {
+      setRedirectTo('/genes');
+    }
+  }, [searchString]);
+
+  const [selectedAttributes, setSelectedAttributes] = useState(
+    new Set(initialSelectedAttributes)
+  );
+
+  function toggleAttributeSelect(event) {
+    const attributeName = event.target.id;
+    const newSelAttr = cloneDeep(selectedAttributes);
+    if (newSelAttr.has(attributeName)) {
+      newSelAttr.delete(attributeName);
+    } else {
+      newSelAttr.add(attributeName);
+    }
+    setSelectedAttributes(newSellAttr);
+  }
+
+  function submit() {
+    submit = (event) => {
+      event.preventDefault();
+      // const { history } = this.props;
+      // const { selectedAttributes, searchString } = this.state;
+      if (searchString.length && selectedAttributes.size) {
+        const query = new URLSearchParams();
+        query.set('attributes', [...selectedAttributes]);
+        query.set('search', searchString.trim());
+        const queryString = query.toString();
+        
+        //  React Router is supposed to work with the Redirect
+        //  component, but I cannot figure out how to do that so
+        //  I just push to the history instead.
+        
+        // history.push(`/genes?${queryString}`);
+      }
+    };
+  }
+
+  return (
+    <form className="form-inline search mx-auto" role="search" onSubmit={this.submit}>
+      <div className="input-group input-group-sm">
+        <div className="input-group-prepend">
+          <Dropdown>
+            <DropdownButton className="btn btn-sm btn-outline-dark dropdown-toggle search-dropdown border" />
+            <DropdownMenu>
+              <h6 className="dropdown-header">Select attributes to search</h6>
+              {attributes.map(({ name }) => {
+                const checked = selectedAttributes.has(name);
+                return (
+                  <div
+                    key={`${name} ${checked}`}
+                    className="form-check px-3 pb-1"
+                    style={{ justifyContent: 'flex-start', whiteSpace: 'pre' }}
+                  >
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      id={name}
+                      checked={checked}
+                      onChange={toggleAttributeSelect}
+                    />
+                    <label className="form-check-label">{name}</label>
+                  </div>
+                );
+              })}
+            </DropdownMenu>
+          </Dropdown>
+        </div>
+        <input
+          type="text"
+          className="form-control border-right-0 border search-bar"
+          placeholder="Search genes"
+          value={searchString}
+          onChange={(event) => setSearchString(event.target.value)}
+          onSubmit={submit}
+        />
+        {searchString && (
+          <span className="input-group-addon bg-white border-left-0 border pt-1 clear-search">
+            <span className="icon-cancel" onClick={() => setSearchString('')} />
+          </span>
+        )}
+
+        <div className="input-group-append btn-group">
+          <button type="submit" className="btn btn-sm btn-outline-dark border">
+            <span className="icon-search" />
+          </button>
+        </div>
+      </div>
+    </form>
+  );
+}
+
+/*
 class SearchBar extends React.Component {
   constructor(props) {
     super(props);
@@ -92,11 +217,11 @@ class SearchBar extends React.Component {
       query.set('attributes', [...selectedAttributes]);
       query.set('search', searchString.trim());
       const queryString = query.toString();
-      /*
-        React Router is supposed to work with the Redirect
-        component, but I cannot figure out how to do that so
-        I just push to the history instead.
-      */
+      
+      //  React Router is supposed to work with the Redirect
+      //  component, but I cannot figure out how to do that so
+      //  I just push to the history instead.
+      
       history.push(`/genes?${queryString}`);
     }
   };
@@ -109,11 +234,11 @@ class SearchBar extends React.Component {
       },
       (err, res) => {
         if (err) logger.warn(err);
-        /*
-        React Router is supposed to work with the Redirect
-        component, but I cannot figure out how to do that so
-        I just push to the history instead.
-      */
+        
+        // React Router is supposed to work with the Redirect
+        // component, but I cannot figure out how to do that so
+        // I just push to the history instead.
+      
         history.push('/genes');
       },
     );
@@ -182,5 +307,6 @@ class SearchBar extends React.Component {
     );
   }
 }
+*/
 
 export default withConditionalRendering(SearchBar);
