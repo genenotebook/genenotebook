@@ -8,7 +8,7 @@ import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 import { formatDate } from '/imports/ui/util/uiUtil.jsx';
 
 const REMOVE_STATES = ['completed', 'failed', 'cancelled'];
-const RESTART_STATES = ['failed', 'cancelled'];
+// const RESTART_STATES = ['failed', 'cancelled'];
 const CANCEL_STATES = ['waiting', 'running', 'created', 'ready']; // Anything that is not completed, failed or cancelled
 
 function Status({ status }) {
@@ -44,10 +44,7 @@ export function JobProgressBar({ progress, loading }) {
   }
 
   const { completed, total, percent } = progress;
-
   const barColor = completed === total ? 'success' : 'default';
-
-  // console.log(completed, total, barColor)
 
   return (
     <div className="progress">
@@ -71,29 +68,7 @@ function performJobAction(jobId, action) {
   });
 }
 
-function JobInfo({ job }) {
-  /*
-  function reRunJob(event) {
-    const jobId = event.target.name;
-    jobQueue.getJob(jobId, (err, job) => {
-      job.rerun();
-    });
-  }
-
-  function cancelJob(event) {
-    const jobId = event.target.name;
-    jobQueue.getJob(jobId, (err, job) => {
-      job.cancel();
-    });
-  }
-
-  function removeJob(event) {
-    const jobId = event.target.name;
-    jobQueue.getJob(jobId, (err, job) => {
-      job.remove();
-    });
-  }
-  */
+function JobInfo({ job, loading }) {
   const { _id: jobId } = job;
   return (
     <tr key={jobId}>
@@ -145,7 +120,6 @@ function JobInfo({ job }) {
   );
 }
 
-// class AdminJobqueue extends React.Component {
 function AdminJobqueue({ loading, jobs }) {
   return loading
     ? <div> Loading </div>
@@ -166,7 +140,7 @@ function AdminJobqueue({ loading, jobs }) {
         </thead>
         <tbody>
           {
-        jobs.map((job) => <JobInfo job={job} />)
+        jobs.map((job) => <JobInfo key={job._id} job={job} loading={loading} />)
       }
         </tbody>
       </table>

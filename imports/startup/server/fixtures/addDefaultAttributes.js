@@ -8,6 +8,14 @@ const PERMANENT_ATTRIBUTES = [
     query: 'attributes.Note',
   },
   {
+    name: 'Dbxref',
+    query: 'attributes.Dbxref',
+  },
+  {
+    name: 'Ontology Term',
+    query: 'attributes.Ontology_term',
+  },
+  {
     name: 'Orthogroup',
     query: 'orthogroupId',
   },

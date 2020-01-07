@@ -13,7 +13,7 @@ import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
 import AttributeInfo from './AttributeInfo.jsx';
 
-const attributeDataTracker = () => {
+function attributeDataTracker() {
   const attributeSub = Meteor.subscribe('attributes');
   const attributes = attributeCollection.find({}).fetch();
   const genomeSub = Meteor.subscribe('genomes');
@@ -24,7 +24,7 @@ const attributeDataTracker = () => {
     genomes,
     loading,
   };
-};
+}
 
 const withConditionalRendering = compose(
   withTracker(attributeDataTracker),
