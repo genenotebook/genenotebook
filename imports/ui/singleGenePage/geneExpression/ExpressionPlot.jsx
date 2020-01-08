@@ -181,7 +181,21 @@ function YAxis({ scale, numTicks }) {
 
 function ExpressionDot({ yScale, ...sample }) {
   const [showPopover, setPopover] = useState(false);
-  function togglePopover() { setPopover(!showPopover); }
+  function closePopover() {
+    document.removeEventListener('click', closePopover);
+    setPopover(false);
+  }
+  function openPopover() {
+    document.addEventListener('click', closePopover);
+    setPopover(true);
+  }
+  function togglePopover() {
+    if (showPopover) {
+      closePopover();
+    } else {
+      openPopover();
+    }
+  }
   const targetId = `x${sample._id}`;
   return (
     <>

@@ -176,9 +176,24 @@ function ProteinDomain({
   const style = { fill, fillOpacity: 0.5 };
   const targetId = `${name.replace(/[:\.]/g, '_')}_${start}_${end}`;
 
-  const [showPopover, setShowPopover] = useState(false);
+  const [showPopover, setPopover] = useState(false);
+  // function togglePopover() {
+  //   setShowPopover(!showPopover);
+  // }
+  function closePopover() {
+    document.removeEventListener('click', closePopover);
+    setPopover(false);
+  }
+  function openPopover() {
+    document.addEventListener('click', closePopover);
+    setPopover(true);
+  }
   function togglePopover() {
-    setShowPopover(!showPopover);
+    if (showPopover) {
+      closePopover();
+    } else {
+      openPopover();
+    }
   }
   return (
     <>
