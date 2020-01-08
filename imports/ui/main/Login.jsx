@@ -43,6 +43,7 @@ export default function Login({ location }) {
           onChange={(event) => setUsername(event.target.value)}
           required
           autoFocus
+          autoComplete="username"
         />
         <label htmlFor="inputPassword" className="sr-only">Password</label>
         <input
@@ -53,6 +54,7 @@ export default function Login({ location }) {
           value={password}
           onChange={(event) => setPassword(event.target.value)}
           required
+          autoComplete="current-password"
         />
         <button
           className="btn btn-lg btn-primary btn-block mb-3"

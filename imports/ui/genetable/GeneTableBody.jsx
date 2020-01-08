@@ -42,6 +42,7 @@ function dataTracker({
   selectedGenes,
   updateSelection,
   selectedAll,
+  ...props
 }) {
   const geneSub = Meteor.subscribe('genes', { query, sort, limit });
   const loading = !geneSub.ready();
@@ -53,6 +54,7 @@ function dataTracker({
     selectedGenes,
     updateSelection,
     selectedAll,
+    ...props,
   };
 }
 
@@ -130,12 +132,19 @@ const withConditionalRendering = compose(
   withEither(hasNoResults, NoResults),
 );
 
-function AttributeColumn({ attributeName, attributeValue, geneId }) {
+function AttributeColumn({
+  attributeName, attributeValue, geneId, genomeDataCache,
+}) {
   switch (attributeName) {
     case 'Gene ID':
       return <GeneLink geneId={geneId} />;
     case 'Genome':
-      return <GenomeName genomeId={attributeValue} />;
+      return (
+        <GenomeName
+          genomeId={attributeValue}
+          genomeDataCache={genomeDataCache}
+        />
+      );
     default:
       return <AttributeValue attributeValue={attributeValue} />;
   }
@@ -158,6 +167,7 @@ function GeneTableRow({
   updateSelection,
   attributes,
   selectedVisualization,
+  genomeDataCache,
 }) {
   const selected = selectedAllGenes || selectedGenes.has(gene.ID);
   const color = selected ? 'black' : 'white';
@@ -178,7 +188,12 @@ function GeneTableRow({
           return (
             <td key={attributeName} data-label={attributeName}>
               <AttributeColumn
-                {...{ attributeName, attributeValue, geneId: gene.ID }}
+                {...{
+                  attributeName,
+                  attributeValue,
+                  geneId: gene.ID,
+                  genomeDataCache,
+                }}
               />
             </td>
           );
@@ -226,7 +241,7 @@ function GeneTableBody({
 
   return (
     <tbody className="genetable-body">
-      {genes.map(gene => (
+      {genes.map((gene) => (
         <GeneTableRow key={gene.ID} gene={gene} {...props} />
       ))}
     </tbody>

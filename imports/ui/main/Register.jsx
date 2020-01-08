@@ -73,6 +73,7 @@ export default function Register({ location }) {
             onChange={(event) => setUsername(event.target.value)}
             value={username}
             required
+            autoComplete="username"
           />
         </div>
 
@@ -90,6 +91,7 @@ export default function Register({ location }) {
             onChange={(event) => setEmail(event.target.value)}
             value={email}
             required
+            autoComplete="email"
           />
         </div>
 
@@ -109,6 +111,7 @@ export default function Register({ location }) {
             onChange={(event) => setPassword(event.target.value)}
             value={password}
             required
+            autoComplete="new-password"
           />
         </div>
         <div className="input-group password-repeat">
@@ -125,6 +128,7 @@ export default function Register({ location }) {
             onChange={(event) => setPasswordRepeat(event.target.value)}
             value={passwordRepeat}
             required
+            autoComplete="new-password"
           />
         </div>
 

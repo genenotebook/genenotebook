@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import find from 'lodash/find';
 
 import { getGeneSequences } from '/imports/api/util/util.js';
@@ -7,107 +7,103 @@ import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdow
 
 import './seq.scss';
 
-const Controls = ({ seqType, selectSeqType, transcripts, selectTranscript, selectedTranscript }) => {
-  const seqTypes = ['nucl','prot']
-  return <React.Fragment>
-    <div className="btn-group btn-group-sm sequence-toggle float-right" role="group">
-      {
-        seqTypes.map(sType => {
+function Controls({
+  seqType, setSeqType, transcripts, setSelectedTranscript, selectedTranscript,
+}) {
+  const seqTypes = ['nucl', 'prot'];
+  return (
+    <>
+      <div className="btn-group btn-group-sm sequence-toggle float-right" role="group">
+        {
+        seqTypes.map((sType) => {
           const active = sType === seqType ? 'active' : 'border';
           const label = sType === 'prot' ? 'Protein' : 'Nucleotide';
-          return <button key={sType} id={sType} type="button" onClick={selectSeqType}
-              className={`btn btn-outline-dark px-2 py-0 ${active}`}>
+          return (
+            <button
+              key={sType}
+              id={sType}
+              type="button"
+              onClick={() => setSeqType(sType)}
+              className={`btn btn-outline-dark px-2 py-0 ${active}`}
+            >
               { label }
             </button>
+          );
         })
       }
-    </div>
+      </div>
 
-    <div className="btn-group btn-group-sm float-right">
-      <Dropdown>
-        <DropdownButton className="btn btn-sm btn-outline-dark dropdown-toggle px-2 py-0 border">
-          { selectedTranscript }
-        </DropdownButton>
-        <DropdownMenu>
-        <h6 className='dropdown-header'>Select transcript</h6>
-        { 
-          transcripts.map( transcript => {
-            return <li key={transcript}>
-              <a href="#" id={transcript} className="select-transcript-seq dropdown-item" 
-                onClick={selectTranscript} >
+      <div className="btn-group btn-group-sm float-right">
+        <Dropdown>
+          <DropdownButton className="btn btn-sm btn-outline-dark dropdown-toggle px-2 py-0 border">
+            { selectedTranscript }
+          </DropdownButton>
+          <DropdownMenu>
+            <h6 className="dropdown-header">Select transcript</h6>
+            {
+          transcripts.map((transcript) => (
+            <li key={transcript}>
+              <button
+                type="button"
+                // id={transcript}
+                className="btn btn-link select-transcript-seq dropdown-item"
+                onClick={() => setSelectedTranscript(transcript)}
+              >
                 { transcript }
-              </a>
+              </button>
             </li>
-          })
+          ))
         }
-        </DropdownMenu>
-      </Dropdown>
-    </div>
-  </React.Fragment>
+          </DropdownMenu>
+        </Dropdown>
+      </div>
+    </>
+  );
 }
 
-export default class SeqContainer extends React.Component {
-  constructor(props){
-    super(props)
-    const transcripts = this.props.gene.subfeatures.filter(sub => {
-      return sub.type === 'mRNA'
-    }).map(transcript => {
-      return transcript.ID
-    }).sort()
+export default function SeqContainer({ gene, maxLength = 300 }) {
+  const transcripts = gene.subfeatures
+    .filter((sub) => sub.type === 'mRNA')
+    .map((transcript) => transcript.ID)
+    .sort();
+  const [selectedTranscript, setSelectedTranscript] = useState(transcripts[0]);
+  const [seqType, setSeqType] = useState('nucl');
+  const [showAll, setShowAll] = useState(false);
 
-    const selectedTranscript = transcripts[0];
+  const sequences = getGeneSequences(gene);
+  const sequence = find(sequences, { ID: selectedTranscript });
+  const showSequence = showAll
+    ? sequence[seqType]
+    : `${sequence[seqType].slice(0, maxLength)}...`;
+  const buttonText = showAll
+    ? 'Show less'
+    : 'Show more ...';
 
-    this.state = {
-      selectedTranscript,
-      transcripts,
-      seqType: 'nucl',
-      showAll: false
-    }
-  }
-
-  toggleShowAll = event => {
-    event.preventDefault();
-    this.setState({
-      showAll: !this.state.showAll
-    })
-  }
-
-  selectTranscript = event => {
-    const selectedTranscript = event.target.id;
-    this.setState({ selectedTranscript })
-  }
-
-  selectSeqType = event => {
-    const seqType = event.target.id;
-    this.setState({ seqType });
-  }
-
-  render(){
-    const maxLength = 300;
-    const { showAll, selectedTranscript, transcripts, seqType } = this.state;
-    const { gene } = this.props;
-    //const transcript = find(transcripts, { ID: selectedTranscript });
-    //const showSequence = showAll ? 
-    const sequences = getGeneSequences(gene);
-    const sequence = find(sequences, { ID: selectedTranscript });
-    const showSequence = showAll ? sequence[seqType] : sequence[seqType].slice(0, maxLength) + '...';
-    const buttonText = showAll ? 'Show less' : 'Show more ...';
-
-    return <div id="sequence">
+  return (
+    <div id="sequence">
       <hr />
-      <Controls selectedTranscript = { selectedTranscript } 
-        selectTranscript = { this.selectTranscript } transcripts = { transcripts }
-        seqType = { seqType } selectSeqType = { this.selectSeqType } />
+      <Controls
+        selectedTranscript={selectedTranscript}
+        setSelectedTranscript={setSelectedTranscript}
+        transcripts={transcripts}
+        seqType={seqType}
+        setSeqType={setSeqType}
+      />
       <h3>Coding Sequence</h3>
       <div className="card seq-container">
-        <p className="seq"> 
-          >{ selectedTranscript } <br/> 
+        <p className="seq">
+          {`>${selectedTranscript} `}
+          <br />
           { showSequence }
         </p>
-        <a href='#' onClick={this.toggleShowAll}>
+        <button
+          type="button"
+          className="btn btn-link"
+          onClick={() => setShowAll(!showAll)}
+        >
           <small>{ buttonText }</small>
-        </a>
+        </button>
       </div>
     </div>
-  }
+  );
 }

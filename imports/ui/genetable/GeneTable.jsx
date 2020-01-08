@@ -28,7 +28,7 @@ export const VISUALIZATIONS = ['Gene model', 'Protein domains', 'Gene expression
  * @param  {Object} props [description]
  * @return {Object}       [description]
  */
-function attributeTracker({ location, history }) {
+function attributeTracker({ location, history, ...props }) {
   const attributeSub = Meteor.subscribe('attributes');
   const loading = !attributeSub.ready();
   const attributes = attributeCollection.find({}).fetch();
@@ -37,6 +37,7 @@ function attributeTracker({ location, history }) {
     attributes,
     location,
     history,
+    ...props,
   };
 }
 
@@ -45,7 +46,9 @@ function attributeTracker({ location, history }) {
  * @param  {[type]} options.attributes [description]
  * @return {[type]}                    [description]
  */
-function searchTracker({ attributes, location, history }) {
+function searchTracker({
+  attributes, location, history, ...props
+}) {
   const { search } = location;
   const queryString = new URLSearchParams(search);
 
@@ -84,6 +87,7 @@ function searchTracker({ attributes, location, history }) {
     searchQuery,
     location,
     history,
+    ...props,
   };
 }
 
@@ -123,7 +127,7 @@ function processBlastJob(Component) {
 }
 
 function GeneTable({
-  searchQuery, selectedAttributes, attributes, history,
+  searchQuery, selectedAttributes, attributes, history, genomeDataCache,
 }) {
   const [limit, setLimit] = useState(20);
   const [query, setQuery] = useState(searchQuery);
@@ -270,6 +274,7 @@ function GeneTable({
                 attributes,
                 selectedVisualization: selectedViz,
                 updateScrollLimit: setLimit,
+                genomeDataCache,
               }}
             />
           </table>
