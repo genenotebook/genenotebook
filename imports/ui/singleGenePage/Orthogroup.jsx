@@ -58,7 +58,7 @@ function TreeBranch({ node, chronogram }) {
 }
 
 function InternalNode({
-  data = { name: ''}, x, y, chronogram,
+  data = { name: '' }, x, y, chronogram,
 }) {
   const nodeLabel = data.name;
   return (
@@ -74,7 +74,9 @@ function TreeNode({ node }) {
     : <InternalNode {...node} />;
 }
 
-function Tree({ tree, size, geneIds, chronogram = true }) {
+function Tree({
+  tree, size, geneIds, chronogram = true,
+}) {
   return (
     <div className="card tree">
       <ContainerDimensions>
@@ -94,17 +96,17 @@ function Tree({ tree, size, geneIds, chronogram = true }) {
               ])
               .separation(() => 1);
 
-            const treeRoot = hierarchy(tree, node => node.branchset);
+            const treeRoot = hierarchy(tree, (node) => node.branchset);
 
-            const treeData = treeMap(treeRoot).sum(node => node.branchLength);
+            const treeData = treeMap(treeRoot).sum((node) => node.branchLength);
 
-            const nodes = treeData.descendants().filter(node => node.parent);
+            const nodes = treeData.descendants().filter((node) => node.parent);
 
             return (
               <svg width={width} height={height}>
                 <g transform={`translate(${margin.left},${margin.top})`}>
                   {
-                    nodes.map(node => (
+                    nodes.map((node) => (
                       <React.Fragment key={`${node.x}_${node.y}`}>
                         <TreeBranch {...{ node, chronogram }} />
                         <TreeNode {...{ node, chronogram }} />
@@ -129,10 +131,10 @@ function Orthogroup({ orthogroup, showHeader = false }) {
     <div id="orthogroup">
       {
           showHeader && (
-          <React.Fragment>
-            <hr />
-            <h3>Orthogroup</h3>
-          </React.Fragment>
+            <>
+              <hr />
+              <h3>Orthogroup</h3>
+            </>
           )
       }
       <Tree {...orthogroup} />

@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import React from 'react';
 import { compose } from 'recompose';
 import { scaleLinear } from 'd3';//-scale';
@@ -12,7 +13,7 @@ import { withEither } from '/imports/ui/util/uiUtil.jsx';
 
 import './proteinDomains.scss';
 
-const XAxis = ({ scale, numTicks, transform, seqid }) => {
+function XAxis({ scale, numTicks, transform, seqid }) {
   const range = scale.range();
 
   const [start, end] = scale.domain();
@@ -22,24 +23,30 @@ const XAxis = ({ scale, numTicks, transform, seqid }) => {
   const ticks = [start];
 
   for (let i = 1; i < numTicks; i++) {
-     ticks.push(start + (i * stepSize));
+    ticks.push(start + (i * stepSize));
   }
-  ticks.push(end)
+  ticks.push(end);
   return (
     <g className = 'x-axis' transform={transform}>
-      <text className='axis-label' x={range[0]} y='0' 
-        dy='5' textAnchor='left' fontSize='11'>
+      <text
+        className='axis-label'
+        x={range[0]}
+        y='0' 
+        dy='5'
+        textAnchor='left'
+        fontSize='11'
+      >
         {seqid}
       </text>
       <line className='backbone' x1={range[0]} x2={range[1]} 
         y1='25' y2='25' stroke='black'/>
       {
         ticks.map((tick, tickIndex) => {
-          const pos = scale(tick)
+          const pos = scale(tick);
           let textAnchor;
-          if (tickIndex === 0){
+          if (tickIndex === 0) {
             textAnchor = 'start';
-          } else if (tickIndex === ticks.length - 1){
+          } else if (tickIndex === ticks.length - 1) {
             textAnchor = 'end';
           } else {
             textAnchor = 'middle';
@@ -52,11 +59,11 @@ const XAxis = ({ scale, numTicks, transform, seqid }) => {
                 { tick }
               </text>
             </g>
-          )
+          );
         })
       }
     </g>
-  )
+  );
 }
 
 const DomainPopover = ({ showPopover, targetId, togglePopover, ...domain }) => {

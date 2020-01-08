@@ -12,28 +12,38 @@ import { withEither } from '/imports/ui/util/uiUtil.jsx';
 
 import './orthogroup.scss';
 
-const isLoading = ({ loading }) => loading;
-
-const Loading = ({ transcriptId, x ,y }) => {
-  const style = { fill: 'lightgrey' };
-  return <g>
-    <circle cy={x} cx={y} r='5' style={style} />
-    <foreignObject width='300' height='20' x={y + 10} y={x - 13}>
-      <span style={{fontSize: 10}}> ...{transcriptId} </span>
-    </foreignObject>
-  </g>
+function isLoading({ loading }) {
+  return loading;
 }
 
-const isNotFound = ({ gene }) => typeof gene === 'undefined';
-
-const NotFound = ({ transcriptId, x ,y }) => {
+function Loading({ transcriptId, x, y }) {
   const style = { fill: 'lightgrey' };
-  return <g>
-    <circle cy={x} cx={y} r='5' style={style} />
-    <foreignObject width='300' height='20' x={y + 10} y={x - 13}>
-      <span style={{fontSize: 10}}>{transcriptId}</span>
-    </foreignObject>
-  </g>
+  return (
+    <g>
+      <circle cy={x} cx={y} r="5" style={style} />
+      <foreignObject width="300" height="20" x={y + 10} y={x - 13}>
+        <span style={{ fontSize: 10 }}>
+          {` ...${transcriptId} `}
+        </span>
+      </foreignObject>
+    </g>
+  );
+}
+
+function isNotFound({ gene }) {
+  return typeof gene === 'undefined';
+}
+
+function NotFound({ transcriptId, x, y }) {
+  const style = { fill: 'lightgrey' };
+  return (
+    <g>
+      <circle cy={x} cx={y} r="5" style={style} />
+      <foreignObject width="300" height="20" x={y + 10} y={x - 13}>
+        <span style={{ fontSize: 10 }}>{transcriptId}</span>
+      </foreignObject>
+    </g>
+  );
 }
 
 /**
@@ -44,18 +54,24 @@ const NotFound = ({ transcriptId, x ,y }) => {
  * @param  {Number} options.y            [description]
  * @return {Stateless React Component}                      [description]
  */
-const OrthogroupTipNode = ({ transcriptId, gene, x, y, chronogram }) => {
+function OrthogroupTipNode({
+  transcriptId, gene, x, y, chronogram,
+}) {
   const { genomeId } = gene;
   const fill = randomColor({ seed: genomeId + genomeId.slice(3) });
   const style = { fill };
-  return <g className='tipnode'>
-    <circle className='orthogroup-node' cy={x} cx={y} r='4.5' style={style}/>
-    <foreignObject width='300' height='20' x={y + 10} y={x - 13}>
-      <Link to={`/gene/${gene.ID}`} style={{fontSize:10}}>
-        { transcriptId } { gene.attributes.Name }
-      </Link>
-    </foreignObject>
-  </g>
+  return (
+    <g className="tipnode">
+      <circle className="orthogroup-node" cy={x} cx={y} r="4.5" style={style} />
+      <foreignObject width="300" height="20" x={y + 10} y={x - 13}>
+        <Link to={`/gene/${gene.ID}`} style={{ fontSize: 10 }}>
+          { transcriptId }
+          {' '}
+          { gene.attributes.Name }
+        </Link>
+      </foreignObject>
+    </g>
+  );
 }
 
 /**
@@ -64,18 +80,20 @@ const OrthogroupTipNode = ({ transcriptId, gene, x, y, chronogram }) => {
  * @param  {...[Object]} options.props [description]
  * @return {Object}                  [description]
  */
-const geneLinkDataTracker = ({ data, ...props }) => {
+function geneLinkDataTracker({ data, ...props }) {
   const transcriptId = data.name;
   const geneSub = Meteor.subscribe('singleGene', { transcriptId });
   const loading = !geneSub.ready();
   const gene = Genes.findOne({ 'subfeatures.ID': transcriptId });
-  return { loading, gene, transcriptId, ...props }
+  return {
+    loading, gene, transcriptId, ...props,
+  };
 }
 
 const withConditionalRendering = compose(
   withTracker(geneLinkDataTracker),
   withEither(isLoading, Loading),
-  withEither(isNotFound, NotFound)
-)
+  withEither(isNotFound, NotFound),
+);
 
 export default withConditionalRendering(OrthogroupTipNode);

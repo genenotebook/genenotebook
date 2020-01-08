@@ -129,7 +129,7 @@ function NavBar() {
   );
 }
 
-function Header() {
+export default function Header() {
   const [showPageloadPopup, togglePageloadPopup] = useState(false);
   return (
     <>
@@ -146,5 +146,3 @@ function Header() {
     </>
   );
 }
-
-export default Header;

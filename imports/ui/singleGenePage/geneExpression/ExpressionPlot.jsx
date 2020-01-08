@@ -27,7 +27,7 @@ function expressionDataTracker({
   const transcriptomeSub = Meteor.subscribe('geneExpression', gene.ID);
 
   const sampleInfo = groupBy(samples, '_id');
-  const sampleIds = samples.map(sample => sample._id);
+  const sampleIds = samples.map((sample) => sample._id);
 
   const values = Transcriptomes.find({
     geneId: gene.ID,
@@ -184,7 +184,7 @@ function ExpressionDot({ yScale, ...sample }) {
   function togglePopover() { setPopover(!showPopover); }
   const targetId = `x${sample._id}`;
   return (
-    <React.Fragment>
+    <>
       <circle
         className="expression"
         id={targetId}
@@ -199,14 +199,14 @@ function ExpressionDot({ yScale, ...sample }) {
         {...{ targetId, showPopover, ...sample }}
         togglePopover={togglePopover}
       />
-    </React.Fragment>
+    </>
   );
 }
 
 function DotPlot({ groupSamples, yScale }) {
   return (
     <g className="dotplot">
-      {groupSamples.map(sample => (
+      {groupSamples.map((sample) => (
         <ExpressionDot key={sample._id} {...{ yScale, ...sample }} />
       ))}
     </g>
@@ -214,12 +214,12 @@ function DotPlot({ groupSamples, yScale }) {
 }
 
 function BarPlot({ replicaGroup, groupSamples, yScale }) {
-  const tpm = groupSamples.map(sample => sample.tpm);
+  const tpm = groupSamples.map((sample) => sample.tpm);
   const meanVal = mean(tpm);
   const width = 20;
 
   const stdDev = Math.sqrt(
-    sum(groupSamples.map(sample => (sample.tpm - meanVal) ** 2)),
+    sum(groupSamples.map((sample) => (sample.tpm - meanVal) ** 2)),
   );
 
   const stdErr = stdDev / Math.sqrt(groupSamples.length);
@@ -339,7 +339,7 @@ function GroupedSamples({ replicaGroups, yScale, transform }) {
 
 function ExpressionPlot({ values, resizable, height }) {
   const [width, setWidth] = useState(250);
-  const tpm = values.map(value => value.tpm);
+  const tpm = values.map((value) => value.tpm);
   tpm.push(1);
   const maxTpm = Math.max(...tpm);
   const precision = maxTpm > 10 ? 0 : maxTpm > 1 ? 1 : 2;

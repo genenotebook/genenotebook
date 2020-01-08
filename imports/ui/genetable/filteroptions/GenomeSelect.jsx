@@ -39,7 +39,7 @@ function GenomeSelect({
   genomes, query = {}, updateQuery, ...props
 }) {
   const [selectedGenomes, setSelectedGenomes] = useState(
-    new Set(genomes.map(genome => genome._id)),
+    new Set(genomes.map((genome) => genome._id)),
   );
 
   function toggleGenomeSelect(genomeId) {
@@ -62,7 +62,7 @@ function GenomeSelect({
   }
 
   function selectAll() {
-    const newSelection = new Set(genomes.map(genome => genome._id));
+    const newSelection = new Set(genomes.map((genome) => genome._id));
     setSelectedGenomes(newSelection);
 
     const newQuery = cloneDeep(query);

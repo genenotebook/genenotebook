@@ -3,7 +3,7 @@ import React from 'react';
 import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
 import { VISUALIZATIONS } from '/imports/ui/genetable/GeneTable.jsx';
 
-function ColumnSelect({
+export default function ColumnSelect({
   attributes,
   selectedColumns,
   toggleColumnSelect,
@@ -57,5 +57,3 @@ function ColumnSelect({
     </Dropdown>
   );
 }
-
-export default ColumnSelect;

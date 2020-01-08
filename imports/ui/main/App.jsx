@@ -25,7 +25,7 @@ export default function App() {
   const basename = urlParts.slice(3).join('/');
   return (
     <Router basename={basename}>
-      <React.Fragment>
+      <>
         <Header />
         <main role="main" className="h-100">
           <Switch>
@@ -45,7 +45,7 @@ export default function App() {
           </Switch>
         </main>
         <Footer />
-      </React.Fragment>
+      </>
     </Router>
   );
 }

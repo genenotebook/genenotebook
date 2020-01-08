@@ -33,8 +33,7 @@ export default function Footer() {
               }}
             />
             <em>
-GeneNoteBook v
-              {version}
+              {`GeneNoteBook v${version}`}
             </em>
           </small>
         </a>
