@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- Upgraded to `alanning:roles@3.2.0`
+- Modified user permission schemas to comply with `alanning:roles@3.2.0` for the following collections: `users`, `genomeCollection`, `genomeSequenceCollection`, `ExperimentInfo`, `Transcriptomes`
+
 ## [0.1.16] 2019-05-02
 
 ### Added
