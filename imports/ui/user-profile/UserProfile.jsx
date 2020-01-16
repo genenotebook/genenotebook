@@ -68,7 +68,7 @@ function UserRoles({
           User roles
       </label>
       <PermissionSelect
-        value={roles}
+        value={roles.map(({ _id: roleId }) => roleId)}
         options={existingRoles}
         onChange={onChange}
         disabled={!isAdmin || !editing}

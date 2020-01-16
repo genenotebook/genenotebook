@@ -26,9 +26,11 @@ const withConditionalRendering = compose(
   withEither(isLoading, Loading),
 );
 
-function AdminUserInfo ({
-  _id, username, emails, profile, createdAt, roles, ...user
-}) {
+function AdminUserInfo ({ user }) {
+  console.log({ user });
+  const {
+    _id, username, emails, profile, createdAt, roles = [],
+  } = user;
   const { first_name, last_name } = profile;
   return (
     <tr>
@@ -43,7 +45,10 @@ function AdminUserInfo ({
       <td>{ emails[0].address }</td>
       <td>{ formatDate(createdAt) }</td>
       <td>
-        <PermissionSelect value={roles} disabled />
+        <PermissionSelect
+          value={roles.map(({ _id: roleId }) => roleId)}
+          disabled
+        />
       </td>
     </tr>
   );
@@ -72,7 +77,7 @@ function AdminUsers({ users }) {
         </thead>
         <tbody>
           {
-            users.map((user) => <AdminUserInfo key={user._id} {...user} />)
+            users.map((user) => <AdminUserInfo key={user._id} user={user} />)
           }
         </tbody>
       </table>

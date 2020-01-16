@@ -14,6 +14,7 @@ import './header.scss';
 
 function adminTracker() {
   const isAdmin = Roles.userIsInRole(Meteor.userId(), 'admin');
+  console.log({ isAdmin });
   return {
     isAdmin,
   };
