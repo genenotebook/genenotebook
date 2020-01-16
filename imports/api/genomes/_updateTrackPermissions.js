@@ -4,7 +4,7 @@ import { Roles } from 'meteor/alanning:roles';
 
 import SimpleSchema from 'simpl-schema';
 
-import { Tracks } from '/imports/api/genomes/track_collection.js';
+import { Tracks } from '/imports/api/genomes/_track_collection.js';
 
 /**
  * submitBlastJob validated method: submits makeblastdb job to jobqueue, call this from the client
@@ -17,30 +17,29 @@ export const updateTrackPermissions = new ValidatedMethod({
   validate: new SimpleSchema({
     trackName: { type: String },
     permissions: { type: Array },
-    'permissions.$': { type: String }
+    'permissions.$': { type: String },
   }).validator(),
   applyOptions: {
-    noRetry: true
+    noRetry: true,
   },
-  run({ trackName, permissions }){
-    if (! this.userId) {
+  run({ trackName, permissions }) {
+    if (!this.userId) {
       throw new Meteor.Error('not-authorized');
     }
-    if (! Roles.userIsInRole(this.userId,'user')){
+    if (!Roles.userIsInRole(this.userId, 'user')) {
       throw new Meteor.Error('not-authorized');
     }
 
-    if (permissions.length === 0){
-      permissions.push('admin')
+    if (permissions.length === 0) {
+      permissions.push('admin');
     }
 
     return Tracks.update({
-      trackName
-    },{
+      trackName,
+    }, {
       $set: {
-        permissions
-      }
-    })
-  
-  }
-})
+        permissions,
+      },
+    });
+  },
+});

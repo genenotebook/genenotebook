@@ -16,18 +16,17 @@ import logger from '/imports/api/util/logger.js';
 const updateSampleInfo = new ValidatedMethod({
   name: 'updateSampleInfo',
   validate: new SimpleSchema({
-    _id: { type: String },
-    sampleName: { type: String },
-    replicaGroup: { type: String },
-    description: { type: String },
-    permissions: { type: Array },
-    'permissions.$': { type: String },
+    _id: String,
+    sampleName: String,
+    replicaGroup: String,
+    description: String,
+    permission: String,
   }).validator(),
   applyOptions: {
     noRetry: true,
   },
   run({
-    _id, sampleName, replicaGroup, description, permissions,
+    _id, sampleName, replicaGroup, description, permission,
   }) {
     if (!this.userId) {
       throw new Meteor.Error('not-authorized');
@@ -36,12 +35,9 @@ const updateSampleInfo = new ValidatedMethod({
       throw new Meteor.Error('not-authorized');
     }
 
-    if (permissions.length === 0) {
-      permissions.push('admin');
-    }
 
     logger.debug({
-      _id, sampleName, replicaGroup, description, permissions,
+      _id, sampleName, replicaGroup, description, permission,
     });
 
     return ExperimentInfo.update({ _id }, {
@@ -49,7 +45,7 @@ const updateSampleInfo = new ValidatedMethod({
         sampleName,
         replicaGroup,
         description,
-        permissions,
+        permission,
       },
     });
   },

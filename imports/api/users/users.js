@@ -5,13 +5,21 @@ import { Roles } from 'meteor/alanning:roles';
 
 import SimpleSchema from 'simpl-schema';
 
+// ordered set of roles
+export const ROLES = ['registered', 'user', 'curator', 'admin'];
+
+export function getHighestRole(roles) {
+  const ranks = roles.map((role) => ROLES.indexOf(role));
+  const maxRank = ranks.sort().slice(-1);
+  return ROLES[maxRank];
+}
+
 export const updateUserInfo = new ValidatedMethod({
   name: 'updateUserInfo',
   validate: new SimpleSchema({
     userId: String,
     username: String,
-    roles: Array,
-    'roles.$': String,
+    role: String,
     profile: Object,
     'profile.last_name': String,
     'profile.first_name': String,
@@ -24,7 +32,7 @@ export const updateUserInfo = new ValidatedMethod({
     noRetry: true,
   },
   run({
-    userId, username, roles, profile, emails,
+    userId, username, role, profile, emails,
   }) {
     if (!this.userId) {
       throw new Meteor.Error('not-authorized');
@@ -35,9 +43,10 @@ export const updateUserInfo = new ValidatedMethod({
 
     Meteor.users.update({ _id: userId }, {
       $set: {
-        username, roles, profile, emails,
+        username, profile, emails,
       },
     });
+    Roles.setUserRoles(userId, role);
   },
 });
 

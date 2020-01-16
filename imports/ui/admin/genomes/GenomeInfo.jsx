@@ -15,7 +15,7 @@ function EditGenomeInfo({
   name: initialGenomeName,
   organism: initialOrganism,
   description: initialDescription,
-  permissions: initialPermissions,
+  permission: initialPermission,
   isPublic: initialIsPublic,
   annotationTrack = {},
   toggleEdit,
@@ -25,20 +25,21 @@ function EditGenomeInfo({
   const [genomeName, setGenomeName] = useState(initialGenomeName);
   const [organism, setOrganism] = useState(initialOrganism);
   const [description, setDescription] = useState(initialDescription);
-  const [permissions, setPermissions] = useState(initialPermissions);
+  const [permission, setPermission] = useState(initialPermission);
   const [isPublic, setPublic] = useState(initialIsPublic);
 
   function togglePublic() {
     setPublic(!isPublic);
   }
 
+  /*
   function updatePermissions(newPermissions) {
     // make sure admin is always in permissions and that there are no duplicates
     const perm = newPermissions.map((permission) => permission.value);
     perm.push('admin');
     setPermissions([...new Set(perm)]);
   }
-
+  */
   function saveChanges() {
     updateGenome.call({
       _id: genomeId,
@@ -60,7 +61,7 @@ function EditGenomeInfo({
   const hasChanges = genomeName !== initialGenomeName
     || organism !== initialOrganism
     || description !== initialDescription
-    || permissions !== initialPermissions
+    || permission !== initialPermission
     || isPublic !== initialIsPublic;
 
   return (
@@ -119,9 +120,11 @@ function EditGenomeInfo({
       </td>
       <td>
         <PermissionSelect
-          value={permissions}
+          value={permission}
           disabled={isPublic}
-          onChange={updatePermissions}
+          onChange={(selection) => {
+            setPermission(selection.value);
+          }}
         />
       </td>
       <td>
@@ -191,7 +194,7 @@ function GenomeInfoLine({
   organism,
   isPublic,
   description,
-  permissions,
+  permission,
   annotationTrack = {},
   toggleEdit,
 }) {
@@ -205,7 +208,7 @@ function GenomeInfoLine({
         <input type="checkbox" checked={isPublic} disabled />
       </td>
       <td>
-        <PermissionSelect value={permissions} disabled />
+        <PermissionSelect value={permission} disabled />
       </td>
       <td>
         <AnnotationInfo

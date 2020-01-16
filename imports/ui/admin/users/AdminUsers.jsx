@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
+import { Roles } from 'meteor/alanning:roles';
 
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -8,7 +9,7 @@ import { compose } from 'recompose';
 import {
   withEither, isLoading, Loading, formatDate,
 } from '/imports/ui/util/uiUtil.jsx';
-import PermissionSelect from '/imports/ui/util/PermissionSelect.jsx';
+import { getHighestRole } from '/imports/api/users/users.js';
 
 
 function adminUsersDataTracker() {
@@ -27,11 +28,12 @@ const withConditionalRendering = compose(
 );
 
 function AdminUserInfo ({ user }) {
-  console.log({ user });
   const {
-    _id, username, emails, profile, createdAt, roles = [],
+    _id, username, emails, profile, createdAt,
   } = user;
   const { first_name, last_name } = profile;
+  const roles = Roles.getRolesForUser(_id);
+  const role = getHighestRole(roles);
   return (
     <tr>
       <td>
@@ -45,10 +47,7 @@ function AdminUserInfo ({ user }) {
       <td>{ emails[0].address }</td>
       <td>{ formatDate(createdAt) }</td>
       <td>
-        <PermissionSelect
-          value={roles.map(({ _id: roleId }) => roleId)}
-          disabled
-        />
+        { role }
       </td>
     </tr>
   );

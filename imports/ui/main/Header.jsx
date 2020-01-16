@@ -13,8 +13,8 @@ import PageloadPopup from './PageloadPopup.jsx';
 import './header.scss';
 
 function adminTracker() {
-  const isAdmin = Roles.userIsInRole(Meteor.userId(), 'admin');
-  console.log({ isAdmin });
+  const userId = Meteor.userId();
+  const isAdmin = Roles.userIsInRole(userId, 'admin');
   return {
     isAdmin,
   };
@@ -41,7 +41,7 @@ function LoggedInButton({ isAdmin }) {
           &nbsp;Favourites
         </button>
         <div className="dropdown-divider" />
-        {isAdmin && (
+        { isAdmin && (
           <>
             <Link to="/admin" className="dropdown-item featuremenu-item">
               <span className="icon-cog" />

@@ -6,7 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 import { Roles } from 'meteor/alanning:roles';
 
-import { updateUserInfo } from '/imports/api/users/users.js';
+import { updateUserInfo, getHighestRole } from '/imports/api/users/users.js';
 
 import React, { useState } from 'react';
 import { compose } from 'recompose';
@@ -60,7 +60,7 @@ Edit profile
 }
 
 function UserRoles({
-  roles, existingRoles, onChange, isAdmin, editing,
+  role, existingRoles, onChange, isAdmin, editing,
 }) {
   return (
     <div className="form-group col-md-6">
@@ -68,7 +68,7 @@ function UserRoles({
           User roles
       </label>
       <PermissionSelect
-        value={roles.map(({ _id: roleId }) => roleId)}
+        value={role}
         options={existingRoles}
         onChange={onChange}
         disabled={!isAdmin || !editing}
@@ -200,15 +200,17 @@ function UserProfile({
   existingRoles,
   user,
 }) {
+  const initialRole = getHighestRole(Roles.getRolesForUser(user._id));
+
   const [username, setUsername] = useState(user.username);
-  const [roles, setRoles] = useState(user.roles);
+  const [role, setRole] = useState(initialRole);
   const [profile, setProfile] = useState(user.profile);
   const [emails, setEmails] = useState(user.emails);
   const [editing, setEditing] = useState(false);
 
   const isAdmin = Roles.userIsInRole(Meteor.userId(), 'admin');
   const hasChanges = !isEqual(username, user.username)
-    || !isEqual(roles, user.roles)
+    || !isEqual(role, initialRole)
     || !isEqual(profile, user.profile)
     || !isEqual(emails, user.emails);
 
@@ -216,8 +218,9 @@ function UserProfile({
     setUsername(event.target.value);
   }
 
-  function changeRoles(_newRoles) {
-    const newRoles = _newRoles.map((role) => role.value);
+  function changeRoles({ value: newRole }) {
+    /*
+    const newRoles = _newRoles.map((r) => r.value);
 
     if (newRoles.indexOf('registered') < 0) {
       newRoles.push('registered');
@@ -226,8 +229,9 @@ function UserProfile({
     if (newRoles.indexOf('admin') < 0 && isAdmin) {
       newRoles.push('admin');
     }
+    */
 
-    setRoles(newRoles);
+    setRole(newRole);
   }
 
   function changeProfile({ target }) {
@@ -254,7 +258,7 @@ function UserProfile({
   function saveChanges() {
     setEditing(false);
     updateUserInfo.call({
-      userId: user._id, username, roles, profile, emails,
+      userId: user._id, username, role, profile, emails,
     }, (err) => {
       if (err) alert(err);
     });
@@ -262,7 +266,7 @@ function UserProfile({
 
   function cancelChanges() {
     setUsername(user.username);
-    setRoles(user.roles);
+    setRole(initialRole);
     setProfile(user.profile);
     setEmails(user.emails);
     setEditing(false);
@@ -298,7 +302,7 @@ function UserProfile({
             />
             <UserRoles
               {...{
-                roles, existingRoles, isAdmin, editing,
+                role, existingRoles, isAdmin, editing,
               }}
               onChange={changeRoles}
             />

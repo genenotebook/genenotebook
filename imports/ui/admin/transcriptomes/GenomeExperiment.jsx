@@ -145,10 +145,10 @@ function ReplicaGroup({
   replicaGroup: initialReplicaGroup,
 }) {
   const {
-    permissions: initialPermissions,
+    permission: initialPermission,
     isPublic: initialIsPublic,
   } = groupExperiments[0];
-  const [permissions, setPermissions] = useState(initialPermissions);
+  const [permission, setPermission] = useState(initialPermission);
   const [replicaGroup, setReplicaGroup] = useState(initialReplicaGroup);
   const [isPublic, setIsPublic] = useState(initialIsPublic);
   const [isEditing, setEditing] = useState(false);
@@ -171,7 +171,7 @@ function ReplicaGroup({
     const sampleIds = groupExperiments.map((exp) => exp._id);
     const hasChanges = replicaGroup !== initialReplicaGroup
       || isPublic !== initialIsPublic
-      || permissions !== initialPermissions;
+      || permission !== initialPermission;
 
     if (hasChanges) {
       setEditing(false);
@@ -180,7 +180,7 @@ function ReplicaGroup({
         sampleIds,
         replicaGroup,
         isPublic,
-        permissions,
+        permission,
       }, (err) => {
         if (err) alert(err);
       });
@@ -213,8 +213,7 @@ function ReplicaGroup({
               <label htmlFor="replica-group">Replica group</label>
               <input
                 type="text"
-                className="form-control ml-2"
-                id="replica-group"
+                className="form-control form-control-sm ml-2"
                 value={replicaGroup}
                 size="40"
                 title={replicaGroup}
@@ -236,10 +235,10 @@ function ReplicaGroup({
               <label htmlFor="permissions">Permissions</label>
               <PermissionSelect
                 onChange={(selection) => {
-                  setPermissions(selection.map((s) => s.value));
+                  setPermission(selection.value);
                 }}
-                disabled={!isEditing}
-                value={permissions}
+                disabled={!isEditing || isPublic}
+                value={permission}
                 className="ml-2"
               />
             </div>
@@ -252,7 +251,7 @@ function ReplicaGroup({
               { groupExperiments.length }
             </span>
             {' '}
-Transcriptomes
+            Transcriptomes
           </button>
         </div>
       </div>

@@ -19,14 +19,13 @@ const updateReplicaGroup = new ValidatedMethod({
     'sampleIds.$': String,
     replicaGroup: String,
     isPublic: Boolean,
-    permissions: Array,
-    'permissions.$': String,
+    permission: String,
   }).validator(),
   applyOptions: {
     noRetry: true,
   },
   run({
-    sampleIds, replicaGroup, isPublic, permissions,
+    sampleIds, replicaGroup, isPublic, permission,
   }) {
     if (!this.userId) {
       throw new Meteor.Error('not-authorized');
@@ -41,7 +40,7 @@ const updateReplicaGroup = new ValidatedMethod({
       $set: {
         replicaGroup,
         isPublic,
-        permissions,
+        permission,
       },
     }, {
       multi: true,

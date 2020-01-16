@@ -38,7 +38,7 @@ function AdminGenomes({ genomes }) {
               'Organism',
               'Description',
               'Public',
-              'Permissions',
+              'Permission',
               'Annotation track',
               'Actions',
             ].map((label) => (

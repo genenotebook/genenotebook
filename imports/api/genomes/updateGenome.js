@@ -6,18 +6,6 @@ import { Roles } from 'meteor/alanning:roles';
 
 import { genomeCollection, genomeSchema } from './genomeCollection.js';
 
-/**
- * [ValidatedMethod description]
- * @param {[type]} options.name:     'updateGenome' [description]
- * @param {[type]} options.validate: new            SimpleSchema({                                        _id:          { type: String        [description]
- * @param {[type]} name:             {             type:           String    }           [description]
- * @param {[type]} organism:         {             type:           String    }           [description]
- * @param {[type]} description:      {             type:           String    }           [description]
- * @param {[type]} permissions:      {             type:           Array     }           [description]
- * @param {[type]} 'permissions.$':  {             type:           String}               }).validator() [description]
- * @param {[type]} applyOptions:     {                                                    noRetry:        true             }    [description]
- * @param {[type]} run({            _id,           name,           organism, description, permissions     }){                                if            (! this.userId) {      throw new Meteor.Error('not-authorized');    }    if (! Roles.userIsInRole(this.userId, 'admin') [description]
- */
 const updateGenome = new ValidatedMethod({
   name: 'updateGenome',
   validate: genomeSchema.validator(),
@@ -25,7 +13,7 @@ const updateGenome = new ValidatedMethod({
     noRetry: true,
   },
   run({
-    _id, name, organism, description, permissions, isPublic,
+    _id, name, organism, description, permission, isPublic,
   }) {
     if (!this.userId) {
       throw new Meteor.Error('not-authorized');
@@ -41,7 +29,7 @@ const updateGenome = new ValidatedMethod({
         name,
         organism,
         description,
-        permissions,
+        permission,
         isPublic,
       },
     });
