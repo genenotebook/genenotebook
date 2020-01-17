@@ -19,7 +19,7 @@ function availableGenomes({ userId }) {
   const roles = Roles.getRolesForUser(userId);
   const genomeIds = genomeCollection
     .find({
-      $or: [{ permissions: { $in: roles } }, { isPublic: true }],
+      $or: [{ permission: { $in: roles } }, { isPublic: true }],
     })
     .map((genome) => genome._id);
   return genomeIds;
@@ -144,7 +144,7 @@ Meteor.publish({
     }
     const roles = Roles.getRolesForUser(publication.userId);
     return genomeCollection.find({
-      $or: [{ permissions: { $in: roles } }, { isPublic: true }],
+      $or: [{ permission: { $in: roles } }, { isPublic: true }],
     });
   },
   orthogroups(ID) {

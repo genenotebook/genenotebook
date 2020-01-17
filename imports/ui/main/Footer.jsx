@@ -8,6 +8,7 @@ export default function Footer() {
   const [version, setVersion] = useState('...');
   getVersion.call({}, (err, res) => {
     if (err) console.error(err);
+    console.log(res);
     setVersion(res);
   });
   return (
