@@ -1,13 +1,12 @@
 /* eslint-disable import/no-dynamic-require */
-import { Meteor } from 'meteor/meteor';
+// import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 
 import fs from 'fs';
 
-import logger from '/imports/api/util/logger.js';
+// import logger from '/imports/api/util/logger.js';
 
 let pkg = {};
-
 
 const getVersion = new ValidatedMethod({
   name: 'getVersion',
@@ -16,11 +15,10 @@ const getVersion = new ValidatedMethod({
     noRetry: true,
   },
   run() {
-    let version;
+    let version = '..';
     if (!this.isSimulation) {
       const { argv } = process;
       const executable = argv[1];
-      console.log({ argv });
       const isProduction = executable
         .split('/')
         .slice(-1)
@@ -37,13 +35,8 @@ const getVersion = new ValidatedMethod({
 
       pkg = JSON.parse(fs.readFileSync(pkgFile));
       version = pkg.version;
-      console.log({
-        isProduction, splitPosition, folder, pkgFile, version,
-      });
     }
     return version;
-    // console.log({ pkg });
-    // return pkg.version;
   },
 });
 
