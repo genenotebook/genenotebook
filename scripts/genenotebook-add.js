@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-'use strict';
+/* eslint-disable no-underscore-dangle */
+
 const program = require('commander');
 
 program
@@ -8,10 +9,10 @@ program
   .command('annotation', 'Add genome annotation to reference genome')
   .command('transcriptome', 'Add transcriptome quantification data (Kallisto output)')
   .command('interproscan', 'Add protein domain information (InterProScan output)')
-  .command('orthogroups','Add orthogroup phylogenetic trees (OrthoFinder output)');
-  
-program.on('command:*', function([ command ]){
-  if ( this._execs[command] ) return;
+  .command('orthogroups', 'Add orthogroup phylogenetic trees (OrthoFinder output)');
+
+program.on('command:*', function([command]) {
+  if (this._execs.has(command)) return;
   console.warn(`Can not add data of type: ${command}`);
   program.help();
 });

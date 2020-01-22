@@ -13,7 +13,7 @@ program
   .command('list', 'List contents of a running GeneNoteBook server');
 
 program.on('command:*', function([command]) {
-  if (this._execs[command]) return;
+  if (this._execs.has(command)) return;
   console.warn(`Unkown genenotebook command: ${command}`);
   program.help();
 });

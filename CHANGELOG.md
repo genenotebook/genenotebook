@@ -7,10 +7,25 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.2.0] 2020-01-22
+
+### Added
+
+- Mongodb logging
+- Verbosity toggle for gff parsing
+
 ### Changed
 
+- Meteor version 1.9
+- Node.js version >12
+- Fully migrated all react components to new hooks API
 - Upgraded to `alanning:roles@3.2.0`
 - Modified user permission schemas to comply with `alanning:roles@3.2.0` for the following collections: `users`, `genomeCollection`, `genomeSequenceCollection`, `ExperimentInfo`, `Transcriptomes`
+
+### Fixed
+
+- Footer correctly displays version info on production builds
+- Plot tooltips can be closed by clicking anywhere on the screen, similar to dropdown menu 
 
 ## [0.1.16] 2019-05-02
 
@@ -221,7 +236,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - First GeneNoteBook version ready for use
 
-[unreleased]: https://github.com/genenotebook/genenotebook/compare/v0.1.16...HEAD
+[unreleased]: https://github.com/genenotebook/genenotebook/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/genenotebook/genenotebook/compare/v0.1.16...v0.2.0
 [0.1.16]: https://github.com/genenotebook/genenotebook/compare/v0.1.15...v0.1.16
 [0.1.15]: https://github.com/genenotebook/genenotebook/compare/v0.1.14...v0.1.15
 [0.1.14]: https://github.com/genenotebook/genenotebook/compare/v0.1.13...v0.1.14
