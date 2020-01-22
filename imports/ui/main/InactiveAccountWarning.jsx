@@ -2,22 +2,24 @@ import React from 'react';
 
 import './inactiveAccountWarning.scss';
 
-const InactiveAccountWarning = props => {
+export default function InactiveAccountWarning() {
   return (
-    <div className='container alert alert-danger text-center inactive-account-warning' role='alert'>
-      <h4 className='alert-heading'>
-        <span className="icon-exclamation"/> Inactive account
+    <div className="container alert alert-danger text-center inactive-account-warning" role="alert">
+      <h4 className="alert-heading">
+        <span className="icon-exclamation" />
+        {' '}
+        Inactive account
       </h4>
       <p>
-        Your account is currently not activated <br/>
+        Your account is currently not activated
+        {' '}
+        <br />
         This means you can not use all features
       </p>
-      <hr/>
+      <hr />
       <p className="mb-0">
         <strong>Please have your account activated by an admin user</strong>
       </p>
     </div>
-  )
+  );
 }
-
-export default InactiveAccountWarning;

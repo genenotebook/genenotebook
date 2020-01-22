@@ -15,7 +15,7 @@ import './landingpage.scss';
 
 function GeneNumber({ _id: genomeId, isPublic }) {
   const [geneNumber, setGeneNumber] = useState('...');
-  getQueryCount.call({ genomeId }, (err, res) => {
+  getQueryCount.call({ query: { genomeId } }, (err, res) => {
     setGeneNumber(res);
   });
   return (
@@ -35,52 +35,11 @@ function GeneNumber({ _id: genomeId, isPublic }) {
   );
 }
 
-/*
-class GeneNumber extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      geneNumber: '...',
-    };
-  }
-
-  componentDidMount = () => {
-    const { _id: genomeId } = this.props;
-    const query = { genomeId };
-    getQueryCount.call({ query }, (err, res) => {
-      this.setState({
-        geneNumber: new Intl.NumberFormat().format(res),
-      });
-    });
-  }
-
-  render() {
-    const { geneNumber } = this.state;
-    const { isPublic } = this.props;
-    return (
-      <div className="btn-group" role="group">
-        <button type="button" className="btn btn-sm btn-outline-dark px-2 py-0" disabled>
-          {
-          isPublic
-            ? <span className="badge badge-success">Public</span>
-            : <span className="badge badge-warning">Private</span>
-        }
-        </button>
-        <button type="button" className="btn btn-sm btn-outline-dark px-2 py-0" disabled>
-          <span className="badge badge-dark">{ geneNumber }</span>
-          &nbsp;genes
-        </button>
-      </div>
-    );
-  }
-}
-*/
-
 function Stats({ genomes = [] }) {
   return (
     <ul className="list-group">
       {
-        genomes.map(genome => (
+        genomes.map((genome) => (
           <li key={genome._id} className="list-group-item d-flex justify-content-between">
             <div className="d-inline-block ml-4">
               { genome.name }
@@ -100,7 +59,7 @@ function Stats({ genomes = [] }) {
 }
 
 Stats.propTypes = {
-  genomes: PropTypes.shape([]),
+  genomes: PropTypes.array,
 };
 
 Stats.defaultProps = {

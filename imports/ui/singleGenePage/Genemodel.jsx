@@ -124,9 +124,24 @@ function IntervalPopover({
 function Exon({
   genomeId, start, end, type, phase, scale, attributes, ID, seq,
 }) {
-  const [showPopover, setShowPopover] = useState(false);
+  const [showPopover, setPopover] = useState(false);
+  // function togglePopover() {
+  //   setShowPopover(!showPopover);
+  // }
+  function closePopover() {
+    document.removeEventListener('click', closePopover);
+    setPopover(false);
+  }
+  function openPopover() {
+    document.addEventListener('click', closePopover);
+    setPopover(true);
+  }
   function togglePopover() {
-    setShowPopover(!showPopover);
+    if (showPopover) {
+      closePopover();
+    } else {
+      openPopover();
+    }
   }
 
   const targetId = `${type}-${start}-${end}`;
@@ -145,7 +160,7 @@ function Exon({
   // const style = { ':hover': { border: '1px solid black' } };
 
   return (
-    <React.Fragment>
+    <>
       <rect
         className="exon"
         {...{
@@ -172,19 +187,34 @@ function Exon({
         }}
         togglePopover={togglePopover}
       />
-    </React.Fragment>
+    </>
   );
 }
 
 function Transcript({
   transcript, exons, scale, strand, genomeId, geneId,
 }) {
-  const [showPopover, setShowPopover] = useState(false);
+  const [showPopover, setPopover] = useState(false);
+  // function togglePopover() {
+  //   setShowPopover(!showPopover);
+  // }
+  function closePopover() {
+    document.removeEventListener('click', closePopover);
+    setPopover(false);
+  }
+  function openPopover() {
+    document.addEventListener('click', closePopover);
+    setPopover(true);
+  }
   function togglePopover() {
-    setShowPopover(!showPopover);
+    if (showPopover) {
+      closePopover();
+    } else {
+      openPopover();
+    }
   }
   // put CDS exons last so they get drawn last and are placed on top
-  exons.sort(exon1 => (exon1.type === 'CDS' ? 1 : -1));
+  exons.sort((exon1) => (exon1.type === 'CDS' ? 1 : -1));
 
   const { start, end } = transcript;
 
@@ -199,7 +229,7 @@ function Transcript({
 
   const t = strand === '+' ? 2 : -2;
   return (
-    <React.Fragment>
+    <>
       <line
         {...{
           x1,
@@ -221,7 +251,7 @@ function Transcript({
         className="transcript-hover"
         onClick={togglePopover}
       />
-      {exons.map(exon => (
+      {exons.map((exon) => (
         <Exon
           key={exon.ID}
           {...{
@@ -240,7 +270,7 @@ function Transcript({
         }}
         togglePopover={togglePopover}
       />
-    </React.Fragment>
+    </>
   );
 }
 
@@ -279,7 +309,7 @@ export default function Genemodel({ gene, resizable = true }) {
   const start = Math.max(0, gene.start - padding);
   const end = gene.end + padding;
 
-  const transcripts = gene.subfeatures.filter(subfeature => subfeature.type === 'mRNA');
+  const transcripts = gene.subfeatures.filter((subfeature) => subfeature.type === 'mRNA');
 
   const height = 14 * transcripts.length + 46;
 

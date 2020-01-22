@@ -14,7 +14,7 @@ import './genomes/addGenome.js';
 import './genomes/updateGenome.js';
 import './genomes/removeGenome.js';
 import './genomes/addAnnotationTrack.js';
-import './genomes/updateTrackPermissions.js';
+// import './genomes/updateTrackPermissions.js';
 import './genomes/removeAnnotationTrack.js';
 
 import './genes/interproscan.js';

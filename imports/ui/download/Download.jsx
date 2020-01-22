@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable react/forbid-prop-types */
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
@@ -28,7 +29,7 @@ function Waiting({ job }) {
   const percent = Math.round(job.progress.percent);
   return (
     <JobStatus>
-      <React.Fragment>
+      <>
         <h2 className="text-center"> Searching files...</h2>
         <div className="progress">
           <div className="progress">
@@ -42,7 +43,7 @@ function Waiting({ job }) {
             />
           </div>
         </div>
-      </React.Fragment>
+      </>
     </JobStatus>
   );
 }
@@ -55,7 +56,7 @@ function Running({ job }) {
   const percent = Math.round(job.progress.percent);
   return (
     <JobStatus>
-      <React.Fragment>
+      <>
         <h2 className="text-center"> Compressing files...</h2>
         <div className="progress">
           <div className="progress">
@@ -69,7 +70,7 @@ function Running({ job }) {
             />
           </div>
         </div>
-      </React.Fragment>
+      </>
     </JobStatus>
   );
 }

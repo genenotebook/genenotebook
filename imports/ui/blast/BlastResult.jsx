@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable react/forbid-prop-types, jsx-a11y/label-has-associated-control,
  jsx-a11y/label-has-for */
 import { Meteor } from 'meteor/meteor';
@@ -43,7 +44,7 @@ JobStatus.propTypes = {
 function Loading() {
   return (
     <JobStatus>
-      <React.Fragment>
+      <>
         <h2 className="text-center"> Loading job info...</h2>
         <div className="progress">
           <div className="progress">
@@ -57,7 +58,7 @@ function Loading() {
             />
           </div>
         </div>
-      </React.Fragment>
+      </>
     </JobStatus>
   );
 }
@@ -65,7 +66,7 @@ function Loading() {
 function Waiting({ jobId }) {
   return (
     <JobStatus>
-      <React.Fragment>
+      <>
         <h2 className="text-center">
           Waiting for job&nbsp;
           {jobId}
@@ -89,7 +90,7 @@ function Waiting({ jobId }) {
             />
           </div>
         </h2>
-      </React.Fragment>
+      </>
     </JobStatus>
   );
 }
@@ -101,7 +102,7 @@ Waiting.propTypes = {
 function Running({ jobId }) {
   return (
     <JobStatus>
-      <React.Fragment>
+      <>
         <h2 className="text-center">
           Job&nbsp;
           {jobId}
@@ -133,7 +134,7 @@ function Running({ jobId }) {
             />
           </div>
         </h2>
-      </React.Fragment>
+      </>
     </JobStatus>
   );
 }
@@ -161,10 +162,10 @@ NotFound.propTypes = {
 function NoHits({ job }) {
   return (
     <JobStatus>
-      <React.Fragment>
+      <>
         <h2 className="text-center"> No BLAST hits found</h2>
         <BlastJobInfo job={job} />
-      </React.Fragment>
+      </>
     </JobStatus>
   );
 }

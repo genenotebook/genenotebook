@@ -15,29 +15,29 @@ import logger from '/imports/api/util/logger.js';
 const removeBlastDb = new ValidatedMethod({
   name: 'removeBlastDb',
   validate: new SimpleSchema({
-    genomeId: { type: String }
+    genomeId: { type: String },
   }).validator(),
   applyOptions: {
-    noRetry: true
+    noRetry: true,
   },
-  run({ genomeId}){
-    if (! this.userId) {
+  run({ genomeId }) {
+    if (!this.userId) {
       throw new Meteor.Error('not-authorized');
     }
-    if (! Roles.userIsInRole(this.userId,'admin')){
+    if (!Roles.userIsInRole(this.userId, 'admin')) {
       throw new Meteor.Error('not-authorized');
     }
 
-    logger.log(`Remove ${genomeId} blastDb`)
+    logger.log(`Remove ${genomeId} blastDb`);
 
     return genomeCollection.update({
-      _id: genomeId
+      _id: genomeId,
     }, {
       $unset: {
-        'annotationTrack.blastDb': true
-      }
-    })
-  }
-})
+        'annotationTrack.blastDb': true,
+      },
+    });
+  },
+});
 
 export default removeBlastDb;

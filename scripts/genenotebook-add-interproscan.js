@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-'use strict';
+/* eslint-disable no-underscore-dangle */
 
 const program = require('commander');
-const fs = require('fs');
+// const fs = require('fs');
 const asteroid = require('asteroid');
 const path = require('path');
 const WebSocket = require('ws');
@@ -15,8 +15,8 @@ program
   .option('-u, --username <username>', 'GeneNoteBook admin username')
   .option('-p, --password <password>', 'GeneNoteBook admin password')
   .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
-  .action(file => {
-    if ( typeof file !== 'string' ) program.help();
+  .action((file) => {
+    if (typeof file !== 'string') program.help();
     fileName = path.resolve(file);
   });
 
@@ -25,27 +25,29 @@ program.parse(process.argv);
 
 const { username, password, port = 3000 } = program;
 
-if (!( fileName && username && password  )){
-  program.help()
+if (!(fileName && username && password)) {
+  program.help();
 }
 
-const endpoint = `ws://localhost:${port}/websocket`
+const endpoint = `ws://localhost:${port}/websocket`;
 const SocketConstructor = WebSocket;
 
-const Connection = asteroid.createClass()
+const Connection = asteroid.createClass();
 
-const geneNoteBook = new Connection({ endpoint, SocketConstructor })
+const geneNoteBook = new Connection({ endpoint, SocketConstructor });
 
 geneNoteBook.loginWithPassword({ username, password })
-.then(loginResult => {
-  return geneNoteBook.call('addInterproscan', { fileName })
-})
-.then(addInterproscanResult => {
-  const { result: { ok, writeErrors, writeConcernErrors, nInserted }} =  addInterproscanResult;
-  console.log(`Succesfully added ${nInserted} protein domains`);
-  geneNoteBook.disconnect()
-})
-.catch(error => {
-  console.log(error)
-  geneNoteBook.disconnect()
-})
+  .then((loginResult) => geneNoteBook.call('addInterproscan', { fileName }))
+  .then((addInterproscanResult) => {
+    const {
+      result: {
+        ok, writeErrors, writeConcernErrors, nInserted,
+      },
+    } = addInterproscanResult;
+    console.log(`Succesfully added ${nInserted} protein domains`);
+    geneNoteBook.disconnect();
+  })
+  .catch((error) => {
+    console.log(error);
+    geneNoteBook.disconnect();
+  });

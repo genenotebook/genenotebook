@@ -33,7 +33,7 @@ const QUERY_TYPES = [
   'Does not equal',
   'Contains',
   'Does not contain',
-].map(query => new SelectionOption(query));
+].map((query) => new SelectionOption(query));
 
 /**
  * [description]
@@ -276,7 +276,7 @@ function GeneTableHeader({
   ...props
 }) {
   const selectedAttributes = attributes
-    .filter(attribute => selectedColumns.has(attribute.name))
+    .filter((attribute) => selectedColumns.has(attribute.name))
     .sort((a, b) => {
       if (a.name === 'Gene ID') return -1;
       if (b.name === 'Gene ID') return 1;
@@ -287,7 +287,7 @@ function GeneTableHeader({
   return (
     <thead>
       <tr>
-        {selectedAttributes.map(attribute => (
+        {selectedAttributes.map((attribute) => (
           <HeaderElement
             key={attribute.name}
             label={attribute.name}

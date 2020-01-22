@@ -7,17 +7,17 @@ import ExpressionPlot from './ExpressionPlot.jsx';
 
 function GeneExpression({ gene, showHeader, ...props }) {
   return (
-    <React.Fragment>
+    <>
       {showHeader && (
-        <React.Fragment>
+        <>
           <hr />
           <h3>Gene Expression</h3>
-        </React.Fragment>
+        </>
       )}
       <SampleSelection gene={gene} {...props}>
         <ExpressionPlot {...props} />
       </SampleSelection>
-    </React.Fragment>
+    </>
   );
 }
 

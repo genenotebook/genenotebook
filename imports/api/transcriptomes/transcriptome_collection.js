@@ -24,12 +24,9 @@ const ExperimentInfoSchema = new SimpleSchema({
     type: Boolean,
     label: 'Public experiment',
   },
-  permissions: {
-    type: Array,
-    label: 'User groups that can access this experiment',
-  },
-  'permissions.$': {
+  permission: {
     type: String,
+    label: 'Permission level for this experiment',
   },
 });
 

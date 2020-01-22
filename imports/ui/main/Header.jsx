@@ -13,7 +13,8 @@ import PageloadPopup from './PageloadPopup.jsx';
 import './header.scss';
 
 function adminTracker() {
-  const isAdmin = Roles.userIsInRole(Meteor.userId(), 'admin');
+  const userId = Meteor.userId();
+  const isAdmin = Roles.userIsInRole(userId, 'admin');
   return {
     isAdmin,
   };
@@ -40,14 +41,14 @@ function LoggedInButton({ isAdmin }) {
           &nbsp;Favourites
         </button>
         <div className="dropdown-divider" />
-        {isAdmin && (
-          <React.Fragment>
+        { isAdmin && (
+          <>
             <Link to="/admin" className="dropdown-item featuremenu-item">
               <span className="icon-cog" />
               &nbsp;Admin settings
             </Link>
             <div className="dropdown-divider" />
-          </React.Fragment>
+          </>
         )}
         <button
           type="button"
@@ -129,10 +130,10 @@ function NavBar() {
   );
 }
 
-function Header() {
+export default function Header() {
   const [showPageloadPopup, togglePageloadPopup] = useState(false);
   return (
-    <React.Fragment>
+    <>
       <header className="navigation border" role="banner">
         <NavBar />
       </header>
@@ -143,8 +144,6 @@ function Header() {
           }}
         />
       )}
-    </React.Fragment>
+    </>
   );
 }
-
-export default Header;

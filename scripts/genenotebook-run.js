@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-/* eslint-disable no-underscore-dangle */
+/* eslint-disable no-underscore-dangle, global-require */
 
-const program = require('commander');
+const { Tail } = require('tail');
+const command = require('commander');
 const { spawn, exec } = require('child_process');
 const path = require('path');
 
@@ -13,7 +14,19 @@ function error(msg) {
   console.error(`## ERROR: ${new Date().toISOString()} ${msg}`);
 }
 
-function startMongoDaemon(dbPath) {
+function checkMongoLog(logPath) {
+  const tail = new Tail(logPath);
+  tail.on('line', function(line) {
+    const parts = line.split(' ');
+    const status = parts[1];
+    if (status === 'E') {
+      error(`MongoDB error: ${parts.slice(2).join(' ')}`);
+      process.exit(1);
+    }
+  });
+}
+
+function startMongoDaemon(dbPath, mongoPort) {
   const dataFolderPath = `${dbPath}/data`;
   const logFolderPath = `${dbPath}/log`;
   exec(`mkdir -p ${dataFolderPath} ${logFolderPath}`);
@@ -21,24 +34,33 @@ function startMongoDaemon(dbPath) {
 
   log(`Using DB path: ${dbPath}`);
   log(`MongoDB data files are in ${dataFolderPath}`);
-  log(`MongoDB logs are is in ${logFolderPath}`);
+  log(`MongoDB logs are in ${logFolderPath}`);
   log('Starting MongoDB daemon');
-  const MONGO_URL = 'mongodb://localhost:27017/genenotebook';
+  const MONGO_URL = `mongodb://localhost:${mongoPort}/genenotebook`;
   const mongoDaemon = spawn('mongod', [
     '--port',
-    '27017',
+    mongoPort,
     '--dbpath',
     dataFolderPath,
     '--logpath',
     logPath,
   ]);
 
-  mongoDaemon.on('error', (err) => {
+  mongoDaemon.on('error', function(err) {
     error(err);
   });
 
-  mongoDaemon.stderr.on('data', (data) => {
-    error(data.toString('utf8'));
+  mongoDaemon.stderr.on('data', function(chunk) {
+    error(chunk.toString('utf8'));
+  });
+
+  mongoDaemon.stdout.on('data', function(chunk) {
+    const msg = chunk.toString('utf8')
+      .split(' ')
+      .slice(5)
+      .join(' ');
+    log(`MongoDB message: ${msg}`);
+    checkMongoLog(logPath);
   });
 
   const connection = {
@@ -46,59 +68,62 @@ function startMongoDaemon(dbPath) {
     MONGO_URL,
   };
 
-  return connection;
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(connection);
+    }, 10000);
+  });
 }
 
-function startGeneNoteBook(opts) {
-  return () => {
-    Object.assign(process.env, opts);
-    require('./main.js');
-  };
+async function startGeneNoteBook(cmd) {
+  const PORT = parseInt(cmd.port, 0) || 3000;
+  const ROOT_URL = cmd.rootUrl || `http://localhost:${PORT}`;
+  const opts = { PORT, ROOT_URL };
+
+  if (cmd.mongoUrl) {
+    if (cmd.dbPath) {
+      throw new Error('--db-path and --mongo-url are mutually exclusive');
+    }
+    Object.assign(opts, { MONGO_URL: cmd.mongoUrl });
+  } else {
+    const dbPath = cmd.dbPath || './db';
+    const mongoPort = cmd.mongoPort || 27017;
+    const { MONGO_URL, mongoDaemon } = await startMongoDaemon(
+      path.resolve(dbPath),
+      mongoPort,
+    );
+    Object.assign(opts, { MONGO_URL });
+    process.on('exit', function() {
+      log('Shutting down mongo daemon');
+      mongoDaemon.kill();
+    });
+  }
+  Object.assign(process.env, opts);
+  require('./main.js');
 }
 
-program
+command
   .description('Run a GeneNoteBook server')
   .usage('[options]')
   .option('--port [port]', 'Web server port on which to serve GeneNoteBook. Default: 3000')
   .option(
     '-m, --mongo-url [url]',
-    'URL of running MongoDB daemon. (Mutually exclusive with --dbpath)',
+    'URL of running MongoDB daemon and database name, for example mongodb://localhost:27017/genenotebook (Mutually exclusive with --dbpath)',
   )
   .option(
     '-d, --db-path [path]',
-    'Folder where DB files will be stored. Default: ./data/db.'
+    'Folder where DB files will be stored. Default: ./db.'
       + ' (Mutually exclusive with --mongo-url)',
   )
   .option(
-    '-r, --root-url [url]',
-    'Root URL on which GeneNoteBook will be accessed. ' + 'Default: http://localhost',
+    '--mongo-port [port]', 'Port on which the mongo daemon will serve. Default: 27017',
   )
   .option(
-    '-n, --node-options [option string]',
-    'Runtime settings for NodeJS formatted as double-quoted string. '
-      + 'Default: "--max-old-space-size=8192"',
+    '-r, --root-url [url]',
+    'Root URL on which GeneNoteBook will be accessed. Default: http://localhost',
   );
 
-program._name = 'genenotebook run';
-program.parse(process.argv);
+command._name = 'genenotebook run';
+command.parse(process.argv);
 
-const opts = {};
-
-const PORT = parseInt(program.port, 0) || 3000;
-const ROOT_URL = program.rootUrl || `http://localhost:${PORT}`;
-const NODE_OPTIONS = program.nodeOptions || '--max-old-space-size=8192';
-
-Object.assign(opts, { PORT, ROOT_URL, NODE_OPTIONS });
-
-if (program.mongoUrl) {
-  if (program.dbPath) {
-    throw new Error('--db-path and --mongo-url are mutually exclusive');
-  }
-  Object.assign(opts, { MONGO_URL: program.mongoUrl });
-} else {
-  const dbPath = program.dbPath || './db';
-  const connection = startMongoDaemon(path.resolve(dbPath));
-  Object.assign(opts, connection);
-}
-
-setTimeout(startGeneNoteBook(opts), 100);
+startGeneNoteBook(command);

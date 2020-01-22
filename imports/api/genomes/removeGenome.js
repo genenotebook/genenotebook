@@ -8,21 +8,21 @@ import { genomeCollection, genomeSequenceCollection } from './genomeCollection.j
 import { Genes } from '/imports/api/genes/gene_collection.js';
 import logger from '/imports/api/util/logger.js';
 
-import { removeAnnotationTrack } from './removeAnnotationTrack.js';
+// import { removeAnnotationTrack } from './removeAnnotationTrack.js';
 
-export const removeGenome = new ValidatedMethod({
+const removeGenome = new ValidatedMethod({
   name: 'removeGenome',
   validate: new SimpleSchema({
-    genomeId: { type: String }
+    genomeId: { type: String },
   }).validator(),
   applyOptions: {
-    noRetry: true
+    noRetry: true,
   },
-  run({ genomeId }){
-    if (! this.userId) {
+  run({ genomeId }) {
+    if (!this.userId) {
       throw new Meteor.Error('not-authorized');
     }
-    if (! Roles.userIsInRole(this.userId, 'admin')){
+    if (!Roles.userIsInRole(this.userId, 'admin')) {
       throw new Meteor.Error('not-authorized');
     }
 
@@ -36,5 +36,7 @@ export const removeGenome = new ValidatedMethod({
     genomeCollection.remove({ _id: genomeId });
     genomeSequenceCollection.remove({ genomeId });
     Genes.remove({ genomeId });
-  }
-})
+  },
+});
+
+export default removeGenome;

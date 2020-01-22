@@ -5,7 +5,7 @@ import ColumnSelect from './ColumnSelect.jsx';
 
 import './filteroptions.scss';
 
-function FilterOptions({
+export default function FilterOptions({
   attributes,
   selectedColumns,
   toggleColumnSelect,
@@ -36,5 +36,3 @@ function FilterOptions({
     </div>
   );
 }
-
-export default FilterOptions;

@@ -13,42 +13,42 @@ import logger from '/imports/api/util/logger.js';
  * @param  {String} options.dbType    Either nucl or prot
  * @return {String}                   jobId of the makeblastdb job
  */
-export const updateSampleInfo = new ValidatedMethod({
+const updateSampleInfo = new ValidatedMethod({
   name: 'updateSampleInfo',
   validate: new SimpleSchema({
-    _id: { type: String },
-    sampleName: { type: String },
-    replicaGroup: { type: String },
-    description: { type: String },
-    permissions: { type: Array },
-    'permissions.$': { type: String }
+    _id: String,
+    sampleName: String,
+    replicaGroup: String,
+    description: String,
+    permission: String,
   }).validator(),
   applyOptions: {
-    noRetry: true
+    noRetry: true,
   },
-  run({ _id, sampleName, replicaGroup, description, permissions }){
-    if (! this.userId) {
+  run({
+    _id, sampleName, replicaGroup, description, permission,
+  }) {
+    if (!this.userId) {
       throw new Meteor.Error('not-authorized');
     }
-    if (! Roles.userIsInRole(this.userId,'admin')){
+    if (!Roles.userIsInRole(this.userId, 'admin')) {
       throw new Meteor.Error('not-authorized');
     }
 
-    if (permissions.length === 0){
-      permissions.push('admin')
-    }
 
     logger.debug({
-      _id,sampleName,replicaGroup,description,permissions
-    })
+      _id, sampleName, replicaGroup, description, permission,
+    });
 
-    return ExperimentInfo.update({ _id },{
+    return ExperimentInfo.update({ _id }, {
       $set: {
         sampleName,
         replicaGroup,
         description,
-        permissions
-      }
-    })
-  }
-})
+        permission,
+      },
+    });
+  },
+});
+
+export default updateSampleInfo;

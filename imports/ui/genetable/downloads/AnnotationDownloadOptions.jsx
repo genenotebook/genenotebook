@@ -10,20 +10,14 @@ const dataTracker = ({ ...props }) => {
   const loading = !attributeSub.ready();
   const attributes = attributeCollection.find({}).fetch();
   return {
-    loading, attributes, ...props
-  }
-}
+    loading, attributes, ...props,
+  };
+};
 
-class AnnotationDownloadOptions extends React.Component {
-  constructor(props){
-    super(props)
-  }
-
-  render(){
-    return (
-      <div></div>
-    )
-  }
+function AnnotationDownloadOptions() {
+  return (
+    <div />
+  );
 }
 
 export default withTracker(dataTracker)(AnnotationDownloadOptions);

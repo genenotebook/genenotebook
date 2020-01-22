@@ -4,7 +4,8 @@ import ContainerDimensions from 'react-container-dimensions';
 import { scaleLinear, interpolateGreys } from 'd3'; // -scale';
 // import { interpolateGreys } from 'd3-scale-chromatic';
 
-const PopoverHover = props => (
+/*
+const PopoverHover = (props) => (
   <Popover id="blast-plot-popover" title={props.geneID}>
     <p>
       <small>
@@ -27,19 +28,20 @@ const PopoverHover = props => (
     </p>
   </Popover>
 );
+*/
 
-const XAxis = (props) => {
-  const range = props.scale.range();
+function XAxis({ scale, numTicks, ...props }) {
+  const range = scale.range();
   const width = range[1];
 
-  const domain = props.scale.domain();
+  const domain = scale.domain();
   const queryLength = domain[1];
 
-  const stepSize = Math.round(queryLength / props.numTicks);
+  const stepSize = Math.round(queryLength / numTicks);
 
   const ticks = [];
 
-  for (let i = 1; i < props.numTicks; i++) {
+  for (let i = 1; i < numTicks; i++) {
     ticks.push(i * stepSize);
   }
 
@@ -53,7 +55,7 @@ const XAxis = (props) => {
         </text>
       </g>
       {ticks.map((tick) => {
-        const pos = props.scale(tick);
+        const pos = scale(tick);
         return (
           <g key={tick}>
             <line x1={pos} x2={pos} y1="0" y2="5" stroke="black" />
@@ -71,60 +73,64 @@ const XAxis = (props) => {
       </g>
     </g>
   );
-};
+}
 
-const HitPlotLine = (props) => {
-  const hsps = props.hit.Hit_hsps;
-  const geneID = props.hit.Hit_def[0].split(' ')[1];
+function HitPlotLine({
+  hit, index, height, xScale, maxBitScore, ...props
+}) {
+  const hsps = hit.Hit_hsps;
+  // const geneID = hit.Hit_def[0].split(' ')[1];
   return (
-    <g transform={`translate(0,${props.index * props.height})`}>
-      {hsps.map((_hsp, index) => {
+    <g transform={`translate(0,${index * height})`}>
+      {hsps.map((_hsp, hsp_index) => {
         const hsp = _hsp.Hsp[0];
         const x = hsp['Hsp_query-from'];
         const width = hsp['Hsp_query-to'] - x;
         const bitScore = hsp['Hsp_bit-score'];
-        const alignmentLength = hsp['Hsp_align-len'];
-        const gaps = hsp.Hsp_gaps;
-        const evalue = hsp.Hsp_evalue;
+        // const alignmentLength = hsp['Hsp_align-len'];
+        // const gaps = hsp.Hsp_gaps;
+        // const evalue = hsp.Hsp_evalue;
         return (
           <rect
-            key={index}
-            x={props.xScale(x)}
+            key={hsp_index}
+            x={xScale(x)}
             y="0"
-            width={props.xScale(width)}
-            height={props.height / 2}
+            width={xScale(width)}
+            height={height / 2}
             style={{
-              fill: interpolateGreys(bitScore / props.maxBitScore),
+              fill: interpolateGreys(bitScore / maxBitScore),
             }}
           />
         );
       })}
     </g>
   );
-};
+}
 
-const HitPlot = (props) => {
+function HitPlot({
+  width, queryLength, hits, ...props
+}) {
   const padding = {
     top: 10,
     bottom: 10,
     left: 20,
     right: 20,
   };
-  const width = props.width - padding.left - padding.right;
+  const paddedWidth = width - padding.left - padding.right;
   const xScale = scaleLinear()
-    .domain([0, props.queryLength])
-    .range([0, width]);
-  const maxBitScore = props.hits[0].Hit_hsps[0].Hsp[0]['Hsp_bit-score'][0];
+    .domain([0, queryLength])
+    .range([0, paddedWidth]);
+  const maxBitScore = hits[0].Hit_hsps[0].Hsp[0]['Hsp_bit-score'][0];
   const lineHeight = 12;
 
-  const height = lineHeight * props.hits.length + padding.top + padding.bottom + 30;
+  const height = lineHeight * hits.length + padding.top + padding.bottom + 30;
 
   return (
-    <svg width={props.width} height={height}>
+    <svg width={width} height={height}>
       <g className="blast-hit-plot" transform={`translate(${padding.left},${padding.top})`}>
         <XAxis scale={xScale} numTicks={10} />
         <g className="hits" transform="translate(0,30)">
-          {props.hits.map((hit, index) => (
+          {hits.map((hit, index) => (
             <HitPlotLine
               key={index}
               hit={hit}
@@ -138,7 +144,7 @@ const HitPlot = (props) => {
       </g>
     </svg>
   );
-};
+}
 
 export default function BlastResultPlot({ job }) {
   const { result, data } = job;

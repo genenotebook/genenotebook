@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
 
-import BlastAlignment from './BlastAlignment.jsx';
+// import BlastAlignment from './BlastAlignment.jsx';
 
 function blastHitDataTracker({ hit, RenderComponent }) {
   const [geneId, transcriptId] = hit.Hit_def[0].split(' ');
@@ -81,7 +81,7 @@ export default function BlastResultList({ blastResult, RenderComponent }) {
   const hits = BlastOutput_iterations[0].Iteration[0].Iteration_hits[0].Hit;
   return (
     <ul className="list-group list-group-flush">
-      {hits.map(hit => (
+      {hits.map((hit) => (
         <li className="list-group-item" key={hit.Hit_id[0]}>
           <HitLineWithTracker hit={hit} RenderComponent={RenderComponent} />
         </li>
