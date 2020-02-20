@@ -73,7 +73,7 @@
     "meteor-babel-helpers": "0.0.3",
     "meteor-job": "^1.5.2",
     "meteor-later": "^1.2.0",
-    "meteor-node-stubs": "^0.4.1",
+    "meteor-node-stubs": "^1.0.0",
     "object-hash": "^2.0.1",
     "papaparse": "^5.1.1",
     "pkginfo": "^0.4.1",
