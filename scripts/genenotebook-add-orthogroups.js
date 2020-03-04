@@ -39,19 +39,12 @@ geneNoteBook.loginWithPassword({ username, password })
   .then((loginResult) => geneNoteBook
     .call('addOrthogroupTrees', { folderName }))
   .then((result) => {
-    console.log({ result });
+    // console.log({ result });
     const { nGenes, nOrthogroups } = result;
-    /*
-    const {
-      result: {
-        ok, writeErrors, writeConcernErrors, nInserted,
-      },
-    } = addOrthogroupResult;
-    */
     console.log(`Succesfully added ${nOrthogroups} orthogroup phylogenetic trees containing ${nGenes} genes in the database`);
     geneNoteBook.disconnect();
   })
   .catch(({ error }) => {
-    console.error(error);
+    console.error(`Error: ${error}`);
     geneNoteBook.disconnect();
   });

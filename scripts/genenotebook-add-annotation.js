@@ -56,7 +56,7 @@ geneNoteBook
     console.log(`Succesfully added ${nInserted} genes`);
     geneNoteBook.disconnect();
   })
-  .catch((error) => {
-    console.log(error);
+  .catch(({ error }) => {
+    console.error(`Error: ${error}`);
     geneNoteBook.disconnect();
   });

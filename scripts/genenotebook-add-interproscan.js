@@ -2,7 +2,6 @@
 /* eslint-disable no-underscore-dangle */
 
 const program = require('commander');
-// const fs = require('fs');
 const asteroid = require('asteroid');
 const path = require('path');
 const WebSocket = require('ws');
@@ -47,7 +46,7 @@ geneNoteBook.loginWithPassword({ username, password })
     console.log(`Succesfully added ${nInserted} protein domains`);
     geneNoteBook.disconnect();
   })
-  .catch((error) => {
-    console.log(error);
+  .catch(({ error }) => {
+    console.error(`Error: ${error}`);
     geneNoteBook.disconnect();
   });
