@@ -2,7 +2,6 @@
 /* eslint-disable no-underscore-dangle */
 
 const program = require('commander');
-// const fs = require('fs');
 const asteroid = require('asteroid');
 const path = require('path');
 const WebSocket = require('ws');
@@ -37,17 +36,22 @@ const Connection = asteroid.createClass();
 const geneNoteBook = new Connection({ endpoint, SocketConstructor });
 
 geneNoteBook.loginWithPassword({ username, password })
-  .then((loginResult) => geneNoteBook.call('addOrthogroupTrees', { folderName }))
-  .then((addOrthogroupResult) => {
+  .then((loginResult) => geneNoteBook
+    .call('addOrthogroupTrees', { folderName }))
+  .then((result) => {
+    console.log({ result });
+    const { nGenes, nOrthogroups } = result;
+    /*
     const {
       result: {
         ok, writeErrors, writeConcernErrors, nInserted,
       },
     } = addOrthogroupResult;
-    console.log(`Succesfully added ${nInserted} orthogroup phylogenetic trees from ${folderName}`);
+    */
+    console.log(`Succesfully added ${nOrthogroups} orthogroup phylogenetic trees containing ${nGenes} genes in the database`);
     geneNoteBook.disconnect();
   })
-  .catch((error) => {
-    console.log(error);
+  .catch(({ error }) => {
+    console.error(error);
     geneNoteBook.disconnect();
   });
