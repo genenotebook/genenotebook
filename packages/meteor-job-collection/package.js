@@ -12,9 +12,9 @@ Package.describe({
   git: 'https://github.com/vsivsi/meteor-job-collection.git',
 });
 
-//Npm.depends({
+// Npm.depends({
 //  'meteor-job': '1.5.2',
-//});
+// });
 
 Package.onUse(function(api) {
   api.versionsFrom('1.6.1');
