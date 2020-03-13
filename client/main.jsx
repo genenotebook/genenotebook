@@ -9,6 +9,7 @@ import '/imports/startup/client/download-routes.js';
 import App from '/imports/ui/main/App.jsx';
 
 import '/imports/ui/global_stylesheets/global.scss';
+import '/node_modules/bulma/css/bulma.css';
 
 WebFont.load({
   google: {

@@ -124,10 +124,73 @@ function SearchBar({
 
   return (
     <form
-      className="form-inline search mx-auto"
+      className="navbar-item is-pulled-right"
       role="search"
       onSubmit={submit}
     >
+      <div className="field has-addons">
+        <div className="control has-dropdown">
+          <div className="dropdown is-hoverable">
+            <div className="dropdown-trigger">
+              <button type="button" className="button is-small has-dropdown navbar-link" aria-haspopup="true" aria-controls="dropdown-menu-search" />
+            </div>
+            <div className="dropdown-menu" id="dropdown-menu-search" role="menu">
+              <div className="dropdown-content">
+                <h6 className="is-h6 dropdown-item">Select attributes to search</h6>
+                {attributes.map(({ name }) => {
+                  const checked = selectedAttributes.has(name);
+                  return (
+                    <div className="dropdown-item" id={name} key={name}>
+                      <label className="checkbox">
+                        <input
+                          type="checkbox"
+                          defaultChecked={checked}
+                          onChange={toggleAttributeSelect}
+                          className="dropdown-checkbox is-small"
+                        />
+                        { name }
+                      </label>
+                    </div>
+                  );
+                /* return (
+                  <div
+                    key={`${name} ${checked}`}
+                    className="form-check px-3 pb-1"
+                    style={{ justifyContent: 'flex-start', whiteSpace: 'pre' }}
+                  >
+                    <input
+                      type="checkbox"
+                      className="input is-small"
+                      id={name}
+                      checked={checked}
+                      onChange={toggleAttributeSelect}
+                    />
+                    <label className="form-check-label">{name}</label>
+                  </div>
+                ); */
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="control">
+          <input
+            type="text"
+            className="input is-small"
+            placeholder="Search genes"
+            value={searchString}
+            onChange={(event) => setSearchString(event.target.value)}
+            onSubmit={submit}
+            ref={inputRef}
+          />
+        </div>
+        <div className="control">
+          <button type="submit" className="button is-small">
+            <span className="icon-search" />
+          </button>
+        </div>
+      </div>
+      {/*
       <div className="input-group input-group-sm">
         <div className="input-group-prepend">
           <Dropdown>
@@ -144,7 +207,7 @@ function SearchBar({
                   >
                     <input
                       type="checkbox"
-                      className="form-check-input"
+                      className="input is-small"
                       id={name}
                       checked={checked}
                       onChange={toggleAttributeSelect}
@@ -182,6 +245,7 @@ function SearchBar({
           </button>
         </div>
       </div>
+        */}
     </form>
   );
 }

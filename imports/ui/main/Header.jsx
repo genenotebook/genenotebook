@@ -22,6 +22,41 @@ function adminTracker() {
 
 function LoggedInButton({ isAdmin }) {
   return (
+    <div className="navbar-item has-dropdown is-hoverable">
+      <button type="button" className="button is-small navbar-link user-button">
+        <span className="icon-user" />
+      </button>
+      <div className="navbar-dropdown is-right">
+        <Link to="/profile" className="navbar-item">
+          <span className="icon-pencil" />
+            &nbsp;User profile
+        </Link>
+        <Link to="/#" className="navbar-item" disabled>
+          <span className="icon-clipboard" />
+            &nbsp;Favourites
+        </Link>
+        <hr className="navbar-divider" />
+        { isAdmin && (
+          <>
+            <Link to="/admin" className="navbar-item">
+              <span className="icon-cog" />
+                &nbsp;Admin settings
+            </Link>
+            <div className="dropdown-divider" />
+          </>
+        )}
+        <button
+          type="button"
+          className="button is-small is-fullwidth is-danger is-light"
+          id="signout"
+          onClick={Meteor.logout}
+        >
+          <span className="icon-logout" />
+            &nbsp;Sign out
+        </button>
+      </div>
+    </div>
+    /*
     <Dropdown>
       <DropdownButton className="btn btn-sm btn-outline-dark dropdown-toggle border">
         <span className="icon-user" aria-hidden="true" />
@@ -61,6 +96,7 @@ function LoggedInButton({ isAdmin }) {
         </button>
       </DropdownMenu>
     </Dropdown>
+        */
   );
 }
 
@@ -68,7 +104,7 @@ const LoggedInButtonWithTracker = withTracker(adminTracker)(LoggedInButton);
 
 function LoggedOutButton() {
   return (
-    <Link to="/login" className="btn btn-primary btn-sm" id="signin">
+    <Link to="/login" className="button user-button" id="signin">
       <span className="icon-login" aria-hidden="true" />
       &nbsp;Sign in
     </Link>
@@ -84,45 +120,44 @@ const UserButtons = withTracker(() => {
 
 function NavBar() {
   const [show, setShow] = useState(false);
+  const isActive = show ? 'is-active' : '';
   const urlPrefix = Meteor.absoluteUrl();
   return (
-    <nav className="navbar navbar-expand-md bg-light navbar-light py-0">
-      <div className="container">
-        <NavLink to="/" className="navbar-brand" activeClassName="active">
-          <small>
+    <nav className="navbar is-light" role="navigation">
+      <div className="navbar-brand">
+        <NavLink to="/" className="" activeClassName="active">
+          <figure className="image is-32x32">
             <img
+              id="navbar-brand-image"
               src={`${urlPrefix}logo.svg`}
-              alt="GeneNoteBook logo"
-              className="navbar-logo rounded-circle"
+              alt="GeneNoteBook"
+              className="is-rounded"
             />
-          </small>
+          </figure>
         </NavLink>
         <button
-          className="navbar-toggler"
+          className={`navbar-burger burger button ${isActive}`}
           type="button"
           onClick={() => {
-            setShow(false);
+            setShow(!show);
           }}
         >
-          <span className="navbar-toggler-icon" />
+          <span aria-hidden="true" />
+          <span aria-hidden="true" />
+          <span aria-hidden="true" />
         </button>
-        <div
-          className={`collapse navbar-collapse justify-content-between ${show ? 'show' : ''}`}
-          id="navbar"
-        >
-          <ul className="navbar-nav">
-            <li className="nav-item">
-              <NavLink to="/genes" className="nav-link" activeClassName="active">
-                Genes
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink to="/blast" className="nav-link" activeClassName="active">
-                Blast
-              </NavLink>
-            </li>
-          </ul>
+        <NavLink id="gene-link" to="/genes" className="navbar-item" activeClassName="active">
+          Genes
+        </NavLink>
+        <NavLink to="/blast" className="navbar-item" activeClassName="active">
+          Blast
+        </NavLink>
+      </div>
+      <div className={`navbar-menu ${isActive}`}>
+        <div className="navbar-start">
           <SearchBar />
+        </div>
+        <div className="navbar-end">
           <UserButtons />
         </div>
       </div>
@@ -134,7 +169,7 @@ export default function Header() {
   const [showPageloadPopup, togglePageloadPopup] = useState(false);
   return (
     <>
-      <header className="navigation border" role="banner">
+      <header role="banner">
         <NavBar />
       </header>
       {showPageloadPopup && (
