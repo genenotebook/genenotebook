@@ -47,7 +47,7 @@ function LoggedInButton({ isAdmin }) {
         )}
         <button
           type="button"
-          className="button is-small is-fullwidth is-danger is-light"
+          className="button is-fullwidth is-danger is-light"
           id="signout"
           onClick={Meteor.logout}
         >

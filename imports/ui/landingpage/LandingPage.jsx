@@ -106,17 +106,18 @@ const StatsWithDataTracker = withConditionalRendering(Stats);
 
 function LandingPage() {
   return (
-    <div className="container">
-      <div className="jumbotron my-2 pb-1 pt-4 bg-light border">
-        <h1 className="genenotebook-title"> GeneNoteBook </h1>
-        <h4 className="text-muted font-weight-light"> A collaborative notebook for genes and genomes </h4>
-        <hr />
-        <p className="lead font-weight-light">
+    <>
+      <section className="hero is-small is-light is-bold">
+        <div className="hero-body">
+          <h1 className="title"> GeneNoteBook </h1>
+          <h2 className="subtitle"> A collaborative notebook for genes and genomes </h2>
+          <div className="box">
+            <p className="lead font-weight-light">
           Through this site you can browse and query data for the following genomes:
-        </p>
-        <StatsWithDataTracker />
-        <hr />
-        {
+            </p>
+            <StatsWithDataTracker />
+          </div>
+          {
           !Meteor.userId()
           && (
           <div className="btn-group mx-auto pb-3" role="group">
@@ -135,60 +136,83 @@ function LandingPage() {
           </div>
           )
         }
-      </div>
-
-      <div className="card-deck">
-
-        <div className="card bg-light text-center mb-3">
-          <div className="card-body">
-            <span className="icon-clipboard" aria-hidden="true" style={{ fontSize: '3rem' }} />
-            <h3 className="card-title">
-              Gene Table
-            </h3>
-            <h6 className="card-subtitle text-muted mb-2">
-              Browse through a table of genes with customizable queries
-            </h6>
-            <Link to="/genes" className="btn btn-outline-dark btn-sm px-2 py-0 btn-block">
-              <span className="icon-list" aria-hidden="true" />
-              &nbsp;Browse
-            </Link>
-          </div>
         </div>
+      </section>
 
-        <div className="card bg-light text-center mb-3">
-          <div className="card-body">
-            <span className="icon-search" aria-hidden="true" style={{ fontSize: '3rem' }} />
-            <h3 className="card-title">
+      <section className="hero">
+        <div className="container">
+          <div className="columns">
+
+            <div className="column is-4">
+              <div className="card">
+                <div className="card-content">
+                  <div className="media">
+                    <div className="media-left">
+                      <figure className="is-48x48">
+                        <span className="icon-clipboard" aria-hidden="true" style={{ fontSize: '2.4rem' }} />
+                      </figure>
+                    </div>
+                    <div className="media-content">
+                      <p className="title is-4">
+                      Gene Table
+                      </p>
+                      <p className="subtitle is-6">
+                      Intuitive browsing
+                      </p>
+                    </div>
+                  </div>
+                  <div className="content">
+                  Browse through a table of genes with customizable queries
+                  </div>
+                  <div className="content">
+                    <Link to="/genes" className="button is-link is-light is-fullwidth">
+                      <span className="icon-list" aria-hidden="true" />
+                    &nbsp;Browse
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="column is-4">
+              <div className="card">
+                <div className="card-body">
+                  <span className="icon-search" aria-hidden="true" style={{ fontSize: '3rem' }} />
+                  <h3 className="card-title">
               Custom Search
-            </h3>
-            <h6 className="card-subtitle mb-2 text-muted">
+                  </h3>
+                  <h6 className="card-subtitle mb-2 text-muted">
               Search genes based on attributes like GO terms or protein domains
-            </h6>
-            <Link to={{ path: '/', state: { highLightSearch: true } }} className="btn btn-outline-dark btn-sm px-2 py-0 btn-block">
-              <span className="icon-search" aria-hidden="true" />
+                  </h6>
+                  <Link to={{ path: '/', state: { highLightSearch: true } }} className="btn btn-outline-dark btn-sm px-2 py-0 btn-block">
+                    <span className="icon-search" aria-hidden="true" />
               &nbsp;Search
-            </Link>
-          </div>
-        </div>
+                  </Link>
+                </div>
+              </div>
+            </div>
 
-        <div className="card bg-light text-center mb-3">
-          <div className="card-body">
-            <span className="icon-database" aria-hidden="true" style={{ fontSize: '3rem' }} />
-            <h3 className="card-title">
+            <div className="column is-4">
+              <div className="card">
+                <div className="card-body">
+                  <span className="icon-database" aria-hidden="true" style={{ fontSize: '3rem' }} />
+                  <h3 className="card-title">
               BLAST
-            </h3>
-            <h6 className="card-subtitle mb-2 text-muted">
+                  </h3>
+                  <h6 className="card-subtitle mb-2 text-muted">
               BLAST your protein or DNA sequence to genome annotations
-            </h6>
-            <Link to="/blast" className="btn btn-outline-dark btn-sm px-2 py-0 btn-block">
-              <span className="icon-database" aria-hidden="true" />
+                  </h6>
+                  <Link to="/blast" className="btn btn-outline-dark btn-sm px-2 py-0 btn-block">
+                    <span className="icon-database" aria-hidden="true" />
               &nbsp;Blast
-            </Link>
+                  </Link>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-
-      </div>
-    </div>
+      </section>
+    </>
   );
 }
 
