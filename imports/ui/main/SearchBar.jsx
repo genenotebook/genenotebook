@@ -5,6 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React, { useState, useEffect, useRef } from 'react';
+// import PropTypes from 'prop-types';
 import { Redirect, withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 import { cloneDeep } from 'lodash';
@@ -48,12 +49,6 @@ const attributeTracker = ({ location }) => {
     redirected,
   };
 };
-
-const withConditionalRendering = compose(
-  withRouter,
-  withTracker(attributeTracker),
-  withEither(isLoading, Loading),
-);
 
 function SearchBar({
   selectedAttributes: initialSelectedAttributes,
@@ -250,4 +245,8 @@ function SearchBar({
   );
 }
 
-export default withConditionalRendering(SearchBar);
+export default compose(
+  withRouter,
+  withTracker(attributeTracker),
+  withEither(isLoading, Loading),
+)(SearchBar);

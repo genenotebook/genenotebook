@@ -56,47 +56,6 @@ function LoggedInButton({ isAdmin }) {
         </button>
       </div>
     </div>
-    /*
-    <Dropdown>
-      <DropdownButton className="btn btn-sm btn-outline-dark dropdown-toggle border">
-        <span className="icon-user" aria-hidden="true" />
-      </DropdownButton>
-      <DropdownMenu className="dropdown-menu header-menu px-2">
-        <Link to="/profile" className="dropdown-item featuremenu-item">
-          <span className="icon-pencil" />
-          &nbsp;User profile
-        </Link>
-        <button
-          type="button"
-          role="menuitem"
-          className="dropdown-item featuremenu-item disabled text-muted"
-          disabled
-        >
-          <span className="icon-clipboard" />
-          &nbsp;Favourites
-        </button>
-        <div className="dropdown-divider" />
-        { isAdmin && (
-          <>
-            <Link to="/admin" className="dropdown-item featuremenu-item">
-              <span className="icon-cog" />
-              &nbsp;Admin settings
-            </Link>
-            <div className="dropdown-divider" />
-          </>
-        )}
-        <button
-          type="button"
-          className="btn btn-outline-danger btn-sm btn-block"
-          id="signout"
-          onClick={Meteor.logout}
-        >
-          <span className="icon-logout" />
-          &nbsp;Sign out
-        </button>
-      </DropdownMenu>
-    </Dropdown>
-        */
   );
 }
 
@@ -104,10 +63,12 @@ const LoggedInButtonWithTracker = withTracker(adminTracker)(LoggedInButton);
 
 function LoggedOutButton() {
   return (
-    <Link to="/login" className="button user-button" id="signin">
-      <span className="icon-login" aria-hidden="true" />
+    <div className="navbar-item">
+      <Link to="/login" className="button is-small is-link" id="signin">
+        <span className="icon-login" aria-hidden="true" />
       &nbsp;Sign in
-    </Link>
+      </Link>
+    </div>
   );
 }
 
@@ -123,9 +84,9 @@ function NavBar() {
   const isActive = show ? 'is-active' : '';
   const urlPrefix = Meteor.absoluteUrl();
   return (
-    <nav className="navbar is-light" role="navigation">
+    <nav className="navbar is-white" role="navigation">
       <div className="navbar-brand">
-        <NavLink to="/" className="" activeClassName="active">
+        <NavLink to="/" activeClassName="active">
           <figure className="image is-32x32">
             <img
               id="navbar-brand-image"

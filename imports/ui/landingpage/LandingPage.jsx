@@ -42,8 +42,7 @@ function Stats({ genomes = [] }) {
         genomes.map((genome) => (
           <li key={genome._id} className="list-group-item d-flex justify-content-between">
             <div className="d-inline-block ml-4">
-              { genome.name }
-              {' '}
+              { `${genome.name} ` }
               <span className="font-italic text-muted">
                 { genome.organism }
               </span>
@@ -84,14 +83,22 @@ function NoGenomes() {
   return (
     Meteor.userId()
       ? (
-        <div className="alert alert-dark" role="alert">
-          <p className="text-muted mb-0">Currently no genomes are available</p>
-        </div>
+        <article className="message is-info" role="alert">
+          <div className="message-body">
+            Currently no genomes are available
+          </div>
+        </article>
       )
       : (
-        <div className="alert alert-dark" role="alert">
-          <p className="text-muted mb-0">No public genomes are available. Sign in to access private data.</p>
-        </div>
+        <article className="message is-info" role="alert">
+          <div className="message-body">
+            No public genomes are available.&nbsp;
+            <Link to="/login">
+              Sign in
+            </Link>
+            &nbsp;to access private data.
+          </div>
+        </article>
       )
   );
 }
@@ -113,23 +120,23 @@ function LandingPage() {
           <h2 className="subtitle"> A collaborative notebook for genes and genomes </h2>
           <div className="box">
             <p className="lead font-weight-light">
-          Through this site you can browse and query data for the following genomes:
+              Through this site you can browse and query data for the following genomes:
             </p>
             <StatsWithDataTracker />
           </div>
           {
           !Meteor.userId()
           && (
-          <div className="btn-group mx-auto pb-3" role="group">
-            <Link to="/register" className="btn btn-sm btn-outline-success">
+          <div className="buttons are-small" role="group">
+            <Link to="/register" className="button is-success">
               <span className="icon-user-add" aria-hidden="true" />
               &nbsp;Create account
             </Link>
-            <Link to="/login" className="btn btn-sm btn-outline-primary">
+            <Link to="/login" className="button is-link">
               <span className="icon-login" aria-hidden="true" />
               &nbsp;Sign in
             </Link>
-            <a href="http://genenotebook.github.io/" className="btn btn-sm btn-outline-dark">
+            <a href="http://genenotebook.github.io/" className="button is-dark is-outlined">
               <span className="icon-github" aria-hidden="true" />
               &nbsp;About GeneNotebook
             </a>
@@ -139,33 +146,33 @@ function LandingPage() {
         </div>
       </section>
 
-      <section className="hero">
-        <div className="container">
+      <section className="hero is-link is-bold">
+        <div className="hero-body">
           <div className="columns">
 
             <div className="column is-4">
               <div className="card">
                 <div className="card-content">
                   <div className="media">
-                    <div className="media-left">
+                    <div className="media-left card">
                       <figure className="is-48x48">
-                        <span className="icon-clipboard" aria-hidden="true" style={{ fontSize: '2.4rem' }} />
+                        <span className="icon-clipboard has-text-primary" aria-hidden="true" style={{ fontSize: '2.4rem' }} />
                       </figure>
                     </div>
                     <div className="media-content">
-                      <p className="title is-4">
-                      Gene Table
+                      <p className="title is-4 has-text-dark">
+                        Gene Table
                       </p>
-                      <p className="subtitle is-6">
-                      Intuitive browsing
+                      <p className="subtitle is-6 has-text-dark">
+                        Intuitive browsing
                       </p>
                     </div>
                   </div>
                   <div className="content">
-                  Browse through a table of genes with customizable queries
+                    Browse through a table of genes with customizable queries
                   </div>
                   <div className="content">
-                    <Link to="/genes" className="button is-link is-light is-fullwidth">
+                    <Link to="/genes" className="button is-primary is-light is-fullwidth">
                       <span className="icon-list" aria-hidden="true" />
                     &nbsp;Browse
                     </Link>
@@ -176,36 +183,63 @@ function LandingPage() {
 
             <div className="column is-4">
               <div className="card">
-                <div className="card-body">
-                  <span className="icon-search" aria-hidden="true" style={{ fontSize: '3rem' }} />
-                  <h3 className="card-title">
-              Custom Search
-                  </h3>
-                  <h6 className="card-subtitle mb-2 text-muted">
-              Search genes based on attributes like GO terms or protein domains
-                  </h6>
-                  <Link to={{ path: '/', state: { highLightSearch: true } }} className="btn btn-outline-dark btn-sm px-2 py-0 btn-block">
-                    <span className="icon-search" aria-hidden="true" />
-              &nbsp;Search
-                  </Link>
+                <div className="card-content">
+                  <div className="media">
+                    <div className="media-left card">
+                      <figure className="is-48x48">
+                        <span className="icon-search has-text-warning" aria-hidden="true" style={{ fontSize: '2.4rem' }} />
+                      </figure>
+                    </div>
+                    <div className="media-content">
+                      <p className="title is-4 has-text-dark">
+                        Search
+                      </p>
+                      <p className="subtitle is-6 has-text-dark">
+                        Custom search options
+                      </p>
+                    </div>
+                  </div>
+                  <div className="content">
+                    Search genes by their attributes, such as GO-terms,
+                    protein domains or manual annotations.
+                  </div>
+                  <div className="content">
+                    <Link to={{ path: '/', state: { highLightSearch: true } }} className="button is-warning is-light is-fullwidth">
+                      <span className="icon-search" aria-hidden="true" />
+                &nbsp;Search
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
 
             <div className="column is-4">
               <div className="card">
-                <div className="card-body">
-                  <span className="icon-database" aria-hidden="true" style={{ fontSize: '3rem' }} />
-                  <h3 className="card-title">
-              BLAST
-                  </h3>
-                  <h6 className="card-subtitle mb-2 text-muted">
-              BLAST your protein or DNA sequence to genome annotations
-                  </h6>
-                  <Link to="/blast" className="btn btn-outline-dark btn-sm px-2 py-0 btn-block">
-                    <span className="icon-database" aria-hidden="true" />
+                <div className="card-content">
+                  <div className="media">
+                    <div className="media-left card">
+                      <figure className="is-48x48">
+                        <span className="icon-database has-text-link" aria-hidden="true" style={{ fontSize: '2.4rem' }} />
+                      </figure>
+                    </div>
+                    <div className="media-content">
+                      <p className="title is-4 has-text-dark">
+                        BLAST
+                      </p>
+                      <p className="subtitle is-6 has-text-dark">
+                        Search by sequence
+                      </p>
+                    </div>
+                  </div>
+                  <div className="content">
+                    BLAST your protein or DNA sequence to genome annotations.
+                  </div>
+                  <div className="content">
+                    <Link to="/blast" className="button is-light is-link is-fullwidth">
+                      <span className="icon-database" aria-hidden="true" />
               &nbsp;Blast
-                  </Link>
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
