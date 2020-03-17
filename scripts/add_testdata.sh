@@ -41,8 +41,8 @@ function addOrthogroups {
 
 addGenome &&\
 addAnnotation &&\
-#addInterproscan &&\
-#addTranscriptomes &&\
+addInterproscan &&\
+addTranscriptomes &&\
 addOrthogroups
 
 

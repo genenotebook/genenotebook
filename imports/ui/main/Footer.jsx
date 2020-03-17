@@ -13,15 +13,12 @@ export default function Footer() {
     setVersion(res);
   });
   return (
-    <footer className="footer is-light">
+    <footer className="footer is-light has-text-centered">
       <a
         href="https://genenotebook.github.io/"
         target="_blank"
         rel="noopener noreferrer"
-        style={{
-          color: '#A9A9A9',
-        }}
-        className="content columns is-centered is-vcentered"
+        className="content columns is-centered is-vcentered has-text-grey-light"
       >
         <div className="column is-narrow">
           <figure className="image is-32x32">
@@ -40,6 +37,7 @@ export default function Footer() {
           </span>
         </div>
       </a>
+      <p className="has-text-grey-light">© 2017-2020</p>
     </footer>
   );
 }
