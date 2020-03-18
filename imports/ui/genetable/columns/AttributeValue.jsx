@@ -10,10 +10,10 @@ function AttributeValueArray({
   const values = showAll ? attributeValue : attributeValue.slice(0, maxLength);
   const buttonText = showAll ? 'Show less' : 'Show more ...';
   return (
-    <ul className="list-group list-group-flush">
+    <ul>
       {
         values.map((value) => (
-          <li key={value} className="list-group-item py-0 px-0">
+          <li key={value}>
             { value }
           </li>
         ))
@@ -21,10 +21,10 @@ function AttributeValueArray({
       {
         attributeValue.length > maxLength
         && (
-        <li className="list-group-item py-0 px-0">
+        <li>
           <button
             type="button"
-            className="btn btn-link px-3"
+            className="is-link"
             onClick={toggleShowAll}
           >
             <small>{ buttonText }</small>
@@ -47,13 +47,13 @@ function SingleAttributeValue({
   const buttonText = showAll ? 'Show less' : 'Show more ...';
   return (
     <>
-      <p className="mb-1">{ value }</p>
+      <p>{ value }</p>
       {
         attrVal.length > maxLength
         && (
         <button
           type="button"
-          className="btn btn-link px-3 py-0"
+          className="is-link"
           onClick={toggleShowAll}
         >
           <small>{ buttonText }</small>
@@ -71,7 +71,7 @@ export default function AttributeValue({ attributeValue }) {
   }
 
   if (typeof attributeValue === 'undefined') {
-    return <p className="mb-1" />;
+    return <p />;
   }
 
   const AttributeValueComponent = isArray(attributeValue)

@@ -188,32 +188,32 @@ function GeneTableRow({
           return (
             <td key={attributeName} data-label={attributeName}>
               <AttributeColumn
-                {...{
-                  attributeName,
-                  attributeValue,
-                  geneId: gene.ID,
-                  genomeDataCache,
-                }}
+                attributeName={attributeName}
+                attributeValue={attributeValue}
+                geneId={gene.ID}
+                genomeDataCache={genomeDataCache}
               />
             </td>
           );
         })}
-      <td data-label={selectedVisualization} style={{ width: '20rem' }}>
+      <td data-label={selectedVisualization} style={{ width: '2rem' }}>
         <DataVisualization gene={gene} resizable height={100} />
       </td>
       <td>
         <button
           type="button"
-          className="btn btn-sm btn-outline-dark pull-right px-1 py-0"
+          className="button is-small"
           id={gene.ID}
           onClick={updateSelection.bind(this)}
         >
-          <span
-            id={gene.ID}
-            className="icon-check"
-            aria-hidden="true"
-            style={{ color }}
-          />
+          <span className="icon">
+            <span
+              id={gene.ID}
+              className="icon-check"
+              aria-hidden="true"
+              style={{ color }}
+            />
+          </span>
         </button>
       </td>
     </tr>
