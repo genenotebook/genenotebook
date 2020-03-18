@@ -12,10 +12,9 @@ import { cloneDeep } from 'lodash';
 
 import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 
-import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
+// import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
 import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
-import './searchBar.scss';
 
 const attributeTracker = ({ location }) => {
   const {
@@ -147,22 +146,6 @@ function SearchBar({
                       </label>
                     </div>
                   );
-                /* return (
-                  <div
-                    key={`${name} ${checked}`}
-                    className="form-check px-3 pb-1"
-                    style={{ justifyContent: 'flex-start', whiteSpace: 'pre' }}
-                  >
-                    <input
-                      type="checkbox"
-                      className="input is-small"
-                      id={name}
-                      checked={checked}
-                      onChange={toggleAttributeSelect}
-                    />
-                    <label className="form-check-label">{name}</label>
-                  </div>
-                ); */
                 })}
               </div>
             </div>

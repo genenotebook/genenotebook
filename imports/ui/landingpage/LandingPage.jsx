@@ -13,47 +13,54 @@ import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
 import './landingpage.scss';
 
-function GeneNumber({ _id: genomeId, isPublic }) {
+function GeneNumber({ _id: genomeId }) {
   const [geneNumber, setGeneNumber] = useState('...');
   getQueryCount.call({ query: { genomeId } }, (err, res) => {
     setGeneNumber(res);
   });
   return (
-    <div className="btn-group" role="group">
-      <button type="button" className="btn btn-sm btn-outline-dark px-2 py-0" disabled>
-        {
-        isPublic
-          ? <span className="badge badge-success">Public</span>
-          : <span className="badge badge-warning">Private</span>
-      }
-      </button>
-      <button type="button" className="btn btn-sm btn-outline-dark px-2 py-0" disabled>
-        <span className="badge badge-dark">{ geneNumber }</span>
-        &nbsp;genes
-      </button>
-    </div>
+    <p>{ geneNumber }</p>
   );
 }
 
 function Stats({ genomes = [] }) {
   return (
-    <ul className="list-group">
-      {
-        genomes.map((genome) => (
-          <li key={genome._id} className="list-group-item d-flex justify-content-between">
-            <div className="d-inline-block ml-4">
-              { `${genome.name} ` }
-              <span className="font-italic text-muted">
-                { genome.organism }
-              </span>
-            </div>
-            <div className="d-inline-block mr-4 pull-right">
-              <GeneNumber {...genome} />
-            </div>
-          </li>
-        ))
-      }
-    </ul>
+    <article className="message is-light genome-stats">
+      <div className="message-body">
+        <table className="table is-hoverable is-fullwidth has-background-white-bis">
+          <thead>
+            <tr>
+              <th className="has-text-weight-bold">Name</th>
+              <th className="has-text-weight-bold">Organism</th>
+              <th className="has-text-weight-bold has-text-centered">Status</th>
+              <th className="has-text-weight-bold has-text-right">&#8470; genes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+            genomes.map(({
+              _id, name, organism, isPublic,
+            }) => (
+              <tr key={_id} className="list-group-item d-flex justify-content-between">
+                <td>{name}</td>
+                <td>{ organism }</td>
+                <td className="has-text-centered">
+                  {
+                  isPublic
+                    ? <span className="tag is-success is-light">Public</span>
+                    : <span className="tag is-warning is-light">Private</span>
+                  }
+                </td>
+                <td className="has-text-right">
+                  <GeneNumber _id={_id} />
+                </td>
+              </tr>
+            ))
+          }
+          </tbody>
+        </table>
+      </div>
+    </article>
   );
 }
 
@@ -119,7 +126,7 @@ function LandingPage() {
           <h1 className="title"> GeneNoteBook </h1>
           <h2 className="subtitle"> A collaborative notebook for genes and genomes </h2>
           <div className="box">
-            <p className="lead font-weight-light">
+            <p className="font-weight-light">
               Through this site you can browse and query data for the following genomes:
             </p>
             <StatsWithDataTracker />

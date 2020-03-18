@@ -71,7 +71,9 @@ function searchTracker({
 
   const selectedAttributes = attributes
     .filter(
-      ({ defaultShow, defaultSearch, name }) => defaultShow || defaultSearch || new RegExp(name).test(searchAttributes),
+      ({ defaultShow, defaultSearch, name }) => defaultShow
+        || defaultSearch
+        || new RegExp(name).test(searchAttributes),
     )
     .map(({ name }) => name);
 
@@ -115,7 +117,13 @@ function hasNoBlastJob({ blastJob }) {
 
 function processBlastJob(Component) {
   return function({ searchQuery, blastJob, ...props }) {
-    const hits = blastJob.result.BlastOutput.BlastOutput_iterations[0].Iteration[0].Iteration_hits[0].Hit;
+    const hits = blastJob
+      .result
+      .BlastOutput
+      .BlastOutput_iterations[0]
+      .Iteration[0]
+      .Iteration_hits[0]
+      .Hit;
     const geneIds = hits.map((hit) => {
       const geneId = hit.Hit_def[0].split(' ')[0];
       return geneId;
@@ -213,72 +221,80 @@ function GeneTable({
   });
 
   return (
-    <div className="container-fluid px-0 mx-0 genetable">
-      <div className="table-responsive h-80">
-        <div className="card genetable-wrapper h-100 my-2">
-          <div className="card-header d-flex justify-content-between px-1 py-1">
-            <FilterOptions
-              {...{
-                attributes,
-                selectedColumns,
-                toggleColumnSelect,
-                selectedVisualization: selectedViz,
-                toggleVisualization,
-                query,
-                updateQuery,
-              }}
-            />
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-dark px-2 mx-2 py-0 border query-count"
-              disabled
-            >
-              <span className="badge badge-dark">{queryCount}</span>
-              &nbsp;query results
-            </button>
-            <SelectionOptions
-              {...{
-                selectedGenes,
-                selectedAllGenes: allGenes,
-                toggleDownloadDialog,
-                toggleSelectAllGenes,
-              }}
-            />
+    <div className="container genetable">
+      <div className="card genetable-wrapper">
+        <div className="card-header">
+          <div className="columns is-vcentered">
+            <div className="column">
+              <FilterOptions
+                {...{
+                  attributes,
+                  selectedColumns,
+                  toggleColumnSelect,
+                  selectedVisualization: selectedViz,
+                  toggleVisualization,
+                  query,
+                  updateQuery,
+                }}
+              />
+            </div>
+            <div className="column">
+              <div className="tags has-addons is-centered">
+                <span className="tag">
+                  &#8470; query results
+                </span>
+                <span className="tag is-small is-info">
+                  {queryCount}
+                </span>
+              </div>
+            </div>
+            <div className="column">
+              <div className="is-pulled-right">
+                <SelectionOptions
+                  {...{
+                    selectedGenes,
+                    selectedAllGenes: allGenes,
+                    toggleDownloadDialog,
+                    toggleSelectAllGenes,
+                  }}
+                />
+              </div>
+            </div>
           </div>
-          <table className="genetable table table-hover table-sm">
-            <GeneTableHeader
-              {...{
-                selectedColumns,
-                selectedGenes,
-                selectedAllGenes: allGenes,
-                toggleSelectAllGenes,
-                selectedVisualization: selectedViz,
-                updateQuery,
-                cancelQuery,
-                query,
-                updateSort,
-                sort,
-                attributes,
-                history,
-              }}
-            />
-            <GeneTableBody
-              {...{
-                query,
-                sort,
-                limit,
-                selectedGenes,
-                selectedAllGenes: allGenes,
-                updateSelection: updateGeneSelection,
-                selectedColumns,
-                attributes,
-                selectedVisualization: selectedViz,
-                updateScrollLimit: setLimit,
-                genomeDataCache,
-              }}
-            />
-          </table>
         </div>
+        <table className="genetable table is-narrow is-hoverable is-fullwidth">
+          <GeneTableHeader
+            {...{
+              selectedColumns,
+              selectedGenes,
+              selectedAllGenes: allGenes,
+              toggleSelectAllGenes,
+              selectedVisualization: selectedViz,
+              updateQuery,
+              cancelQuery,
+              query,
+              updateSort,
+              sort,
+              attributes,
+              history,
+            }}
+          />
+          <GeneTableBody
+            {...{
+              query,
+              sort,
+              limit,
+              selectedGenes,
+              selectedAllGenes: allGenes,
+              updateSelection: updateGeneSelection,
+              selectedColumns,
+              attributes,
+              selectedVisualization: selectedViz,
+              updateScrollLimit: setLimit,
+              genomeDataCache,
+            }}
+          />
+        </table>
       </div>
       {showDownloadDialog && (
         <DownloadDialogModal
@@ -295,7 +311,7 @@ function GeneTable({
   );
 }
 
-const withConditionalRendering = compose(
+export default compose(
   withTracker(attributeTracker),
   withEither(isLoading, Loading),
   withTracker(searchTracker),
@@ -303,6 +319,4 @@ const withConditionalRendering = compose(
   withEither(isLoading, Loading),
   withEither(hasNoBlastJob, GeneTable),
   processBlastJob,
-);
-
-export default withConditionalRendering(GeneTable);
+)(GeneTable);

@@ -15,24 +15,29 @@ export default function FilterOptions({
   updateQuery,
 }) {
   return (
-    <div className="btn-group" role="group">
-      <button
-        type="button"
-        className="btn btn-sm btn-outline-dark px-2 py-0 border filter-options"
-        disabled
-      >
-        Select:
-      </button>
-      <GenomeSelect {...{ query, updateQuery }} />
-      <ColumnSelect
-        {...{
-          attributes,
-          selectedColumns,
-          toggleColumnSelect,
-          selectedVisualization,
-          toggleVisualization,
-        }}
-      />
+    <div className="field has-addons" role="group">
+      <div className="control">
+        <button
+          type="button"
+          className="button is-small is-static filter-options"
+        >
+          Select:
+        </button>
+      </div>
+      <div className="control">
+        <GenomeSelect {...{ query, updateQuery }} />
+      </div>
+      <div className="control">
+        <ColumnSelect
+          {...{
+            attributes,
+            selectedColumns,
+            toggleColumnSelect,
+            selectedVisualization,
+            toggleVisualization,
+          }}
+        />
+      </div>
     </div>
   );
 }
