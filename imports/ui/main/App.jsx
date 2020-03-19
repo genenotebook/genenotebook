@@ -28,7 +28,7 @@ export default function App() {
     <Router basename={basename}>
       <>
         <Header />
-        <main role="main" className="">
+        <main role="main" className="has-background-light">
           <Switch>
             <Route exact path="/" component={LandingPage} />
             <Route exact path="/login" component={Login} />

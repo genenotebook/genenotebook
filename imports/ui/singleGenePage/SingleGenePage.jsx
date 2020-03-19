@@ -3,7 +3,7 @@ import { withTracker } from 'meteor/react-meteor-data';
 // import { Job } from 'meteor/vsivsi:job-collection';
 
 import React from 'react';
-import { compose } from 'recompose';
+import { compose, branch, renderComponent } from 'recompose';
 import hash from 'object-hash';
 
 // import jobQueue from '/imports/api/jobqueue/jobqueue.js';
@@ -22,6 +22,8 @@ import ProteinDomains from './ProteinDomains.jsx';
 import Orthogroup from './Orthogroup.jsx';
 
 import GeneExpression from './geneExpression/GeneExpression.jsx';
+
+import './singleGenePage.scss';
 
 function hasOwnProperty(obj, prop) {
   return Object.hasOwnProperty.call(obj, prop);
@@ -74,58 +76,51 @@ function genomeDataTracker({ gene, genomeDataCache }) {
   };
 }
 
-const withConditionalRendering = compose(
-  withTracker(geneDataTracker),
-  withEither(isLoading, Loading),
-  withEither(isNotFound, NotFound),
-  withTracker(genomeDataTracker),
-  withEither(isLoading, Loading),
-);
-
 function SingleGenePage({ gene, genome = {} }) {
   return (
     <div className="container">
-      <div className="card single-gene-page my-2">
-        <div className="card-header">
-          <h4 className="lead">
-            {gene.ID}
-            {' '}
+      <div className="card single-gene-page">
+        <header className="has-background-light">
+          <h4 className="title is-size-4 has-text-weight-light">
+            {`${gene.ID} `}
             <small className="text-muted">{genome.name}</small>
           </h4>
-          <ul className="nav nav-tabs card-header-tabs">
-            <li className="nav-item">
-              <a className="nav-link active" href="#general-info">
-                General Information
-              </a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="#genemodel">
-                Gene model
-              </a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="#sequence">
-                Coding Sequence
-              </a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="#protein-domains">
-                Protein Domains
-              </a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="#orthogroup">
-                Orthogroup
-              </a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="#expression">
-                Expression
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div className="card-body">
+          <div className="tabs is-boxed">
+            <ul>
+              <li className="is-active">
+                <a href="#general-info">
+                  General Information
+                </a>
+              </li>
+              <li>
+                <a href="#genemodel">
+                  Gene model
+                </a>
+              </li>
+              <li>
+                <a href="#sequence">
+                  Coding Sequence
+                </a>
+              </li>
+              <li>
+                <a href="#protein-domains">
+                  Protein Domains
+                </a>
+              </li>
+              <li>
+                <a href="#orthogroup">
+                  Orthogroup
+                </a>
+              </li>
+              <li>
+                <a href="#expression">
+                  Expression
+                </a>
+              </li>
+            </ul>
+          </div>
+        </header>
+        <div className="card-content">
           <GeneralInfo
             key={hash(gene.attributes)}
             gene={gene}
@@ -157,4 +152,10 @@ function SingleGenePage({ gene, genome = {} }) {
   );
 }
 
-export default withConditionalRendering(SingleGenePage);
+export default compose(
+  withTracker(geneDataTracker),
+  withEither(isLoading, Loading),
+  withEither(isNotFound, NotFound),
+  withTracker(genomeDataTracker),
+  withEither(isLoading, Loading),
+)(SingleGenePage);

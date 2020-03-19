@@ -28,58 +28,55 @@ function Controls({
 }) {
   const canEdit = Roles.userIsInRole(Meteor.userId(), ['admin', 'curator']);
   return (
-    <div>
+    <div className="is-pulled-right">
       {showHistory && (
         <button
           type="button"
           onClick={toggleHistory}
-          className="btn btn-outline-dark btn-sm float-right px-2 py-0 viewingHistory"
+          className="button is-small viewingHistory"
         >
           <span className="icon-history" aria-hidden="true" />
-          &nbsp;Hide history
+          {' Hide history'}
         </button>
       )}
       {totalVersionNumber > 0 && !isEditing && !showHistory && (
         <button
           type="button"
           onClick={toggleHistory}
-          className="btn btn-outline-dark btn-sm float-right px-2 py-0 viewingHistory"
+          className="button is-small viewingHistory"
         >
-          <i className="icon-history" aria-hidden="true" />
-          &nbsp;Show history&nbsp;
-          <span className="badge badge-dark">{totalVersionNumber + 1}</span>
+          <span className="icon-history" aria-hidden="true" />
+          {' Show history '}
+          <span className="icon has-background-info has-text-white total-versions">{totalVersionNumber + 1}</span>
         </button>
       )}
       {canEdit && !isEditing && !showHistory && (
         <button
           type="button"
           onClick={startEdit}
-          className="btn btn-outline-dark btn-sm float-right px-2 py-0 edit border"
+          className="button is-small edit"
         >
           <span className="icon-pencil" aria-hidden="true" />
-          {' '}
-          Edit
+          {' Edit'}
         </button>
       )}
       {canEdit && isEditing && !showHistory && (
-        <div className="btn-group float-right">
+        <div className="buttons has-addons">
           <button
             type="button"
             onClick={saveEdit}
-            className="btn btn-outline-success px-2 py-0 btn-sm save"
+            className="button is-small save"
           >
             <span className="icon-floppy" aria-hidden="true" />
-            {' '}
-            Save
+            {' Save'}
           </button>
           <button
             type="button"
             onClick={cancelEdit}
-            className="btn btn-outline-danger btn-sm px-2 py-0 cancel"
+            className="button is-small cancel"
           >
             <span className="icon-cancel" aria-hidden="true" />
-            {' '}
-            Cancel
+            {' Cancel'}
           </button>
         </div>
       )}
@@ -115,32 +112,38 @@ function VersionHistory({
     : 'No previous version available';
   return (
     <div>
-      <div className="alert alert-primary d-flex justify-content-between" role="alert">
-        <div>
-          <span className="icon-exclamation" aria-hidden="true" />
-          {`You are watching version 
-          ${currentVersionNumber + 1} / ${totalVersionNumber + 1} 
-          of this gene.`}
-          <br />
-        </div>
-        <div>
-          {`Edit by ${userName} at ${editAt}.`}
-          <br />
-        </div>
-        {Roles.userIsInRole(Meteor.userId(), 'admin') && (
+      <article className="message is-info" role="alert">
+        <div className="message-body">
+          {Roles.userIsInRole(Meteor.userId(), 'admin') && (
           <button
             type="button"
-            className="button btn-sm btn-primary px-2 py-0"
+            className="button is-small is-warning is-pulled-right"
             onClick={restoreVersion}
           >
             Revert to this version
           </button>
-        )}
-      </div>
+          )}
+          <span className="icon-exclamation" aria-hidden="true" />
+          {'You are watching '}
+          <div className="tags has-addons is-inline">
+            <span className="tag is-dark">version</span>
+            <span className="tag is-info">
+              {`${currentVersionNumber + 1} / ${totalVersionNumber + 1}`}
+            </span>
+          </div>
+          {' of this gene. Edit by '}
+          <div className="tags has-addons is-inline">
+            <span className="tag is-dark">User</span>
+            <span className="tag is-info">{userName}</span>
+          </div>
+          {' at '}
+          <span className="tag is-info">{editAt}</span>
+        </div>
+      </article>
       <div className="pager">
         <button
           type="button"
-          className="btn btn-sm btn-outline-dark px-2 py-0"
+          className="button is-small"
           name="previous"
           onClick={selectVersion}
           disabled={!hasPreviousVersion}
@@ -149,12 +152,11 @@ function VersionHistory({
             className={`${hasPreviousVersion ? 'icon-left' : 'icon-block'}`}
             aria-hidden="true"
           />
-          {' '}
-          {previousText}
+          {` ${previousText}`}
         </button>
         <button
           type="button"
-          className="btn btn-sm btn-outline-dark px-2 py-0 float-right"
+          className="button is-small is-pulled-right"
           name="next"
           onClick={selectVersion}
           disabled={!hasNextVersion}
@@ -175,17 +177,25 @@ function AttributeInput({
   name, value, onChange, deleteAttribute,
 }) {
   return (
-    <div className="d-flex justify-content-between">
-      <textarea className="form-control" {...{ name, value, onChange }} />
+    <>
+      <textarea
+        className="textarea"
+        rows="2"
+        name={name}
+        value={value}
+        onChange={onChange}
+      />
       <button
         type="button"
         name={name}
-        className="btn btn-outline-danger btn-sm"
+        className="button is-danger is-light is-outlined is-small"
         onClick={deleteAttribute.bind(this, name)}
       >
-        <span className="icon-trash" />
+        <span className="icon">
+          <span className="icon-trash" />
+        </span>
       </button>
-    </div>
+    </>
   );
 }
 
@@ -194,24 +204,14 @@ function geneInfoDataTracker({ gene, ...props }) {
   Meteor.subscribe('attributes');
 
   const editHistory = EditHistory.find(
-    {
-      ID: gene.ID,
-    },
-    {
-      sort: {
-        date: -1,
-      },
-    },
+    { ID: gene.ID },
+    { sort: { date: -1 } },
   ).fetch();
 
   const attributeNames = attributeCollection
     .find(
-      {
-        reserved: false,
-      },
-      {
-        field: name,
-      },
+      { reserved: false },
+      { field: 'name' },
     )
     .map((attribute) => attribute.name);
 
@@ -222,7 +222,9 @@ function geneInfoDataTracker({ gene, ...props }) {
   };
 }
 
-function GeneInfo({ gene, genome, attributeNames, editHistory }) {
+function GeneInfo({
+  gene, genome, attributeNames, editHistory,
+}) {
   const {
     seqid, start, end, strand, source, orthogroupId,
   } = gene;
@@ -243,7 +245,7 @@ function GeneInfo({ gene, genome, attributeNames, editHistory }) {
   function cancelEdit() {
     setIsEditing(false);
     setAddingNewAttribute(false);
-    setAttributes(cloneDeep(gene.attributes))
+    setAttributes(cloneDeep(gene.attributes));
   }
   function saveEdit() {
     logger.debug('save edit');
@@ -335,7 +337,7 @@ function GeneInfo({ gene, genome, attributeNames, editHistory }) {
         saveEdit={saveEdit}
         cancelEdit={cancelEdit}
       />
-      <h3>General information</h3>
+      <h3 className="subtitle is-4">General information</h3>
       {showHistory && (
         <VersionHistory
           currentVersionNumber={editHistory.length - reversions}
@@ -347,7 +349,7 @@ function GeneInfo({ gene, genome, attributeNames, editHistory }) {
         />
       )}
       <div className="table-responive">
-        <table className="table table-hover">
+        <table className="table is-hoverable is-fullwidth is-narrow">
           <tbody>
             <tr>
               <td>Gene ID</td>
@@ -356,10 +358,9 @@ function GeneInfo({ gene, genome, attributeNames, editHistory }) {
             <tr>
               <td>Genome</td>
               <td>
-                {genome.name}
-                {' '}
+                {`${genome.name} `}
                 <small>
-                  {`(${genome.organism})`}
+                  { genome.organism }
                 </small>
               </td>
             </tr>
@@ -401,58 +402,112 @@ function GeneInfo({ gene, genome, attributeNames, editHistory }) {
                 );
               })}
             {isEditing && addingNewAttribute && (
-              <tr>
-                <td>
-                  <div className="input-group input-group-sm">
-                    <div className="input-group-prepend">
-                      <span className="input-group-text">Key</span>
+              <tr className="new-attribute">
+                <td colSpan="2">
+                  <article className="message is-info">
+                    <div className="message-body">
+                      <h5 className="subtitle is-5">
+                        New attribute
+                      </h5>
+                      <div className="field columns">
+                        <div className="field column">
+                          <label className="label is-small">
+                            Key
+                          </label>
+                          <div className="control">
+                            <input
+                              list="attribute-keys"
+                              type="text"
+                              className="input is-small"
+                              onChange={({ target }) => {
+                                setNewAttributeKey(target.value);
+                              }}
+                            />
+                            <datalist id="attribute-keys">
+                              {attributeNames.map((attributeName) => (
+                                <option
+                                  value={attributeName}
+                                  key={attributeName}
+                                />
+                              ))}
+                            </datalist>
+                          </div>
+                        </div>
+                        <div className="field column">
+                          <label className="label is-small">
+                            Value
+                          </label>
+                          <div className="control">
+                            <input
+                              type="text"
+                              className="input is-small"
+                              onChange={({ target }) => {
+                                setNewAttributeValue(target.value);
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <input
-                      list="#attribute-keys"
-                      type="text"
-                      className="form-control"
-                      onChange={({ target }) => {
-                        setNewAttributeKey(target.value);
-                      }}
-                    />
-                    <datalist id="attribute-keys">
-                      {attributeNames.map((attributeName) => (
-                        <option
-                          value={attributeName}
-                          key={attributeName}
-                        />
-                      ))}
-                    </datalist>
+                  </article>
+                  {/* <div className="field has-addons">
+                    <p className="control">
+                      <button type="button" className="button is-static is-small">
+                        Key
+                      </button>
+                    </p>
+                    <p className="control is-expanded">
+                      <input
+                        list="attribute-keys"
+                        type="text"
+                        className="input is-small"
+                        onChange={({ target }) => {
+                          setNewAttributeKey(target.value);
+                        }}
+                      />
+                      <datalist id="attribute-keys">
+                        {attributeNames.map((attributeName) => (
+                          <option
+                            value={attributeName}
+                            key={attributeName}
+                          />
+                        ))}
+                      </datalist>
+                    </p>
                   </div>
-                </td>
+                  </td>
                 <td>
-                  <div className="input-group input-group-sm">
-                    <div className="input-group-prepend">
-                      <span className="input-group-text">Value</span>
-                    </div>
-                    <input
-                      type="text"
-                      className="form-control"
-                      onChange={({ target }) => {
-                        setNewAttributeValue(target.value);
-                      }}
-                    />
+                  <div className="field has-addons">
+                    <p className="control">
+                      <button type="button" className="button is-static is-small">
+                        Value
+                      </button>
+                    </p>
+                    <p className="control is-expanded">
+                      <input
+                        type="text"
+                        className="input is-small"
+                        onChange={({ target }) => {
+                          setNewAttributeValue(target.value);
+                        }}
+                      />
+                    </p>
                   </div>
+                  */}
                 </td>
               </tr>
             )}
           </tbody>
         </table>
         {isEditing && !addingNewAttribute && (
-          <div className="text-center">
+          <div className="has-text-centered">
             <button
               type="button"
-              className="btn btn-outline-success btn-sm px-2 py-0"
+              className="button is-small is-success is-light"
               onClick={() => { setAddingNewAttribute(true); }}
             >
               <span className="icon-plus" />
-              {' '}
-              Add new attribute
+              {' Add new attribute'}
             </button>
           </div>
         )}
