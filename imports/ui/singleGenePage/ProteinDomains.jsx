@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import React, { useState } from 'react';
-import { compose } from 'recompose';
+import { compose, branch, renderComponent } from 'recompose';
 import { scaleLinear } from 'd3';// -scale';
 import { groupBy } from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';
@@ -260,7 +260,7 @@ function InterproGroup({
     <g transform={transform}>
       <foreignObject width={xMax} height="25" x="0" y="-22">
         <p style={{
-          fontSize: '1rem',
+          fontSize: '.7rem',
           fontFamily: 'monospace',
           overflow: 'hidden',
           whitespace: 'nowrap',
@@ -271,15 +271,13 @@ function InterproGroup({
         >
           <a
             href={`https://www.ebi.ac.uk/interpro/entry/${interproId}`}
-            className="btn btn-outline-dark px-2 py-0"
             style={{ fontSize: '.7rem' }}
             target="_blank"
             rel="noopener noreferrer"
           >
             {interproId}
           </a>
-          &nbsp;
-          { interproId !== 'Unintegrated signature' && description}
+          { interproId !== 'Unintegrated signature' && ` ${description}`}
         </p>
       </foreignObject>
       {
@@ -323,29 +321,27 @@ function hasNoProteinDomains({ gene }) {
   return proteinDomains.length === 0;
 }
 
-function NoProteinDomains({ showHeader }) {
+function Header() {
   return (
     <>
-      {
-        showHeader && (
-          <>
-            <hr />
-            <h3>Protein domains</h3>
-          </>
-        )
-      }
-      <div className="card protein-domains px-1 pt-1 mb-0">
-        <div className="alert alert-dark mx-1 mt-1" role="alert">
-          <p className="text-center text-muted mb-0">No protein domains found</p>
-        </div>
-      </div>
+      <hr />
+      <h4 className="subtitle is-4">Protein domains</h4>
     </>
   );
 }
 
-const withConditionalRendering = compose(
-  withEither(hasNoProteinDomains, NoProteinDomains),
-);
+function NoProteinDomains({ showHeader }) {
+  return (
+    <>
+      { showHeader && <Header /> }
+      <article className="message no-protein-domains" role="alert">
+        <div className="message-body">
+          <p className="has-text-grey">No protein domains found</p>
+        </div>
+      </article>
+    </>
+  );
+}
 
 function ProteinDomains({ gene, showHeader, resizable = true }) {
   const [width, setWidth] = useState(300);
@@ -392,15 +388,8 @@ function ProteinDomains({ gene, showHeader, resizable = true }) {
   let domainCount = 0;
   return (
     <>
-      {
-      showHeader && (
-        <>
-          <hr />
-          <h3>Protein domains</h3>
-        </>
-      )
-    }
-      <div className="card protein-domains px-0">
+      { showHeader && <Header /> }
+      <div className="card protein-domains">
         <svg width={svgWidth} height={svgHeight} style={style}>
           <XAxis
             scale={scale}
@@ -437,4 +426,6 @@ function ProteinDomains({ gene, showHeader, resizable = true }) {
   );
 }
 
-export default withConditionalRendering(ProteinDomains);
+export default compose(
+  branch(hasNoProteinDomains, renderComponent(NoProteinDomains)),
+)(ProteinDomains);

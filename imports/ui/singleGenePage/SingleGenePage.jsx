@@ -19,7 +19,7 @@ import GeneralInfo from './GeneralInfo.jsx';
 import Genemodel from './Genemodel.jsx';
 import Seq from './Seq.jsx';
 import ProteinDomains from './ProteinDomains.jsx';
-import Orthogroup from './Orthogroup.jsx';
+import Orthogroup from './orthoGroup/Orthogroup.jsx';
 
 import GeneExpression from './geneExpression/GeneExpression.jsx';
 

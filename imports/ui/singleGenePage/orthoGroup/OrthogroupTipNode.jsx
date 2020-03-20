@@ -3,12 +3,10 @@ import { Meteor } from 'meteor/meteor';
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { compose } from 'recompose';
+import { compose, branch, renderComponent } from 'recompose';
 import randomColor from 'randomcolor';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
-
-import { withEither } from '/imports/ui/util/uiUtil.jsx';
 
 import './orthogroup.scss';
 
@@ -65,9 +63,7 @@ function OrthogroupTipNode({
       <circle className="orthogroup-node" cy={x} cx={y} r="4.5" style={style} />
       <foreignObject width="300" height="20" x={y + 10} y={x - 13}>
         <Link to={`/gene/${gene.ID}`} style={{ fontSize: 10 }}>
-          { transcriptId }
-          {' '}
-          { gene.attributes.Name }
+          {`${transcriptId} ${gene.attributes.Name || ''}`}
         </Link>
       </foreignObject>
     </g>
@@ -90,10 +86,8 @@ function geneLinkDataTracker({ data, ...props }) {
   };
 }
 
-const withConditionalRendering = compose(
+export default compose(
   withTracker(geneLinkDataTracker),
-  withEither(isLoading, Loading),
-  withEither(isNotFound, NotFound),
-);
-
-export default withConditionalRendering(OrthogroupTipNode);
+  branch(isLoading, renderComponent(Loading)),
+  branch(isNotFound, renderComponent(NotFound)),
+)(OrthogroupTipNode);

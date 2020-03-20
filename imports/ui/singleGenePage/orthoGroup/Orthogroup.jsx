@@ -2,14 +2,14 @@ import { withTracker } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
 
 import React from 'react';
-import { compose } from 'recompose';
-import ContainerDimensions from 'react-container-dimensions';
+import { compose, branch, renderComponent } from 'recompose';
+import ReactResizeDetector from 'react-resize-detector';
 import { cluster, hierarchy } from 'd3';
 
 import { parseNewick } from '/imports/api/util/util.js';
 import { orthogroupCollection } from '/imports/api/genes/orthogroup_collection.js';
 
-import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
+import { isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
 import OrthogroupTipNode from './OrthogroupTipNode.jsx';
 
@@ -17,13 +17,16 @@ function hasNoOrthogroup({ orthogroup }) {
   return typeof orthogroup === 'undefined';
 }
 
-function NoOrthogroup() {
+function NoOrthogroup({ showHeader }) {
   return (
-    <div className="card orthogroup px-1 pt-1 mb-0">
-      <div className="alert alert-dark mx-1 mt-1" role="alert">
-        <p className="text-center text-muted mb-0">No Orthogroup found</p>
-      </div>
-    </div>
+    <>
+      { showHeader && <Header /> }
+      <article className="message no-orthogroup" role="alert">
+        <div className="message-body">
+          <p className="has-text-grey">No orthogroup found</p>
+        </div>
+      </article>
+    </>
   );
 }
 
@@ -39,12 +42,6 @@ function orthogroupDataTracker({ gene, ...props }) {
     ...props,
   };
 }
-
-const withConditionalRendering = compose(
-  withTracker(orthogroupDataTracker),
-  withEither(isLoading, Loading),
-  withEither(hasNoOrthogroup, NoOrthogroup),
-);
 
 function TreeBranch({ node, chronogram }) {
   const offset = chronogram ? 0 : 20;
@@ -79,7 +76,7 @@ function Tree({
 }) {
   return (
     <div className="card tree">
-      <ContainerDimensions>
+      <ReactResizeDetector handleWidth>
         {
           ({ width }) => {
             const margin = {
@@ -118,8 +115,17 @@ function Tree({
             );
           }
         }
-      </ContainerDimensions>
+      </ReactResizeDetector>
     </div>
+  );
+}
+
+function Header() {
+  return (
+    <>
+      <hr />
+      <h4 className="subtitle is-4">Orthogroup</h4>
+    </>
   );
 }
 
@@ -129,17 +135,14 @@ function Orthogroup({ orthogroup, showHeader = false }) {
   orthogroup.tree = tree;
   return (
     <div id="orthogroup">
-      {
-          showHeader && (
-            <>
-              <hr />
-              <h3>Orthogroup</h3>
-            </>
-          )
-      }
+      { showHeader && <Header /> }
       <Tree {...orthogroup} />
     </div>
   );
 }
 
-export default withConditionalRendering(Orthogroup);
+export default compose(
+  withTracker(orthogroupDataTracker),
+  branch(isLoading, renderComponent(Loading)),
+  branch(hasNoOrthogroup, renderComponent(NoOrthogroup)),
+)(Orthogroup);

@@ -1,7 +1,10 @@
+article.no-protein-domains {
+  margin-right: 1rem;
+}
 .protein-domain-interval {
   cursor: pointer;
   &:hover {
-    stroke: #007bff !important; //Bootstrap primary color
+    stroke: hsl(204, 86%, 53%) !important; //Bulma info color
     stroke-width: 2px !important;
     stroke-linejoin: round;
   }
