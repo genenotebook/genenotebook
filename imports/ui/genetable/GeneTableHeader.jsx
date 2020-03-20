@@ -168,7 +168,7 @@ function HeaderElement({
               whiteSpace: 'nowrap',
             }}
           >
-            {queryLoading && <span className="icon-spin animate-spin" />}
+            {/* queryLoading && <span className="icon-spin animate-spin" /> */}
             {attribute.name}
           </button>
         </div>
@@ -176,7 +176,7 @@ function HeaderElement({
           {attribute.name !== 'Genome' && (
             <div className="dropdown is-hoverable columnselect">
               <div className="dropdown-trigger">
-                <button type="button" className={`button is-small ${buttonClass}`}>
+                <button type="button" className={`button is-small ${buttonClass} ${queryLoading ? 'is-loading' : ''}`}>
                   V
                 </button>
               </div>
@@ -266,89 +266,6 @@ function HeaderElement({
     </th>
   );
 }
-{ /* <Dropdown>
-            <DropdownButton className={`btn btn-sm px-1 py-0 dropdown-toggle ${buttonClass}`} />
-            <DropdownMenu className={`dropdown-menu dropdown-menu-${orientation} px-2`}>
-              <div className={`sort-wrapper ${hasSort ? 'has-sort' : ''}`}>
-                <h6 className="dropdown-header">Sort:</h6>
-                <div className="form-check">
-                  {[1, -1].map((sortOrder) => {
-                    const checked = sort && sort[attribute.query] === sortOrder;
-                    return (
-                      <div key={`${sortOrder}-${checked}`}>
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          id={sortOrder}
-                          onChange={() => {
-                            updateSortOrder(sortOrder);
-                          }}
-                          checked={checked}
-                        />
-                        <label className="form-check-label" htmlFor={sortOrder}>
-                          {sortOrder === 1 ? 'Increasing' : 'Decreasing'}
-                        </label>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-              <div className="dropdown-divider" />
-              <div className={`query-wrapper pb-1 mb-1 ${hasQuery ? 'has-query' : ''}`}>
-                <h6 className="dropdown-header">Filter:</h6>
-                <Select
-                  className="form-control-sm pb-5"
-                  value={new SelectionOption(queryLabel)}
-                  options={QUERY_TYPES}
-                  onChange={({ label }) => {
-                    setAttributeQuery({
-                      queryLabel: label,
-                      queryValue,
-                    });
-                  }}
-                />
-                {['None', 'Present', 'Not present'].indexOf(queryLabel) < 0 ? (
-                  <textarea
-                    className="form-control"
-                    onChange={({ target }) => {
-                      setAttributeQuery({
-                        queryLabel,
-                        queryValue: target.value,
-                      });
-                    }}
-                    value={queryValue}
-                  />
-                ) : null}
-              </div>
-              {hasNewQuery && !queryLoading && (
-                <button
-                  type="button"
-                  className="btn btn-sm btn-block btn-outline-success"
-                  onClick={triggerQueryUpdate}
-                >
-                  Update filter
-                </button>
-              )}
-              {queryLoading && (
-                <button type="button" className="btn btn-sm btn-block btn-success" disabled>
-                  <span className="icon-spin animate-spin" />
-                  &nbsp;Query loading
-                </button>
-              )}
-              {hasQuery && (
-                <button
-                  type="button"
-                  className="btn btn-sm btn-block btn-outline-dark"
-                  onClick={cancelQuery}
-                >
-                  <span className="icon-cancel" />
-                  Cancel filter
-                </button>
-              )}
-            </DropdownMenu>
-          </Dropdown>
-
-          )} */ }
 
 /**
  * [description]

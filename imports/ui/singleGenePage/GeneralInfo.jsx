@@ -337,7 +337,7 @@ function GeneInfo({
         saveEdit={saveEdit}
         cancelEdit={cancelEdit}
       />
-      <h3 className="subtitle is-4">General information</h3>
+      <h4 className="subtitle is-4">General information</h4>
       {showHistory && (
         <VersionHistory
           currentVersionNumber={editHistory.length - reversions}

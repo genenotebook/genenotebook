@@ -15,7 +15,7 @@ import { withEither } from '/imports/ui/util/uiUtil.jsx';
 
 import NotFound from '/imports/ui/main/NotFound.jsx';
 
-import GeneralInfo from './generalInfo/GeneralInfo.jsx';
+import GeneralInfo from './GeneralInfo.jsx';
 import Genemodel from './Genemodel.jsx';
 import Seq from './Seq.jsx';
 import ProteinDomains from './ProteinDomains.jsx';
@@ -127,9 +127,7 @@ function SingleGenePage({ gene, genome = {} }) {
             genome={genome}
           />
           <section id="genemodel">
-            <hr />
-            <h3>Genemodel</h3>
-            <Genemodel gene={gene} />
+            <Genemodel gene={gene} showXAxis showHeader resizable />
           </section>
           <Seq gene={gene} />
           <section id="protein-domains">

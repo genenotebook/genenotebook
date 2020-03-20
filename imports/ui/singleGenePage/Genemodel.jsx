@@ -125,9 +125,7 @@ function Exon({
   genomeId, start, end, type, phase, scale, attributes, ID, seq,
 }) {
   const [showPopover, setPopover] = useState(false);
-  // function togglePopover() {
-  //   setShowPopover(!showPopover);
-  // }
+
   function closePopover() {
     document.removeEventListener('click', closePopover);
     setPopover(false);
@@ -146,7 +144,9 @@ function Exon({
 
   const targetId = `${type}-${start}-${end}`;
 
-  const baseColor = new Color(randomColor({ seed: genomeId + genomeId.slice(3) }));
+  const baseColor = new Color(
+    randomColor({ seed: genomeId + genomeId.slice(3) }),
+  );
   const contrastColor = baseColor.isLight()
     ? baseColor.darken(0.5).saturate(0.3)
     : baseColor.lighten(0.5).desaturate(0.3);
@@ -163,13 +163,11 @@ function Exon({
     <>
       <rect
         className="exon"
-        {...{
-          x,
-          y,
-          width,
-          height,
-          fill: fill.rgb(),
-        }}
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        fill={fill.rgb()}
         id={targetId}
         onClick={togglePopover}
       />
@@ -195,9 +193,7 @@ function Transcript({
   transcript, exons, scale, strand, genomeId, geneId,
 }) {
   const [showPopover, setPopover] = useState(false);
-  // function togglePopover() {
-  //   setShowPopover(!showPopover);
-  // }
+
   function closePopover() {
     document.removeEventListener('click', closePopover);
     setPopover(false);
@@ -301,7 +297,12 @@ export function GenemodelGroup({
   );
 }
 
-export default function Genemodel({ gene, resizable = true }) {
+export default function Genemodel({
+  gene,
+  resizable = false,
+  showXAxis = false,
+  showHeader = false,
+}) {
   const [width, setWidth] = useState(250);
 
   const geneLength = gene.end - gene.start;
@@ -311,7 +312,9 @@ export default function Genemodel({ gene, resizable = true }) {
 
   const transcripts = gene.subfeatures.filter((subfeature) => subfeature.type === 'mRNA');
 
-  const height = 14 * transcripts.length + 46;
+  const height = showXAxis
+    ? 14 * transcripts.length + 46
+    : 14 * transcripts.length + 6;
 
   const margin = {
     top: 10,
@@ -325,29 +328,40 @@ export default function Genemodel({ gene, resizable = true }) {
     .range([margin.left, width - margin.right]);
 
   return (
-    <div id="genemodel" className="card genemodel">
-      <svg width={width} height={height} className="genemodel-container">
-        <GenemodelGroup gene={gene} transcripts={transcripts} width={width} scale={scale} />
-        <XAxis
-          scale={scale}
-          numTicks="2"
-          transform={`translate(0,${height - 22})`}
-          seqid={gene.seqid}
-        />
-        <defs>
-          <marker id="arrowEnd" markerWidth="15" markerHeight="10" refX="0" refY="5" orient="auto">
-            <path d="M0,5 L15,5 L10,10 M10,0 L15,5" fill="none" stroke="black" strokeWidth="1" />
-          </marker>
-        </defs>
-      </svg>
-      {resizable && (
+    <>
+      {showHeader
+      && (
+        <>
+          <hr />
+          <h4 className="subtitle is-4">Genemodel</h4>
+        </>
+      )}
+      <div id="genemodel" className="card genemodel">
+        <svg width={width} height={height} className="genemodel-container">
+          <GenemodelGroup gene={gene} transcripts={transcripts} width={width} scale={scale} />
+          {showXAxis && (
+          <XAxis
+            scale={scale}
+            numTicks="2"
+            transform={`translate(0,${height - 22})`}
+            seqid={gene.seqid}
+          />
+          )}
+          <defs>
+            <marker id="arrowEnd" markerWidth="15" markerHeight="10" refX="0" refY="5" orient="auto">
+              <path d="M0,5 L15,5 L10,10 M10,0 L15,5" fill="none" stroke="black" strokeWidth="1" />
+            </marker>
+          </defs>
+        </svg>
+        {resizable && (
         <ReactResizeDetector
           handleWidth
           onResize={(w) => {
             setWidth(w);
           }}
         />
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 }
