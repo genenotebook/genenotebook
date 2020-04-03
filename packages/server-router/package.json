@@ -1,0 +1,23 @@
+{
+  "private": true,
+  "name": "server-router",
+  "version": "1.2.3",
+  "description": "Server router with authentication for Meteor",
+  "scripts": {
+    "clean": "rm -rf node_modules",
+    "docs": "documentation build src/** --config documentation.yml -f html -o docs",
+    "serve-docs": "documentation serve src/** --config documentation.yml --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Marcin Hagmajer",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-eslint": "^7.2.3",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "^15.0.1",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^5.0.1",
+    "eslint-plugin-react": "^7.0.1",
+    "flow-bin": "^0.46.0"
+  }
+}
