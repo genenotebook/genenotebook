@@ -98,7 +98,7 @@ function IntervalPopover({
                 <tr key={attributeName}>
                   <td>{attributeName}</td>
                   <td>
-                    <AttributeValue {...{ attributeValue }} />
+                    <AttributeValue attributeValue={attributeValue} />
                   </td>
                 </tr>
               ))}
@@ -156,8 +156,6 @@ function Exon({
   const width = scale(end) - scale(start);
   const y = type === 'CDS' ? 0 : 4;
   const height = type === 'CDS' ? 12 : 4;
-
-  // const style = { ':hover': { border: '1px solid black' } };
 
   return (
     <>
@@ -302,8 +300,9 @@ export default function Genemodel({
   resizable = false,
   showXAxis = false,
   showHeader = false,
+  initialWidth = 200,
 }) {
-  const [width, setWidth] = useState(250);
+  const [width, setWidth] = useState(initialWidth);
 
   const geneLength = gene.end - gene.start;
   const padding = Math.round(0.1 * geneLength);
@@ -356,9 +355,7 @@ export default function Genemodel({
         {resizable && (
         <ReactResizeDetector
           handleWidth
-          onResize={(w) => {
-            setWidth(w);
-          }}
+          onResize={(w) => setWidth(w)}
         />
         )}
       </div>

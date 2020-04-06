@@ -343,11 +343,14 @@ function NoProteinDomains({ showHeader }) {
   );
 }
 
-function ProteinDomains({ gene, showHeader, resizable = true }) {
-  const [width, setWidth] = useState(300);
-  function onResize(width) {
-    setWidth(width);
-  }
+function ProteinDomains({
+  gene,
+  showHeader = false,
+  resizable = false,
+  initialWidth = 250,
+}) {
+  const [width, setWidth] = useState(initialWidth);
+
   // get sequence to determine length
   const sequences = getGeneSequences(gene);
   // interproscan results should be on transcripts
@@ -361,13 +364,15 @@ function ProteinDomains({ gene, showHeader, resizable = true }) {
   const interproGroups = Object.entries(groupBy(transcript.protein_domains,
     'interproId')).sort(sortGroups);
   const totalGroups = interproGroups.length;
-  let totalDomains = 0;
+  const totalDomains = 0;
+  /*
   const sortedDomains = interproGroups.map((domainGroup) => {
     const [interproId, domains] = domainGroup;
     const sourceGroups = Object.entries(groupBy(domains, 'name'));
     totalDomains += sourceGroups.length;
     return sourceGroups;
   });
+  */
 
   const margin = {
     top: 10,
@@ -384,7 +389,9 @@ function ProteinDomains({ gene, showHeader, resizable = true }) {
   const svgWidth = width - margin.left - margin.right;
   const svgHeight = (totalGroups * 30) + (totalDomains * 10)
     + margin.top + margin.bottom + 40;
-  const scale = scaleLinear().domain([0, transcriptSize]).range([0, svgWidth]);
+  const scale = scaleLinear()
+    .domain([0, transcriptSize])
+    .range([0, svgWidth]);
   let domainCount = 0;
   return (
     <>
@@ -399,28 +406,31 @@ function ProteinDomains({ gene, showHeader, resizable = true }) {
           />
           <g className="domains" transform="translate(0,40)">
             {
-          interproGroups.map((interproGroup, index) => {
-            const [interproId, domains] = interproGroup;
-            const sourceGroups = groupBy(domains, 'name');
-            const yTransform = ((index + 1) * 30) + (domainCount * 10);
-            const transform = `translate(0,${yTransform})`;
-            domainCount += Object.entries(sourceGroups).length;
-            return (
-              <InterproGroup
-                key={interproId}
-                interproId={interproId}
-                sourceGroups={sourceGroups}
-                transform={transform}
-                scale={scale}
-              />
-            );
-          })
-        }
+              interproGroups.map((interproGroup, index) => {
+                const [interproId, domains] = interproGroup;
+                const sourceGroups = groupBy(domains, 'name');
+                const yTransform = ((index + 1) * 30) + (domainCount * 10);
+                const transform = `translate(0,${yTransform})`;
+                domainCount += Object.entries(sourceGroups).length;
+                return (
+                  <InterproGroup
+                    key={interproId}
+                    interproId={interproId}
+                    sourceGroups={sourceGroups}
+                    transform={transform}
+                    scale={scale}
+                  />
+                );
+              })
+            }
           </g>
         </svg>
-        {
-        resizable && <ReactResizeDetector handleWidth onResize={onResize} />
-      }
+        {resizable && (
+          <ReactResizeDetector
+            handleWidth
+            onResize={(w) => setWidth(w)}
+          />
+        )}
       </div>
     </>
   );

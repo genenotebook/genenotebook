@@ -222,7 +222,7 @@ function GeneTable({
 
   return (
     <div className="container genetable">
-      <div className="card genetable-wrapper">
+      <div className="card genetable-wrapper table-container">
         <div className="card-header">
           <div className="columns is-vcentered">
             <div className="column">

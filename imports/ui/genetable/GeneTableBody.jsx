@@ -196,8 +196,13 @@ function GeneTableRow({
             </td>
           );
         })}
-      <td data-label={selectedVisualization} style={{ width: '2rem' }}>
-        <DataVisualization gene={gene} resizable height={100} />
+      <td data-label={selectedVisualization} style={{ width: '250px' }}>
+        <DataVisualization
+          gene={gene}
+          resizable
+          height={100}
+          initialWidth={250}
+        />
       </td>
       <td>
         <button
