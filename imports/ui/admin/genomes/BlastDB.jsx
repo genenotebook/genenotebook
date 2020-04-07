@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
-import { compose } from 'recompose';
+import { compose, branch, renderComponent } from 'recompose';
 
 import makeBlastDb from '/imports/api/blast/makeblastdb.js';
 import removeBlastDb from '/imports/api/blast/removeblastdb.js';
@@ -12,13 +12,13 @@ import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 import logger from '/imports/api/util/logger.js';
 
 import { JobProgressBar } from '/imports/ui/admin/jobqueue/AdminJobqueue.jsx';
-import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
+import { isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
 function HasBlastDb({ isEditing, genomeId }) {
   return isEditing ? (
     <button
       type="button"
-      className="btn btn-outline-danger btn-sm px-2 py-0 btn-block"
+      className="button is-danger is-small is-outlined is-light is-fullwidth"
       id={genomeId}
       onClick={() => {
         removeBlastDb.call({ genomeId }, (err) => {
@@ -31,11 +31,12 @@ function HasBlastDb({ isEditing, genomeId }) {
     >
       <span className="icon-exclamation" />
       Remove Blast DBs
+      <span className="icon-exclamation" />
     </button>
   ) : (
     <button
       type="button"
-      className="btn btn-outline-success btn-sm px-2 py-0 btn-block"
+      className="button is-small is-success is-static is-fullwidth is-outlined"
       id={genomeId}
       disabled
     >
@@ -49,7 +50,7 @@ function HasNoJob({ isEditing, genomeId }) {
   return isEditing ? (
     <button
       type="button"
-      className="btn btn-outline-primary btn-sm px-2 py-0 btn-block"
+      className="button is-small is-fullwidth"
       id={genomeId}
       onClick={() => {
         makeBlastDb.call({ genomeId }, (err) => {
@@ -65,9 +66,8 @@ function HasNoJob({ isEditing, genomeId }) {
   ) : (
     <button
       type="button"
-      className="btn btn-outline-secondary btn-sm px-2 py-0 btn-block"
+      className="button is-small is-fullwidth is-static"
       id={genomeId}
-      disabled
     >
       <i className="icon-block" />
       No Blast DB
@@ -94,12 +94,13 @@ const makeBlastDbJobTracker = ({ genomeId, isEditing }) => {
 };
 
 function HasNoBlastDb({ hasJob, job, ...props }) {
+  // eslint-disable-next-line react/jsx-props-no-spreading
   return hasJob ? <JobProgressBar {...job} /> : <HasNoJob {...props} />;
 }
 
 const HasNoBlastDbWithJobTracker = compose(
   withTracker(makeBlastDbJobTracker),
-  withEither(isLoading, Loading),
+  branch(isLoading, renderComponent(Loading)),
 )(HasNoBlastDb);
 
 export default function BlastDB({ isEditing, genomeId, blastDb }) {

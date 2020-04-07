@@ -4,10 +4,10 @@ import { Roles } from 'meteor/alanning:roles';
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { compose } from 'recompose';
+import { compose, branch, renderComponent } from 'recompose';
 
 import {
-  withEither, isLoading, Loading, formatDate,
+  isLoading, Loading, formatDate,
 } from '/imports/ui/util/uiUtil.jsx';
 import { getHighestRole } from '/imports/api/users/users.js';
 
@@ -24,7 +24,7 @@ function adminUsersDataTracker() {
 
 const withConditionalRendering = compose(
   withTracker(adminUsersDataTracker),
-  withEither(isLoading, Loading),
+  branch(isLoading, renderComponent(Loading)),
 );
 
 function AdminUserInfo ({ user }) {
@@ -55,32 +55,29 @@ function AdminUserInfo ({ user }) {
 
 function AdminUsers({ users }) {
   return (
-    <div className="mt-2">
-      <table className="table table-hover table-sm">
-        <thead>
-          <tr>
-            {
-              ['Username', 'Full name', 'E-mail', 'Created at', 'User groups'].map((label) => (
-                <th key={label} id={label}>
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-outline-dark px-2 py-0"
-                    disabled
-                  >
-                    {label}
-                  </button>
-                </th>
-              ))
-            }
-          </tr>
-        </thead>
-        <tbody>
+    <table className="table is-hoverable is-narrow is-fullwidth">
+      <thead>
+        <tr>
           {
-            users.map((user) => <AdminUserInfo key={user._id} user={user} />)
+            ['Username', 'Full name', 'E-mail', 'Created at', 'User groups'].map((label) => (
+              <th key={label} id={label}>
+                <button
+                  type="button"
+                  className="button is-static is-fullwidth is-small"
+                >
+                  {label}
+                </button>
+              </th>
+            ))
           }
-        </tbody>
-      </table>
-    </div>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          users.map((user) => <AdminUserInfo key={user._id} user={user} />)
+        }
+      </tbody>
+    </table>
   );
 }
 

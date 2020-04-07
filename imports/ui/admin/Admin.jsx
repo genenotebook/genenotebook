@@ -7,6 +7,8 @@ import AdminAttributes from './attributes/AdminAttributes.jsx';
 import AdminTranscriptomes from './transcriptomes/AdminTranscriptomes.jsx';
 import AdminJobqueue from './jobqueue/AdminJobqueue.jsx';
 
+import './admin.scss';
+
 const ADMIN_PAGES = {
   users: <AdminUsers />,
   genomes: <AdminGenomes />,
@@ -62,7 +64,7 @@ export default function Admin({ match }) {
   const pages = Object.keys(ADMIN_PAGES);
   return (
     <div className="container">
-      <div className="card admin-panel">
+      <div className="card admin-menu">
         <Nav
           pages={pages}
           currentPage={currentPage}

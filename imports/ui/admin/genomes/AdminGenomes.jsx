@@ -3,12 +3,12 @@ import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
-import { compose } from 'recompose';
+import { compose, branch, renderComponent } from 'recompose';
 import hash from 'object-hash';
 
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 
-import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
+import { isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
 import GenomeInfo from './GenomeInfo.jsx';
 
@@ -22,46 +22,41 @@ function adminGenomesDataTracker() {
   };
 }
 
-const withConditionalRendering = compose(
-  withTracker(adminGenomesDataTracker),
-  withEither(isLoading, Loading),
-);
-
 function AdminGenomes({ genomes }) {
   return (
-    <div className="mt-2">
-      <table className="table table-hover table-sm">
-        <thead>
-          <tr>
-            {[
-              'Reference name',
-              'Organism',
-              'Description',
-              'Public',
-              'Permission',
-              'Annotation track',
-              'Actions',
-            ].map((label) => (
-              <th key={label} id={label}>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-dark px-2 py-0"
-                  disabled
-                >
-                  {label}
-                </button>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {genomes.map((genome) => (
-            <GenomeInfo key={hash(genome.annotationTrack || {})} {...genome} />
+    <table className="table is-hoverable is-small is-fullwidth">
+      <thead>
+        <tr>
+          {[
+            'Reference name',
+            'Organism',
+            'Description',
+            'Public',
+            'Permission',
+            'Annotation track',
+            'Actions',
+          ].map((label) => (
+            <th key={label} id={label}>
+              <button
+                type="button"
+                className="button is-small is-static is-fullwidth"
+              >
+                {label}
+              </button>
+            </th>
           ))}
-        </tbody>
-      </table>
-    </div>
+        </tr>
+      </thead>
+      <tbody>
+        {genomes.map((genome) => (
+          <GenomeInfo key={hash(genome.annotationTrack || {})} {...genome} />
+        ))}
+      </tbody>
+    </table>
   );
 }
 
-export default withConditionalRendering(AdminGenomes);
+export default compose(
+  withTracker(adminGenomesDataTracker),
+  branch(isLoading, renderComponent(Loading)),
+)(AdminGenomes);

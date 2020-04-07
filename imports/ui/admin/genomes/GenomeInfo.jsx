@@ -67,10 +67,10 @@ function EditGenomeInfo({
   return (
     <tr>
       <td>
-        <div className="form-group">
+        <div className="field">
           <input
             type="text"
-            className="form-control form-control-sm"
+            className="input is-small"
             id="name"
             aria-describedby="referenceName"
             value={genomeName}
@@ -78,38 +78,34 @@ function EditGenomeInfo({
               setGenomeName(event.target.value);
             }}
           />
-          <small id="referenceNameHelp" className="form-text text-muted">
+          <small id="referenceNameHelp" className="help">
             Genome names must be unique
           </small>
         </div>
       </td>
       <td>
-        <div className="form-group">
-          <input
-            type="text"
-            className="form-control form-control-sm"
-            id="organism"
-            aria-describedby="organism"
-            value={organism}
-            onChange={(event) => {
-              setOrganism(event.target.value);
-            }}
-          />
-        </div>
+        <input
+          type="text"
+          className="input is-small"
+          id="organism"
+          aria-describedby="organism"
+          value={organism}
+          onChange={(event) => {
+            setOrganism(event.target.value);
+          }}
+        />
       </td>
       <td>
-        <div className="form-group">
-          <textarea
-            className="form-control form-control-sm"
-            id="description"
-            aria-describedby="description"
-            rows="3"
-            value={description}
-            onChange={(event) => {
-              setDescription(event.target.value);
-            }}
-          />
-        </div>
+        <textarea
+          className="textarea is-small"
+          id="description"
+          aria-describedby="description"
+          rows="2"
+          value={description}
+          onChange={(event) => {
+            setDescription(event.target.value);
+          }}
+        />
       </td>
       <td>
         <input
@@ -136,15 +132,39 @@ function EditGenomeInfo({
         />
       </td>
       <td>
+        <ul>
+          <li>
+            <div className="buttons has-addons are-small">
+              <button
+                type="button"
+                onClick={saveChanges}
+                className={`button ${hasChanges ? 'is-success is-light is-outlined' : ''}`}
+                disabled={!hasChanges}
+              >
+                <span className="icon-check" />
+                Save
+              </button>
+              <button
+                type="button"
+                onClick={toggleEdit}
+                className="button"
+              >
+                <span className="icon-cancel" />
+                Cancel
+              </button>
+            </div>
+          </li>
+        </ul>
+        {/*
         <table style={{ width: '100%' }}>
           <tbody>
             <tr>
               <td>
-                <div className="btn-group btn-group-justified">
+                <div className="buttons has-addons are-small">
                   <button
                     type="button"
                     onClick={saveChanges}
-                    className="btn btn-success btn-sm px-2 py-0"
+                    className={`button ${hasChanges ? 'is-success is-light is-outlined' : ''}`}
                     disabled={!hasChanges}
                   >
                     <span className="icon-check" />
@@ -153,7 +173,7 @@ function EditGenomeInfo({
                   <button
                     type="button"
                     onClick={toggleEdit}
-                    className="btn btn-outline-dark btn-sm px-2 py-0"
+                    className="button"
                   >
                     <span className="icon-cancel" />
                     Cancel
@@ -183,6 +203,7 @@ function EditGenomeInfo({
             </tr>
           </tbody>
         </table>
+                */}
       </td>
     </tr>
   );
@@ -219,17 +240,15 @@ function GenomeInfoLine({
         />
       </td>
       <td>
-        <div className="btn-group">
-          <button
-            type="button"
-            onClick={toggleEdit}
-            name={genomeId}
-            className="btn btn-outline-dark btn-sm px-2 py-0"
-          >
-            <span className="icon-pencil" />
-            Edit&nbsp;
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={toggleEdit}
+          name={genomeId}
+          className="button is-small is-fullwidth"
+        >
+          <span className="icon-pencil" />
+          {' Edit'}
+        </button>
       </td>
     </tr>
   );
