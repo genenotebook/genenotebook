@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable jsx-a11y/no-interactive-element-to-noninteractive-role */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
@@ -11,6 +12,8 @@ import updateSampleInfo
   from '/imports/api/transcriptomes/updateSampleInfo.js';
 
 import PermissionSelect from '/imports/ui/util/PermissionSelect.jsx';
+
+import './genomeExperiment.scss';
 
 function Experiment({
   _id,
@@ -42,40 +45,38 @@ function Experiment({
 
   return (
     <>
-      <div className="btn-group" role="group">
+      <div className="buttons has-addons" role="group">
         <button
           type="button"
-          className="btn btn-sm border px-0 py-0"
-          id="edit"
+          className="button is-small"
           onClick={toggleEditing}
         >
           <span
             className={isEditing ? 'icon-cancel' : 'icon-pencil'}
             id="edit"
-            onClick={toggleEditing}
           />
+          { isEditing ? ' Cancel' : ' Edit' }
         </button>
-        {
-        isEditing
-        && (
+        { isEditing && (
         <button
           type="button"
-          className="btn btn-sm btn-success px-0 py-0"
-          id="save"
+          className="button is-small"
           onClick={submit}
         >
           <span className="icon-floppy" id="save" onClick={submit} />
+          Save
         </button>
-        )
-      }
+        )}
       </div>
-      <form onSubmit={submit}>
-        <div className="form-row">
-          <div className="form-group col-md-4">
-            <label htmlFor="sample-name">Sample name</label>
+      <form className="columns" onSubmit={submit}>
+        <div className="field is-horizontal column">
+          <div className="field-label is-small">
+            <label className="label">Sample name</label>
+          </div>
+          <div className="field-body">
             <input
               type="text"
-              className="form-control form-control-sm"
+              className="input is-small"
               id="sampleName"
               title={sampleName}
               value={sampleName}
@@ -85,39 +86,48 @@ function Experiment({
               disabled={!isEditing}
             />
           </div>
-          <div className="form-group col-md-4">
-            <label htmlFor="description">description</label>
+        </div>
+        <div className="field is-horizontal column">
+          <div className="field-label is-small">
+            <label className="label">description</label>
+          </div>
+          <div className="field-body">
             <input
               type="text"
               id="description"
               value={description}
               title={description}
-              className="form-control form-control-sm"
+              className="input is-small"
               onChange={(event) => {
                 setDescription(event.target.value);
               }}
               disabled={!isEditing}
             />
           </div>
-          <div className="form-group col-md-4">
-            <label htmlFor="allReplicaGroups" role="group">Replica group</label>
-            <select
-              className="form-control form-control-sm"
-              disabled={!isEditing}
-              value={replicaGroup}
-              id="replicaGroup"
-              onChange={(event) => {
-                setReplicaGroup(event.target.value);
-              }}
-            >
-              {
+        </div>
+        <div className="field is-horizontal column">
+          <div className="field-label is-small">
+            <label className="label">Replica group</label>
+          </div>
+          <div className="field-body">
+            <div className="select is-small">
+              <select
+                disabled={!isEditing}
+                value={replicaGroup}
+                id="replicaGroup"
+                onChange={(event) => {
+                  setReplicaGroup(event.target.value);
+                }}
+              >
+                {
               allReplicaGroups.map((replicaGroupOption) => (
                 <option key={replicaGroupOption} value={replicaGroupOption}>
                   { replicaGroupOption }
                 </option>
               ))
             }
-            </select>
+              </select>
+            </div>
           </div>
         </div>
       </form>
@@ -127,10 +137,10 @@ function Experiment({
 
 function Experiments({ groupExperiments, allReplicaGroups }) {
   return (
-    <ul className="list-group mt-1">
+    <ul className="list">
       {
         groupExperiments.map((experiment) => (
-          <li key={experiment._id} className="list-group-item">
+          <li key={experiment._id} className="list-item">
             <Experiment {...{ allReplicaGroups, ...experiment }} />
           </li>
         ))
@@ -188,77 +198,106 @@ function ReplicaGroup({
   }
 
   return (
-    <>
-      <div className="d-flex justify-content-between">
-        <div>
-          <div className="btn-group" role="group">
-            <button type="button" className="btn btn-sm border px-0 py-0" id="expand" onClick={toggleExpand}>
-              <span className={expand ? 'icon-minus' : 'icon-plus'} id="expand" onClick={toggleExpand} />
+    <li className={`list-item replica-group has-background-white-bis ${isEditing ? 'is-editing' : ''}`}>
+      <div className="level">
+        <div className="level-left">
+          <button type="button" className="button is-small" id="expand" onClick={toggleExpand}>
+            <span className="icon">
+              <span className={expand ? 'icon-minus' : 'icon-plus'} />
+            </span>
+          </button>
+          <div className="buttons has-addons edit-buttons" role="group">
+            <button
+              type="button"
+              className="button is-small"
+              onClick={toggleEditing}
+            >
+              <span
+                className={isEditing ? 'icon-cancel' : 'icon-pencil'}
+                id="edit"
+              />
+              { isEditing ? ' Cancel' : ' Edit' }
             </button>
-            <button type="button" className="btn btn-sm border px-0 py-0" id="edit" onClick={toggleEditing}>
-              <span className={isEditing ? 'icon-cancel' : 'icon-pencil'} id="edit" onClick={toggleEditing} />
-            </button>
-            {
-            isEditing
-            && (
-            <button type="button" className="btn btn-sm btn-success px-0 py-0" id="save" onClick={submit}>
+            { isEditing && (
+            <button
+              type="button"
+              className="button is-small"
+              onClick={submit}
+            >
               <span className="icon-floppy" id="save" onClick={submit} />
+              Save
             </button>
-            )
-          }
+            )}
           </div>
-
-          <form className="form d-inline-flex ml-2" onSubmit={submit}>
-            <div className="form-group mx-2">
-              <label htmlFor="replica-group">Replica group</label>
-              <input
-                type="text"
-                className="form-control form-control-sm ml-2"
-                value={replicaGroup}
-                size="40"
-                title={replicaGroup}
-                onChange={(event) => setReplicaGroup(event.target.value)}
-                disabled={!isEditing}
-              />
-            </div>
-            <div className="form-group mx-2">
-              <label htmlFor="isPublic">Public</label>
-              <input
-                type="checkbox"
-                className="form-control ml-2"
-                checked={isPublic}
-                onChange={toggleIsPublic}
-                disabled={!isEditing}
-              />
-            </div>
-            <div className="form-group mx-2">
-              <label htmlFor="permissions">Permissions</label>
-              <PermissionSelect
-                onChange={(selection) => {
-                  setPermission(selection.value);
-                }}
-                disabled={!isEditing || isPublic}
-                value={permission}
-                className="ml-2"
-              />
-            </div>
-
-          </form>
         </div>
-        <div>
-          <button type="button" className="btn btn-sm btn-outline-dark px-2 py-0" disabled>
-            <span className="badge badge-primary">
+        <div className="level-right">
+          <div className="tags has-addons">
+            <span className="tag is-danger is-light">
               { groupExperiments.length }
             </span>
-            {' '}
-            Transcriptomes
-          </button>
+            <span className="tag is-light">
+              Samples
+            </span>
+          </div>
         </div>
       </div>
+      <form className="form columns" onSubmit={submit}>
+        <div className="field is-horizontal column">
+          <div className="field-label is-small">
+            <label className="label">
+              Replica group
+            </label>
+          </div>
+          <div className="field-body">
+            <input
+              type="text"
+              className="input is-small"
+              value={replicaGroup}
+              size="30"
+              title={replicaGroup}
+              onChange={(event) => setReplicaGroup(event.target.value)}
+              disabled={!isEditing}
+            />
+          </div>
+        </div>
+        <div className="field is-horizontal column">
+          <div className="field-label is-small">
+            <label className="label" htmlFor="isPublic">
+              Public
+            </label>
+          </div>
+          <div className="field-body">
+            <input
+              type="checkbox"
+              className="checkbox"
+              checked={isPublic}
+              onChange={toggleIsPublic}
+              disabled={!isEditing}
+            />
+          </div>
+        </div>
+        <div className="field is-horizontal column">
+          <div className="field-label is-small">
+            <label className="label" htmlFor="permissions">
+              Permissions
+            </label>
+          </div>
+          <div className="field-body">
+            <PermissionSelect
+              onChange={(selection) => {
+                setPermission(selection.value);
+              }}
+              disabled={!isEditing || isPublic}
+              value={permission}
+              className="ml-2"
+            />
+          </div>
+        </div>
+      </form>
       {
       expand && <Experiments {...{ groupExperiments, allReplicaGroups }} />
     }
-    </>
+    </li>
   );
 }
 
@@ -268,18 +307,16 @@ function ExpandedGenomeExperiment({
 }) {
   const replicaGroups = groupBy(experiments, (exp) => exp.replicaGroup);
   return (
-    <ul className="list-group mt-1">
-      {
-      Object.entries(replicaGroups).map(([replicaGroup, groupExperiments]) => (
-        <li className="list-group-item" key={replicaGroup}>
+    <ul className="list">
+      { Object.entries(replicaGroups)
+        .map(([replicaGroup, groupExperiments]) => (
           <ReplicaGroup
+            key={replicaGroup}
             replicaGroup={replicaGroup}
             groupExperiments={groupExperiments}
             allReplicaGroups={allReplicaGroups}
           />
-        </li>
-      ))
-    }
+        ))}
     </ul>
   );
 }
@@ -293,42 +330,57 @@ export default function GenomeExperiment({ genome, experiments }) {
   const btnClass = expanded ? 'icon-minus' : 'icon-plus';
   return (
     <>
-      <div className="d-flex justify-content-between">
-        <div>
+      <div className="level">
+        <div className="level-left">
           <button
             type="button"
-            className="btn btn-outline-dark btn-sm border px-0 py-0 mr-2"
+            className="button is-small"
             onClick={toggleExpand}
           >
-            <span className={btnClass} />
+            <span className="icon">
+              <span className={btnClass} />
+            </span>
           </button>
-          { genome.name }
-          {' '}
-          <small className="text-muted">{ genome.organism }</small>
+          <form className="genome-name">
+            <div className="field is-horizontal">
+              <div className="field-label is-normal">
+                <label className="label">Genome</label>
+              </div>
+              <div className="field-body">
+                <div className="field">
+                  <p className="control">
+                    <input className="input is-static" readOnly value={genome.name} />
+                  </p>
+                </div>
+              </div>
+            </div>
+          </form>
+
+          <small className="text-muted">{ `(${genome.organism})` }</small>
         </div>
-        <div className="btn-group">
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-dark px-2 py-0"
-            disabled
-          >
-            <span className="badge badge-warning">
-              { allReplicaGroups.length }
-            </span>
-            {' '}
-            Replica groups
-          </button>
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-dark px-2 py-0"
-            disabled
-          >
-            <span className="badge badge-primary">
-              { experiments.length }
-            </span>
-            {' '}
-            Transcriptomes
-          </button>
+        <div className="level-right">
+          <div className="field is-grouped is-grouped-multiline">
+            <div className="control">
+              <div className="tags has-addons">
+                <span className="tag is-primary">
+                  { allReplicaGroups.length }
+                </span>
+                <span className="tag is-light">
+                  Replica groups
+                </span>
+              </div>
+            </div>
+            <div className="control">
+              <div className="tags has-addons">
+                <span className="tag is-danger is-light">
+                  { experiments.length }
+                </span>
+                <span className="tag is-light">
+                  Samples
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       {

@@ -1,4 +1,4 @@
-/* eslint-disable react/no-multi-comp */
+/* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 // import { isEqual } from 'lodash';
 
@@ -46,7 +46,7 @@ function EditGenomeInfo({
       name: genomeName,
       organism,
       description,
-      permissions,
+      permission,
       isPublic,
       annotationTrack,
     }, (err) => {
@@ -154,56 +154,26 @@ function EditGenomeInfo({
               </button>
             </div>
           </li>
+          <li>
+            <button
+              type="button"
+              onClick={() => {
+                removeGenome.call({ genomeId }, (err) => {
+                  if (err) {
+                    logger.warn(err);
+                    alert(err);
+                  }
+                });
+              }}
+              className="button is-small is-danger is-light is-outlined is-fullwidth"
+              name={genomeId}
+            >
+              <span className="icon-exclamation" />
+              Delete genome
+              <span className="icon-exclamation" />
+            </button>
+          </li>
         </ul>
-        {/*
-        <table style={{ width: '100%' }}>
-          <tbody>
-            <tr>
-              <td>
-                <div className="buttons has-addons are-small">
-                  <button
-                    type="button"
-                    onClick={saveChanges}
-                    className={`button ${hasChanges ? 'is-success is-light is-outlined' : ''}`}
-                    disabled={!hasChanges}
-                  >
-                    <span className="icon-check" />
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    onClick={toggleEdit}
-                    className="button"
-                  >
-                    <span className="icon-cancel" />
-                    Cancel
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <button
-                  type="button"
-                  onClick={() => {
-                    removeGenome.call({ genomeId }, (err) => {
-                      if (err) {
-                        logger.warn(err);
-                        alert(err);
-                      }
-                    });
-                  }}
-                  className="btn btn-danger btn-sm px-2 py-0 btn-block"
-                  name={genomeId}
-                >
-                  <span className="icon-exclamation" />
-                  Delete genome
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-                */}
       </td>
     </tr>
   );
@@ -260,8 +230,10 @@ export default function GenomeInfo(props) {
     setIsEditing(!isEditing);
   }
   return isEditing ? (
+    // eslint-disable-next-line react/jsx-props-no-spreading
     <EditGenomeInfo {...props} toggleEdit={toggleEdit} />
   ) : (
+    // eslint-disable-next-line react/jsx-props-no-spreading
     <GenomeInfoLine {...props} toggleEdit={toggleEdit} />
   );
 }

@@ -1,5 +1,4 @@
 /* eslint-disable react/prop-types */
-/* eslint-disable react/no-multi-comp */
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
@@ -11,7 +10,8 @@ import removeBlastDb from '/imports/api/blast/removeblastdb.js';
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 import logger from '/imports/api/util/logger.js';
 
-import { JobProgressBar } from '/imports/ui/admin/jobqueue/AdminJobqueue.jsx';
+import { JobProgressBar }
+  from '/imports/ui/admin/jobqueue/AdminJobqueue.jsx';
 import { isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
 function HasBlastDb({ isEditing, genomeId }) {

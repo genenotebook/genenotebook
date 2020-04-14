@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
@@ -12,40 +13,64 @@ const REMOVE_STATES = ['completed', 'failed', 'cancelled'];
 const CANCEL_STATES = ['waiting', 'running', 'created', 'ready']; // Anything that is not completed, failed or cancelled
 
 function Status({ status }) {
-  let labelClass = 'badge ';
+  let labelClass = 'tag ';
   switch (status) {
     case 'completed':
-      labelClass += 'badge-success';
+      labelClass += 'is-success';
       break;
     case 'cancelled':
-      labelClass += 'badge-warning';
+      labelClass += 'is-warning';
       break;
     case 'failed':
-      labelClass += 'badge-danger';
+      labelClass += 'is-danger';
       break;
     case 'running':
-      labelClass += 'badge-primary';
+      labelClass += 'is-primary';
       break;
     default:
-      labelClass += 'badge-light';
+      break;
+      // labelClass += 'is-light';
   }
   return (
     <span className={labelClass}>
-      {' '}
-      {status}
-      {' '}
+      {` ${status} `}
     </span>
   );
 }
 
-export function JobProgressBar({ progress, loading }) {
+export function JobProgressBar({ progress, loading, status }) {
   if (loading) {
     return null;
   }
 
   const { completed, total, percent } = progress;
-  const barColor = completed === total ? 'success' : 'default';
-
+  let barColor = '';
+  switch (true) {
+    case (completed === 0):
+      barColor = 'is-default';
+      break;
+    case (completed < total):
+      barColor = 'is-info';
+      break;
+    case (completed === total):
+      barColor = 'is-success';
+      break;
+    default:
+      break;
+  }
+  const value = completed === 0 && status !== 'cancelled'
+    ? null
+    : Math.round(percent);
+  return (
+    <progress
+      className={`progress is-small ${barColor}`}
+      value={value}
+      max="100"
+    >
+      {`${value}%`}
+    </progress>
+  );
+  /*
   return (
     <div className="progress">
       <div
@@ -60,6 +85,7 @@ export function JobProgressBar({ progress, loading }) {
       </div>
     </div>
   );
+  */
 }
 
 function performJobAction(jobId, action) {
@@ -78,21 +104,22 @@ function JobInfo({ job, loading }) {
       <td>{job.data.userId}</td>
       <td><JobProgressBar loading={loading} {...job} /></td>
       <td>
-        <button
-          type="button"
-          className="btn btn-outline-dark btn-sm py-0 px-2"
-          onClick={() => {
-            performJobAction(jobId, 'rerun');
-          }}
-        >
+        <div className="buttons has-addons">
+          <button
+            type="button"
+            className="button is-small"
+            onClick={() => {
+              performJobAction(jobId, 'rerun');
+            }}
+          >
             Rerun
-        </button>
-        {
+          </button>
+          {
             CANCEL_STATES.indexOf(job.status) >= 0
             && (
             <button
               type="button"
-              className="btn btn-outline-warning btn-sm py-0 px-2"
+              className="button is-small is-warning is-outlined"
               onClick={() => {
                 performJobAction(jobId, 'cancel');
               }}
@@ -101,12 +128,12 @@ function JobInfo({ job, loading }) {
             </button>
             )
           }
-        {
+          {
             REMOVE_STATES.indexOf(job.status) >= 0
             && (
             <button
               type="button"
-              className="btn btn-outline-danger btn-sm py-0 px-2"
+              className="button is-small is-danger is-light is-outlined"
               onClick={() => {
                 performJobAction(jobId, 'remove');
               }}
@@ -115,6 +142,7 @@ function JobInfo({ job, loading }) {
             </button>
             )
           }
+        </div>
       </td>
     </tr>
   );
@@ -124,30 +152,37 @@ function AdminJobqueue({ loading, jobs }) {
   return loading
     ? <div> Loading </div>
     : (
-      <table className="table table-hover table-sm">
+      <table className="table is-hover is-small is-fullwidth">
         <thead>
           <tr>
             {
-          ['Status', 'Type', 'Created', 'User', 'Progress', 'Actions'].map((label) => (
-            <th key={label} scope="col">
-              <button type="button" className="btn btn-sm btn-outline-dark py-0 px-2" disabled>
-                { label }
-              </button>
-            </th>
-          ))
-        }
+              [
+                'Status', 'Type', 'Created', 'User', 'Progress', 'Actions',
+              ].map((label) => (
+                <th key={label} scope="col">
+                  <button
+                    type="button"
+                    className="button is-small is-static is-fullwidth"
+                  >
+                    { label }
+                  </button>
+                </th>
+              ))
+            }
           </tr>
         </thead>
         <tbody>
           {
-        jobs.map((job) => <JobInfo key={job._id} job={job} loading={loading} />)
-      }
+            jobs.map((job) => (
+              <JobInfo key={job._id} job={job} loading={loading} />
+            ))
+          }
         </tbody>
       </table>
     );
 }
 
-export default withTracker((props) => {
+export default withTracker(() => {
   const subscription = Meteor.subscribe('jobQueue');
   return {
     jobs: jobQueue.find({}).fetch(),

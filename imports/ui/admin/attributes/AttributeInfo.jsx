@@ -1,8 +1,8 @@
-/* eslint-disable react/no-multi-comp */
 /* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 
-import { updateAttributeInfo } from '/imports/api/genes/updateAttributeInfo.js';
+import { updateAttributeInfo }
+  from '/imports/api/genes/updateAttributeInfo.js';
 import logger from '/imports/api/util/logger.js';
 
 function EditAttributeInfo({
@@ -31,6 +31,8 @@ function EditAttributeInfo({
     );
     toggleEdit();
   }
+  const hasChanges = defaultShow !== defaultShowState
+    || defaultSearch !== defaultSearchState;
   return (
     <tr>
       <td>{name}</td>
@@ -58,22 +60,19 @@ function EditAttributeInfo({
         />
       </td>
       <td>
-        <div className="btn-group btn-group-justified">
+        <div className="buttons has-addons">
           <button
             type="button"
-            className="btn btn-outline-success btn-sm px-2 py-0"
+            className={`button is-small ${hasChanges ? 'is-success is-light is-outlined' : ''}`}
             onClick={saveChanges}
-            disabled={
-              defaultShow === defaultShowState
-              && defaultSearch === defaultSearchState
-            }
+            disabled={!hasChanges}
           >
             <span className="icon-check" />
             Save
           </button>
           <button
             type="button"
-            className="btn btn-outline-dark btn-sm px-2 py-0"
+            className="button is-small"
             onClick={toggleEdit}
           >
             <span className="icon-remove" />
@@ -107,7 +106,7 @@ function AttributeInfoLine({
       <td>
         <button
           type="button"
-          className="btn btn-sm btn-outline-dark py-0 px-2"
+          className="button is-small is-fullwidth"
           onClick={toggleEdit}
         >
           <span className="icon-pencil" />
@@ -122,6 +121,7 @@ export default function AttributeInfo(props) {
   const [isEditing, setEditing] = useState(false);
   return isEditing ? (
     <EditAttributeInfo
+      // eslint-disable-next-line react/jsx-props-no-spreading
       {...props}
       toggleEdit={() => {
         setEditing(!isEditing);
@@ -129,6 +129,7 @@ export default function AttributeInfo(props) {
     />
   ) : (
     <AttributeInfoLine
+      // eslint-disable-next-line react/jsx-props-no-spreading
       {...props}
       toggleEdit={() => {
         setEditing(!isEditing);

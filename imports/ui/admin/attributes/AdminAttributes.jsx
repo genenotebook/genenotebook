@@ -3,13 +3,16 @@ import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
-import { compose } from 'recompose';
+import { compose, branch, renderComponent } from 'recompose';
 
-import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
-import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
-import { scanGeneAttributes } from '/imports/api/genes/scanGeneAttributes.js';
+import { attributeCollection }
+  from '/imports/api/genes/attributeCollection.js';
+import { genomeCollection }
+  from '/imports/api/genomes/genomeCollection.js';
+import { scanGeneAttributes }
+  from '/imports/api/genes/scanGeneAttributes.js';
 
-import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
+import { isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
 
 import AttributeInfo from './AttributeInfo.jsx';
 
@@ -26,11 +29,6 @@ function attributeDataTracker() {
   };
 }
 
-const withConditionalRendering = compose(
-  withTracker(attributeDataTracker),
-  withEither(isLoading, Loading),
-);
-
 function AdminAttributes({ attributes, genomes }) {
   function scanAttributes(event) {
     event.preventDefault();
@@ -40,17 +38,22 @@ function AdminAttributes({ attributes, genomes }) {
   }
   return (
     <div>
-      <hr />
-      <button
-        type="button"
-        className="btn btn-warning"
-        onClick={scanAttributes}
-      >
-        <span className="icon-exclamation" aria-hidden="true" />
-          Scan all genes for attributes
-      </button>
-      <hr />
-      <table className="table table-hover table-sm">
+      <article className="message is-warning">
+        <div className="message-body">
+          <button
+            type="button"
+            className="button is-warning"
+            onClick={scanAttributes}
+          >
+            <span className="icon-exclamation" aria-hidden="true" />
+            Scan all genes for attributes
+          </button>
+          <p>
+            This triggers a map-reduce that can take a while
+          </p>
+        </div>
+      </article>
+      <table className="table is-small is-hoverable is-fullwidth">
         <thead>
           <tr>
             {[
@@ -63,8 +66,7 @@ function AdminAttributes({ attributes, genomes }) {
               <th key={label} scope="col">
                 <button
                   type="button"
-                  className="btn btn-sm btn-outline-dark py-0 px-2"
-                  disabled
+                  className="button is-small is-static is-fullwidth"
                 >
                   {label}
                 </button>
@@ -74,6 +76,7 @@ function AdminAttributes({ attributes, genomes }) {
         </thead>
         <tbody>
           {attributes.map((attribute) => (
+            // eslint-disable-next-line react/jsx-props-no-spreading
             <AttributeInfo key={attribute._id} {...attribute} />
           ))}
         </tbody>
@@ -82,4 +85,7 @@ function AdminAttributes({ attributes, genomes }) {
   );
 }
 
-export default withConditionalRendering(AdminAttributes);
+export default compose(
+  withTracker(attributeDataTracker),
+  branch(isLoading, renderComponent(Loading)),
+)(AdminAttributes);
