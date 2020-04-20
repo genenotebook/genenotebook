@@ -5,8 +5,6 @@ import { cloneDeep, isEqual, isEmpty } from 'lodash';
 
 import logger from '/imports/api/util/logger.js';
 
-// import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
-
 import './geneTableHeader.scss';
 
 function hasOwnProperty(obj, prop) {
@@ -186,7 +184,6 @@ function HeaderElement({
                     <h6 className="is-h6 dropdown-item dropdown-header">
                       Sort:
                     </h6>
-
                     {[1, -1].map((sortOrder) => {
                       const checked = sort && sort[attribute.query] === sortOrder;
                       return (
@@ -206,7 +203,6 @@ function HeaderElement({
                         </div>
                       );
                     })}
-
                   </div>
                   <hr className="dropdown-divider" />
                   <div className={`dropdown-item query-wrapper ${hasQuery ? 'has-query' : ''}`}>
