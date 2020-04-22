@@ -41,7 +41,7 @@ function XAxis({ scale, numTicks, ...props }) {
 
   const ticks = [];
 
-  for (let i = 1; i < numTicks; i++) {
+  for (let i = 1; i < numTicks; i += 1) {
     ticks.push(i * stepSize);
   }
 
@@ -82,7 +82,7 @@ function HitPlotLine({
   // const geneID = hit.Hit_def[0].split(' ')[1];
   return (
     <g transform={`translate(0,${index * height})`}>
-      {hsps.map((_hsp, hsp_index) => {
+      {hsps.map((_hsp, hspIndex) => {
         const hsp = _hsp.Hsp[0];
         const x = hsp['Hsp_query-from'];
         const width = hsp['Hsp_query-to'] - x;
@@ -92,13 +92,17 @@ function HitPlotLine({
         // const evalue = hsp.Hsp_evalue;
         return (
           <rect
-            key={hsp_index}
+            key={hspIndex}
             x={xScale(x)}
             y="0"
             width={xScale(width)}
             height={height / 2}
+            rx="1"
+            ry="1"
             style={{
               fill: interpolateGreys(bitScore / maxBitScore),
+              strokeWidth: 0.5,
+              stroke: 'hsl(0, 0%, 29%)',
             }}
           />
         );
@@ -114,7 +118,7 @@ function HitPlot({
     top: 10,
     bottom: 10,
     left: 20,
-    right: 20,
+    right: 60,
   };
   const paddedWidth = width - padding.left - padding.right;
   const xScale = scaleLinear()
@@ -150,12 +154,17 @@ export default function BlastResultPlot({ job }) {
   const { result, data } = job;
   const hits = result.BlastOutput.BlastOutput_iterations[0].Iteration[0].Iteration_hits[0].Hit;
   return (
-    <div className="blast-result-plot">
+    <fieldset className="box blast-result-plot" style={{ minInlineSize: 'unset' }}>
+      <legend className="subtitle is-5">HSP Plot</legend>
       <ContainerDimensions>
-        {({ width, height }) => (
-          <HitPlot width={width} hits={hits} queryLength={data.input.length} />
+        {({ width }) => (
+          <HitPlot
+            width={width}
+            hits={hits}
+            queryLength={data.input.length}
+          />
         )}
       </ContainerDimensions>
-    </div>
+    </fieldset>
   );
 }

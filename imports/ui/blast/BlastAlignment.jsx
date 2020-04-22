@@ -2,6 +2,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import './blastAlignment.scss';
+
 const AlignmentText = ({ hsp }) => {
   const queryStart = hsp['Hsp_query-from'][0];
   const hspStart = hsp['Hsp_hit-from'][0];
@@ -23,16 +25,18 @@ const AlignmentText = ({ hsp }) => {
   const midLineSeq = hsp.Hsp_midline[0];
   const subjectSeq = hsp.Hsp_hseq[0];
   return (
-    <pre className="alignment-text">
-      {queryTag}
-      {querySeq}
-      <br />
-      {midLinePadding}
-      {midLineSeq}
-      <br />
-      {subjectTag}
-      {subjectSeq}
-    </pre>
+    <article className="message">
+      <pre className="alignment-text message-body">
+        {queryTag}
+        {querySeq}
+        <br />
+        {midLinePadding}
+        {midLineSeq}
+        <br />
+        {subjectTag}
+        {subjectSeq}
+      </pre>
+    </article>
   );
 };
 
@@ -42,11 +46,11 @@ AlignmentText.propTypes = {
 
 function BlastAlignment({ hit }) {
   return (
-    <ul className="list-group">
+    <ul>
       {hit.Hit_hsps.map((_hsp) => {
         const hsp = _hsp.Hsp[0];
         return (
-          <li className="list-group-item border" key={hsp.Hsp_evalue[0]}>
+          <li key={hsp.Hsp_evalue[0]}>
             <AlignmentText hsp={hsp} />
           </li>
         );

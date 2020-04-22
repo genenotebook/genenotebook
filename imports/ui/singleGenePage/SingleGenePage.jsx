@@ -142,8 +142,7 @@ function SingleGenePage({ gene, genome = {} }) {
         </div>
         <div className="card-footer text-muted">
           Gene info page for
-          {' '}
-          {gene.ID}
+          {` ${gene.ID}`}
         </div>
       </div>
     </div>

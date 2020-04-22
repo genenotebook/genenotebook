@@ -142,9 +142,11 @@ function GenomeSelect({ genomes, selectedGenomes, toggleGenomeSelect }) {
   );
 }
 
-function OptionField({ name, value, setValue }) {
+export function BlastOptionField({
+  name, value, setValue, disabled = false,
+}) {
   return (
-    <div className="field has-addons">
+    <div className="field has-addons blast-option-field">
       <p className="control">
         <button type="button" className="button is-static is-small">
           { name }
@@ -154,6 +156,7 @@ function OptionField({ name, value, setValue }) {
         <input
           type="text"
           className="input is-small"
+          disabled={disabled}
           value={value}
           onChange={({ target }) => {
             setValue(target.value);
@@ -175,10 +178,10 @@ function AdvancedOptions({
       </legend>
       <div className="columns">
         <div className="column">
-          <OptionField name="--e-value" value={eValue} setValue={setEValue} />
+          <BlastOptionField name="--e-value" value={eValue} setValue={setEValue} />
         </div>
         <div className="column">
-          <OptionField
+          <BlastOptionField
             name="--num-alignments"
             value={numAlignments}
             setValue={setNumAlignments}
@@ -364,7 +367,7 @@ function SubmitBlast({ genomes }) {
       <div className="card">
         <header className="has-background-light">
           <h4 className="title is-size-4 has-text-weight-light">
-            Blast search
+            BLAST search
           </h4>
         </header>
         <div className="card-content">
