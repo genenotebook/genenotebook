@@ -116,6 +116,6 @@
     "eslint-plugin-meteor": "^7.0.0",
     "eslint-plugin-react": "^7.18.0",
     "eslint-plugin-react-hooks": "^3.0.0",
-    "puppeteer": "^2.0.0"
+    "puppeteer": "^3.0.0"
   }
 }
