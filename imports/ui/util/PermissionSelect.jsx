@@ -3,10 +3,13 @@ import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
 import Select from 'react-select';
-import { compose } from 'recompose';
 
-import { withEither, isLoading, Loading } from './uiUtil.jsx';
+import {
+  branch, compose, isLoading, Loading,
+} from './uiUtil.jsx';
 import { ROLES } from '/imports/api/users/users.js';
+
+import './permissionSelect.scss';
 
 class SelectionOption extends Object {
   constructor(optionName) {
@@ -37,12 +40,8 @@ const permissionSelectDataTracker = (props) => {
   };
 };
 
-const withConditionalRendering = compose(
-  withTracker(permissionSelectDataTracker),
-  withEither(isLoading, Loading),
-);
 
-function PermissionSelect({
+function _PermissionSelect({
   value, options, onChange, disabled, ...props
 }) {
   console.log({ value, options });
@@ -59,4 +58,28 @@ function PermissionSelect({
   );
 }
 
-export default withConditionalRendering(PermissionSelect);
+function PermissionSelect({
+  value, options, onChange, disabled, ...props
+}) {
+  console.log({ value, options });
+  return (
+    <ul className="permission-select steps is-small" disabled={disabled}>
+      {options.map((option) => (
+        <li
+          key={option._id}
+          className={`steps-segment ${option._id === value ? 'is-active' : ''}`}
+        >
+          <span className="steps-marker" />
+          <div className="steps-content">
+            <small>{option._id}</small>
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export default compose(
+  withTracker(permissionSelectDataTracker),
+  branch(isLoading, Loading),
+)(PermissionSelect);

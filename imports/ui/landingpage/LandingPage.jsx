@@ -4,12 +4,13 @@ import { withTracker } from 'meteor/react-meteor-data';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { compose } from 'recompose';
 
 import getQueryCount from '/imports/api/methods/getQueryCount.js';
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 
-import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
+import {
+  branch, compose, isLoading, Loading,
+} from '/imports/ui/util/uiUtil.jsx';
 
 import './landingpage.scss';
 
@@ -112,8 +113,8 @@ function NoGenomes() {
 
 const withConditionalRendering = compose(
   withTracker(statsDataTracker),
-  withEither(isLoading, Loading),
-  withEither(hasNoGenomes, NoGenomes),
+  branch(isLoading, Loading),
+  branch(hasNoGenomes, NoGenomes),
 );
 
 const StatsWithDataTracker = withConditionalRendering(Stats);

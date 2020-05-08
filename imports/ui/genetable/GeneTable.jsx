@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React, { useState, useEffect } from 'react';
-import { compose } from 'recompose';
 import { cloneDeep, isEqual, isEmpty } from 'lodash';
 
 import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
@@ -10,7 +9,9 @@ import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 
 import getQueryCount from '/imports/api/methods/getQueryCount.js';
 
-import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
+import {
+  branch, compose, isLoading, Loading,
+} from '/imports/ui/util/uiUtil.jsx';
 
 import FilterOptions from './filteroptions/FilterOptions.jsx';
 import SelectionOptions from './SelectionOptions.jsx';
@@ -313,10 +314,10 @@ function GeneTable({
 
 export default compose(
   withTracker(attributeTracker),
-  withEither(isLoading, Loading),
+  branch(isLoading, Loading),
   withTracker(searchTracker),
   withTracker(blastJobTracker),
-  withEither(isLoading, Loading),
-  withEither(hasNoBlastJob, GeneTable),
+  branch(isLoading, Loading),
+  branch(hasNoBlastJob, GeneTable),
   processBlastJob,
 )(GeneTable);

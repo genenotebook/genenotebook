@@ -3,7 +3,6 @@ import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
-import { compose, branch, renderComponent } from 'recompose';
 
 import makeBlastDb from '/imports/api/blast/makeblastdb.js';
 import removeBlastDb from '/imports/api/blast/removeblastdb.js';
@@ -12,7 +11,9 @@ import logger from '/imports/api/util/logger.js';
 
 import { JobProgressBar }
   from '/imports/ui/admin/jobqueue/AdminJobqueue.jsx';
-import { isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
+import {
+  branch, compose, isLoading, Loading,
+} from '/imports/ui/util/uiUtil.jsx';
 
 function HasBlastDb({ isEditing, genomeId }) {
   return isEditing ? (
@@ -100,7 +101,7 @@ function HasNoBlastDb({ hasJob, job, ...props }) {
 
 const HasNoBlastDbWithJobTracker = compose(
   withTracker(makeBlastDbJobTracker),
-  branch(isLoading, renderComponent(Loading)),
+  branch(isLoading, Loading),
 )(HasNoBlastDb);
 
 export default function BlastDB({ isEditing, genomeId, blastDb }) {

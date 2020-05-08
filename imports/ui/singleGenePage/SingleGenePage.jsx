@@ -1,17 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
-// import { Job } from 'meteor/vsivsi:job-collection';
 
 import React from 'react';
-import { compose, branch, renderComponent } from 'recompose';
 import hash from 'object-hash';
 
-// import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 import { Genes } from '/imports/api/genes/gene_collection.js';
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 // import logger from '/imports/api/util/logger.js';
 
-import { withEither } from '/imports/ui/util/uiUtil.jsx';
+import { branch, compose } from '/imports/ui/util/uiUtil.jsx';
 
 import NotFound from '/imports/ui/main/NotFound.jsx';
 
@@ -151,8 +148,8 @@ function SingleGenePage({ gene, genome = {} }) {
 
 export default compose(
   withTracker(geneDataTracker),
-  withEither(isLoading, Loading),
-  withEither(isNotFound, NotFound),
+  branch(isLoading, Loading),
+  branch(isNotFound, NotFound),
   withTracker(genomeDataTracker),
-  withEither(isLoading, Loading),
+  branch(isLoading, Loading),
 )(SingleGenePage);

@@ -1,6 +1,5 @@
 /* eslint-disable max-classes-per-file */
 import React, { useState } from 'react';
-import { compose, branch, renderComponent } from 'recompose';
 import { scaleLinear } from 'd3';// -scale';
 import { groupBy } from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';
@@ -9,7 +8,7 @@ import randomColor from 'randomcolor';
 
 import { getGeneSequences } from '/imports/api/util/util.js';
 
-import { withEither } from '/imports/ui/util/uiUtil.jsx';
+import { branch, compose } from '/imports/ui/util/uiUtil.jsx';
 
 import './proteinDomains.scss';
 
@@ -437,5 +436,5 @@ function ProteinDomains({
 }
 
 export default compose(
-  branch(hasNoProteinDomains, renderComponent(NoProteinDomains)),
+  branch(hasNoProteinDomains, NoProteinDomains),
 )(ProteinDomains);

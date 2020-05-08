@@ -3,14 +3,15 @@ import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
-import { compose, branch, renderComponent } from 'recompose';
 
 import { ExperimentInfo }
   from '/imports/api/transcriptomes/transcriptome_collection.js';
 import { genomeCollection }
   from '/imports/api/genomes/genomeCollection.js';
 
-import { isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
+import {
+  branch, compose, isLoading, Loading,
+} from '/imports/ui/util/uiUtil.jsx';
 
 import GenomeExperiment from './GenomeExperiment.jsx';
 
@@ -58,5 +59,5 @@ function AdminTranscriptomes({ experiments, genomes }) {
 
 export default compose(
   withTracker(dataTracker),
-  branch(isLoading, renderComponent(Loading)),
+  branch(isLoading, Loading),
 )(AdminTranscriptomes);

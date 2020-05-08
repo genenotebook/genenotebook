@@ -7,7 +7,6 @@ import { Link } from 'react-router-dom';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
 
-// import BlastAlignment from './BlastAlignment.jsx';
 import './blastResultList.scss';
 
 function blastHitDataTracker({ hit, RenderComponent }) {

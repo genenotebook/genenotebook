@@ -5,13 +5,15 @@ import { withTracker } from 'meteor/react-meteor-data';
 
 import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
-import { compose, branch, renderComponent } from 'recompose';
 
-import { isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
+import {
+  branch, compose, isLoading, Loading,
+} from '/imports/ui/util/uiUtil.jsx';
 import logger from '/imports/api/util/logger.js';
 
 import submitBlastJob from '/imports/api/blast/submitblastjob.js';
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
+
 
 import './submitblast.scss';
 
@@ -409,5 +411,5 @@ function SubmitBlast({ genomes }) {
 
 export default compose(
   withTracker(dataTracker),
-  branch(isLoading, renderComponent(Loading)),
+  branch(isLoading, Loading),
 )(SubmitBlast);

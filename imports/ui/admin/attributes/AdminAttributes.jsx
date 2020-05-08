@@ -3,7 +3,6 @@ import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
-import { compose, branch, renderComponent } from 'recompose';
 
 import { attributeCollection }
   from '/imports/api/genes/attributeCollection.js';
@@ -12,7 +11,9 @@ import { genomeCollection }
 import { scanGeneAttributes }
   from '/imports/api/genes/scanGeneAttributes.js';
 
-import { isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
+import {
+  branch, compose, isLoading, Loading,
+} from '/imports/ui/util/uiUtil.jsx';
 
 import AttributeInfo from './AttributeInfo.jsx';
 
@@ -87,5 +88,5 @@ function AdminAttributes({ attributes, genomes }) {
 
 export default compose(
   withTracker(attributeDataTracker),
-  branch(isLoading, renderComponent(Loading)),
+  branch(isLoading, Loading),
 )(AdminAttributes);

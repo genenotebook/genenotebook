@@ -3,7 +3,7 @@ import { withTracker } from 'meteor/react-meteor-data';
 import React from 'react';
 
 import { getGeneSequences } from '/imports/api/util/util.js';
-import { withEither } from '/imports/ui/util/uiUtil.jsx';
+import { branch } from '/imports/ui/util/uiUtil.jsx';
 
 import previewDataTracker from './previewDataTracker.js';
 
@@ -31,7 +31,7 @@ function NoPreview() {
 function SequencePreview({ previewGenes, seqType }) {
   return (
     <div>
-      {previewGenes.map(gene => formatFasta({ gene, seqType }).map(fastaLine => (
+      {previewGenes.map((gene) => formatFasta({ gene, seqType }).map((fastaLine) => (
         <span key={fastaLine}>
           {fastaLine}
           <br />
@@ -41,7 +41,7 @@ function SequencePreview({ previewGenes, seqType }) {
   );
 }
 
-const SequencePreviewWithCheck = withEither(hasNoPreview, NoPreview)(SequencePreview);
+const SequencePreviewWithCheck = branch(hasNoPreview, NoPreview)(SequencePreview);
 
 function SequenceDownload({ previewGenes, options }) {
   const { seqType } = options;

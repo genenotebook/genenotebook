@@ -5,15 +5,14 @@ import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React, { useState, useEffect, useRef } from 'react';
-// import PropTypes from 'prop-types';
 import { Redirect, withRouter } from 'react-router-dom';
-import { compose } from 'recompose';
 import { cloneDeep } from 'lodash';
 
 import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 
-// import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
-import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
+import {
+  branch, compose, isLoading, Loading,
+} from '/imports/ui/util/uiUtil.jsx';
 
 
 const attributeTracker = ({ location }) => {
@@ -126,7 +125,11 @@ function SearchBar({
         <div className="control has-dropdown">
           <div className="dropdown is-hoverable">
             <div className="dropdown-trigger">
-              <button type="button" className="button is-small has-dropdown navbar-link" aria-haspopup="true" aria-controls="dropdown-menu-search" />
+              <button type="button" className="button is-small">
+                <span className="icon">
+                  <span className="icon-down" />
+                </span>
+              </button>
             </div>
             <div className="dropdown-menu" id="dropdown-menu-search" role="menu">
               <div className="dropdown-content">
@@ -231,5 +234,5 @@ function SearchBar({
 export default compose(
   withRouter,
   withTracker(attributeTracker),
-  withEither(isLoading, Loading),
+  branch(isLoading, Loading),
 )(SearchBar);

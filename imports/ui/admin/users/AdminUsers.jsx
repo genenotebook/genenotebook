@@ -4,10 +4,9 @@ import { Roles } from 'meteor/alanning:roles';
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { compose, branch, renderComponent } from 'recompose';
 
 import {
-  isLoading, Loading, formatDate,
+  branch, compose, isLoading, Loading, formatDate,
 } from '/imports/ui/util/uiUtil.jsx';
 import { getHighestRole } from '/imports/api/users/users.js';
 
@@ -21,11 +20,6 @@ function adminUsersDataTracker() {
     users,
   };
 }
-
-const withConditionalRendering = compose(
-  withTracker(adminUsersDataTracker),
-  branch(isLoading, renderComponent(Loading)),
-);
 
 function AdminUserInfo ({ user }) {
   const {
@@ -81,4 +75,7 @@ function AdminUsers({ users }) {
   );
 }
 
-export default withConditionalRendering(AdminUsers);
+export default compose(
+  withTracker(adminUsersDataTracker),
+  branch(isLoading, Loading),
+)(AdminUsers);

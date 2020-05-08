@@ -5,8 +5,6 @@ import { Roles } from 'meteor/alanning:roles';
 import React, { useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 
-import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
-
 import SearchBar from './SearchBar.jsx';
 import PageloadPopup from './PageloadPopup.jsx';
 

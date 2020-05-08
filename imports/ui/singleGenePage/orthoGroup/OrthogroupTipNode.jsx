@@ -3,10 +3,11 @@ import { Meteor } from 'meteor/meteor';
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { compose, branch, renderComponent } from 'recompose';
 import randomColor from 'randomcolor';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
+
+import { branch, compose } from '/imports/ui/util/uiUtil.jsx';
 
 import './orthogroup.scss';
 
@@ -88,6 +89,6 @@ function geneLinkDataTracker({ data, ...props }) {
 
 export default compose(
   withTracker(geneLinkDataTracker),
-  branch(isLoading, renderComponent(Loading)),
-  branch(isNotFound, renderComponent(NotFound)),
+  branch(isLoading, Loading),
+  branch(isNotFound, NotFound),
 )(OrthogroupTipNode);

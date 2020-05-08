@@ -15,20 +15,32 @@ export function round(x, n) {
 
 
 /**
- * Let conditionalRenderingFn decide wether to wrap EitherComponent or Component
+ * Inspired by recompose branch, but does not require HOCs
+ * Let conditionalRenderingFn decide wether to wrap BranchComponent or Component
  * Used for conditional rendering of composed components
  * @param {Function} conditionalRenderingFn
  * @param {Function} EitherComponent
  * @return {Function}
  */
-export const withEither = (
+export const branch = (
   conditionalRenderingFn,
-  EitherComponent,
-) => Component => props => (conditionalRenderingFn(props) ? (
-  <EitherComponent {...props} />
+  BranchComponent,
+) => (Component) => (props) => (conditionalRenderingFn(props) ? (
+  <BranchComponent {...props} />
 ) : (
   <Component {...props} />
 ));
+
+/**
+ * Inspired by recompose compose
+ * @param  {...Function} funcs react components to compose
+ * @return {Function} single react component with all HOCs incorporated
+ */
+export function compose(...funcs) {
+  return funcs.reduce((a, b) => function(...args) {
+    return a(b(...args));
+  }, (arg) => arg); // identity function to initialize reduce
+}
 
 /**
  * Helper function to see if reactive dataTracker is still loading

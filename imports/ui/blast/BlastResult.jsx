@@ -6,11 +6,12 @@ import { withTracker } from 'meteor/react-meteor-data';
 
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { compose, branch, renderComponent } from 'recompose';
 import { Link } from 'react-router-dom';
 
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 // import logger from '/imports/api/util/logger.js';
+
+import { branch, compose } from '/imports/ui/util/uiUtil.jsx';
 
 import {
   Dropdown,
@@ -336,9 +337,9 @@ BlastResult.propTypes = {
 
 export default compose(
   withTracker(blastDataTracker),
-  branch(isLoading, renderComponent(Loading)),
-  branch(isNotFound, renderComponent(NotFound)),
-  branch(isWaiting, renderComponent(Waiting)),
-  branch(isRunning, renderComponent(Running)),
-  branch(noHits, renderComponent(NoHits)),
+  branch(isLoading, Loading),
+  branch(isNotFound, NotFound),
+  branch(isWaiting, Waiting),
+  branch(isRunning, Running),
+  branch(noHits, NoHits),
 )(BlastResult);

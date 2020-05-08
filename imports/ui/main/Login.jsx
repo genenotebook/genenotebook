@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { Meteor } from 'meteor/meteor';
-// import { withTracker } from 'meteor/react-meteor-data';
 
 import React, { useState } from 'react';
 import { Redirect, Link } from 'react-router-dom';
@@ -80,7 +79,7 @@ export default function Login({ location }) {
                 </div>
                 <div className="control">
                   <button
-                    className="button is-link is-light is-fullwidth is-large"
+                    className="button is-link is-light is-fullwidth is-large submit-login"
                     type="submit"
                   >
                     Sign in

@@ -2,13 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React, { useEffect } from 'react';
-import { compose } from 'recompose';
 import dot from 'dot-object';
 import { find } from 'lodash';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
 
-import { withEither } from '/imports/ui/util/uiUtil.jsx';
+import { branch, compose } from '/imports/ui/util/uiUtil.jsx';
 
 import Genemodel from '/imports/ui/singleGenePage/Genemodel.jsx';
 import ProteinDomains from '/imports/ui/singleGenePage/ProteinDomains.jsx';
@@ -121,16 +120,6 @@ function Loading({ selectedColumns, ...props }) {
     </tbody>
   );
 }
-
-/**
- * [withConditionalRendering description]
- * @type {[type]}
- */
-const withConditionalRendering = compose(
-  withTracker(dataTracker),
-  withEither(isLoading, Loading),
-  withEither(hasNoResults, NoResults),
-);
 
 function AttributeColumn({
   attributeName, attributeValue, geneId, genomeDataCache,
@@ -253,4 +242,8 @@ function GeneTableBody({
   );
 }
 
-export default withConditionalRendering(GeneTableBody);
+export default compose(
+  withTracker(dataTracker),
+  branch(isLoading, Loading),
+  branch(hasNoResults, NoResults),
+)(GeneTableBody);

@@ -9,13 +9,14 @@ import { Roles } from 'meteor/alanning:roles';
 import { updateUserInfo, getHighestRole } from '/imports/api/users/users.js';
 
 import React, { useState } from 'react';
-import { compose } from 'recompose';
 import { isEqual, pick, cloneDeep } from 'lodash';
 
 import logger from '/imports/api/util/logger.js';
 
 import PermissionSelect from '/imports/ui/util/PermissionSelect.jsx';
-import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
+import {
+  branch, compose, isLoading, Loading,
+} from '/imports/ui/util/uiUtil.jsx';
 
 import ResetPassword from './ResetPassword.jsx';
 
@@ -26,36 +27,39 @@ function UserProfileButtons({
 }) {
   if (editing) {
     return (
-      <div className="btn-group" role="group">
+      <div className="field has-addons user-profile-buttons has-text-centered" role="group">
         {hasChanges && (
-          <button className="btn btn-sm btn-success px-2 py-0" type="button" onClick={saveChanges}>
-            <span className="icon-floppy" />
-            {' '}
-            Save changes
-          </button>
+          <p className="control">
+            <button className="button is-small is-success is-small is-outlined" type="button" onClick={saveChanges}>
+              <span className="icon-floppy" />
+              {' Save changes'}
+            </button>
+          </p>
         )}
-        <button
-          className="btn btn-sm btn-outline-dark border px-2 py-0"
-          type="button"
-          onClick={cancelChanges}
-        >
-          <span className="icon-cancel" />
-          {' '}
-          Cancel
-        </button>
+        <p className="control">
+          <button
+            className="button is-small"
+            type="button"
+            onClick={cancelChanges}
+          >
+            <span className="icon-cancel" />
+            {' Cancel'}
+          </button>
+        </p>
       </div>
     );
   }
   return (
-    <button
-      className="btn btn-sm btn-outline-dark border px-2 py-0"
-      type="button"
-      onClick={toggleEdit}
-    >
-      <span className="icon-pencil" />
-      {' '}
-Edit profile
-    </button>
+    <div className="has-text-centered">
+      <button
+        className="button is-small"
+        type="button"
+        onClick={toggleEdit}
+      >
+        <span className="icon-pencil" />
+        {' Edit profile'}
+      </button>
+    </div>
   );
 }
 
@@ -63,9 +67,9 @@ function UserRoles({
   role, existingRoles, onChange, isAdmin, editing,
 }) {
   return (
-    <div className="form-group col-md-6">
-      <label htmlFor="groups" className="control-label">
-          User roles
+    <div className="field">
+      <label htmlFor="groups" className="label">
+        User roles
       </label>
       <PermissionSelect
         value={role}
@@ -79,13 +83,13 @@ function UserRoles({
 
 function UserName({ username, onChange, editing }) {
   return (
-    <div className="form-group col-md-6">
-      <label htmlFor="username" className="control-label">
-          Username
+    <div className="field">
+      <label htmlFor="username" className="label">
+        Username
       </label>
       <input
         type="text"
-        className="form-control form-control-sm"
+        className="input is-small"
         id="username"
         onChange={onChange}
         value={username}
@@ -94,9 +98,8 @@ function UserName({ username, onChange, editing }) {
         title="Only letters and numbers"
         autoComplete="username"
       />
-      <small id="emailHelp" className="form-text text-muted">
-          Your username will be visible to other users and must be unique.
-        {' '}
+      <small id="emailHelp" className="help">
+        {'Your username will be visible to other users and must be unique. '}
         <b>required</b>
       </small>
     </div>
@@ -107,14 +110,14 @@ function Profile({
   first_name, last_name, onChange, editing,
 }) {
   return (
-    <div className="form-row">
-      <div className="form-group col-md-6">
-        <label htmlFor="firstname" className="control-label">
-            First name
+    <div className="columns">
+      <div className="column">
+        <label htmlFor="firstname" className="label">
+          First name
         </label>
         <input
           type="text"
-          className="form-control form-control-sm"
+          className="input is-small"
           id="firstname"
           onChange={onChange}
           value={first_name}
@@ -124,13 +127,13 @@ function Profile({
           autoComplete="given-name"
         />
       </div>
-      <div className="form-group col-md-6">
-        <label htmlFor="lastname" className="control-label">
-            Last name
+      <div className="column">
+        <label htmlFor="lastname" className="label">
+          Last name
         </label>
         <input
           type="text"
-          className="form-control form-control-sm"
+          className="input is-small"
           id="lastname"
           onChange={onChange}
           value={last_name}
@@ -149,13 +152,13 @@ function EmailAddress({ emails, onChange }) {
     // start counting at 1
     const index = i + 1;
     return (
-      <div className="form-group" key={`email${index}`}>
-        <label htmlFor={`email${index}`} className="control-label">
-            Email address
+      <div className="field" key={`email${index}`}>
+        <label htmlFor={`email${index}`} className="label">
+          Email address
         </label>
         <input
           type="email"
-          className="form-control form-control-sm"
+          className="input is-small"
           id={`email${index}`}
           onChange={onChange}
           value={email.address}
@@ -190,11 +193,6 @@ function dataTracker({ match }) {
 
   return { user, loading, existingRoles };
 }
-
-const withConditionalRendering = compose(
-  withTracker(dataTracker),
-  withEither(isLoading, Loading),
-);
 
 function UserProfile({
   existingRoles,
@@ -255,7 +253,7 @@ function UserProfile({
     setEmails(newEmails);
   }
 
-  function saveChanges() {
+  function handleSubmit() {
     setEditing(false);
     updateUserInfo.call({
       userId: user._id, username, role, profile, emails,
@@ -273,6 +271,7 @@ function UserProfile({
   }
 
   function deleteAccount() {
+    // eslint-disable-next-line no-alert
     alert(
       'This currently does nothing. Please contact your administrator if you really want to remove your account',
     );
@@ -280,50 +279,59 @@ function UserProfile({
   }
 
   return (
-    <div className="user-profile card text-center">
-      <div className="card-body">
-        <AdminAccountCheck {...user} />
-        <div className="float-center">
-          <img className="mb-4 rounded-circle" src="logo.svg" alt="" width="50" height="50" />
-          <h1 className="h3 mb-3 font-weight-normal">User Profile</h1>
+    <div className="hero is-small is-light is-bold">
+      <div className="hero-body">
+        <div className="container columns is-centered">
+          <form className="card column is-4 login-form" onSubmit={handleSubmit}>
+            <div className="card-body">
+              <AdminAccountCheck {...user} />
+              <div className="card-image">
+                <figure className="image is-96x96">
+                  <img className="is-rounded" src="logo.svg" alt="logo" />
+                </figure>
+              </div>
+              <h4 className="subtitle is-4 has-text-centered">User profile</h4>
+              <UserProfileButtons
+                toggleEdit={() => setEditing(!editing)}
+                saveChanges={handleSubmit}
+                cancelChanges={cancelChanges}
+                {...{ editing, hasChanges }}
+              />
+              <hr />
+              <div>
+                <UserName
+                  {...{ username, editing }}
+                  onChange={changeUsername}
+                />
+                <UserRoles
+                  {...{
+                    role, existingRoles, isAdmin, editing,
+                  }}
+                  onChange={changeRoles}
+                />
+              </div>
+              <Profile {...{ editing, ...profile }} onChange={changeProfile} />
+              <EmailAddress {...{ emails, editing }} onChange={changeEmail} />
+              <hr />
+
+              {editing && <ResetPassword toggleEdit={() => setEditing(!editing)} {...user} />}
+              <button
+                className="button is-small is-danger"
+                type="button"
+                onClick={deleteAccount}
+              >
+                <span className="icon-cancel" />
+                {' Delete account'}
+              </button>
+            </div>
+          </form>
         </div>
-        <UserProfileButtons
-          toggleEdit={() => setEditing(!editing)}
-          saveChanges={saveChanges}
-          cancelChanges={cancelChanges}
-          {...{ editing, hasChanges }}
-        />
-        <form onSubmit={saveChanges}>
-          <hr />
-          <div className="form-row">
-            <UserName
-              {...{ username, editing }}
-              onChange={changeUsername}
-            />
-            <UserRoles
-              {...{
-                role, existingRoles, isAdmin, editing,
-              }}
-              onChange={changeRoles}
-            />
-          </div>
-          <Profile {...{ editing, ...profile }} onChange={changeProfile} />
-          <EmailAddress {...{ emails, editing }} onChange={changeEmail} />
-          <hr />
-        </form>
-        {editing && <ResetPassword toggleEdit={() => setEditing(!editing)} {...user} />}
-        <button
-          className="btn btn-sm btn-danger px-2 py-0"
-          type="button"
-          onClick={deleteAccount}
-        >
-          <span className="icon-cancel" />
-          {' '}
-          Delete account
-        </button>
       </div>
     </div>
   );
 }
 
-export default withConditionalRendering(UserProfile);
+export default compose(
+  withTracker(dataTracker),
+  branch(isLoading, Loading),
+)(UserProfile);

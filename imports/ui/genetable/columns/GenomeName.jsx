@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
-// import React from 'react';
-import { compose, branch, renderComponent } from 'recompose';
-
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
-import { isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
+import {
+  branch, compose, isLoading, Loading,
+} from '/imports/ui/util/uiUtil.jsx';
 
 function hasOwnProperty(obj, prop) {
   return Object.hasOwnProperty.call(obj, prop);
@@ -36,5 +35,5 @@ function GenomeName({ genome }) {
 
 export default compose(
   withTracker(dataTracker),
-  branch(isLoading, renderComponent(Loading)),
+  branch(isLoading, Loading),
 )(GenomeName);

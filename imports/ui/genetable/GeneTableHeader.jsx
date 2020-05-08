@@ -175,7 +175,9 @@ function HeaderElement({
             <div className="dropdown is-hoverable columnselect">
               <div className="dropdown-trigger">
                 <button type="button" className={`button is-small ${buttonClass} ${queryLoading ? 'is-loading' : ''}`}>
-                  V
+                  <span className="icon">
+                    <span className="icon-down" />
+                  </span>
                 </button>
               </div>
               <div className="dropdown-menu" role="menu">

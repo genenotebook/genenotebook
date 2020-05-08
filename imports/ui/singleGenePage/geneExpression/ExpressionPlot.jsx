@@ -7,7 +7,6 @@ import { withTracker } from 'meteor/react-meteor-data';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import ReactResizeDetector from 'react-resize-detector';
-import { compose } from 'recompose';
 import { mean, sum, groupBy } from 'lodash';
 import randomColor from 'randomcolor';
 import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
@@ -17,7 +16,7 @@ import {
   Transcriptomes,
 } from '/imports/api/transcriptomes/transcriptome_collection.js';
 
-import { withEither, round } from '/imports/ui/util/uiUtil.jsx';
+import { branch, compose, round } from '/imports/ui/util/uiUtil.jsx';
 
 import './expressionPlot.scss';
 
@@ -77,10 +76,10 @@ function Loading() {
 }
 
 const withConditionalRendering = compose(
-  withEither(isLoading, Loading),
-  withEither(hasNoSamples, NoSamples),
-  withTracker(expressionDataTracker),
-  withEither(isLoading, Loading),
+  branch(isLoading, Loading),
+  branch(hasNoSamples, NoSamples),
+  branch(expressionDataTracker),
+  branch(isLoading, Loading),
 );
 
 function ExpressionPopover({

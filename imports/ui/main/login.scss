@@ -1,9 +1,13 @@
 .login-form {
-  .card-image, button, a#new-account {
+  .card-image, a#new-account {
     display: table;
     margin: 0 auto;
   }
   .card-footer, a#new-account {
     margin-top: 1rem;
+  }
+
+  button.submit-login {
+    padding-bottom: 14px;
   }
 }

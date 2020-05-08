@@ -3,12 +3,13 @@ import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
-import { compose, branch, renderComponent } from 'recompose';
 import hash from 'object-hash';
 
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 
-import { isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
+import {
+  branch, compose, isLoading, Loading,
+} from '/imports/ui/util/uiUtil.jsx';
 
 import GenomeInfo from './GenomeInfo.jsx';
 
@@ -58,5 +59,5 @@ function AdminGenomes({ genomes }) {
 
 export default compose(
   withTracker(adminGenomesDataTracker),
-  branch(isLoading, renderComponent(Loading)),
+  branch(isLoading, Loading),
 )(AdminGenomes);

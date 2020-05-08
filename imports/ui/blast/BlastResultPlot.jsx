@@ -1,8 +1,9 @@
 import React from 'react';
 import ContainerDimensions from 'react-container-dimensions';
 // import { Popover, OverlayTrigger } from 'react-bootstrap';
-import { scaleLinear, interpolateGreys } from 'd3'; // -scale';
-// import { interpolateGreys } from 'd3-scale-chromatic';
+import { scaleLinear, interpolateGreys } from 'd3';
+
+import './blastResultPlot.scss';
 
 /*
 const PopoverHover = (props) => (
@@ -93,12 +94,13 @@ function HitPlotLine({
         return (
           <rect
             key={hspIndex}
+            className="hsp"
             x={xScale(x)}
             y="0"
             width={xScale(width)}
             height={height / 2}
-            rx="1"
-            ry="1"
+            rx="2"
+            ry="2"
             style={{
               fill: interpolateGreys(bitScore / maxBitScore),
               strokeWidth: 0.5,
@@ -154,7 +156,7 @@ export default function BlastResultPlot({ job }) {
   const { result, data } = job;
   const hits = result.BlastOutput.BlastOutput_iterations[0].Iteration[0].Iteration_hits[0].Hit;
   return (
-    <fieldset className="box blast-result-plot" style={{ minInlineSize: 'unset' }}>
+    <fieldset className="box blast-result-plot">
       <legend className="subtitle is-5">HSP Plot</legend>
       <ContainerDimensions>
         {({ width }) => (

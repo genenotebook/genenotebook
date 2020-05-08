@@ -1,6 +1,5 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from 'react';
-// import { isEqual } from 'lodash';
 
 import updateGenome from '/imports/api/genomes/updateGenome.js';
 import removeGenome from '/imports/api/genomes/removeGenome.js';

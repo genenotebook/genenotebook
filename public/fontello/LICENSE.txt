@@ -37,13 +37,13 @@ Font license info
    Homepage:  http://www.entypo.com
 
 
-## Modern Pictograms
+## MFG Labs
 
-   Copyright (c) 2012 by John Caserta. All rights reserved.
+   Copyright (C) 2012 by Daniel Bruce
 
-   Author:    John Caserta
+   Author:    MFG Labs
    License:   SIL (http://scripts.sil.org/OFL)
-   Homepage:  http://thedesignoffice.org/project/modern-pictograms/
+   Homepage:  http://www.mfglabs.com/
 
 
 ## Font Awesome
@@ -62,15 +62,6 @@ Font license info
    Author:    Just Be Nice studio
    License:   SIL (http://scripts.sil.org/OFL)
    Homepage:  http://www.justbenicestudio.com/
-
-
-## MFG Labs
-
-   Copyright (C) 2012 by Daniel Bruce
-
-   Author:    MFG Labs
-   License:   SIL (http://scripts.sil.org/OFL)
-   Homepage:  http://www.mfglabs.com/
 
 
 ## Fontelico

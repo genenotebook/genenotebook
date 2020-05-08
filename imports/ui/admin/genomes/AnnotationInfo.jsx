@@ -1,9 +1,10 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
-import { compose, branch, renderComponent } from 'recompose';
 
 import { removeAnnotationTrack }
   from '/imports/api/genomes/removeAnnotationTrack.js';
+
+import { branch, compose } from '/imports/ui/util/uiUtil.jsx';
 
 import BlastDB from './BlastDB.jsx';
 
@@ -59,5 +60,5 @@ function AnnotationInfo({
   );
 }
 export default compose(
-  branch(hasNoAnnotation, renderComponent(NoAnnotation)),
+  branch(hasNoAnnotation, NoAnnotation),
 )(AnnotationInfo);
