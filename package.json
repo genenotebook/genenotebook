@@ -60,7 +60,7 @@
     "core-js": "^3.6.4",
     "core-util-is": "^1.0.2",
     "d3": "^5.15.0",
-    "documentation": "^12.1.4",
+    "documentation": "^13.0.0",
     "dot-object": "^2.0.0",
     "fibers": "^5.0.0",
     "file-type": "^14.0.0",
