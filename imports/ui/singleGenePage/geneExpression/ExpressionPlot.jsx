@@ -75,13 +75,6 @@ function Loading() {
   );
 }
 
-const withConditionalRendering = compose(
-  branch(isLoading, Loading),
-  branch(hasNoSamples, NoSamples),
-  branch(expressionDataTracker),
-  branch(isLoading, Loading),
-);
-
 function ExpressionPopover({
   showPopover,
   targetId,
@@ -378,7 +371,8 @@ function ExpressionPlot({ values, resizable, height }) {
           <g transform={`translate(${padding.left},${padding.top})`}>
             <YAxis scale={yScale} numTicks="4" />
             <GroupedSamples
-              {...{ replicaGroups, yScale }}
+              replicaGroups={replicaGroups}
+              yScale={yScale}
               transform="translate(20,0)"
             />
           </g>
@@ -401,4 +395,10 @@ ExpressionPlot.propTypes = {
   resizable: PropTypes.bool,
   height: PropTypes.number,
 };
-export default withConditionalRendering(ExpressionPlot);
+
+export default compose(
+  branch(isLoading, Loading),
+  branch(hasNoSamples, NoSamples),
+  withTracker(expressionDataTracker),
+  branch(isLoading, Loading),
+)(ExpressionPlot);

@@ -128,13 +128,13 @@ function SingleGenePage({ gene, genome = {} }) {
           </section>
           <Seq gene={gene} />
           <section id="protein-domains">
-            <ProteinDomains gene={gene} showHeader />
+            <ProteinDomains gene={gene} showHeader resizable />
           </section>
           <section id="orthogroup">
-            <Orthogroup gene={gene} showHeader />
+            <Orthogroup gene={gene} showHeader resizable />
           </section>
           <section id="expression">
-            <GeneExpression gene={gene} showHeader />
+            <GeneExpression gene={gene} showHeader resizable />
           </section>
         </div>
         <div className="card-footer text-muted">
