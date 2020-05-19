@@ -52,6 +52,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.9.6",
+    "@popperjs/core": "^2.4.0",
     "asteroid": "^2.0.3",
     "bcrypt": "^4.0.0",
     "buffer-shims": "^1.0.0",
@@ -87,6 +88,7 @@
     "react-container-dimensions": "^1.4.1",
     "react-dom": "^16.13.1",
     "react-mounter": "^1.2.0",
+    "react-popper": "^2.2.3",
     "react-resize-detector": "^4.2.3",
     "react-router-dom": "^5.2.0",
     "react-select": "^3.1.0",
