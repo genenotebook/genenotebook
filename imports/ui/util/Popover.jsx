@@ -1,3 +1,5 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable react/jsx-props-no-spreading */
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { usePopper } from 'react-popper';
@@ -36,7 +38,7 @@ export function PopoverBody({
   );
 }
 
-export function Popover({ children, ...props }) {
+export function Popover({ children }) {
   const [showPopover, setPopover] = useState(false);
   function closePopover() {
     document.removeEventListener('click', closePopover);
@@ -59,14 +61,7 @@ export function Popover({ children, ...props }) {
 
   const node = document.querySelector('body');
 
-  function renderChildren() {
-    return React.Children.map(children, (child) => React.cloneElement(child, {
-      togglePopover, showPopover, node, setReferenceElement, setPopperElement, styles, attributes,
-    }));
-  }
-  return (
-    <>
-      { renderChildren() }
-    </>
-  );
+  return React.Children.map(children, (child) => React.cloneElement(child, {
+    togglePopover, showPopover, node, setReferenceElement, setPopperElement, styles, attributes,
+  }));
 }

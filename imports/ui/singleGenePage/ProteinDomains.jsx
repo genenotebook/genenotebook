@@ -3,12 +3,16 @@ import React, { useState } from 'react';
 import { scaleLinear } from 'd3';// -scale';
 import { groupBy } from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';
-import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
+// import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import randomColor from 'randomcolor';
 
 import { getGeneSequences } from '/imports/api/util/util.js';
 
 import { branch, compose } from '/imports/ui/util/uiUtil.jsx';
+
+import {
+  Popover, PopoverTrigger, PopoverBody,
+} from '/imports/ui/util/Popover.jsx';
 
 import './proteinDomains.scss';
 
@@ -78,6 +82,7 @@ function XAxis({
   );
 }
 
+/*
 function DomainPopover({
   showPopover, targetId, togglePopover, ...domain
 }) {
@@ -165,61 +170,87 @@ function DomainPopover({
     </Popover>
   );
 }
+*/
 
 function ProteinDomain({
-  interproId, start, end, name, domainIndex, scale,
+  interproId, start, end, name, domainIndex, scale, Dbxref = [], Ontology_term = [], signature_desc, source, score,
 }) {
   const fill = interproId === 'Unintegrated signature'
     ? 'grey'
     : randomColor({ seed: interproId });
   const style = { fill, fillOpacity: 0.5 };
   const targetId = `${name.replace(/[:\.]/g, '_')}_${start}_${end}`;
-
-  const [showPopover, setPopover] = useState(false);
-  // function togglePopover() {
-  //   setShowPopover(!showPopover);
-  // }
-  function closePopover() {
-    document.removeEventListener('click', closePopover);
-    setPopover(false);
-  }
-  function openPopover() {
-    document.addEventListener('click', closePopover);
-    setPopover(true);
-  }
-  function togglePopover() {
-    if (showPopover) {
-      closePopover();
-    } else {
-      openPopover();
-    }
-  }
   return (
-    <>
-      <rect
-        className="protein-domain-interval"
-        x={scale(start)}
-        width={scale(end) - scale(start)}
-        y="0"
-        height="8"
-        rx="2"
-        ry="2"
-        style={style}
-        id={targetId}
-        onClick={togglePopover}
-      />
-      <DomainPopover
-        targetId={targetId}
-        interproId={interproId}
-        start={start}
-        end={end}
-        name={name}
-        domainIndex={domainIndex}
-        scale={scale}
-        showPopover={showPopover}
-        togglePopover={togglePopover}
-      />
-    </>
+    <Popover>
+      <PopoverTrigger>
+        <rect
+          className="protein-domain-interval"
+          x={scale(start)}
+          width={scale(end) - scale(start)}
+          y="0"
+          height="8"
+          rx="2"
+          ry="2"
+          style={style}
+          id={targetId}
+        />
+      </PopoverTrigger>
+      <PopoverBody>
+        <nav className="panel">
+          <p className="panel-heading">
+            { name }
+          </p>
+          <div className="panel-block">
+            <table className="table is-small is-narrow is-hoverable">
+              <tbody>
+                <tr>
+                  <td>Signature description</td>
+                  <td>{signature_desc || 'Not available'}</td>
+                </tr>
+                <tr>
+                  <td>Coordinates</td>
+                  <td>
+                    {`${start}..${end}`}
+                  </td>
+                </tr>
+                <tr>
+                  <td>Score</td>
+                  <td>{score}</td>
+                </tr>
+                <tr>
+                  <td>Source</td>
+                  <td>{source}</td>
+                </tr>
+                { Dbxref.length > 0 && (
+                  <tr>
+                    <td>Dbxref</td>
+                    <td>
+                      <ul>
+                        { Dbxref.map((xref) => (
+                          <li key={xref}>{ xref }</li>
+                        ))}
+                      </ul>
+                    </td>
+                  </tr>
+                )}
+                { Ontology_term.length > 0 && (
+                  <tr>
+                    <td>Ontology term</td>
+                    <td>
+                      <ul>
+                        { Ontology_term.map((term) => (
+                          <li key={term}>{ term }</li>
+                        ))}
+                      </ul>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </nav>
+      </PopoverBody>
+    </Popover>
   );
 }
 
