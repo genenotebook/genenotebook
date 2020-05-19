@@ -1,11 +1,16 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable react/jsx-props-no-spreading */
 import React, { useState } from 'react';
-import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import ReactResizeDetector from 'react-resize-detector';
 import { scaleLinear } from 'd3';
 import randomColor from 'randomcolor';
 import Color from 'color';
 
 import AttributeValue from '/imports/ui/genetable/columns/AttributeValue.jsx';
+
+import {
+  Popover, PopoverTrigger, PopoverBody,
+} from '/imports/ui/util/Popover.jsx';
 
 import './genemodel.scss';
 
@@ -59,42 +64,32 @@ function XAxis({
   );
 }
 
-function IntervalPopover({
-  showPopover,
-  togglePopover,
-  targetId,
-  ID,
-  type,
-  start,
-  end,
-  phase,
-  attributes = {},
-  seq,
+function IntervalInfo({
+  ID, type, start, end, phase, attributes, seq,
 }) {
   return (
-    <Popover placement="top" isOpen={showPopover} target={targetId} toggle={togglePopover}>
-      <PopoverHeader>{ID}</PopoverHeader>
-      <PopoverBody className="px-0 py-0">
-        <div className="table-responive">
-          <table className="table table-hover">
-            <tbody>
-              <tr>
-                <td>Type</td>
-                <td>{type}</td>
-              </tr>
-              <tr>
-                <td>Coordinates</td>
-                <td>
-                  {start}
-                  ..
-                  {end}
-                </td>
-              </tr>
-              <tr>
-                <td>Phase</td>
-                <td>{phase}</td>
-              </tr>
-              {Object.entries(attributes).map(([attributeName, attributeValue]) => (
+    <nav className="panel">
+      <p className="panel-heading">
+        {ID}
+      </p>
+      <div className="panel-body">
+        <table className="table is-hoverable is-narrow is-small">
+          <tbody>
+            <tr>
+              <td>Type</td>
+              <td>{type}</td>
+            </tr>
+            <tr>
+              <td>Coordinates</td>
+              <td>{`${start}..${end}`}</td>
+            </tr>
+            <tr>
+              <td>Phase</td>
+              <td>{phase}</td>
+            </tr>
+            {Object
+              .entries(attributes)
+              .map(([attributeName, attributeValue]) => (
                 <tr key={attributeName}>
                   <td>{attributeName}</td>
                   <td>
@@ -102,46 +97,24 @@ function IntervalPopover({
                   </td>
                 </tr>
               ))}
-              <tr>
-                <td colSpan="2">
-                  <h6>
-                    {type}
-                    &nbsp;sequence
-                  </h6>
-                  <div className="card exon-sequence">
-                    <AttributeValue attributeValue={seq} />
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </PopoverBody>
-    </Popover>
+            <tr>
+              <td colSpan="2">
+                <h6>{`${type} sequence`}</h6>
+                <div className="card exon-sequence">
+                  <AttributeValue attributeValue={seq} />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </nav>
   );
 }
 
 function Exon({
   genomeId, start, end, type, phase, scale, attributes, ID, seq,
 }) {
-  const [showPopover, setPopover] = useState(false);
-
-  function closePopover() {
-    document.removeEventListener('click', closePopover);
-    setPopover(false);
-  }
-  function openPopover() {
-    document.addEventListener('click', closePopover);
-    setPopover(true);
-  }
-  function togglePopover() {
-    if (showPopover) {
-      closePopover();
-    } else {
-      openPopover();
-    }
-  }
-
   const targetId = `${type}-${start}-${end}`;
 
   const baseColor = new Color(
@@ -158,61 +131,40 @@ function Exon({
   const height = type === 'CDS' ? 12 : 4;
 
   return (
-    <>
-      <rect
-        className="exon"
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        fill={fill.rgb()}
-        id={targetId}
-        onClick={togglePopover}
-      />
-      <IntervalPopover
-        {...{
-          targetId,
-          ID,
-          type,
-          start,
-          end,
-          phase,
-          attributes,
-          seq,
-          showPopover,
-        }}
-        togglePopover={togglePopover}
-      />
-    </>
+    <Popover>
+      <PopoverTrigger>
+        <rect
+          className="exon"
+          x={x}
+          y={y}
+          width={width}
+          height={height}
+          fill={fill.rgb()}
+          id={targetId}
+        />
+      </PopoverTrigger>
+      <PopoverBody>
+        <IntervalInfo
+          {...{
+            ID, type, start, end, phase, attributes, seq,
+          }}
+        />
+      </PopoverBody>
+    </Popover>
   );
 }
 
 function Transcript({
   transcript, exons, scale, strand, genomeId, geneId,
 }) {
-  const [showPopover, setPopover] = useState(false);
-
-  function closePopover() {
-    document.removeEventListener('click', closePopover);
-    setPopover(false);
-  }
-  function openPopover() {
-    document.addEventListener('click', closePopover);
-    setPopover(true);
-  }
-  function togglePopover() {
-    if (showPopover) {
-      closePopover();
-    } else {
-      openPopover();
-    }
-  }
   // put CDS exons last so they get drawn last and are placed on top
   exons.sort((exon1) => (exon1.type === 'CDS' ? 1 : -1));
 
-  const { start, end } = transcript;
+  const {
+    start, end, ID, attributes, seq, type,
+  } = transcript;
 
-  const targetId = transcript.ID.replace(/\.|:/g, '_');
+  const targetId = ID.replace(/\.|:/g, '_');
 
   // flip start and end coordinates based on strand so that marker end is always drawn correctly
   const x1 = scale(strand === '+' ? start : end);
@@ -235,16 +187,26 @@ function Transcript({
         markerEnd="url(#arrowEnd)"
         id={targetId}
       />
-      <line
-        {...{
-          x1: x1 - t,
-          x2: x2 + t,
-          y1,
-          y2,
-        }}
-        className="transcript-hover"
-        onClick={togglePopover}
-      />
+      <Popover>
+        <PopoverTrigger>
+          <line
+            {...{
+              x1: x1 - t,
+              x2: x2 + t,
+              y1,
+              y2,
+            }}
+            className="transcript-hover"
+          />
+        </PopoverTrigger>
+        <PopoverBody>
+          <IntervalInfo
+            {...{
+              ID, type, start, end, phase: '.', attributes, seq,
+            }}
+          />
+        </PopoverBody>
+      </Popover>
       {exons.map((exon) => (
         <Exon
           key={exon.ID}
@@ -256,20 +218,12 @@ function Transcript({
           }}
         />
       ))}
-      <IntervalPopover
-        {...{
-          targetId,
-          showPopover,
-          ...transcript,
-        }}
-        togglePopover={togglePopover}
-      />
     </>
   );
 }
 
 export function GenemodelGroup({
-  gene, transcripts, width, scale,
+  gene, transcripts, scale,
 }) {
   return (
     <g className="genemodel" transform="translate(0,4)">
@@ -277,7 +231,11 @@ export function GenemodelGroup({
         const exons = gene.subfeatures.filter(({ parents }) => parents.indexOf(transcript.ID) >= 0);
         const { ID: geneId, strand, genomeId } = gene;
         return (
-          <g key={transcript.ID} className="transcript" transform={`translate(0,${index * 14})`}>
+          <g
+            key={transcript.ID}
+            className="transcript"
+            transform={`translate(0,${index * 14})`}
+          >
             <Transcript
               {...{
                 exons,
