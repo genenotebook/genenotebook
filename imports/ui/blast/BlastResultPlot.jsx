@@ -1,6 +1,5 @@
 import React from 'react';
-import ContainerDimensions from 'react-container-dimensions';
-// import { Popover, OverlayTrigger } from 'react-bootstrap';
+import ReactResizeDetector from 'react-resize-detector';
 import { scaleLinear, interpolateGreys } from 'd3';
 
 import './blastResultPlot.scss';
@@ -158,7 +157,7 @@ export default function BlastResultPlot({ job }) {
   return (
     <fieldset className="box blast-result-plot">
       <legend className="subtitle is-5">HSP Plot</legend>
-      <ContainerDimensions>
+      <ReactResizeDetector handleWidth>
         {({ width }) => (
           <HitPlot
             width={width}
@@ -166,7 +165,7 @@ export default function BlastResultPlot({ job }) {
             queryLength={data.input.length}
           />
         )}
-      </ContainerDimensions>
+      </ReactResizeDetector>
     </fieldset>
   );
 }

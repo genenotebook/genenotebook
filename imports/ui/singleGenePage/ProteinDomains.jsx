@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { scaleLinear } from 'd3';// -scale';
 import { groupBy } from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';
-// import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import randomColor from 'randomcolor';
 
 import { getGeneSequences } from '/imports/api/util/util.js';
