@@ -1,6 +1,11 @@
 import React from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import { scaleLinear, interpolateGreys } from 'd3';
+import { omit } from 'lodash';
+
+import {
+  Popover, PopoverTrigger, PopoverBody,
+} from '/imports/ui/util/Popover.jsx';
 
 import './blastResultPlot.scss';
 
@@ -90,22 +95,46 @@ function HitPlotLine({
         // const alignmentLength = hsp['Hsp_align-len'];
         // const gaps = hsp.Hsp_gaps;
         // const evalue = hsp.Hsp_evalue;
+        const popoverItems = omit(hsp, ['Hsp_qseq', 'Hsp_hseq', 'Hsp_midline']);
         return (
-          <rect
-            key={hspIndex}
-            className="hsp"
-            x={xScale(x)}
-            y="0"
-            width={xScale(width)}
-            height={height / 2}
-            rx="2"
-            ry="2"
-            style={{
-              fill: interpolateGreys(bitScore / maxBitScore),
-              strokeWidth: 0.5,
-              stroke: 'hsl(0, 0%, 29%)',
-            }}
-          />
+          <Popover>
+            <PopoverTrigger>
+              <rect
+                key={hspIndex}
+                className="hsp"
+                x={xScale(x)}
+                y="0"
+                width={xScale(width)}
+                height={height / 2}
+                rx="2"
+                ry="2"
+                style={{
+                  fill: interpolateGreys(bitScore / maxBitScore),
+                  strokeWidth: 0.5,
+                  stroke: 'hsl(0, 0%, 29%)',
+                }}
+              />
+            </PopoverTrigger>
+            <PopoverBody>
+              <nav className="panel">
+                <p className="panel-heading">
+                  {`BLAST HSP ${hspIndex}`}
+                </p>
+                <div className="panel-body">
+                  <table className="table is-hoverable is-narrow is-small">
+                    <tbody>
+                      {Object.entries(popoverItems).map(([key, value]) => (
+                        <tr>
+                          <td>{key}</td>
+                          <td>{value}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </nav>
+            </PopoverBody>
+          </Popover>
         );
       })}
     </g>
