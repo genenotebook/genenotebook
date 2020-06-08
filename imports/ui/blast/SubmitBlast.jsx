@@ -87,7 +87,8 @@ function SequenceInput({
                 className={`button is-small ${value ? '' : 'is-static'}`}
               >
                 <strong>{ value ? selectedSeqType : 'empty' }</strong>
-                  &nbsp;sequence
+                &nbsp;sequence
+                { value && <span className="icon-down" /> }
               </button>
             </div>
             <div className="dropdown-menu" role="menu">
@@ -95,6 +96,7 @@ function SequenceInput({
                 {['Protein', 'Nucleotide'].map((seqType) => (
                   // eslint-disable-next-line jsx-a11y/anchor-is-valid
                   <a
+                    key={seqType}
                     href="#"
                     className={`dropdown-item ${seqType === selectedSeqType ? 'is-active' : ''}`}
                     id={seqType}
@@ -207,7 +209,7 @@ function SubmitButtons({
     return (
       <button
         type="button"
-        className="button is-small is-static"
+        className="button is-small is-static submit-buttons"
       >
         <span className="icon-questionmark" />
         Enter sequence
@@ -228,21 +230,22 @@ function SubmitButtons({
 
   return (
     <div className="field is-grouped submit-buttons">
-      <p className="control">
+      <div className="control">
         <div className="field has-addons">
-          <p className="control">
+          <div className="control">
             <button
               type="button"
               className="button is-small is-static"
             >
               Search a
             </button>
-          </p>
-          <p className="control dropdown is-hoverable is-right">
+          </div>
+          <div className="control dropdown is-hoverable is-right">
             <div className="dropdown-trigger">
               <button type="button" className="button is-small">
                 <strong>{selectedDbType}</strong>
                 &nbsp;database
+                <span className="icon-down" />
               </button>
             </div>
             <div className="dropdown-menu" role="menu">
@@ -261,10 +264,10 @@ function SubmitButtons({
                 ))}
               </div>
             </div>
-          </p>
+          </div>
         </div>
-      </p>
-      <p className="control">
+      </div>
+      <div className="control">
         <button
           className="button is-primary is-small"
           type="button"
@@ -273,7 +276,7 @@ function SubmitButtons({
           <span className="icon-database" />
           {blastType.toUpperCase()}
         </button>
-      </p>
+      </div>
     </div>
   );
 }

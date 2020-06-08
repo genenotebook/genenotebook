@@ -1,8 +1,10 @@
+/* eslint-disable react/jsx-props-no-spreading */
+/* eslint-disable react/prop-types */
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React, { useState, useEffect } from 'react';
-import { cloneDeep, isEqual, isEmpty } from 'lodash';
+import { cloneDeep, isEqual } from 'lodash';
 
 import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
@@ -13,6 +15,7 @@ import {
   branch, compose, isLoading, Loading,
 } from '/imports/ui/util/uiUtil.jsx';
 
+// eslint-disable-next-line import/no-cycle
 import FilterOptions from './filteroptions/FilterOptions.jsx';
 import SelectionOptions from './SelectionOptions.jsx';
 
@@ -22,7 +25,11 @@ import DownloadDialogModal from './downloads/DownloadDialog.jsx';
 
 import './geneTable.scss';
 
-export const VISUALIZATIONS = ['Gene model', 'Protein domains', 'Gene expression'];
+export const VISUALIZATIONS = [
+  'Gene model', 'Protein domains', 'Gene expression',
+];
+
+const DEFAULT_NUM_GENES_DISPLAY = 20;
 
 /**
  * Reactive data tracker to identify available gene attributes
@@ -138,7 +145,7 @@ function processBlastJob(Component) {
 function GeneTable({
   searchQuery, selectedAttributes, attributes, history, genomeDataCache,
 }) {
-  const [limit, setLimit] = useState(20);
+  const [limit, setLimit] = useState(DEFAULT_NUM_GENES_DISPLAY);
   const [query, setQuery] = useState(searchQuery);
   useEffect(() => {
     if (!isEqual(query, searchQuery)) {

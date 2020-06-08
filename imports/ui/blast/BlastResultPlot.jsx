@@ -9,33 +9,7 @@ import {
 
 import './blastResultPlot.scss';
 
-/*
-const PopoverHover = (props) => (
-  <Popover id="blast-plot-popover" title={props.geneID}>
-    <p>
-      <small>
-        <b>E-value</b>
-:
-        {props.evalue}
-        <br />
-        <b>Bitscore</b>
-:
-        {props.bitScore}
-        <br />
-        <b>Alignment length</b>
-:
-        {props.alignmentLength}
-        <br />
-        <b>Gaps</b>
-:
-        {props.gaps}
-      </small>
-    </p>
-  </Popover>
-);
-*/
-
-function XAxis({ scale, numTicks, ...props }) {
+function XAxis({ scale, numTicks }) {
   const range = scale.range();
   const width = range[1];
 
@@ -81,10 +55,10 @@ function XAxis({ scale, numTicks, ...props }) {
 }
 
 function HitPlotLine({
-  hit, index, height, xScale, maxBitScore, ...props
+  hit, index, height, xScale, maxBitScore,
 }) {
   const hsps = hit.Hit_hsps;
-  // const geneID = hit.Hit_def[0].split(' ')[1];
+  const geneId = hit.Hit_def[0].split(' ')[1];
   return (
     <g transform={`translate(0,${index * height})`}>
       {hsps.map((_hsp, hspIndex) => {
@@ -118,14 +92,14 @@ function HitPlotLine({
             <PopoverBody>
               <nav className="panel">
                 <p className="panel-heading">
-                  {`BLAST HSP ${hspIndex}`}
+                  {geneId}
                 </p>
                 <div className="panel-body">
                   <table className="table is-hoverable is-narrow is-small">
                     <tbody>
                       {Object.entries(popoverItems).map(([key, value]) => (
                         <tr>
-                          <td>{key}</td>
+                          <td>{key.slice(4)}</td>
                           <td>{value}</td>
                         </tr>
                       ))}
@@ -141,9 +115,7 @@ function HitPlotLine({
   );
 }
 
-function HitPlot({
-  width, queryLength, hits, ...props
-}) {
+function HitPlot({ width, queryLength, hits }) {
   const padding = {
     top: 10,
     bottom: 10,
