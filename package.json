@@ -75,7 +75,7 @@
     "meteor-later": "^1.2.0",
     "meteor-node-stubs": "^1.0.0",
     "object-hash": "^2.0.1",
-    "papaparse": "^5.1.1",
+    "papaparse": "^5.2.0",
     "pkginfo": "^0.4.1",
     "prop-types": "^15.7.2",
     "randomcolor": "^0.6.0",
