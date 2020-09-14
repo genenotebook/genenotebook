@@ -12,6 +12,7 @@ let fileName;
 program
   .description('Add InterProScan results to a running GeneNoteBook server')
   .usage('[options] <InterProScan gff3 output file>')
+  .arguments('<file>')
   .option('-u, --username <username>', 'GeneNoteBook admin username')
   .option('-p, --password <password>', 'GeneNoteBook admin password')
   .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')

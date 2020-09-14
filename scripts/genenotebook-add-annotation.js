@@ -11,6 +11,7 @@ let fileName;
 program
   .description('Add fasta formatted reference genome to a running GeneNoteBook server')
   .usage('[options] <annotation gff3 file>')
+  .arguments('<file>')
   .option('-u, --username <username>', 'GeneNoteBook admin username')
   .option('-p, --password <password>', 'GeneNoteBook admin password')
   .option(
