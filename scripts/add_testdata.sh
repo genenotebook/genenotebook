@@ -26,7 +26,7 @@ function addGenome {
 
 function addAnnotation {
   echo "adding test annotation" &&\
-  ./scripts/genenotebook add annotation -u admin -p admin -n test testdata/testdata.gff 
+  ./scripts/genenotebook add annotation -u admin -p admin -n test testdata/testdata.gff
 }
 
 function addInterproscan {
@@ -34,9 +34,7 @@ function addInterproscan {
   ./scripts/genenotebook add interproscan -u admin -p admin testdata/testdata.iprscan.gff3
 }
 
-#addGenome &&\
-#addAnnotation &&\
-#addInterproscan &&\
-addTranscriptomes 
-
-
+addGenome &&\
+addAnnotation &&\
+addInterproscan &&\
+addTranscriptomes
