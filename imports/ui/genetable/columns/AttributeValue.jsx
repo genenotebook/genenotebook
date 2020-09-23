@@ -4,7 +4,9 @@ function isArray(x) {
   return Array.isArray(x) && x.length > 1;
 }
 
-function addExtUrl(value, setDescription) {
+function DetailedSingleAttribute({ value }) {
+  const [description, setDescription] = useState("");
+
   let url;
 
   if (/^(GO:[0-9]{7})$/.test(value)) {
@@ -27,20 +29,14 @@ function addExtUrl(value, setDescription) {
   }
 
   if (typeof url !== 'undefined') {
-    return (
+    value = (
       <a href={url}>{value}</a>
     )
   }
 
-  return value;
-}
-
-function DetailedSingleAttribute({ value }) {
-  const [description, setDescription] = useState("");
-
   return (
     <>
-      { addExtUrl(value, setDescription) } {description}
+      { value } {description}
     </>
   );
 }
