@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 /* eslint-disable no-underscore-dangle, global-require */
 
+const fs = require('fs');
+
 const { Tail } = require('tail');
 const command = require('commander');
 const { spawn, exec } = require('child_process');
@@ -79,6 +81,11 @@ async function startGeneNoteBook(cmd) {
   const PORT = parseInt(cmd.port, 0) || 3000;
   const ROOT_URL = cmd.rootUrl || `http://localhost:${PORT}`;
   const opts = { PORT, ROOT_URL };
+
+  if (fs.existsSync("settings.json") && !('METEOR_SETTINGS' in process.env)) {
+    const METEOR_SETTINGS = fs.readFileSync("settings.json", 'utf8');
+    Object.assign(opts, { METEOR_SETTINGS });
+  }
 
   if (cmd.mongoUrl) {
     if (cmd.dbPath) {

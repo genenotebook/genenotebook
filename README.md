@@ -16,7 +16,7 @@
 conda install -c bioconda genenotebook
 ```
 
-### Start GeneNoteNook
+### Start GeneNoteBook
 
 ```
 genenotebook run

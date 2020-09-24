@@ -12,6 +12,7 @@ let fileName;
 program
   .description('Add Kallisto quantified gene expression to a running GeneNoteBook server')
   .usage('[options] <Kallisto abundance.tsv file>')
+  .arguments('<file>')
   .option('-u, --username <username>', 'GeneNoteBook admin username')
   .option('-p, --password <password>', 'GeneNoteBook admin password')
   .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
