@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { withTracker } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
 
@@ -21,7 +22,7 @@ function hasNoOrthogroup({ orthogroup }) {
 function NoOrthogroup({ showHeader }) {
   return (
     <>
-      { showHeader && <Header /> }
+      {showHeader && <Header />}
       <article className="message no-orthogroup" role="alert">
         <div className="message-body">
           <p className="has-text-grey">No orthogroup found</p>
@@ -44,7 +45,7 @@ function orthogroupDataTracker({ gene, ...props }) {
   };
 }
 
-function TreeBranch({ node, chronogram }) {
+function TreeBranch({ node, chronogram = true }) {
   const offset = chronogram ? 0 : 20;
   const multiplier = chronogram ? 1 : -10;
   const value = chronogram ? 'y' : 'value';
@@ -52,34 +53,33 @@ function TreeBranch({ node, chronogram }) {
   const d = `M${offset + (node.parent[value] * multiplier)},${node.parent.x} 
       L${offset + (node.parent[value] * multiplier)},${node.x} 
       L${offset + (node[value] * multiplier)},${node.x}`;
-  return <path {...{ d, style }} />;
+  return <path d={d} style={style} />;
 }
 
-function InternalNode({
-  data = { name: '' }, x, y, chronogram,
-}) {
+function InternalNode({ node }) {
+  const { data = { name: '' }, x, y } = node;
   const nodeLabel = data.name;
   return (
     <text x={y + 3} y={x + 3} fontSize="10">
-      { nodeLabel }
+      {nodeLabel}
     </text>
   );
 }
 
 function TreeNode({ node }) {
   return typeof node.children === 'undefined'
-    ? <OrthogroupTipNode {...node} />
-    : <InternalNode {...node} />;
+    ? <OrthogroupTipNode node={node} />
+    : <InternalNode node={node} />;
 }
 
 function Tree({
-  tree, size, geneIds, chronogram = true,
+  tree, size,
 }) {
   return (
     <div className="card tree">
       <ReactResizeDetector handleWidth>
         {
-          ({ width }) => {
+          ({ width = 200 }) => {
             const margin = {
               top: 10,
               bottom: 10,
@@ -106,8 +106,8 @@ function Tree({
                   {
                     nodes.map((node) => (
                       <React.Fragment key={`${node.x}_${node.y}`}>
-                        <TreeBranch {...{ node, chronogram }} />
-                        <TreeNode {...{ node, chronogram }} />
+                        <TreeBranch node={node} />
+                        <TreeNode node={node} />
                       </React.Fragment>
                     ))
                   }
@@ -131,13 +131,11 @@ function Header() {
 }
 
 function Orthogroup({ orthogroup, showHeader = false }) {
-  const { tree } = parseNewick(orthogroup.tree);
-  // eslint-disable-next-line no-param-reassign
-  orthogroup.tree = tree;
+  const { tree, size } = parseNewick(orthogroup.tree);
   return (
     <div id="orthogroup">
-      { showHeader && <Header /> }
-      <Tree {...orthogroup} />
+      {showHeader && <Header />}
+      <Tree tree={tree} size={size} />
     </div>
   );
 }

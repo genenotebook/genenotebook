@@ -77,7 +77,8 @@ function OrthogroupTipNode({
  * @param  {...[Object]} options.props [description]
  * @return {Object}                  [description]
  */
-function geneLinkDataTracker({ data, ...props }) {
+function geneLinkDataTracker({ node }) {
+  const { data, ...props } = node;
   const transcriptId = data.name;
   const geneSub = Meteor.subscribe('singleGene', { transcriptId });
   const loading = !geneSub.ready();
