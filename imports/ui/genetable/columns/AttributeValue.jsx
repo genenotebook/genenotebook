@@ -4,6 +4,44 @@ function isArray(x) {
   return Array.isArray(x) && x.length > 1;
 }
 
+function DetailedSingleAttribute({ value }) {
+  const [description, setDescription] = useState('');
+
+  let url;
+
+  if (/^(GO:[0-9]{7})$/.test(value)) {
+    url = `http://amigo.geneontology.org/amigo/term/${value}`;
+    fetch(`http://api.geneontology.org/api/bioentity/${value}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setDescription(data.label);
+      })
+      .catch(console.log);
+  } else if (/^(InterPro:IPR[0-9]{6})$/.test(value)) {
+    url = `https://www.ebi.ac.uk/interpro/entry/${value.replace('InterPro:', '')}`;
+    fetch(`https://www.ebi.ac.uk/interpro/api/entry/interpro/${value.replace('InterPro:', '')}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setDescription(data.metadata.name.name);
+      })
+      .catch(console.log);
+  }
+
+  if (typeof url !== 'undefined') {
+    value = (
+      <a href={url}>{value}</a>
+    );
+  }
+
+  return (
+    <>
+      { value}
+      {' '}
+      {description}
+    </>
+  );
+}
+
 function AttributeValueArray({
   attributeValue, showAll, toggleShowAll, maxLength = 2,
 }) {
@@ -13,23 +51,25 @@ function AttributeValueArray({
     <ul>
       {
         values.map((value) => (
-          <li key={value}>
-            { value }
+          <li key={value} className="list-group-item py-0 px-0">
+            <DetailedSingleAttribute
+              value={value}
+            />
           </li>
         ))
       }
       {
         attributeValue.length > maxLength
         && (
-        <li>
-          <button
-            type="button"
-            className="is-link"
-            onClick={toggleShowAll}
-          >
-            <small>{ buttonText }</small>
-          </button>
-        </li>
+          <li>
+            <button
+              type="button"
+              className="is-link"
+              onClick={toggleShowAll}
+            >
+              <small>{buttonText}</small>
+            </button>
+          </li>
         )
       }
     </ul>
@@ -39,6 +79,7 @@ function AttributeValueArray({
 function SingleAttributeValue({
   attributeValue, showAll, toggleShowAll, maxLength = 100,
 }) {
+  const [description, setDescription] = useState('');
   const attrVal = String(attributeValue);
   const value = showAll || attrVal.length <= maxLength
     ? attrVal
@@ -47,17 +88,22 @@ function SingleAttributeValue({
   const buttonText = showAll ? 'Show less' : 'Show more ...';
   return (
     <>
-      <p>{ value }</p>
+      <p className="mb-1">
+        <DetailedSingleAttribute
+          value={value}
+        />
+
+      </p>
       {
         attrVal.length > maxLength
         && (
-        <button
-          type="button"
-          className="is-link"
-          onClick={toggleShowAll}
-        >
-          <small>{ buttonText }</small>
-        </button>
+          <button
+            type="button"
+            className="is-link"
+            onClick={toggleShowAll}
+          >
+            <small>{buttonText}</small>
+          </button>
         )
       }
     </>

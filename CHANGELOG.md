@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- External links and descriptions on GO terms and INTERPRO ids
+- Make the list of default user accounts configurable using `settings.json` configuration file
+
+### Changed
+
+### Fixed
+
+- Option parsing for CLI
+
 ## [0.2.0] 2020-01-22
 
 ### Added

@@ -11,6 +11,7 @@ let folderName;
 program
   .description('Add Orthogroup phylogenetic trees to a running GeneNoteBook server')
   .usage('[options] <Folder with Orthofinder tree files>')
+  .arguments('<file>')
   .option('-u, --username <username>', 'GeneNoteBook admin username')
   .option('-p, --password <password>', 'GeneNoteBook admin password')
   .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
