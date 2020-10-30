@@ -8,17 +8,17 @@ const attributeSchema = new SimpleSchema({
   defaultSearch: Boolean,
   allGenomes: {
     type: Boolean,
-    optional: true
+    optional: true,
   },
   genomes: {
     type: Array,
-    optional: true
+    optional: true,
   },
   'genomes.$': {
     type: String,
-    optional: true
-  }
-})
+    optional: true,
+  },
+});
 
 const attributeCollection = new Mongo.Collection('attributes');
 
