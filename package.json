@@ -85,7 +85,7 @@
     "react-mounter": "^1.2.0",
     "react-resize-detector": "^6.0.0",
     "react-router-dom": "^5.1.2",
-    "react-select": "^3.0.8",
+    "react-select": "^4.0.0",
     "reactstrap": "^8.4.0",
     "readline-promise": "^1.0.4",
     "recompose": "^0.30.0",
