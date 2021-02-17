@@ -4,7 +4,7 @@ function isArray(x) {
   return Array.isArray(x) && x.length > 1;
 }
 
-function DetailedSingleAttribute({ valueStr }) {
+function DetailedSingleAttribute({ value: valueStr }) {
   const [description, setDescription] = useState('');
 
   let url;
@@ -18,7 +18,7 @@ function DetailedSingleAttribute({ valueStr }) {
       })
       .catch(console.log);
   } else if (/^(InterPro:IPR[0-9]{6})$/.test(valueStr)) {
-    url = `https://www.ebi.ac.uk/interpro/entry/${value.replace('InterPro:', '')}`;
+    url = `https://www.ebi.ac.uk/interpro/entry/${valueStr.replace('InterPro:', '')}`;
     fetch(`https://www.ebi.ac.uk/interpro/api/entry/interpro/${valueStr.replace('InterPro:', '')}`)
       .then((res) => res.json())
       .then((data) => {
@@ -27,12 +27,9 @@ function DetailedSingleAttribute({ valueStr }) {
       .catch(console.log);
   }
 
-  let value;
-  if (typeof url !== 'undefined') {
-    value = (
-      <a href={url}>{value}</a>
-    );
-  }
+  const value = url !== 'undefined'
+    ? <a href={url}>{valueStr}</a>
+    : valueStr;
 
   return (
     <>
