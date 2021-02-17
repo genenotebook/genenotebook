@@ -18,7 +18,7 @@ function error(msg) {
 
 function checkMongoLog(logPath) {
   const tail = new Tail(logPath);
-  tail.on('line', function(line) {
+  tail.on('line', function (line) {
     const parts = line.split(' ');
     const status = parts[1];
     if (status === 'E') {
@@ -48,15 +48,15 @@ function startMongoDaemon(dbPath, mongoPort) {
     logPath,
   ]);
 
-  mongoDaemon.on('error', function(err) {
+  mongoDaemon.on('error', function (err) {
     error(err);
   });
 
-  mongoDaemon.stderr.on('data', function(chunk) {
+  mongoDaemon.stderr.on('data', function (chunk) {
     error(chunk.toString('utf8'));
   });
 
-  mongoDaemon.stdout.on('data', function(chunk) {
+  mongoDaemon.stdout.on('data', function (chunk) {
     const msg = chunk.toString('utf8')
       .split(' ')
       .slice(5)
@@ -78,12 +78,12 @@ function startMongoDaemon(dbPath, mongoPort) {
 }
 
 async function startGeneNoteBook(cmd) {
-  const PORT = parseInt(cmd.port, 0) || 3000;
+  const PORT = parseInt(cmd.port, 10) || 3000;
   const ROOT_URL = cmd.rootUrl || `http://localhost:${PORT}`;
   const opts = { PORT, ROOT_URL };
 
-  if (fs.existsSync("settings.json") && !('METEOR_SETTINGS' in process.env)) {
-    const METEOR_SETTINGS = fs.readFileSync("settings.json", 'utf8');
+  if (fs.existsSync('settings.json') && !('METEOR_SETTINGS' in process.env)) {
+    const METEOR_SETTINGS = fs.readFileSync('settings.json', 'utf8');
     Object.assign(opts, { METEOR_SETTINGS });
   }
 
@@ -100,7 +100,7 @@ async function startGeneNoteBook(cmd) {
       mongoPort,
     );
     Object.assign(opts, { MONGO_URL });
-    process.on('exit', function() {
+    process.on('exit', function () {
       log('Shutting down mongo daemon');
       mongoDaemon.kill();
     });
@@ -120,7 +120,7 @@ command
   .option(
     '-d, --db-path [path]',
     'Folder where DB files will be stored. Default: ./db.'
-      + ' (Mutually exclusive with --mongo-url)',
+    + ' (Mutually exclusive with --mongo-url)',
   )
   .option(
     '--mongo-port [port]', 'Port on which the mongo daemon will serve. Default: 27017',

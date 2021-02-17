@@ -19,7 +19,7 @@ Npm.depends({
 Package.onUse((api) => {
   api.versionsFrom('1.8.2');
   api.use([
-    'typescript',
+    'typescript@4.1.2',
     'underscore',
     'ejson',
     'ecmascript',
