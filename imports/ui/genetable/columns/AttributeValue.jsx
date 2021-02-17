@@ -4,22 +4,22 @@ function isArray(x) {
   return Array.isArray(x) && x.length > 1;
 }
 
-function DetailedSingleAttribute({ value }) {
+function DetailedSingleAttribute({ valueStr }) {
   const [description, setDescription] = useState('');
 
   let url;
 
-  if (/^(GO:[0-9]{7})$/.test(value)) {
-    url = `http://amigo.geneontology.org/amigo/term/${value}`;
-    fetch(`http://api.geneontology.org/api/bioentity/${value}`)
+  if (/^(GO:[0-9]{7})$/.test(valueStr)) {
+    url = `http://amigo.geneontology.org/amigo/term/${valueStr}`;
+    fetch(`http://api.geneontology.org/api/bioentity/${valueStr}`)
       .then((res) => res.json())
       .then((data) => {
         setDescription(data.label);
       })
       .catch(console.log);
-  } else if (/^(InterPro:IPR[0-9]{6})$/.test(value)) {
+  } else if (/^(InterPro:IPR[0-9]{6})$/.test(valueStr)) {
     url = `https://www.ebi.ac.uk/interpro/entry/${value.replace('InterPro:', '')}`;
-    fetch(`https://www.ebi.ac.uk/interpro/api/entry/interpro/${value.replace('InterPro:', '')}`)
+    fetch(`https://www.ebi.ac.uk/interpro/api/entry/interpro/${valueStr.replace('InterPro:', '')}`)
       .then((res) => res.json())
       .then((data) => {
         setDescription(data.metadata.name.name);
@@ -27,6 +27,7 @@ function DetailedSingleAttribute({ value }) {
       .catch(console.log);
   }
 
+  let value;
   if (typeof url !== 'undefined') {
     value = (
       <a href={url}>{value}</a>
@@ -89,10 +90,7 @@ function SingleAttributeValue({
   return (
     <>
       <p className="mb-1">
-        <DetailedSingleAttribute
-          value={value}
-        />
-
+        <DetailedSingleAttribute value={value} />
       </p>
       {
         attrVal.length > maxLength
