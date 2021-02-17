@@ -17,7 +17,6 @@ import GenomeExperiment from './GenomeExperiment.jsx';
 
 import './AdminTranscriptomes.scss';
 
-
 function dataTracker() {
   const expInfoSub = Meteor.subscribe('experimentInfo');
   const experiments = ExperimentInfo.find({}).fetch();
@@ -39,19 +38,19 @@ function AdminTranscriptomes({ experiments, genomes }) {
       <hr />
       <ul className="list is-hoverable">
         {
-        genomes.map((genome) => {
-          const genomeExperiments = experiments
-            .filter((experiment) => experiment.genomeId === genome._id);
-          return (
-            <li className="list-item" key={genome._id}>
-              <GenomeExperiment
-                genome={genome}
-                experiments={genomeExperiments}
-              />
-            </li>
-          );
-        })
-      }
+          genomes.map((genome) => {
+            const genomeExperiments = experiments
+              .filter((experiment) => experiment.genomeId === genome._id);
+            return (
+              <li className="list-item" key={genome._id}>
+                <GenomeExperiment
+                  genome={genome}
+                  experiments={genomeExperiments}
+                />
+              </li>
+            );
+          })
+        }
       </ul>
     </div>
   );

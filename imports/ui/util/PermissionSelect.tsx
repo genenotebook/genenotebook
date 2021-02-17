@@ -9,11 +9,12 @@ import {
 } from './uiUtil.jsx';
 import { ROLES } from '/imports/api/users/users.js';
 
-import './permissionSelect.scss';
+class SelectionOption {
+  value: string;
 
-class SelectionOption extends Object {
-  constructor(optionName) {
-    super();
+  label: string;
+
+  constructor(optionName: string) {
     this.value = optionName;
     this.label = optionName;
   }
@@ -29,7 +30,7 @@ const customStyles = {
   }),
 };
 
-const permissionSelectDataTracker = (props) => {
+function permissionSelectDataTracker(props) {
   const roleSub = Meteor.subscribe('roles');
   const loading = !roleSub.ready();
   const options = Meteor.roles.find({}).fetch();
@@ -38,17 +39,18 @@ const permissionSelectDataTracker = (props) => {
     options,
     ...props,
   };
-};
+}
 
-
-function _PermissionSelect({
-  value, options, onChange, disabled, ...props
-}) {
-  console.log({ value, options });
+interface PermissionSelectOptions {
+  value: string,
+  onChange: any,
+  disabled: boolean
+}
+function PermissionSelect({
+  value, onChange, disabled,
+}: PermissionSelectOptions) {
   return (
     <Select
-      name="permission-select"
-      className=""
       value={new SelectionOption(value)}
       options={ROLES.map((role) => new SelectionOption(role))}
       onChange={onChange}
@@ -57,28 +59,6 @@ function _PermissionSelect({
     />
   );
 }
-
-function PermissionSelect({
-  value, options, onChange, disabled, ...props
-}) {
-  console.log({ value, options });
-  return (
-    <ul className="permission-select steps is-small" disabled={disabled}>
-      {options.map((option) => (
-        <li
-          key={option._id}
-          className={`steps-segment ${option._id === value ? 'is-active' : ''}`}
-        >
-          <span className="steps-marker" />
-          <div className="steps-content">
-            <small>{option._id}</small>
-          </div>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
 export default compose(
   withTracker(permissionSelectDataTracker),
   branch(isLoading, Loading),

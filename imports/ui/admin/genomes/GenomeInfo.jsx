@@ -5,7 +5,7 @@ import updateGenome from '/imports/api/genomes/updateGenome.js';
 import removeGenome from '/imports/api/genomes/removeGenome.js';
 import logger from '/imports/api/util/logger.js';
 
-import PermissionSelect from '/imports/ui/util/PermissionSelect.jsx';
+import PermissionSelect from '/imports/ui/util/PermissionSelect.tsx';
 
 import AnnotationInfo from './AnnotationInfo.jsx';
 
@@ -232,7 +232,7 @@ export default function GenomeInfo(props) {
     // eslint-disable-next-line react/jsx-props-no-spreading
     <EditGenomeInfo {...props} toggleEdit={toggleEdit} />
   ) : (
-    // eslint-disable-next-line react/jsx-props-no-spreading
-    <GenomeInfoLine {...props} toggleEdit={toggleEdit} />
-  );
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      <GenomeInfoLine {...props} toggleEdit={toggleEdit} />
+    );
 }

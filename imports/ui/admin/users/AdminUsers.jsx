@@ -10,7 +10,6 @@ import {
 } from '/imports/ui/util/uiUtil.jsx';
 import { getHighestRole } from '/imports/api/users/users.js';
 
-
 function adminUsersDataTracker() {
   const userSub = Meteor.subscribe('users');
   const loading = !userSub.ready();
@@ -21,7 +20,7 @@ function adminUsersDataTracker() {
   };
 }
 
-function AdminUserInfo ({ user }) {
+function AdminUserInfo({ user }) {
   const {
     _id, username, emails, profile, createdAt,
   } = user;
@@ -32,16 +31,16 @@ function AdminUserInfo ({ user }) {
     <tr>
       <td>
         <Link to={`/admin/user/${_id}`}>
-          { username }
+          {username}
         </Link>
       </td>
       <td>
-        { `${first_name} ${last_name}` }
+        {`${first_name} ${last_name}`}
       </td>
-      <td>{ emails[0].address }</td>
-      <td>{ formatDate(createdAt) }</td>
+      <td>{emails[0].address}</td>
+      <td>{formatDate(createdAt)}</td>
       <td>
-        { role }
+        {role}
       </td>
     </tr>
   );

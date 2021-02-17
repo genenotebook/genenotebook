@@ -1,6 +1,6 @@
 {
   "name": "genenotebook_scripts",
-  "version": "DEVELOPMENT_PLACEHOLDER",
+  "version": "0.3.1-0",
   "description": "Data loading scripts for GeneNoteBook",
   "author": "Rens Holmer",
   "license": "ISC",

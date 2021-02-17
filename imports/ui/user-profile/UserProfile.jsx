@@ -13,7 +13,7 @@ import { isEqual, pick, cloneDeep } from 'lodash';
 
 import logger from '/imports/api/util/logger.js';
 
-import PermissionSelect from '/imports/ui/util/PermissionSelect.jsx';
+import PermissionSelect from '/imports/ui/util/PermissionSelect.tsx';
 import {
   branch, compose, isLoading, Loading,
 } from '/imports/ui/util/uiUtil.jsx';

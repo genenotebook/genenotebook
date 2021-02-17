@@ -9,7 +9,7 @@
     "preupdate": "meteor update",
     "docs": "documentation build --shallow imports/** -f html -o api-docs",
     "postdocs": "cp api-docs/index.html docs/pages/api-docs.html && cp -r api-docs/assets docs/",
-    "bundle": "./bundle.sh",
+    "build": "./bundle.sh",
     "complete_build": "npm install && npm run bundle",
     "dev": "NODE_OPTIONS=--max-old-space-size=8192 meteor run --settings settings.json",
     "dev_production": "NODE_OPTIONS=--max-old-space-size=8192 meteor run --production --settings settings.json",
@@ -108,6 +108,7 @@
   },
   "devDependencies": {
     "@meteorjs/eslint-config-meteor": "^1.0.5",
+    "@types/react": "^17.0.2",
     "babel-eslint": "^10.1.0",
     "babel-plugin-istanbul": "^6.0.0",
     "babel-preset-meteor": "^7.9.0",

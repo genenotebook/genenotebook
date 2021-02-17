@@ -40,3 +40,4 @@ meteortesting:mocha
 dburles:factory
 meteortesting:browser-tests
 meteortesting:mocha-core
+typescript

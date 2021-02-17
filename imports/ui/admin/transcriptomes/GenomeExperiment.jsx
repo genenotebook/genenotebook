@@ -11,7 +11,7 @@ import updateReplicaGroup
 import updateSampleInfo
   from '/imports/api/transcriptomes/updateSampleInfo.js';
 
-import PermissionSelect from '/imports/ui/util/PermissionSelect.jsx';
+import PermissionSelect from '/imports/ui/util/PermissionSelect.tsx';
 
 import './genomeExperiment.scss';
 
@@ -55,17 +55,17 @@ function Experiment({
             className={isEditing ? 'icon-cancel' : 'icon-pencil'}
             id="edit"
           />
-          { isEditing ? ' Cancel' : ' Edit' }
+          {isEditing ? ' Cancel' : ' Edit'}
         </button>
-        { isEditing && (
-        <button
-          type="button"
-          className="button is-small"
-          onClick={submit}
-        >
-          <span className="icon-floppy" id="save" onClick={submit} />
+        {isEditing && (
+          <button
+            type="button"
+            className="button is-small"
+            onClick={submit}
+          >
+            <span className="icon-floppy" id="save" onClick={submit} />
           Save
-        </button>
+          </button>
         )}
       </div>
       <form className="columns" onSubmit={submit}>
@@ -120,12 +120,12 @@ function Experiment({
                 }}
               >
                 {
-              allReplicaGroups.map((replicaGroupOption) => (
-                <option key={replicaGroupOption} value={replicaGroupOption}>
-                  { replicaGroupOption }
-                </option>
-              ))
-            }
+                  allReplicaGroups.map((replicaGroupOption) => (
+                    <option key={replicaGroupOption} value={replicaGroupOption}>
+                      { replicaGroupOption}
+                    </option>
+                  ))
+                }
               </select>
             </div>
           </div>
@@ -216,24 +216,24 @@ function ReplicaGroup({
                 className={isEditing ? 'icon-cancel' : 'icon-pencil'}
                 id="edit"
               />
-              { isEditing ? ' Cancel' : ' Edit' }
+              {isEditing ? ' Cancel' : ' Edit'}
             </button>
-            { isEditing && (
-            <button
-              type="button"
-              className="button is-small"
-              onClick={submit}
-            >
-              <span className="icon-floppy" id="save" onClick={submit} />
+            {isEditing && (
+              <button
+                type="button"
+                className="button is-small"
+                onClick={submit}
+              >
+                <span className="icon-floppy" id="save" onClick={submit} />
               Save
-            </button>
+              </button>
             )}
           </div>
         </div>
         <div className="level-right">
           <div className="tags has-addons">
             <span className="tag is-danger is-light">
-              { groupExperiments.length }
+              {groupExperiments.length}
             </span>
             <span className="tag is-light">
               Samples
@@ -295,8 +295,8 @@ function ReplicaGroup({
         </div>
       </form>
       {
-      expand && <Experiments {...{ groupExperiments, allReplicaGroups }} />
-    }
+        expand && <Experiments {...{ groupExperiments, allReplicaGroups }} />
+      }
     </li>
   );
 }
@@ -356,14 +356,14 @@ export default function GenomeExperiment({ genome, experiments }) {
             </div>
           </form>
 
-          <small className="text-muted">{ `(${genome.organism})` }</small>
+          <small className="text-muted">{`(${genome.organism})`}</small>
         </div>
         <div className="level-right">
           <div className="field is-grouped is-grouped-multiline">
             <div className="control">
               <div className="tags has-addons">
                 <span className="tag is-primary">
-                  { allReplicaGroups.length }
+                  {allReplicaGroups.length}
                 </span>
                 <span className="tag is-light">
                   Replica groups
@@ -373,7 +373,7 @@ export default function GenomeExperiment({ genome, experiments }) {
             <div className="control">
               <div className="tags has-addons">
                 <span className="tag is-danger is-light">
-                  { experiments.length }
+                  {experiments.length}
                 </span>
                 <span className="tag is-light">
                   Samples
@@ -384,14 +384,14 @@ export default function GenomeExperiment({ genome, experiments }) {
         </div>
       </div>
       {
-      expanded
-      && (
-      <ExpandedGenomeExperiment
-        experiments={experiments}
-        allReplicaGroups={allReplicaGroups}
-      />
-      )
-    }
+        expanded
+        && (
+          <ExpandedGenomeExperiment
+            experiments={experiments}
+            allReplicaGroups={allReplicaGroups}
+          />
+        )
+      }
     </>
   );
 }
