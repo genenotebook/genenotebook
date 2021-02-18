@@ -3,7 +3,7 @@
 set -o errexit
 set -o pipefail
 set -o nounset
-set -o xtrace
+# set -o xtrace
 
 function addTranscriptomes {
   echo "adding test transcriptome data" &&\
@@ -26,7 +26,7 @@ function addGenome {
 
 function addAnnotation {
   echo "adding test annotation" &&\
-  ./scripts/genenotebook add annotation -u admin -p admin -n test testdata/testdata.gff 
+  ./scripts/genenotebook add annotation -u admin -p admin -n test testdata/testdata.gff
 }
 
 function addInterproscan {
@@ -34,9 +34,15 @@ function addInterproscan {
   ./scripts/genenotebook add interproscan -u admin -p admin testdata/testdata.iprscan.gff3
 }
 
-#addGenome &&\
-#addAnnotation &&\
-#addInterproscan &&\
-addTranscriptomes 
+function addOrthogroups {
+  echo "adding orthogroup phylogenetic trees" &&\
+  ./scripts/genenotebook add orthogroups -u admin -p admin testdata/testorthogroups
+}
+
+addGenome &&\
+addAnnotation &&\
+addInterproscan &&\
+addTranscriptomes &&\
+addOrthogroups
 
 

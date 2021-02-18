@@ -1,5 +1,3 @@
-@import "{}/node_modules/bootstrap/scss/bootstrap.scss";
-
 html,
 body {
   height: 100%;
@@ -12,13 +10,48 @@ body {
   }
 }
 
-.btn-group-justified {
-  display: flex;
-  .btn {
-    flex-grow: 1;
-  }
+.dropdown-item {
+  padding: 0 1rem 0 1rem !important;
 }
 
-::-ms-clear {
-  display: none;
+input[type='checkbox'], input[type='radio'] {
+  margin-right: .5rem;
+}
+
+/* https://stackoverflow.com/questions/1367409/how-to-make-button-look-like-a-link */
+button.is-link {
+  align-items: normal;
+  background-color: rgba(0,0,0,0);
+  border-color: hsl(217, 71%, 53%);
+  border-style: none;
+  box-sizing: content-box;
+  color: hsl(217, 71%, 53%); 
+  cursor: pointer;
+  display: inline;
+  font: inherit;
+  height: auto;
+  padding: 0;
+  perspective-origin: 0 0;
+  text-align: start;
+  text-decoration: underline;
+  transform-origin: 0 0;
+  width: auto;
+  -moz-appearance: none;
+  -webkit-logical-height: 1em; /* Chrome ignores auto, so we have to use this hack to set the correct height  */
+  -webkit-logical-width: auto; /* Chrome ignores auto, but here for completeness */
+
+  /* Mozilla uses a pseudo-element to show focus on buttons, */
+  /* but anchors are highlighted via the focus pseudo-class. */
+  &::-moz-focus-inner { /* reset any predefined properties */ 
+    @supports (-moz-appearance:none){
+      border: none;
+      padding: 0;
+    }
+  }
+  &:focus { /* add outline to focus pseudo-class */
+    @supports (-moz-appearance:none){
+      outline-style: dotted;
+      outline-width: 1px;
+    }
+  }
 }

@@ -6,9 +6,10 @@ import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 import { Genes } from '/imports/api/genes/gene_collection.js';
 import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 import { Interpro } from '/imports/api/genes/interpro_collection.js';
-import { orthogroupCollection } from '/imports/api/genes/orthogroup_collection.js';
+import {
+  orthogroupCollection,
+} from '/imports/api/genes/orthogroup_collection.js';
 import { EditHistory } from '/imports/api/genes/edithistory_collection.js';
-// import { Tracks } from '/imports/api/genomes/track_collection.js';
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 import {
   ExperimentInfo,
@@ -19,19 +20,31 @@ function availableGenomes({ userId }) {
   const roles = Roles.getRolesForUser(userId);
   const genomeIds = genomeCollection
     .find({
-      $or: [{ permissions: { $in: roles } }, { isPublic: true }],
+      $or: [{ permission: { $in: roles } }, { isPublic: true }],
     })
-    .map(genome => genome._id);
+    .map((genome) => genome._id);
   return genomeIds;
 }
 
+// publish user role assignment https://github.com/Meteor-Community-Packages/meteor-roles
+Meteor.publish(null, function() {
+  const publication = this;
+  if (!publication.userId) {
+    publication.stop();
+  }
+  if (Roles.userIsInRole(publication.userId, 'admin')) {
+    return Meteor.roleAssignment.find();
+  }
+
+  return Meteor.roleAssignment.find({ 'user._id': this.userId });
+});
+
 Meteor.publish({
-  genes({ query = {}, limit = 40, sort = { ID: 1 } }) {
+  genes({ query = {}, limit, sort = { ID: 1 } }) {
     const publication = this;
     const genomeIds = availableGenomes(publication);
-
     if (query.hasOwnProperty('genomeId')) {
-      const queryGenomeIds = query.genomeId.$in.filter(genomeId => genomeIds.includes(genomeId));
+      const queryGenomeIds = query.genomeId.$in.filter((genomeId) => genomeIds.includes(genomeId));
       query.genomeId.$in = queryGenomeIds;
     } else {
       query.genomeId = { $in: genomeIds };
@@ -85,14 +98,14 @@ Meteor.publish({
   geneExpression(geneId) {
     const publication = this;
     const roles = Roles.getRolesForUser(publication.userId);
-    const permissions = { $in: roles };
+    const permission = { $in: roles };
     const isPublic = true;
 
     const experimentIds = ExperimentInfo.find({
-      $or: [{ permissions }, { isPublic }],
+      $or: [{ permission }, { isPublic }],
     })
       .fetch()
-      .map(experiment => experiment._id);
+      .map((experiment) => experiment._id);
 
     return Transcriptomes.find({
       geneId,
@@ -104,10 +117,10 @@ Meteor.publish({
   experimentInfo() {
     const publication = this;
     const roles = Roles.getRolesForUser(publication.userId);
-    const permissions = { $in: roles };
+    const permission = { $in: roles };
     const isPublic = true;
     return ExperimentInfo.find({
-      $or: [{ permissions }, { isPublic }],
+      $or: [{ permission }, { isPublic }],
     });
   },
   /* downloads (downloadId) {
@@ -131,7 +144,7 @@ Meteor.publish({
     }
     const roles = Roles.getRolesForUser(publication.userId);
     return genomeCollection.find({
-      $or: [{ permissions: { $in: roles } }, { isPublic: true }],
+      $or: [{ permission: { $in: roles } }, { isPublic: true }],
     });
   },
   orthogroups(ID) {

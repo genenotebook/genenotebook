@@ -1,95 +1,129 @@
-import React from 'react';
-import { compose } from 'recompose';
-import { withEither } from '/imports/ui/util/uiUtil.jsx';
+import React, { useState } from 'react';
 
-const isArray = ({ attributeValue }) => {
-  return Array.isArray(attributeValue) && attributeValue.length > 1
+function isArray(x) {
+  return Array.isArray(x) && x.length > 1;
 }
 
-class AttributeValueArray extends React.Component {
-  constructor(props){
-    super(props)
-    this.state = {
-      showAll: false
-    }
+function DetailedSingleAttribute({ value: valueStr }) {
+  const [description, setDescription] = useState('');
+
+  let url;
+
+  if (/^(GO:[0-9]{7})$/.test(valueStr)) {
+    url = `http://amigo.geneontology.org/amigo/term/${valueStr}`;
+    fetch(`http://api.geneontology.org/api/bioentity/${valueStr}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setDescription(data.label);
+      })
+      .catch(console.log);
+  } else if (/^(InterPro:IPR[0-9]{6})$/.test(valueStr)) {
+    url = `https://www.ebi.ac.uk/interpro/entry/${valueStr.replace('InterPro:', '')}`;
+    fetch(`https://www.ebi.ac.uk/interpro/api/entry/interpro/${valueStr.replace('InterPro:', '')}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setDescription(data.metadata.name.name);
+      })
+      .catch(console.log);
   }
-  toggleShowAll = event => {
-    event.preventDefault();
-    this.setState({
-      showAll: !this.state.showAll
-    });
-  }
-  render(){
-    const maxLength = 2;
-    const { showAll } = this.state;
-    const { attributeValue } = this.props;
-    const values = showAll ? attributeValue : attributeValue.slice(0,maxLength);
-    const buttonText = showAll ? 'Show less' : 'Show more ...';
-    return <ul className='list-group list-group-flush'>
+
+  const value = url !== 'undefined'
+    ? <a href={url}>{valueStr}</a>
+    : valueStr;
+
+  return (
+    <>
+      { value}
+      {' '}
+      {description}
+    </>
+  );
+}
+
+function AttributeValueArray({
+  attributeValue, showAll, toggleShowAll, maxLength = 2,
+}) {
+  const values = showAll ? attributeValue : attributeValue.slice(0, maxLength);
+  const buttonText = showAll ? 'Show less' : 'Show more ...';
+  return (
+    <ul>
       {
-        values.map(value => {
-          return <li key={value} className='list-group-item py-0 px-0'>
-            { value }
+        values.map((value) => (
+          <li key={value} className="list-group-item py-0 px-0">
+            <DetailedSingleAttribute
+              value={value}
+            />
           </li>
-        })
+        ))
       }
       {
-        attributeValue.length > maxLength &&
-        <li className='list-group-item py-0 px-0'>
-          <a className='px-3' href='#' onClick={this.toggleShowAll}>
-            <small>{ buttonText }</small>
-          </a>
-        </li>
+        attributeValue.length > maxLength
+        && (
+          <li>
+            <button
+              type="button"
+              className="is-link"
+              onClick={toggleShowAll}
+            >
+              <small>{buttonText}</small>
+            </button>
+          </li>
+        )
       }
     </ul>
-  }
+  );
 }
 
-const isUndefined = ({ attributeValue }) => {
-  return typeof attributeValue === 'undefined';
-}
+function SingleAttributeValue({
+  attributeValue, showAll, toggleShowAll, maxLength = 100,
+}) {
+  const [description, setDescription] = useState('');
+  const attrVal = String(attributeValue);
+  const value = showAll || attrVal.length <= maxLength
+    ? attrVal
+    : `${attrVal.slice(0, maxLength)}...`;
 
-const Undefined = () => {
-  return <p className='mb-1' />
-}
-
-const withConditionalRendering = compose(
-  withEither(isUndefined, Undefined),
-  withEither(isArray, AttributeValueArray)
-)
-
-class AttributeValue extends React.Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      showAll: false
-    };
-  }
-  toggleShowAll = event => {
-    event.preventDefault();
-    this.setState({
-      showAll: !this.state.showAll
-    })
-  }
-  render(){
-    const maxLength = 100;
-    const { showAll } = this.state;
-    const attributeValue = String(this.props.attributeValue);
-
-    const value = showAll || attributeValue.length <= maxLength ? attributeValue : 
-      `${attributeValue.slice(0, maxLength)}...`;
-
-    const buttonText = showAll ? 'Show less' : 'Show more ...';
-    return <React.Fragment>
-      <p className='mb-1'>{ value }</p>
+  const buttonText = showAll ? 'Show less' : 'Show more ...';
+  return (
+    <>
+      <p className="mb-1">
+        <DetailedSingleAttribute value={value} />
+      </p>
       {
-        attributeValue.length > maxLength &&
-        <a className='px-3 py-0' href='#' onClick={this.toggleShowAll}>
-          <small>{ buttonText }</small>
-        </a>
+        attrVal.length > maxLength
+        && (
+          <button
+            type="button"
+            className="is-link"
+            onClick={toggleShowAll}
+          >
+            <small>{buttonText}</small>
+          </button>
+        )
       }
-    </React.Fragment>
-  }
+    </>
+  );
 }
 
-export default withConditionalRendering(AttributeValue);
+export default function AttributeValue({ attributeValue }) {
+  const [showAll, setShowAll] = useState(false);
+  function toggleShowAll() {
+    setShowAll(!showAll);
+  }
+
+  if (typeof attributeValue === 'undefined') {
+    return <p />;
+  }
+
+  const AttributeValueComponent = isArray(attributeValue)
+    ? AttributeValueArray
+    : SingleAttributeValue;
+
+  return (
+    <AttributeValueComponent
+      attributeValue={attributeValue}
+      showAll={showAll}
+      toggleShowAll={toggleShowAll}
+    />
+  );
+}

@@ -3,6 +3,8 @@ import { Meteor } from 'meteor/meteor';
 import React, { useState } from 'react';
 import getVersion from '/imports/api/methods/getVersion.js';
 
+import './footer.scss';
+
 export default function Footer() {
   const urlPrefix = Meteor.absoluteUrl();
   const [version, setVersion] = useState('...');
@@ -11,34 +13,31 @@ export default function Footer() {
     setVersion(res);
   });
   return (
-    <footer className="footer py-1 my-auto bg-light border">
-      <div className="container">
-        <a
-          href="https://genenotebook.github.io/"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            color: '#A9A9A9',
-          }}
-        >
-          <small>
+    <footer className="footer is-light has-text-centered">
+      <a
+        href="https://genenotebook.github.io/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="content columns is-centered is-vcentered has-text-grey-light"
+      >
+        <div className="column is-narrow">
+          <figure className="image is-32x32">
             <img
               src={`${urlPrefix}logo_greyscale.svg`}
               alt="GeneNoteBook logo"
-              className="footer-logo rounded-circle border"
-              style={{
-                width: '26px',
-                marginTop: '0px',
-                marginRight: '5px',
-              }}
+              className="is-rounded"
             />
+          </figure>
+        </div>
+        <div className="column is-narrow">
+          <span>
             <em>
-GeneNoteBook v
-              {version}
+              {`GeneNoteBook v${version}`}
             </em>
-          </small>
-        </a>
-      </div>
+          </span>
+        </div>
+      </a>
+      <p className="has-text-grey-light">© 2017-2020</p>
     </footer>
   );
 }

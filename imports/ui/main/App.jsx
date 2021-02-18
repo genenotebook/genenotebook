@@ -20,20 +20,21 @@ import Header from './Header.jsx';
 import Footer from './Footer.jsx';
 import NotFound from './NotFound.jsx';
 
-const App = () => {
+export default function App() {
   const urlParts = Meteor.absoluteUrl().split('/');
   const basename = urlParts.slice(3).join('/');
+  const genomeDataCache = {};
   return (
     <Router basename={basename}>
-      <React.Fragment>
+      <>
         <Header />
-        <main role="main" className="h-100">
+        <main role="main" className="has-background-light">
           <Switch>
             <Route exact path="/" component={LandingPage} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/register" component={Register} />
-            <Route exact path="/genes" component={GeneTable} />
-            <Route path="/gene/:geneId" component={SingleGenePage} />
+            <Route exact path="/genes" render={(props) => <GeneTable genomeDataCache={genomeDataCache} {...props} />} />
+            <Route path="/gene/:geneId" render={(props) => <SingleGenePage genomeDataCache={genomeDataCache} {...props} />} />
             <Route exact path="/blast" component={SubmitBlast} />
             <Route path="/blast/:jobId" component={BlastResult} />
             <Route exact path="/profile" component={UserProfile} />
@@ -45,9 +46,7 @@ const App = () => {
           </Switch>
         </main>
         <Footer />
-      </React.Fragment>
+      </>
     </Router>
   );
-};
-
-export default App;
+}

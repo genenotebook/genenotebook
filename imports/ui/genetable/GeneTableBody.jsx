@@ -2,13 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React, { useEffect } from 'react';
-import { compose } from 'recompose';
 import dot from 'dot-object';
 import { find } from 'lodash';
 
 import { Genes } from '/imports/api/genes/gene_collection.js';
 
-import { withEither } from '/imports/ui/util/uiUtil.jsx';
+import { branch, compose } from '/imports/ui/util/uiUtil.jsx';
 
 import Genemodel from '/imports/ui/singleGenePage/Genemodel.jsx';
 import ProteinDomains from '/imports/ui/singleGenePage/ProteinDomains.jsx';
@@ -38,10 +37,11 @@ const VISUALIZATIONS = {
 function dataTracker({
   query = {},
   sort = { _id: -1 },
-  limit = 40,
+  limit,
   selectedGenes,
   updateSelection,
   selectedAll,
+  ...props
 }) {
   const geneSub = Meteor.subscribe('genes', { query, sort, limit });
   const loading = !geneSub.ready();
@@ -53,6 +53,7 @@ function dataTracker({
     selectedGenes,
     updateSelection,
     selectedAll,
+    ...props,
   };
 }
 
@@ -120,22 +121,19 @@ function Loading({ selectedColumns, ...props }) {
   );
 }
 
-/**
- * [withConditionalRendering description]
- * @type {[type]}
- */
-const withConditionalRendering = compose(
-  withTracker(dataTracker),
-  withEither(isLoading, Loading),
-  withEither(hasNoResults, NoResults),
-);
-
-function AttributeColumn({ attributeName, attributeValue, geneId }) {
+function AttributeColumn({
+  attributeName, attributeValue, geneId, genomeDataCache,
+}) {
   switch (attributeName) {
     case 'Gene ID':
       return <GeneLink geneId={geneId} />;
     case 'Genome':
-      return <GenomeName genomeId={attributeValue} />;
+      return (
+        <GenomeName
+          genomeId={attributeValue}
+          genomeDataCache={genomeDataCache}
+        />
+      );
     default:
       return <AttributeValue attributeValue={attributeValue} />;
   }
@@ -158,6 +156,7 @@ function GeneTableRow({
   updateSelection,
   attributes,
   selectedVisualization,
+  genomeDataCache,
 }) {
   const selected = selectedAllGenes || selectedGenes.has(gene.ID);
   const color = selected ? 'black' : 'white';
@@ -178,27 +177,37 @@ function GeneTableRow({
           return (
             <td key={attributeName} data-label={attributeName}>
               <AttributeColumn
-                {...{ attributeName, attributeValue, geneId: gene.ID }}
+                attributeName={attributeName}
+                attributeValue={attributeValue}
+                geneId={gene.ID}
+                genomeDataCache={genomeDataCache}
               />
             </td>
           );
         })}
-      <td data-label={selectedVisualization} style={{ width: '20rem' }}>
-        <DataVisualization gene={gene} resizable height={100} />
+      <td data-label={selectedVisualization} style={{ width: '250px' }}>
+        <DataVisualization
+          gene={gene}
+          resizable
+          height={100}
+          initialWidth={250}
+        />
       </td>
       <td>
         <button
           type="button"
-          className="btn btn-sm btn-outline-dark pull-right px-1 py-0"
+          className="button is-small"
           id={gene.ID}
           onClick={updateSelection.bind(this)}
         >
-          <span
-            id={gene.ID}
-            className="icon-check"
-            aria-hidden="true"
-            style={{ color }}
-          />
+          <span className="icon">
+            <span
+              id={gene.ID}
+              className="icon-check"
+              aria-hidden="true"
+              style={{ color }}
+            />
+          </span>
         </button>
       </td>
     </tr>
@@ -226,11 +235,15 @@ function GeneTableBody({
 
   return (
     <tbody className="genetable-body">
-      {genes.map(gene => (
+      {genes.map((gene) => (
         <GeneTableRow key={gene.ID} gene={gene} {...props} />
       ))}
     </tbody>
   );
 }
 
-export default withConditionalRendering(GeneTableBody);
+export default compose(
+  withTracker(dataTracker),
+  branch(isLoading, Loading),
+  branch(hasNoResults, NoResults),
+)(GeneTableBody);

@@ -1,26 +1,12 @@
 /* eslint-disable import/no-dynamic-require */
-import { Meteor } from 'meteor/meteor';
+// import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 
 import fs from 'fs';
 
+// import logger from '/imports/api/util/logger.js';
+
 let pkg = {};
-
-if (Meteor.isServer) {
-  const { argv } = process;
-  const executable = argv[1];
-  const isProduction = executable
-    .split('/')
-    .slice(-1)
-    .pop() === 'genenotebook-run.js';
-
-  const splitPosition = isProduction ? -1 : -4;
-  const pkgFile = `${executable
-    .split('/')
-    .slice(0, splitPosition)
-    .join('/')}/package.json`;
-  pkg = JSON.parse(fs.readFileSync(pkgFile));
-}
 
 const getVersion = new ValidatedMethod({
   name: 'getVersion',
@@ -29,7 +15,28 @@ const getVersion = new ValidatedMethod({
     noRetry: true,
   },
   run() {
-    return pkg.version;
+    let version = '..';
+    if (!this.isSimulation) {
+      const { argv } = process;
+      const executable = argv[1];
+      const isProduction = executable
+        .split('/')
+        .slice(-1)
+        .pop() === 'genenotebook-run.js';
+
+      const splitPosition = isProduction ? -1 : -4;
+
+      const folder = executable
+        .split('/')
+        .slice(0, splitPosition)
+        .join('/');
+
+      const pkgFile = `${folder}/package.json`;
+
+      pkg = JSON.parse(fs.readFileSync(pkgFile));
+      version = pkg.version;
+    }
+    return version;
   },
 });
 

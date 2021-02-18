@@ -1,189 +1,193 @@
-/* eslint-disable react/no-multi-comp */
-import React from 'react';
-import { isEqual } from 'lodash';
+/* eslint-disable react/prop-types */
+import React, { useState } from 'react';
 
-import { updateGenome } from '/imports/api/genomes/updateGenome.js';
-import { removeGenome } from '/imports/api/genomes/removeGenome.js';
+import updateGenome from '/imports/api/genomes/updateGenome.js';
+import removeGenome from '/imports/api/genomes/removeGenome.js';
+import logger from '/imports/api/util/logger.js';
 
-import PermissionSelect from '/imports/ui/util/PermissionSelect.jsx';
+import PermissionSelect from '/imports/ui/util/PermissionSelect.tsx';
 
 import AnnotationInfo from './AnnotationInfo.jsx';
 
-class EditGenomeInfo extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    const { toggleEdit, ...genome } = props;
-    this.state = genome;
+function EditGenomeInfo({
+  _id: genomeId,
+  name: initialGenomeName,
+  organism: initialOrganism,
+  description: initialDescription,
+  permission: initialPermission,
+  isPublic: initialIsPublic,
+  annotationTrack = {},
+  toggleEdit,
+}) {
+  const { name: annotationName, blastDb } = annotationTrack;
+
+  const [genomeName, setGenomeName] = useState(initialGenomeName);
+  const [organism, setOrganism] = useState(initialOrganism);
+  const [description, setDescription] = useState(initialDescription);
+  const [permission, setPermission] = useState(initialPermission);
+  const [isPublic, setPublic] = useState(initialIsPublic);
+
+  function togglePublic() {
+    setPublic(!isPublic);
   }
 
-  updateField = (event) => {
-    const field = event.target.id;
-    const { value } = event.target;
-    this.setState({
-      [field]: value,
-    });
-  };
-
-  togglePublic = () => {
-    this.setState({
-      isPublic: !this.state.isPublic,
-    });
-  };
-
-  updatePermissions = (newPermissions) => {
+  /*
+  function updatePermissions(newPermissions) {
     // make sure admin is always in permissions and that there are no duplicates
-    const permissions = newPermissions.map(permission => permission.value);
-    permissions.push('admin');
-    this.setState({
-      permissions: [...new Set(permissions)],
-    });
-  };
-
-  saveChanges = () => {
-    updateGenome.call(this.state, (err, res) => {
-      if (err) alert(err);
-      this.props.toggleEdit();
-    });
-  };
-
-  removeGenome = (event) => {
-    const genomeId = event.target.name;
-    removeGenome.call({ genomeId });
-  };
-
-  render() {
-    const { toggleEdit } = this.props;
-    const {
+    const perm = newPermissions.map((permission) => permission.value);
+    perm.push('admin');
+    setPermissions([...new Set(perm)]);
+  }
+  */
+  function saveChanges() {
+    updateGenome.call({
       _id: genomeId,
       name: genomeName,
       organism,
       description,
-      permissions,
+      permission,
       isPublic,
-      annotationTrack = {},
-    } = this.state;
-    const { name: annotationName, blastDb } = annotationTrack;
-    const hasChanges = !isEqual(this.state, this.props.genome);
-    return (
-      <tr>
-        <td>
-          <div className="form-group">
-            <input
-              type="text"
-              className="form-control form-control-sm"
-              id="name"
-              aria-describedby="referenceName"
-              value={genomeName}
-              onChange={this.updateField}
-            />
-            <small id="referenceNameHelp" className="form-text text-muted">
-              Genome names must be unique
-            </small>
-          </div>
-        </td>
-        <td>
-          <div className="form-group">
-            <input
-              type="text"
-              className="form-control form-control-sm"
-              id="organism"
-              aria-describedby="organism"
-              value={organism}
-              onChange={this.updateField}
-            />
-          </div>
-        </td>
-        <td>
-          <div className="form-group">
-            <textarea
-              className="form-control form-control-sm"
-              id="description"
-              aria-describedby="description"
-              rows="3"
-              value={description}
-              onChange={this.updateField}
-            />
-          </div>
-        </td>
-        <td>
-          <input
-            type="checkbox"
-            checked={isPublic}
-            onChange={this.togglePublic}
-          />
-        </td>
-        <td>
-          <PermissionSelect
-            value={permissions}
-            disabled={isPublic}
-            onChange={this.updatePermissions}
-          />
-        </td>
-        <td>
-          <AnnotationInfo
-            blastDb={blastDb}
-            name={annotationName}
-            genomeId={genomeId}
-            isEditing
-          />
-        </td>
-        <td>
-          <table style={{ width: '100%' }}>
-            <tbody>
-              <tr>
-                <td>
-                  <div className="btn-group btn-group-justified">
-                    <button
-                      type="button"
-                      onClick={this.saveChanges}
-                      className="btn btn-success btn-sm px-2 py-0"
-                      disabled={!hasChanges}
-                    >
-                      <span className="icon-check" />
-                      Save
-                    </button>
-                    <button
-                      type="button"
-                      onClick={toggleEdit}
-                      className="btn btn-outline-dark btn-sm px-2 py-0"
-                    >
-                      <span className="icon-cancel" />
-                      Cancel
-                    </button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <button
-                    type="button"
-                    onClick={this.removeGenome}
-                    className="btn btn-danger btn-sm px-2 py-0 btn-block"
-                    name={genomeId}
-                  >
-                    <span className="icon-exclamation" />
-                    Delete genome
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </td>
-      </tr>
-    );
+      annotationTrack,
+    }, (err) => {
+      if (err) {
+        logger.warn(err);
+        alert(err);
+      }
+      toggleEdit();
+    });
   }
+
+  const hasChanges = genomeName !== initialGenomeName
+    || organism !== initialOrganism
+    || description !== initialDescription
+    || permission !== initialPermission
+    || isPublic !== initialIsPublic;
+
+  return (
+    <tr>
+      <td>
+        <div className="field">
+          <input
+            type="text"
+            className="input is-small"
+            id="name"
+            aria-describedby="referenceName"
+            value={genomeName}
+            onChange={(event) => {
+              setGenomeName(event.target.value);
+            }}
+          />
+          <small id="referenceNameHelp" className="help">
+            Genome names must be unique
+          </small>
+        </div>
+      </td>
+      <td>
+        <input
+          type="text"
+          className="input is-small"
+          id="organism"
+          aria-describedby="organism"
+          value={organism}
+          onChange={(event) => {
+            setOrganism(event.target.value);
+          }}
+        />
+      </td>
+      <td>
+        <textarea
+          className="textarea is-small"
+          id="description"
+          aria-describedby="description"
+          rows="2"
+          value={description}
+          onChange={(event) => {
+            setDescription(event.target.value);
+          }}
+        />
+      </td>
+      <td>
+        <input
+          type="checkbox"
+          checked={isPublic}
+          onChange={togglePublic}
+        />
+      </td>
+      <td>
+        <PermissionSelect
+          value={permission}
+          disabled={isPublic}
+          onChange={(selection) => {
+            setPermission(selection.value);
+          }}
+        />
+      </td>
+      <td>
+        <AnnotationInfo
+          blastDb={blastDb}
+          name={annotationName}
+          genomeId={genomeId}
+          isEditing
+        />
+      </td>
+      <td>
+        <ul>
+          <li>
+            <div className="buttons has-addons are-small">
+              <button
+                type="button"
+                onClick={saveChanges}
+                className={`button ${hasChanges ? 'is-success is-light is-outlined' : ''}`}
+                disabled={!hasChanges}
+              >
+                <span className="icon-check" />
+                Save
+              </button>
+              <button
+                type="button"
+                onClick={toggleEdit}
+                className="button"
+              >
+                <span className="icon-cancel" />
+                Cancel
+              </button>
+            </div>
+          </li>
+          <li>
+            <button
+              type="button"
+              onClick={() => {
+                removeGenome.call({ genomeId }, (err) => {
+                  if (err) {
+                    logger.warn(err);
+                    alert(err);
+                  }
+                });
+              }}
+              className="button is-small is-danger is-light is-outlined is-fullwidth"
+              name={genomeId}
+            >
+              <span className="icon-exclamation" />
+              Delete genome
+              <span className="icon-exclamation" />
+            </button>
+          </li>
+        </ul>
+      </td>
+    </tr>
+  );
 }
 
-const GenomeInfoLine = ({
+function GenomeInfoLine({
   _id: genomeId,
   name: genomeName,
   organism,
   isPublic,
   description,
-  permissions,
+  permission,
   annotationTrack = {},
   toggleEdit,
-}) => {
+}) {
   const { name: annotationName, blastDb } = annotationTrack;
   return (
     <tr>
@@ -194,7 +198,7 @@ const GenomeInfoLine = ({
         <input type="checkbox" checked={isPublic} disabled />
       </td>
       <td>
-        <PermissionSelect value={permissions} disabled />
+        <PermissionSelect value={permission} disabled />
       </td>
       <td>
         <AnnotationInfo
@@ -205,42 +209,30 @@ const GenomeInfoLine = ({
         />
       </td>
       <td>
-        <div className="btn-group">
-          <button
-            type="button"
-            onClick={toggleEdit}
-            name={genomeId}
-            className="btn btn-outline-dark btn-sm px-2 py-0"
-          >
-            <span className="icon-pencil" />
-            Edit&nbsp;
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={toggleEdit}
+          name={genomeId}
+          className="button is-small is-fullwidth"
+        >
+          <span className="icon-pencil" />
+          {' Edit'}
+        </button>
       </td>
     </tr>
   );
-};
+}
 
-export default class GenomeInfo extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isEditing: false,
-    };
+export default function GenomeInfo(props) {
+  const [isEditing, setIsEditing] = useState(false);
+  function toggleEdit() {
+    setIsEditing(!isEditing);
   }
-
-  toggleEdit = () => {
-    this.setState((state, props) => ({
-      isEditing: !state.isEditing,
-    }));
-  };
-
-  render() {
-    const { isEditing } = this.state;
-    return isEditing ? (
-      <EditGenomeInfo {...this.props} toggleEdit={this.toggleEdit} />
-    ) : (
-      <GenomeInfoLine {...this.props} toggleEdit={this.toggleEdit} />
+  return isEditing ? (
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    <EditGenomeInfo {...props} toggleEdit={toggleEdit} />
+  ) : (
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      <GenomeInfoLine {...props} toggleEdit={toggleEdit} />
     );
-  }
 }

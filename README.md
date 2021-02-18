@@ -2,6 +2,8 @@
 
 ![Automated](https://img.shields.io/docker/cloud/automated/genenotebook/genenotebook.svg?style=flat-square&logo=docker)![Build status](https://img.shields.io/docker/cloud/build/genenotebook/genenotebook.svg?style=flat-square&logo=docker)
 
+![CircleCI](https://img.shields.io/circleci/build/github/genenotebook/genenotebook/master?label=Circle%20CI&logo=circleci&style=flat-square)
+
 # GeneNoteBook
 
 ### A collaborative notebook for comparative genomics
@@ -14,7 +16,7 @@
 conda install -c bioconda genenotebook
 ```
 
-### Start GeneNoteNook
+### Start GeneNoteBook
 
 ```
 genenotebook run

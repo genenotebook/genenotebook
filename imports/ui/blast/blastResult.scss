@@ -1,8 +1,34 @@
-.alignment-text{
-	overflow: auto;
-	word-wrap: normal;
-	font-family: Menlo, monospace;
-	font-size: 0.75rem;
-	margin: 0;
-	padding: 0;
+.blast-result{
+	header {
+		padding: 10px;
+		.level-item {
+			align-items: flex-start;
+			justify-content: center;
+		}
+		.title {
+			margin-bottom: 0;
+		}
+		.tags {
+			.tag:first-child {
+				border: solid hsl(0, 0%, 86%);
+				border-width: 1px 0 1px 1px;
+			}
+		}
+	}
+	.tags {
+		align-items: flex-start !important;
+		margin-bottom: 0 !important;
+		&:not(:last-child) {
+			margin-right: 5px;
+		}
+		.tag {
+			margin-bottom: 0;
+		}
+	}
+	.blast-option-field {
+		input:disabled {
+			border: solid hsl(0, 0%, 86%);
+			border-width: 1px;
+		} 
+	}
 }

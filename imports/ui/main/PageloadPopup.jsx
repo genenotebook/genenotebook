@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 
 function PageloadPopup({ togglePopup }) {
   return (
-    <React.Fragment>
+    <>
       <div className="backdrop" />
       <div className="modal" role="dialog">
         <div className="modal-dialog" role="document">
@@ -66,7 +66,7 @@ function PageloadPopup({ togglePopup }) {
           </div>
         </div>
       </div>
-    </React.Fragment>
+    </>
   );
 }
 

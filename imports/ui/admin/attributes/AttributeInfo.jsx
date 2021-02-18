@@ -1,102 +1,9 @@
-/* eslint-disable react/no-multi-comp */
 /* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 
-import { updateAttributeInfo } from '/imports/api/genes/updateAttributeInfo.js';
+import { updateAttributeInfo }
+  from '/imports/api/genes/updateAttributeInfo.js';
 import logger from '/imports/api/util/logger.js';
-/*
-class EditAttributeInfo extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    const { defaultShow, defaultSearch } = props;
-    this.state = {
-      defaultSearch,
-      defaultShow,
-    };
-  }
-
-  update = (event) => {
-    const field = event.target.id;
-    this.setState({
-      [field]: !this.state[field]
-    });
-  };
-
-  saveChanges = () => {
-    const { _id: attributeId, toggleEdit } = this.props;
-    const { defaultShow, defaultSearch } = this.state;
-    updateAttributeInfo.call(
-      { attributeId, defaultShow, defaultSearch },
-      (err) => {
-        if (err) {
-          logger.warn(err);
-          alert(err);
-        }
-      },
-    );
-    toggleEdit();
-  };
-
-  render() {
-    const { name, query, toggleEdit } = this.props;
-    const { defaultShow, defaultSearch } = this.state;
-    logger.debug(defaultShow, defaultSearch);
-    const hasChanges = !(
-      // eslint-disable-next-line react/destructuring-assignment
-      defaultShow === this.props.defaultShow
-      // eslint-disable-next-line react/destructuring-assignment
-      && defaultSearch === this.props.defaultSearch
-    );
-    return (
-      <tr>
-        <td>{name}</td>
-        <td>
-          <code>
-            {query}
-          </code>
-        </td>
-        <td>
-          <input
-            type="checkbox"
-            checked={defaultShow}
-            id="defaultShow"
-            onChange={this.update}
-          />
-        </td>
-        <td>
-          <input
-            type="checkbox"
-            checked={defaultSearch}
-            id="defaultSearch"
-            onChange={this.update}
-          />
-        </td>
-        <td>
-          <div className="btn-group btn-group-justified">
-            <button
-              type="button"
-              className="btn btn-outline-success btn-sm px-2 py-0"
-              onClick={this.saveChanges}
-              disabled={!hasChanges}
-            >
-              <span className="icon-check" />
-              Save
-            </button>
-            <button
-              type="button"
-              className="btn btn-outline-dark btn-sm px-2 py-0"
-              onClick={toggleEdit}
-            >
-              <span className="icon-remove" />
-              Cancel
-            </button>
-          </div>
-        </td>
-      </tr>
-    );
-  }
-}
-*/
 
 function EditAttributeInfo({
   _id: attributeId,
@@ -124,6 +31,8 @@ function EditAttributeInfo({
     );
     toggleEdit();
   }
+  const hasChanges = defaultShow !== defaultShowState
+    || defaultSearch !== defaultSearchState;
   return (
     <tr>
       <td>{name}</td>
@@ -151,22 +60,19 @@ function EditAttributeInfo({
         />
       </td>
       <td>
-        <div className="btn-group btn-group-justified">
+        <div className="buttons has-addons">
           <button
             type="button"
-            className="btn btn-outline-success btn-sm px-2 py-0"
+            className={`button is-small ${hasChanges ? 'is-success is-light is-outlined' : ''}`}
             onClick={saveChanges}
-            disabled={
-              defaultShow === defaultShowState
-              && defaultSearch === defaultSearchState
-            }
+            disabled={!hasChanges}
           >
             <span className="icon-check" />
             Save
           </button>
           <button
             type="button"
-            className="btn btn-outline-dark btn-sm px-2 py-0"
+            className="button is-small"
             onClick={toggleEdit}
           >
             <span className="icon-remove" />
@@ -200,7 +106,7 @@ function AttributeInfoLine({
       <td>
         <button
           type="button"
-          className="btn btn-sm btn-outline-dark py-0 px-2"
+          className="button is-small is-fullwidth"
           onClick={toggleEdit}
         >
           <span className="icon-pencil" />
@@ -215,6 +121,7 @@ export default function AttributeInfo(props) {
   const [isEditing, setEditing] = useState(false);
   return isEditing ? (
     <EditAttributeInfo
+      // eslint-disable-next-line react/jsx-props-no-spreading
       {...props}
       toggleEdit={() => {
         setEditing(!isEditing);
@@ -222,6 +129,7 @@ export default function AttributeInfo(props) {
     />
   ) : (
     <AttributeInfoLine
+      // eslint-disable-next-line react/jsx-props-no-spreading
       {...props}
       toggleEdit={() => {
         setEditing(!isEditing);

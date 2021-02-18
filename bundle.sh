@@ -23,5 +23,7 @@ pushd scripts
 npm install
 popd 
 cp -r scripts/* $BUNDLE_NAME 
+jq ".version = $(jq .version package.json)" scripts/package.json > \
+  $BUNDLE_NAME/package.json
 cp -r testdata.tgz $BUNDLE_NAME 
 cp -r LICENSE $BUNDLE_NAME 

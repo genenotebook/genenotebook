@@ -5,24 +5,33 @@ const orthogroupSchema = new SimpleSchema({
   ID: {
     type: String,
     index: true,
-    label: 'Orthogroup ID'
+    label: 'Orthogroup ID',
   },
   size: {
     type: Number,
-    label: 'Orthogroup size'
+    label: 'Orthogroup size',
   },
   tree: {
     type: String,
-    label: 'Newick formatted phylogenetic tree'
+    label: 'Newick formatted phylogenetic tree',
   },
   alignment: {
     type: String,
-    optional: true
-  }
-})
+    label: 'Fasta formatted multiple sequence alignment',
+    optional: true,
+  },
+  geneIds: {
+    type: Array,
+    label: 'Array of all gene IDs in the orthogroup',
+  },
+  'geneIds.$': {
+    type: String,
+    label: 'Gene ID string',
+  },
+});
 
 const orthogroupCollection = new Mongo.Collection('orthogroups');
 
 orthogroupCollection.attachSchema(orthogroupSchema);
 
-export { orthogroupCollection, orthogroupSchema }
+export { orthogroupCollection, orthogroupSchema };

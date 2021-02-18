@@ -28,12 +28,9 @@ const genomeSequenceSchema = new SimpleSchema({
     index: true,
     label: 'End position of sequence fragment on original sequence',
   },
-  permissions: {
-    type: Array,
-    label: 'User groups that are allowed to see this reference',
-  },
-  'permissions.$': {
+  permission: {
     type: String,
+    label: 'Permission level that is allowed to see this reference',
   },
   isPublic: {
     type: Boolean,
@@ -56,12 +53,9 @@ const genomeSchema = new SimpleSchema({
     index: true,
     unique: true,
   },
-  permissions: {
-    type: Array,
-    label: 'User groups that are allowed to see this reference',
-  },
-  'permissions.$': {
+  permission: {
     type: String,
+    label: 'Permission level that is allowed to see this reference',
   },
   isPublic: {
     type: Boolean,

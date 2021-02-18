@@ -1,45 +1,26 @@
 import React from 'react';
-import ContainerDimensions from 'react-container-dimensions';
-// import { Popover, OverlayTrigger } from 'react-bootstrap';
-import { scaleLinear, interpolateGreys } from 'd3'; // -scale';
-// import { interpolateGreys } from 'd3-scale-chromatic';
+import ReactResizeDetector from 'react-resize-detector';
+import { scaleLinear, interpolateGreys } from 'd3';
+import { omit } from 'lodash';
 
-const PopoverHover = props => (
-  <Popover id="blast-plot-popover" title={props.geneID}>
-    <p>
-      <small>
-        <b>E-value</b>
-:
-        {props.evalue}
-        <br />
-        <b>Bitscore</b>
-:
-        {props.bitScore}
-        <br />
-        <b>Alignment length</b>
-:
-        {props.alignmentLength}
-        <br />
-        <b>Gaps</b>
-:
-        {props.gaps}
-      </small>
-    </p>
-  </Popover>
-);
+import {
+  Popover, PopoverTrigger, PopoverBody,
+} from '/imports/ui/util/Popover.jsx';
 
-const XAxis = (props) => {
-  const range = props.scale.range();
+import './blastResultPlot.scss';
+
+function XAxis({ scale, numTicks }) {
+  const range = scale.range();
   const width = range[1];
 
-  const domain = props.scale.domain();
+  const domain = scale.domain();
   const queryLength = domain[1];
 
-  const stepSize = Math.round(queryLength / props.numTicks);
+  const stepSize = Math.round(queryLength / numTicks);
 
   const ticks = [];
 
-  for (let i = 1; i < props.numTicks; i++) {
+  for (let i = 1; i < numTicks; i += 1) {
     ticks.push(i * stepSize);
   }
 
@@ -53,7 +34,7 @@ const XAxis = (props) => {
         </text>
       </g>
       {ticks.map((tick) => {
-        const pos = props.scale(tick);
+        const pos = scale(tick);
         return (
           <g key={tick}>
             <line x1={pos} x2={pos} y1="0" y2="5" stroke="black" />
@@ -71,60 +52,91 @@ const XAxis = (props) => {
       </g>
     </g>
   );
-};
+}
 
-const HitPlotLine = (props) => {
-  const hsps = props.hit.Hit_hsps;
-  const geneID = props.hit.Hit_def[0].split(' ')[1];
+function HitPlotLine({
+  hit, index, height, xScale, maxBitScore,
+}) {
+  const hsps = hit.Hit_hsps;
+  const geneId = hit.Hit_def[0].split(' ')[1];
   return (
-    <g transform={`translate(0,${props.index * props.height})`}>
-      {hsps.map((_hsp, index) => {
+    <g transform={`translate(0,${index * height})`}>
+      {hsps.map((_hsp, hspIndex) => {
         const hsp = _hsp.Hsp[0];
         const x = hsp['Hsp_query-from'];
         const width = hsp['Hsp_query-to'] - x;
         const bitScore = hsp['Hsp_bit-score'];
-        const alignmentLength = hsp['Hsp_align-len'];
-        const gaps = hsp.Hsp_gaps;
-        const evalue = hsp.Hsp_evalue;
+        // const alignmentLength = hsp['Hsp_align-len'];
+        // const gaps = hsp.Hsp_gaps;
+        // const evalue = hsp.Hsp_evalue;
+        const popoverItems = omit(hsp, ['Hsp_qseq', 'Hsp_hseq', 'Hsp_midline']);
         return (
-          <rect
-            key={index}
-            x={props.xScale(x)}
-            y="0"
-            width={props.xScale(width)}
-            height={props.height / 2}
-            style={{
-              fill: interpolateGreys(bitScore / props.maxBitScore),
-            }}
-          />
+          <Popover>
+            <PopoverTrigger>
+              <rect
+                key={hspIndex}
+                className="hsp"
+                x={xScale(x)}
+                y="0"
+                width={xScale(width)}
+                height={height / 2}
+                rx="2"
+                ry="2"
+                style={{
+                  fill: interpolateGreys(bitScore / maxBitScore),
+                  strokeWidth: 0.5,
+                  stroke: 'hsl(0, 0%, 29%)',
+                }}
+              />
+            </PopoverTrigger>
+            <PopoverBody>
+              <nav className="panel">
+                <p className="panel-heading">
+                  {geneId}
+                </p>
+                <div className="panel-body">
+                  <table className="table is-hoverable is-narrow is-small">
+                    <tbody>
+                      {Object.entries(popoverItems).map(([key, value]) => (
+                        <tr>
+                          <td>{key.slice(4)}</td>
+                          <td>{value}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </nav>
+            </PopoverBody>
+          </Popover>
         );
       })}
     </g>
   );
-};
+}
 
-const HitPlot = (props) => {
+function HitPlot({ width, queryLength, hits }) {
   const padding = {
     top: 10,
     bottom: 10,
     left: 20,
-    right: 20,
+    right: 60,
   };
-  const width = props.width - padding.left - padding.right;
+  const paddedWidth = width - padding.left - padding.right;
   const xScale = scaleLinear()
-    .domain([0, props.queryLength])
-    .range([0, width]);
-  const maxBitScore = props.hits[0].Hit_hsps[0].Hsp[0]['Hsp_bit-score'][0];
+    .domain([0, queryLength])
+    .range([0, paddedWidth]);
+  const maxBitScore = hits[0].Hit_hsps[0].Hsp[0]['Hsp_bit-score'][0];
   const lineHeight = 12;
 
-  const height = lineHeight * props.hits.length + padding.top + padding.bottom + 30;
+  const height = lineHeight * hits.length + padding.top + padding.bottom + 30;
 
   return (
-    <svg width={props.width} height={height}>
+    <svg width={width} height={height}>
       <g className="blast-hit-plot" transform={`translate(${padding.left},${padding.top})`}>
         <XAxis scale={xScale} numTicks={10} />
         <g className="hits" transform="translate(0,30)">
-          {props.hits.map((hit, index) => (
+          {hits.map((hit, index) => (
             <HitPlotLine
               key={index}
               hit={hit}
@@ -138,18 +150,23 @@ const HitPlot = (props) => {
       </g>
     </svg>
   );
-};
+}
 
 export default function BlastResultPlot({ job }) {
   const { result, data } = job;
   const hits = result.BlastOutput.BlastOutput_iterations[0].Iteration[0].Iteration_hits[0].Hit;
   return (
-    <div className="blast-result-plot">
-      <ContainerDimensions>
-        {({ width, height }) => (
-          <HitPlot width={width} hits={hits} queryLength={data.input.length} />
+    <fieldset className="box blast-result-plot">
+      <legend className="subtitle is-5">HSP Plot</legend>
+      <ReactResizeDetector handleWidth>
+        {({ width }) => (
+          <HitPlot
+            width={width}
+            hits={hits}
+            queryLength={data.input.length}
+          />
         )}
-      </ContainerDimensions>
-    </div>
+      </ReactResizeDetector>
+    </fieldset>
   );
 }

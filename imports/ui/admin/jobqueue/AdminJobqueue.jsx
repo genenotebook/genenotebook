@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
@@ -7,158 +8,184 @@ import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 
 import { formatDate } from '/imports/ui/util/uiUtil.jsx';
 
-const REMOVE_STATES = ['completed','failed','cancelled'];
-const RESTART_STATES = ['failed','cancelled'];
-const CANCEL_STATES = ['waiting','running','created','ready']; //Anything that is not completed, failed or cancelled
+const REMOVE_STATES = ['completed', 'failed', 'cancelled'];
+// const RESTART_STATES = ['failed', 'cancelled'];
+const CANCEL_STATES = ['waiting', 'running', 'created', 'ready']; // Anything that is not completed, failed or cancelled
 
-const Status = (props) => {
-  let labelClass = 'badge ';
-  switch(props.status){
+function Status({ status }) {
+  let labelClass = 'tag ';
+  switch (status) {
     case 'completed':
-      labelClass += 'badge-success'
-      break
+      labelClass += 'is-success';
+      break;
     case 'cancelled':
-      labelClass += 'badge-warning'
-      break
+      labelClass += 'is-warning';
+      break;
     case 'failed':
-      labelClass += 'badge-danger'
-      break
+      labelClass += 'is-danger';
+      break;
     case 'running':
-      labelClass += 'badge-primary'
-      break
+      labelClass += 'is-primary';
+      break;
     default:
-      labelClass += 'badge-light'
+      break;
+      // labelClass += 'is-light';
   }
   return (
-    <span className={labelClass}> {props.status} </span>
-  )
+    <span className={labelClass}>
+      {` ${status} `}
+    </span>
+  );
 }
 
-export const JobProgressBar = ({ progress, loading, ...job }) => {
-  if (loading){
-    return null
+export function JobProgressBar({ progress, loading, status }) {
+  if (loading) {
+    return null;
   }
 
   const { completed, total, percent } = progress;
-  
-  const barColor = completed === total ? 'success' : 'default';
-
-  //console.log(completed, total, barColor)
-
+  let barColor = '';
+  switch (true) {
+    case (completed === 0):
+      barColor = 'is-default';
+      break;
+    case (completed < total):
+      barColor = 'is-info';
+      break;
+    case (completed === total):
+      barColor = 'is-success';
+      break;
+    default:
+      break;
+  }
+  const value = completed === 0 && status !== 'cancelled'
+    ? null
+    : Math.round(percent);
   return (
-    <div className = 'progress'>
-      <div 
-        className = {`progress-bar bg-${barColor}`}
-        role = 'progressbar'
-        aria-valuenow = { Math.round(percent) }
-        aria-valuemin='0'
-        aria-valuemax='100'
-        style={{width:`${percent}%`}}
+    <progress
+      className={`progress is-small ${barColor}`}
+      value={value}
+      max="100"
+    >
+      {`${value}%`}
+    </progress>
+  );
+  /*
+  return (
+    <div className="progress">
+      <div
+        className={`progress-bar bg-${barColor}`}
+        role="progressbar"
+        aria-valuenow={Math.round(percent)}
+        aria-valuemin="0"
+        aria-valuemax="100"
+        style={{ width: `${percent}%` }}
       >
         {`${Math.round(percent)}%`}
       </div>
     </div>
-  )
-} 
+  );
+  */
+}
 
-class AdminJobqueue extends React.Component {
-  constructor(props){
-    super(props)
-  }
+function performJobAction(jobId, action) {
+  jobQueue.getJob(jobId, (err, job) => {
+    job[action]();
+  });
+}
 
-  reRunJob = event => {
-    const jobId = event.target.name;
-    jobQueue.getJob(jobId, (err, job) => {
-      job.rerun();
-    });
-  }
+function JobInfo({ job, loading }) {
+  const { _id: jobId } = job;
+  return (
+    <tr key={jobId}>
+      <td><Status {...job} /></td>
+      <td>{job.type}</td>
+      <td>{formatDate(job.created)}</td>
+      <td>{job.data.userId}</td>
+      <td><JobProgressBar loading={loading} {...job} /></td>
+      <td>
+        <div className="buttons has-addons">
+          <button
+            type="button"
+            className="button is-small"
+            onClick={() => {
+              performJobAction(jobId, 'rerun');
+            }}
+          >
+            Rerun
+          </button>
+          {
+            CANCEL_STATES.indexOf(job.status) >= 0
+            && (
+            <button
+              type="button"
+              className="button is-small is-warning is-outlined"
+              onClick={() => {
+                performJobAction(jobId, 'cancel');
+              }}
+            >
+              Cancel
+            </button>
+            )
+          }
+          {
+            REMOVE_STATES.indexOf(job.status) >= 0
+            && (
+            <button
+              type="button"
+              className="button is-small is-danger is-light is-outlined"
+              onClick={() => {
+                performJobAction(jobId, 'remove');
+              }}
+            >
+              Remove
+            </button>
+            )
+          }
+        </div>
+      </td>
+    </tr>
+  );
+}
 
-  cancelJob = event => {
-    const jobId = event.target.name;
-    jobQueue.getJob(jobId, (err, job) => {
-      job.cancel();
-    });
-  }
-
-  removeJob = event => {
-    const jobId = event.target.name;
-    jobQueue.getJob(jobId, (err, job) => {
-      job.remove();
-    });
-  }
-
-  render(){
-    const { loading, jobs, ...props } = this.props;
-    return (
-      loading ? 
-      <div> Loading </div> :
-      <table className="table table-hover table-sm">
+function AdminJobqueue({ loading, jobs }) {
+  return loading
+    ? <div> Loading </div>
+    : (
+      <table className="table is-hover is-small is-fullwidth">
         <thead>
           <tr>
             {
-              ['Status','Type','Created','User','Progress','Actions'].map(label => {
-                return <th key={label} scope='col'>
-                  <button type='button' className='btn btn-sm btn-outline-dark py-0 px-2' disabled>
+              [
+                'Status', 'Type', 'Created', 'User', 'Progress', 'Actions',
+              ].map((label) => (
+                <th key={label} scope="col">
+                  <button
+                    type="button"
+                    className="button is-small is-static is-fullwidth"
+                  >
                     { label }
                   </button>
                 </th>
-              })
+              ))
             }
           </tr>
         </thead>
         <tbody>
           {
-            jobs.map(job => {
-              return (
-                <tr key={job._id}>
-                  <td><Status {...job} /></td>
-                  <td>{job.type}</td>
-                  <td>{formatDate(job.created)}</td>
-                  <td>{job.data.userId}</td>
-                  <td><JobProgressBar loading={loading} {...job} /></td>
-                  <td>
-                    <button 
-                      type='button' 
-                      className='btn btn-outline-dark btn-sm py-0 px-2'
-                      onClick={this.reRunJob}
-                      name={job._id} >
-                      Rerun
-                    </button>
-                    {
-                      CANCEL_STATES.indexOf(job.status) >= 0 &&
-                      <button 
-                        type='button' 
-                        className='btn btn-outline-warning btn-sm py-0 px-2'
-                        onClick={this.cancelJob}
-                        name={job._id} >
-                        Cancel
-                      </button>
-                    }
-                    {
-                      REMOVE_STATES.indexOf(job.status) >= 0 &&
-                      <button 
-                        type='button' 
-                        className='btn btn-outline-danger btn-sm py-0 px-2'
-                        onClick={this.removeJob}
-                        name={job._id} >
-                        Remove
-                      </button>
-                    }
-                  </td>
-                </tr>
-              )
-            })
+            jobs.map((job) => (
+              <JobInfo key={job._id} job={job} loading={loading} />
+            ))
           }
         </tbody>
       </table>
-    )
-  }
+    );
 }
 
-export default withTracker(props => {
-  const subscription = Meteor.subscribe('jobQueue')
+export default withTracker(() => {
+  const subscription = Meteor.subscribe('jobQueue');
   return {
     jobs: jobQueue.find({}).fetch(),
-    loading: !subscription.ready()
-  }
-})(AdminJobqueue)
+    loading: !subscription.ready(),
+  };
+})(AdminJobqueue);

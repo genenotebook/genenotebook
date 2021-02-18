@@ -12,13 +12,14 @@ import { Dropdown, DropdownMenu, DropdownButton } from '/imports/ui/util/Dropdow
 
 import './sampleSelection.scss';
 
-function dataTracker({ gene, children }) {
+function dataTracker({ gene, showHeader, children }) {
   const { genomeId } = gene;
   const experimentSub = Meteor.subscribe('experimentInfo');
   const loading = !experimentSub.ready();
   const experiments = ExperimentInfo.find({ genomeId }).fetch();
   const replicaGroups = groupBy(experiments, 'replicaGroup');
   return {
+    showHeader,
     loading,
     experiments,
     children,
@@ -27,7 +28,7 @@ function dataTracker({ gene, children }) {
 }
 
 const customStyles = {
-  control: provided => ({
+  control: (provided) => ({
     ...provided,
     minWidth: 200,
     margin: 4,
@@ -46,9 +47,9 @@ function DropdownIndicator(props) {
 }
 
 function SampleSelection({
-  gene, replicaGroups, loading, children,
+  gene, showHeader, replicaGroups, loading, children,
 }) {
-  const options = Object.keys(replicaGroups).map(replicaGroup => ({
+  const options = Object.keys(replicaGroups).map((replicaGroup) => ({
     value: replicaGroup,
     label: replicaGroup,
   }));
@@ -58,12 +59,11 @@ function SampleSelection({
     setSelection(options.slice(0, 10));
     setInitialization(true);
   }
-
   function renderChildren() {
     const _samples = selection.map(({ value }) => replicaGroups[value]);
     const samples = [].concat(..._samples);
 
-    return React.Children.map(children, child => React.cloneElement(child, {
+    return React.Children.map(children, (child) => React.cloneElement(child, {
       samples,
       gene,
       loading,
@@ -71,7 +71,71 @@ function SampleSelection({
   }
 
   return (
-    <div>
+    <>
+      { showHeader && <hr /> }
+      <div className="is-pulled-right">
+        <div className="dropdown is-right is-hoverable">
+          <div className="dropdown-trigger">
+            <button type="button" className="button is-small">
+              <span>
+                Select samples&nbsp;
+              </span>
+              <span className="tag is-info sample-numbers">
+                {loading ? '...' : `${selection.length} / ${options.length}`}
+              </span>
+              <span className="icon-down" />
+            </button>
+          </div>
+          <div className="dropdown-menu" role="menu">
+            <div className="dropdown-content">
+              <div className="field has-addons is-centered">
+                <p className="control">
+                  <button
+                    type="button"
+                    className="button is-small"
+                    onClick={() => {
+                      setSelection(options);
+                    }}
+                  >
+                    Select all
+                  </button>
+                </p>
+                <p className="control">
+                  <button
+                    type="button"
+                    className="button is-small"
+                    onClick={() => {
+                      setSelection([]);
+                    }}
+                  >
+                    Deselect all
+                  </button>
+                </p>
+              </div>
+              <Select
+                autoFocus
+                backSpaceRemovesValue={false}
+                closeMenuOnSelect={false}
+                components={{ DropdownIndicator, IndicatorSeparator: null }}
+                controlShouldRenderValue={false}
+                hideSelectedOptions={false}
+                isClearable={false}
+                isMulti
+                menuIsOpen
+                onChange={(newSelection) => { setSelection(newSelection); }}
+                options={options}
+                placeholder="Search..."
+                styles={customStyles}
+                tabSelectsValue={false}
+                value={selection}
+                noOptionsMessage={() => 'No expression data'}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      { showHeader && <h4 className="subtitle is-4">Gene Expression</h4> }
+      {/*
       <div className="d-flex sample-select">
         <Dropdown>
           <DropdownButton className="btn btn-sm btn-outline-dark dropdown-toggle px-2 py-0 border">
@@ -125,8 +189,11 @@ function SampleSelection({
           </DropdownMenu>
         </Dropdown>
       </div>
-      <div>{renderChildren()}</div>
-    </div>
+      */}
+      <div>
+        { renderChildren() }
+      </div>
+    </>
   );
 }
 

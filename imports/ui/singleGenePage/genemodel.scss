@@ -19,7 +19,7 @@
     .exon {
       cursor: pointer;
       &:hover {
-        stroke: #007bff; //Bootstrap primary color
+        stroke: hsl(204, 86%, 53%); //Bulma info color
         stroke-width: 2px;
         stroke-linejoin: round;
       }
@@ -29,7 +29,7 @@
       stroke-width: 16px;
       stroke: transparent;
       &:hover {
-        stroke: #007bff; //Bootstrap primary color
+        stroke: hsl(204, 86%, 53%); //Bulma info color
         
         //stroke-linejoin: round;
       }

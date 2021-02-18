@@ -6,7 +6,7 @@ import logger from '/imports/api/util/logger.js';
  * @param  {String} attributeString Raw gff3 attribute column string
  * @return {Object}                 Key:value pairs of attributes.
  */
-export const parseAttributeString = attributeString => attributeString.split(';').reduce((attributes, stringPart) => {
+export const parseAttributeString = (attributeString) => attributeString.split(';').reduce((attributes, stringPart) => {
   const [key, value] = stringPart.split('=');
   if (typeof key !== 'undefined' && typeof value !== 'undefined') {
     attributes[key] = value
@@ -62,7 +62,7 @@ export const reverseComplement = (seq) => {
   };
   const seqArray = seq.split('');
   const revSeqArray = seqArray.reverse();
-  const revCompSeqArray = revSeqArray.map(nuc => comp[nuc]);
+  const revCompSeqArray = revSeqArray.map((nuc) => comp[nuc]);
   const revCompSeq = revCompSeqArray.join('');
   return revCompSeq;
 };
@@ -155,15 +155,15 @@ export const translate = (seq) => {
  *                        nucleotide sequence and protein sequence field
  */
 export const getGeneSequences = (gene) => {
-  const transcripts = gene.subfeatures.filter(subfeature => subfeature.type === 'mRNA');
+  const transcripts = gene.subfeatures.filter((subfeature) => subfeature.type === 'mRNA');
   const sequences = transcripts.map((transcript) => {
     const cdsArray = gene.subfeatures
       .filter(
-        subfeature => subfeature.parents.indexOf(transcript.ID) >= 0 && subfeature.type === 'CDS',
+        (subfeature) => subfeature.parents.indexOf(transcript.ID) >= 0 && subfeature.type === 'CDS',
       )
       .sort((a, b) => a.start - b.start);
 
-    const rawSeq = cdsArray.map(cds => cds.seq).join('');
+    const rawSeq = cdsArray.map((cds) => cds.seq).join('');
 
     const forward = gene.strand === '+';
     const phase = forward ? cdsArray[0].phase : cdsArray[cdsArray.length - 1].phase;

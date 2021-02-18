@@ -5,7 +5,44 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
-## [0.1.17] 2019-05-02
+## [Unreleased]
+
+### Added
+
+- External links and descriptions on GO terms and INTERPRO ids
+- Make the list of default user accounts configurable using `settings.json` configuration file
+
+### Changed
+
+- Meteor version 2.0
+
+### Fixed
+
+- Option parsing for CLI
+
+## [0.2.0] 2020-01-22
+
+### Added
+
+- Mongodb logging
+- Verbosity toggle for gff parsing
+
+### Changed
+
+- Meteor version 1.10
+- Node.js version >12
+- MongoDB version 4.2
+- Fully migrated all react components to new hooks API
+- Upgraded to `alanning:roles@3.2.0`
+- __BACKWARDS INCOMPATIBLE:__
+Modified user permission schemas to comply with `alanning:roles@3.2.0` for the following collections: `users`, `genomeCollection`, `genomeSequenceCollection`, `ExperimentInfo`, `Transcriptomes`. Existing servers attempt to fix this with automatic schema migration.
+### Fixed
+
+- Footer correctly displays version info on production builds
+- Plot tooltips can be closed by clicking anywhere on the screen, similar to dropdown menu 
+- Various orthogroup loading fixes: results are properly returned to the cli and loading an orthogroup with an existing ID throws an error.
+
+## [0.1.16] 2019-05-02
 
 ### Added
 
@@ -214,7 +251,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - First GeneNoteBook version ready for use
 
-[unreleased]: https://github.com/genenotebook/genenotebook/compare/v0.1.15...HEAD
+[unreleased]: https://github.com/genenotebook/genenotebook/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/genenotebook/genenotebook/compare/v0.1.16...v0.2.0
+[0.1.16]: https://github.com/genenotebook/genenotebook/compare/v0.1.15...v0.1.16
 [0.1.15]: https://github.com/genenotebook/genenotebook/compare/v0.1.14...v0.1.15
 [0.1.14]: https://github.com/genenotebook/genenotebook/compare/v0.1.13...v0.1.14
 [0.1.13]: https://github.com/genenotebook/genenotebook/compare/v0.1.12...v0.1.13

@@ -1,0 +1,16 @@
+fieldset.blast-result-plot {
+  min-inline-size: unset;
+  legend.subtitle {
+    margin-bottom: 0;
+  }
+  svg {
+    rect.hsp {
+      cursor: pointer;
+      &:hover {
+        stroke: hsl(204, 86%, 53%) !important; //Bulma info color
+        stroke-width: 2px !important;
+        stroke-linejoin: round;
+      }
+    }
+  }
+}

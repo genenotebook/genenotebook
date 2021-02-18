@@ -5,8 +5,6 @@ import { cloneDeep, isEqual, isEmpty } from 'lodash';
 
 import logger from '/imports/api/util/logger.js';
 
-import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
-
 import './geneTableHeader.scss';
 
 function hasOwnProperty(obj, prop) {
@@ -33,7 +31,7 @@ const QUERY_TYPES = [
   'Does not equal',
   'Contains',
   'Does not contain',
-].map(query => new SelectionOption(query));
+].map((query) => new SelectionOption(query));
 
 /**
  * [description]
@@ -146,110 +144,122 @@ function HeaderElement({
   }
 
   const hasQuery = currentQueryLabel !== 'None';
-  const hasNewQuery = currentQueryLabel !== queryLabel || currentQueryValue !== queryValue;
-  const hasSort = typeof sort !== 'undefined' && hasOwnProperty(sort, attribute.query);
+  const hasNewQuery = currentQueryLabel !== queryLabel
+    || currentQueryValue !== queryValue;
+  const hasSort = typeof sort !== 'undefined'
+    && hasOwnProperty(sort, attribute.query);
 
-  const buttonClass = hasQuery || hasSort || queryLoading ? 'btn-success' : 'btn-outline-dark';
+  const buttonClass = hasQuery || hasSort || queryLoading
+    ? 'is-success is-light is-outlined'
+    : '';
   const orientation = attribute.name === 'Gene ID' ? 'left' : 'right';
   const colStyle = attribute.name === 'Gene ID' ? { width: '10rem' } : {};
 
   return (
     <th scope="col" style={{ ...colStyle }}>
-      <div className="btn-group btn-group-justified">
-        <button
-          className={`btn btn-sm px-2 py-0 genetable-dropdown ${buttonClass}`}
-          type="button"
-          disabled
-          style={{
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {queryLoading && <span className="icon-spin animate-spin" />}
-          {attribute.name}
-        </button>
-        {attribute.name !== 'Genome' && (
-          <Dropdown>
-            <DropdownButton className={`btn btn-sm px-1 py-0 dropdown-toggle ${buttonClass}`} />
-            <DropdownMenu className={`dropdown-menu dropdown-menu-${orientation} px-2`}>
-              <div className={`sort-wrapper ${hasSort ? 'has-sort' : ''}`}>
-                <h6 className="dropdown-header">Sort:</h6>
-                <div className="form-check">
-                  {[1, -1].map((sortOrder) => {
-                    const checked = sort && sort[attribute.query] === sortOrder;
-                    return (
-                      <div key={`${sortOrder}-${checked}`}>
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          id={sortOrder}
-                          onChange={() => {
-                            updateSortOrder(sortOrder);
-                          }}
-                          checked={checked}
-                        />
-                        <label className="form-check-label" htmlFor={sortOrder}>
-                          {sortOrder === 1 ? 'Increasing' : 'Decreasing'}
-                        </label>
-                      </div>
-                    );
-                  })}
+      <div className="field has-addons header-element" role="group">
+        <div className="control header-element">
+          <button
+            className={`button is-small is-fullwidth genetable-dropdown is-static ${buttonClass}`}
+            type="button"
+            style={{
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {/* queryLoading && <span className="icon-spin animate-spin" /> */}
+            {attribute.name}
+          </button>
+        </div>
+        <div className="control">
+          {attribute.name !== 'Genome' && (
+            <div className="dropdown is-hoverable columnselect">
+              <div className="dropdown-trigger">
+                <button type="button" className={`button is-small ${buttonClass} ${queryLoading ? 'is-loading' : ''}`}>
+                  <span className="icon">
+                    <span className="icon-down" />
+                  </span>
+                </button>
+              </div>
+              <div className="dropdown-menu" role="menu">
+                <div className="dropdown-content">
+                  <div className={`dropdown-item sort-wrapper ${hasSort ? 'has-sort' : ''}`}>
+                    <h6 className="is-h6 dropdown-item dropdown-header">
+                      Sort:
+                    </h6>
+                    {[1, -1].map((sortOrder) => {
+                      const checked = sort && sort[attribute.query] === sortOrder;
+                      return (
+                        <div key={`${sortOrder}-${checked}`}>
+                          <label className="checkbox" htmlFor={sortOrder}>
+                            <input
+                              className="dropdown-checkbox is-small"
+                              type="checkbox"
+                              id={sortOrder}
+                              onChange={() => {
+                                updateSortOrder(sortOrder);
+                              }}
+                              checked={checked}
+                            />
+                            {sortOrder === 1 ? 'Increasing' : 'Decreasing'}
+                          </label>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <hr className="dropdown-divider" />
+                  <div className={`dropdown-item query-wrapper ${hasQuery ? 'has-query' : ''}`}>
+                    <h6 className="is-h6 dropdown-item dropdown-header">
+                      Filter:
+                    </h6>
+                    <Select
+                      className="control"
+                      // closeMenuOnSelect={false}
+                      value={new SelectionOption(queryLabel)}
+                      options={QUERY_TYPES}
+                      onChange={({ label }) => {
+                        setAttributeQuery({
+                          queryLabel: label,
+                          queryValue,
+                        });
+                      }}
+                    />
+                    {['None', 'Present', 'Not present'].indexOf(queryLabel) < 0 ? (
+                      <textarea
+                        className="textarea"
+                        onChange={({ target }) => {
+                          setAttributeQuery({
+                            queryLabel,
+                            queryValue: target.value,
+                          });
+                        }}
+                        value={queryValue}
+                      />
+                    ) : null}
+                  </div>
+                  {hasNewQuery && !queryLoading && (
+                  <button
+                    type="button"
+                    className={`button is-small is-fullwidth is-success is-light ${queryLoading && 'is-loading'}`}
+                    onClick={triggerQueryUpdate}
+                  >
+                    Update filter
+                  </button>
+                  )}
+                  {hasQuery && (
+                  <button
+                    type="button"
+                    className="button is-small is-fullwidth"
+                    onClick={cancelQuery}
+                  >
+                    <span className="icon-cancel" />
+                    Cancel filter
+                  </button>
+                  )}
                 </div>
               </div>
-              <div className="dropdown-divider" />
-              <div className={`query-wrapper pb-1 mb-1 ${hasQuery ? 'has-query' : ''}`}>
-                <h6 className="dropdown-header">Filter:</h6>
-                <Select
-                  className="form-control-sm pb-5"
-                  value={new SelectionOption(queryLabel)}
-                  options={QUERY_TYPES}
-                  onChange={({ label }) => {
-                    setAttributeQuery({
-                      queryLabel: label,
-                      queryValue,
-                    });
-                  }}
-                />
-                {['None', 'Present', 'Not present'].indexOf(queryLabel) < 0 ? (
-                  <textarea
-                    className="form-control"
-                    onChange={({ target }) => {
-                      setAttributeQuery({
-                        queryLabel,
-                        queryValue: target.value,
-                      });
-                    }}
-                    value={queryValue}
-                  />
-                ) : null}
-              </div>
-              {hasNewQuery && !queryLoading && (
-                <button
-                  type="button"
-                  className="btn btn-sm btn-block btn-outline-success"
-                  onClick={triggerQueryUpdate}
-                >
-                  Update filter
-                </button>
-              )}
-              {queryLoading && (
-                <button type="button" className="btn btn-sm btn-block btn-success" disabled>
-                  <span className="icon-spin animate-spin" />
-                  &nbsp;Query loading
-                </button>
-              )}
-              {hasQuery && (
-                <button
-                  type="button"
-                  className="btn btn-sm btn-block btn-outline-dark"
-                  onClick={cancelQuery}
-                >
-                  <span className="icon-cancel" />
-                  Cancel filter
-                </button>
-              )}
-            </DropdownMenu>
-          </Dropdown>
-        )}
+            </div>
+          )}
+        </div>
       </div>
     </th>
   );
@@ -276,7 +286,7 @@ function GeneTableHeader({
   ...props
 }) {
   const selectedAttributes = attributes
-    .filter(attribute => selectedColumns.has(attribute.name))
+    .filter((attribute) => selectedColumns.has(attribute.name))
     .sort((a, b) => {
       if (a.name === 'Gene ID') return -1;
       if (b.name === 'Gene ID') return 1;
@@ -287,7 +297,7 @@ function GeneTableHeader({
   return (
     <thead>
       <tr>
-        {selectedAttributes.map(attribute => (
+        {selectedAttributes.map((attribute) => (
           <HeaderElement
             key={attribute.name}
             label={attribute.name}
@@ -298,8 +308,7 @@ function GeneTableHeader({
         <th scope="col">
           <button
             type="button"
-            className="btn btn-sm btn-outline-dark px-2 py-0 btn-block genetable-dropdown"
-            disabled
+            className="button is-small is-static is-fullwidth"
           >
             {selectedVisualization}
           </button>
@@ -308,10 +317,13 @@ function GeneTableHeader({
           <div className="pull-right">
             <button
               type="button"
-              className="btn btn-outline-dark btn-sm px-1 py-0"
+              className="button is-small"
+              title="Select all"
               onClick={toggleSelectAllGenes}
             >
-              <span className="icon-check" aria-hidden="true" style={{ color: checkBoxColor }} />
+              <span className="icon">
+                <span className="icon-check" aria-hidden="true" style={{ color: checkBoxColor }} />
+              </span>
             </button>
           </div>
         </th>

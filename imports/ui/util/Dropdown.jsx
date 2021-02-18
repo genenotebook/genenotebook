@@ -1,78 +1,56 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-export class DropdownButton extends React.Component {
-  constructor(props){
-    super(props)
-  }
-  render(){
-    const {children, ...props} = this.props;
-    return (
-      <button type='button' key='dropdownButton' {...props}>
-        { children }
-      </button>
-    )
-  }
+export function DropdownButton({ children, ...props }) {
+  return (
+    <button type="button" key="dropdownButton" {...props}>
+      { children }
+    </button>
+  );
 }
 
-export class DropdownMenu extends React.Component {
-  constructor(props){
-    super(props)
-  }
-  render(){
-    const {children, show = '', className = '', ...props} = this.props;
-    return (
-      <div key='dropdownMenu' className={`dropdown-menu ${show} ${className}`} {...props}>
-        { children }
-      </div>
-    )
-  }
+export function DropdownMenu({
+  children, show = '', className = '', ...props
+}) {
+  return (
+    <div
+      key="dropdownMenu"
+      className={`dropdown-menu ${show} ${className}`}
+      {...props}
+    >
+      { children }
+    </div>
+  );
 }
 
-export class Dropdown extends React.Component {
-  constructor(props){
-    super(props)
-    this.state = {
-      show: ''
-    }
+export function Dropdown({ children }) {
+  const [show, setShow] = useState('');
+  function close() {
+    setShow('');
+    document.removeEventListener('click', close);
   }
 
-  open = () => {
-    this.setState({
-      show: 'show'
-    })
-    document.addEventListener('click', this.close);
+  function open() {
+    setShow('show');
+    document.addEventListener('click', close);
   }
 
-  close = () => {
-    this.setState({
-      show: ''
-    })
-    document.removeEventListener('click', this.close);
-  }
-
-  preventClose = event => {
+  function preventClose(event) {
     event.preventDefault();
     event.stopPropagation();
     event.nativeEvent.stopImmediatePropagation();
   }
 
-  renderChildren = () => {
-    return React.Children.map(this.props.children, child => {
-      const onClick = child.type === DropdownButton ? this.open : this.preventClose;
-      return React.cloneElement(child, {
-        onClick: onClick,
-        show: this.state.show
-      })
-    })
+  function renderChildren() {
+    return React.Children.map(children, (child) => {
+      const onClick = child.type === DropdownButton
+        ? open
+        : preventClose;
+      return React.cloneElement(child, { onClick, show });
+    });
   }
-
-  render(){
-    return (
-      <div className='dropdown btn-group'>
-        {
-          this.renderChildren()
-        }
-      </div>
-    )
-  }
+  return (
+    <div className="dropdown btn-group">
+      { renderChildren() }
+    </div>
+  );
 }

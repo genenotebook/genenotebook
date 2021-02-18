@@ -21,7 +21,7 @@ function dataTracker(props) {
 }
 
 const customStyles = {
-  control: provided => ({
+  control: (provided) => ({
     ...provided,
     minWidth: 100,
     margin: 4,
@@ -40,7 +40,7 @@ function DropdownIndicator(props) {
 }
 
 function ExpressionDownloadOptions({
-  replicaGroups, loading, options, updateOptions
+  replicaGroups, loading, options, updateOptions,
 }) {
   const experimentIds = Object.keys(replicaGroups);
 
@@ -107,14 +107,14 @@ function ExpressionDownloadOptions({
             onChange={(newSelection) => {
               selectSamples(newSelection);
             }}
-            options={experimentIds.map(expId => ({
+            options={experimentIds.map((expId) => ({
               value: expId,
               label: expId,
             }))}
             placeholder="Search..."
             styles={customStyles}
             tabSelectsValue={false}
-            value={selectedSamples.map(expId => ({
+            value={selectedSamples.map((expId) => ({
               value: expId,
               label: expId,
             }))}

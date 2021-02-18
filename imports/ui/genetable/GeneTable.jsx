@@ -1,17 +1,21 @@
+/* eslint-disable react/jsx-props-no-spreading */
+/* eslint-disable react/prop-types */
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React, { useState, useEffect } from 'react';
-import { compose } from 'recompose';
-import { cloneDeep, isEqual, isEmpty } from 'lodash';
+import { cloneDeep, isEqual } from 'lodash';
 
 import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 
 import getQueryCount from '/imports/api/methods/getQueryCount.js';
 
-import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
+import {
+  branch, compose, isLoading, Loading,
+} from '/imports/ui/util/uiUtil.jsx';
 
+// eslint-disable-next-line import/no-cycle
 import FilterOptions from './filteroptions/FilterOptions.jsx';
 import SelectionOptions from './SelectionOptions.jsx';
 
@@ -21,14 +25,18 @@ import DownloadDialogModal from './downloads/DownloadDialog.jsx';
 
 import './geneTable.scss';
 
-export const VISUALIZATIONS = ['Gene model', 'Protein domains', 'Gene expression'];
+export const VISUALIZATIONS = [
+  'Gene model', 'Protein domains', 'Gene expression',
+];
+
+const DEFAULT_NUM_GENES_DISPLAY = 20;
 
 /**
  * Reactive data tracker to identify available gene attributes
  * @param  {Object} props [description]
  * @return {Object}       [description]
  */
-function attributeTracker({ location, history }) {
+function attributeTracker({ location, history, ...props }) {
   const attributeSub = Meteor.subscribe('attributes');
   const loading = !attributeSub.ready();
   const attributes = attributeCollection.find({}).fetch();
@@ -37,6 +45,7 @@ function attributeTracker({ location, history }) {
     attributes,
     location,
     history,
+    ...props,
   };
 }
 
@@ -45,7 +54,9 @@ function attributeTracker({ location, history }) {
  * @param  {[type]} options.attributes [description]
  * @return {[type]}                    [description]
  */
-function searchTracker({ attributes, location, history }) {
+function searchTracker({
+  attributes, location, history, ...props
+}) {
   const { search } = location;
   const queryString = new URLSearchParams(search);
 
@@ -68,7 +79,9 @@ function searchTracker({ attributes, location, history }) {
 
   const selectedAttributes = attributes
     .filter(
-      ({ defaultShow, defaultSearch, name }) => defaultShow || defaultSearch || new RegExp(name).test(searchAttributes),
+      ({ defaultShow, defaultSearch, name }) => defaultShow
+        || defaultSearch
+        || new RegExp(name).test(searchAttributes),
     )
     .map(({ name }) => name);
 
@@ -84,6 +97,7 @@ function searchTracker({ attributes, location, history }) {
     searchQuery,
     location,
     history,
+    ...props,
   };
 }
 
@@ -111,7 +125,13 @@ function hasNoBlastJob({ blastJob }) {
 
 function processBlastJob(Component) {
   return function({ searchQuery, blastJob, ...props }) {
-    const hits = blastJob.result.BlastOutput.BlastOutput_iterations[0].Iteration[0].Iteration_hits[0].Hit;
+    const hits = blastJob
+      .result
+      .BlastOutput
+      .BlastOutput_iterations[0]
+      .Iteration[0]
+      .Iteration_hits[0]
+      .Hit;
     const geneIds = hits.map((hit) => {
       const geneId = hit.Hit_def[0].split(' ')[0];
       return geneId;
@@ -123,9 +143,9 @@ function processBlastJob(Component) {
 }
 
 function GeneTable({
-  searchQuery, selectedAttributes, attributes, history,
+  searchQuery, selectedAttributes, attributes, history, genomeDataCache,
 }) {
-  const [limit, setLimit] = useState(20);
+  const [limit, setLimit] = useState(DEFAULT_NUM_GENES_DISPLAY);
   const [query, setQuery] = useState(searchQuery);
   useEffect(() => {
     if (!isEqual(query, searchQuery)) {
@@ -209,71 +229,80 @@ function GeneTable({
   });
 
   return (
-    <div className="container-fluid px-0 mx-0 genetable">
-      <div className="table-responsive h-80">
-        <div className="card genetable-wrapper h-100 my-2">
-          <div className="card-header d-flex justify-content-between px-1 py-1">
-            <FilterOptions
-              {...{
-                attributes,
-                selectedColumns,
-                toggleColumnSelect,
-                selectedVisualization: selectedViz,
-                toggleVisualization,
-                query,
-                updateQuery,
-              }}
-            />
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-dark px-2 mx-2 py-0 border query-count"
-              disabled
-            >
-              <span className="badge badge-dark">{queryCount}</span>
-              &nbsp;query results
-            </button>
-            <SelectionOptions
-              {...{
-                selectedGenes,
-                selectedAllGenes: allGenes,
-                toggleDownloadDialog,
-                toggleSelectAllGenes,
-              }}
-            />
+    <div className="container genetable">
+      <div className="card genetable-wrapper table-container">
+        <div className="card-header">
+          <div className="columns is-vcentered">
+            <div className="column">
+              <FilterOptions
+                {...{
+                  attributes,
+                  selectedColumns,
+                  toggleColumnSelect,
+                  selectedVisualization: selectedViz,
+                  toggleVisualization,
+                  query,
+                  updateQuery,
+                }}
+              />
+            </div>
+            <div className="column">
+              <div className="tags has-addons is-centered">
+                <span className="tag">
+                  &#8470; query results
+                </span>
+                <span className="tag is-small is-info">
+                  {queryCount}
+                </span>
+              </div>
+            </div>
+            <div className="column">
+              <div className="is-pulled-right">
+                <SelectionOptions
+                  {...{
+                    selectedGenes,
+                    selectedAllGenes: allGenes,
+                    toggleDownloadDialog,
+                    toggleSelectAllGenes,
+                  }}
+                />
+              </div>
+            </div>
           </div>
-          <table className="genetable table table-hover table-sm">
-            <GeneTableHeader
-              {...{
-                selectedColumns,
-                selectedGenes,
-                selectedAllGenes: allGenes,
-                toggleSelectAllGenes,
-                selectedVisualization: selectedViz,
-                updateQuery,
-                cancelQuery,
-                query,
-                updateSort,
-                sort,
-                attributes,
-                history,
-              }}
-            />
-            <GeneTableBody
-              {...{
-                query,
-                sort,
-                limit,
-                selectedGenes,
-                selectedAllGenes: allGenes,
-                updateSelection: updateGeneSelection,
-                selectedColumns,
-                attributes,
-                selectedVisualization: selectedViz,
-                updateScrollLimit: setLimit,
-              }}
-            />
-          </table>
         </div>
+        <table className="genetable table is-narrow is-hoverable is-fullwidth">
+          <GeneTableHeader
+            {...{
+              selectedColumns,
+              selectedGenes,
+              selectedAllGenes: allGenes,
+              toggleSelectAllGenes,
+              selectedVisualization: selectedViz,
+              updateQuery,
+              cancelQuery,
+              query,
+              updateSort,
+              sort,
+              attributes,
+              history,
+            }}
+          />
+          <GeneTableBody
+            {...{
+              query,
+              sort,
+              limit,
+              selectedGenes,
+              selectedAllGenes: allGenes,
+              updateSelection: updateGeneSelection,
+              selectedColumns,
+              attributes,
+              selectedVisualization: selectedViz,
+              updateScrollLimit: setLimit,
+              genomeDataCache,
+            }}
+          />
+        </table>
       </div>
       {showDownloadDialog && (
         <DownloadDialogModal
@@ -290,14 +319,12 @@ function GeneTable({
   );
 }
 
-const withConditionalRendering = compose(
+export default compose(
   withTracker(attributeTracker),
-  withEither(isLoading, Loading),
+  branch(isLoading, Loading),
   withTracker(searchTracker),
   withTracker(blastJobTracker),
-  withEither(isLoading, Loading),
-  withEither(hasNoBlastJob, GeneTable),
+  branch(isLoading, Loading),
+  branch(hasNoBlastJob, GeneTable),
   processBlastJob,
-);
-
-export default withConditionalRendering(GeneTable);
+)(GeneTable);

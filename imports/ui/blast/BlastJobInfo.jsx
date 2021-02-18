@@ -1,14 +1,22 @@
 /* eslint-disable react/forbid-prop-types */
 import React from 'react';
 import PropTypes from 'prop-types';
+import { BlastOptionField } from './SubmitBlast.jsx';
 
-function JobInfo({ job }) {
-  const { data } = job;
-  const { blastType, input } = data;
+function BlastJobInfo({ job }) {
+  const {
+    data: {
+      blastType,
+      input,
+      genomeIds,
+      blastOptions: { eValue, numAlignments },
+    },
+  } = job;
+
   return (
-    <fieldset className="border rounded px-3">
-      <legend className="w-auto mx-1">Job info</legend>
-      <table className="table table-sm table-hover">
+    <fieldset className="box" disabled>
+      <legend className="subtitle is-5">Job info</legend>
+      <table className="table is-small is-hoverable is-fullwidth">
         <tbody>
           <tr>
             <td>Created</td>
@@ -19,10 +27,14 @@ function JobInfo({ job }) {
             <td>{blastType}</td>
           </tr>
           <tr>
+            <td>References</td>
+            <td>{genomeIds}</td>
+          </tr>
+          <tr>
             <td>Input</td>
             <td>
               <textarea
-                className="form-control"
+                className="input is-small"
                 rows="5"
                 value={input}
                 style={{ fontFamily: 'monospace' }}
@@ -30,49 +42,22 @@ function JobInfo({ job }) {
               />
             </td>
           </tr>
-        </tbody>
-      </table>
-    </fieldset>
-  );
-}
-
-JobInfo.propTypes = {
-  job: PropTypes.object.isRequired,
-};
-
-function ParameterInfo({ job }) {
-  const { data } = job;
-  const { blastOptions } = data;
-  const { eValue, numAlignments } = blastOptions;
-  return (
-    <fieldset className="border rounded px-3">
-      <legend className="w-auto mx-1">BLAST Parameters</legend>
-      <table className="table table-sm table-hover">
-        <tbody>
           <tr>
-            <td>E-value cutoff</td>
-            <td>{eValue}</td>
-          </tr>
-          <tr>
-            <td>Num alignments</td>
-            <td>{numAlignments}</td>
+            <td>BLAST Parameters</td>
+            <td>
+              <div className="columns">
+                <div className="column">
+                  <BlastOptionField name="--e-value" value={eValue} disabled />
+                </div>
+                <div className="column">
+                  <BlastOptionField name="--num-alignments" value={numAlignments} disabled />
+                </div>
+              </div>
+            </td>
           </tr>
         </tbody>
       </table>
     </fieldset>
-  );
-}
-
-ParameterInfo.propTypes = {
-  job: PropTypes.object.isRequired,
-};
-
-function BlastJobInfo({ job }) {
-  return (
-    <div className="pb-2">
-      <JobInfo job={job} />
-      <ParameterInfo job={job} />
-    </div>
   );
 }
 
