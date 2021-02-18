@@ -8,7 +8,7 @@ import fs from 'fs';
 
 // import { chunk } from 'lodash';
 
-import { Genes } from '/imports/api/genes/gene_collection.js';
+import { Genes } from '/imports/api/genes/geneCollection.js';
 // import { Interpro } from '/imports/api/genes/interpro_collection.js';
 import logger from '/imports/api/util/logger.js';
 
@@ -86,7 +86,6 @@ class InterproscanProcessor {
         }
 
         dbUpdate.$addToSet['subfeatures.$.protein_domains'] = proteinDomain;
-
 
         this.bulkOp.find({ 'subfeatures.ID': seqId }).update(dbUpdate);
       } else {

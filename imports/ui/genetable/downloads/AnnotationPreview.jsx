@@ -1,9 +1,8 @@
-import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
 
-import previewDataTracker from './previewDataTracker.js';
+import { Preview, previewDataTracker } from './Preview.jsx';
 
 const formatAttributes = ({ attributes = {}, ID, parents }) => {
   Object.assign(attributes, { ID, Parent: parents });
@@ -38,20 +37,19 @@ const formatGff3 = (gene) => {
   return gffLines;
 };
 
-const AnnotationDownload = ({ previewGenes }) => (
-  <div className="card download-preview">
-    <div className="card-body">
-      <h4 className="card-title">Download preview</h4>
-      {
-          previewGenes.map((gene) => formatGff3(gene).map((gffLine) => (
-            <span key={gffLine}>
-              {gffLine}
-              <br />
-            </span>
-          )))
-        }
-    </div>
-  </div>
+const AnnotationPreview = ({ loading, previewGenes }) => (
+  <Preview>
+    {loading ? (
+      '...loading...'
+    ) : (
+      previewGenes.map((gene) => formatGff3(gene).map((gffLine) => (
+        <span key={gffLine}>
+          {gffLine}
+          <br />
+        </span>
+      )))
+    )}
+  </Preview>
 );
 
-export default withTracker(previewDataTracker)(AnnotationDownload);
+export default withTracker(previewDataTracker)(AnnotationPreview);

@@ -1,26 +1,25 @@
-// The gray background
-.backdrop {
-  z-index: 999;
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: rgba(0,0,0,0.4);
-  padding: 50;
-}
-
 // The modal "window"
-.modal {
+.modal.download-dialog {
   display: inline !important;
   z-index: 1000 !important;
-}
 
-.download-preview {
-  font-family: Menlo, monospace;
-  overflow: scroll;
-  white-space: nowrap;
-  font-size: 0.75rem;
-  padding: 0.5rem;
-  max-height: 10rem;
+  .modal-card {
+    margin-top: 2em;
+  }
+
+  header {
+    p {
+      padding-bottom: .5em;
+    }
+    padding-bottom: 0px;
+  }
+
+  .download-preview {
+    font-family: Menlo, monospace;
+    overflow: scroll;
+    white-space: nowrap;
+    font-size: 0.75rem;
+    padding: 0.5rem;
+    max-height: 10rem;
+  }
 }

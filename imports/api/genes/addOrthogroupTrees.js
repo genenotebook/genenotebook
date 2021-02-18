@@ -9,7 +9,7 @@ import fs from 'fs';
 
 import { orthogroupCollection, orthogroupSchema } from
   '/imports/api/genes/orthogroup_collection.js';
-import { Genes } from '/imports/api/genes/gene_collection.js';
+import { Genes } from '/imports/api/genes/geneCollection.js';
 import { parseNewick } from '/imports/api/util/util.js';
 import logger from '/imports/api/util/logger.js';
 

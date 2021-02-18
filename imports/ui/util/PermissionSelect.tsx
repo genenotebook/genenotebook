@@ -47,7 +47,7 @@ interface PermissionSelectOptions {
   disabled: boolean
 }
 function PermissionSelect({
-  value, onChange, disabled,
+  value, onChange, disabled = false,
 }: PermissionSelectOptions) {
   return (
     <Select
@@ -59,6 +59,7 @@ function PermissionSelect({
     />
   );
 }
+
 export default compose(
   withTracker(permissionSelectDataTracker),
   branch(isLoading, Loading),

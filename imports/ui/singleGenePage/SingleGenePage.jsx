@@ -4,9 +4,8 @@ import { withTracker } from 'meteor/react-meteor-data';
 import React from 'react';
 import hash from 'object-hash';
 
-import { Genes } from '/imports/api/genes/gene_collection.js';
+import { Genes } from '/imports/api/genes/geneCollection.js';
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
-// import logger from '/imports/api/util/logger.js';
 
 import { branch, compose } from '/imports/ui/util/uiUtil.jsx';
 

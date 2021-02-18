@@ -2,7 +2,7 @@
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
-import React from 'react';
+import React, { useState } from 'react';
 import hash from 'object-hash';
 
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
@@ -23,37 +23,73 @@ function adminGenomesDataTracker() {
   };
 }
 
-function AdminGenomes({ genomes }) {
+function UploadModal() {
   return (
-    <table className="table is-hoverable is-small is-fullwidth">
-      <thead>
-        <tr>
-          {[
-            'Reference name',
-            'Organism',
-            'Description',
-            'Public',
-            'Permission',
-            'Annotation track',
-            'Actions',
-          ].map((label) => (
-            <th key={label} id={label}>
+    <div>
+      <div className="backdrop" />
+      <div className="modal" role="dialog">
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              Upload files
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AdminGenomes({ genomes }) {
+  const [showUploadDialog, setUploadDialog] = useState(false);
+  function toggleUploadDialog() {
+    setUploadDialog(!showUploadDialog);
+  }
+  const columns = [
+    'Reference name',
+    'Organism',
+    'Description',
+    'Public',
+    'Permission',
+    'Annotation track',
+    'Actions',
+  ];
+  return (
+    <>
+      <table className="table is-hoverable is-small is-fullwidth">
+        <thead>
+          <tr>
+            <th colSpan={columns.length}>
               <button
                 type="button"
-                className="button is-small is-static is-fullwidth"
+                className="button is-info is-light is-small is-fullwidth is-outlined"
+                onClick={toggleUploadDialog}
               >
-                {label}
+                Upload new genome
               </button>
             </th>
+          </tr>
+          <tr>
+            {columns.map((label) => (
+              <th key={label} id={label}>
+                <button
+                  type="button"
+                  className="button is-small is-static is-fullwidth"
+                >
+                  {label}
+                </button>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {genomes.map((genome) => (
+            <GenomeInfo key={hash(genome.annotationTrack || {})} {...genome} />
           ))}
-        </tr>
-      </thead>
-      <tbody>
-        {genomes.map((genome) => (
-          <GenomeInfo key={hash(genome.annotationTrack || {})} {...genome} />
-        ))}
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+      { showUploadDialog && <UploadModal />}
+    </>
   );
 }
 

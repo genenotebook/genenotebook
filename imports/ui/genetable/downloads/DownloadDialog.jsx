@@ -1,12 +1,13 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import { cloneDeep } from 'lodash';
 
-import AnnotationDownload from './AnnotationDownload.jsx';
+import AnnotationPreview from './AnnotationPreview.jsx';
 import AnnotationDownloadOptions from './AnnotationDownloadOptions.jsx';
-import SequenceDownload from './SequenceDownload.jsx';
+import SequencePreview from './SequencePreview.jsx';
 import SequenceDownloadOptions from './SequenceDownloadOptions.jsx';
-import ExpressionDownload from './ExpressionDownload.jsx';
+import ExpressionPreview from './ExpressionPreview.jsx';
 import ExpressionDownloadOptions from './ExpressionDownloadOptions.jsx';
 
 import downloadGenes from '/imports/api/genes/downloadGenes.js';
@@ -14,15 +15,15 @@ import getQueryCount from '/imports/api/methods/getQueryCount.js';
 
 import './DownloadDialog.scss';
 
-const DATATYPE_COMPONENTS = {
-  Annotations: AnnotationDownload,
-  Sequences: SequenceDownload,
-  Expression: ExpressionDownload,
+const PREVIEW_COMPONENTS = {
+  Annotation: AnnotationPreview,
+  Sequence: SequencePreview,
+  Expression: ExpressionPreview,
 };
 
 const OPTION_COMPONENTS = {
-  Annotations: AnnotationDownloadOptions,
-  Sequences: SequenceDownloadOptions,
+  Annotation: AnnotationDownloadOptions,
+  Sequence: SequenceDownloadOptions,
   Expression: ExpressionDownloadOptions,
 };
 
@@ -36,7 +37,7 @@ export default function DownloadDialogModal({
   selectedAllGenes,
   selectedGenes,
 }) {
-  const [dataType, setDataType] = useState(Object.keys(DATATYPE_COMPONENTS)[0]);
+  const [dataType, setDataType] = useState(Object.keys(PREVIEW_COMPONENTS)[0]);
   const [downloading, setDownloading] = useState(false);
   const [queryCount, setQueryCount] = useState('...');
   const [options, setOptions] = useState({});
@@ -84,8 +85,79 @@ export default function DownloadDialogModal({
   });
 
   const OptionComponent = OPTION_COMPONENTS[dataType];
-  const DataTypeComponent = DATATYPE_COMPONENTS[dataType];
+  const PreviewComponent = PREVIEW_COMPONENTS[dataType];
 
+  return (
+    <div className="modal download-dialog">
+      <div className="modal-background" />
+      <div className="modal-card">
+        <header className="modal-card-head is-block">
+          <div>
+            <button
+              type="button"
+              className="delete is-pulled-right"
+              aria-label="close"
+              onClick={closeModal}
+            />
+            <p className="modal-card-title">
+              Downloading data for&nbsp;
+              {queryCount}
+              &nbsp;gene
+              {queryCount === 1 ? '' : 's'}
+              .
+            </p>
+          </div>
+          <div className="tabs is-centered is-boxed is-fullwidth">
+            <ul>
+              {Object.keys(PREVIEW_COMPONENTS).map((dataTypeOption) => (
+                <li
+                  key={dataTypeOption}
+                  className={dataType === dataTypeOption ? 'is-active' : ''}
+                >
+                  <a
+                    href="#"
+                    id={dataTypeOption}
+                    onClick={() => {
+                      setDataType(dataTypeOption);
+                      setOptions({});
+                    }}
+                  >
+                    <span>{dataTypeOption}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </header>
+        <section className="modal-card-body">
+          <PreviewComponent query={downloadQuery} options={options} />
+        </section>
+        <section className="modal-card-body">
+          <OptionComponent options={options} updateOptions={updateOptions} />
+        </section>
+        <footer className="modal-card-foot">
+          <button
+            type="button"
+            className="button is-success is-small is-light is-outlined"
+            disabled={downloading}
+            onClick={startDownload}
+          >
+            { downloading ? (
+              <>
+                <span className="icon-spin" />
+                &nbsp;Preparing download URL
+              </>
+            ) : (
+              'Download'
+            )}
+          </button>
+        </footer>
+      </div>
+
+    </div>
+  );
+
+  /*
   return (
     <div>
       <div className="backdrop" />
@@ -162,4 +234,5 @@ export default function DownloadDialogModal({
       </div>
     </div>
   );
+  */
 }

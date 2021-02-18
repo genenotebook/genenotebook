@@ -5,7 +5,7 @@ import { withTracker } from 'meteor/react-meteor-data';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { Genes } from '/imports/api/genes/gene_collection.js';
+import { Genes } from '/imports/api/genes/geneCollection.js';
 
 import './blastResultList.scss';
 

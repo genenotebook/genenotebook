@@ -1,14 +1,17 @@
 /* eslint-disable max-classes-per-file */
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { Meteor } from 'meteor/meteor';
+import { Roles } from 'meteor/alanning:roles';
 
 import SimpleSchema from 'simpl-schema';
 import fs from 'fs';
 import readline from 'readline';
-import Fiber from 'fibers';
-import Future from 'fibers/future';
+// import Fiber from 'fibers';
+// import Future from 'fibers/future';
 
-import { genomeCollection, genomeSequenceCollection } from '/imports/api/genomes/genomeCollection.js';
+import {
+  genomeCollection, genomeSequenceCollection,
+} from '/imports/api/genomes/genomeCollection.js';
 import logger from '/imports/api/util/logger.js';
 
 /**
@@ -49,86 +52,86 @@ class LineProcessor {
     this.isPublic = false;
   }
 
-	/**
-	 * Process a fasta formatted line
-	 * @param  {String} line [description]
-	 * @return {None}
-	 */
-	process = (line) => {
-	  const {
-	    genomeId, permission, isPublic,
-	    seqPart, bulkOp,
-	  } = this;
+  /**
+   * Process a fasta formatted line
+   * @param  {String} line [description]
+   * @return {None}
+   */
+  process = (line) => {
+    const {
+      genomeId, permission, isPublic,
+      seqPart, bulkOp,
+    } = this;
 
-	  if (line[0] === '>') {
-	    // process header line
-	    if (seqPart.header.length && seqPart.seq.length) {
-	      seqPart.end += seqPart.seq.length;
+    if (line[0] === '>') {
+      // process header line
+      if (seqPart.header.length && seqPart.seq.length) {
+        seqPart.end += seqPart.seq.length;
 
-	      const {
-	        header, seq, start, end,
-	      } = seqPart;
-	      bulkOp.insert({
-	        header,
-	        seq,
-	        start,
-	        end,
-	        genomeId,
-	        permission,
-	        isPublic,
-	      });
-	    }
-	    const header = line.substring(1).split(' ')[0];
-	    this.seqPart = new SeqPart({ header });
-	  } else {
-	    // process sequence line
-	    seqPart.seq += line.trim();
-	    if (seqPart.seq.length > CHUNK_SIZE) {
-	      seqPart.end += CHUNK_SIZE;
-	      const { header, start, end } = seqPart;
-	      const seq = seqPart.seq.substring(0, CHUNK_SIZE);
-	      bulkOp.insert({
-	        header,
-	        seq,
-	        start,
-	        end,
-	        genomeId,
-	        permission,
-	        isPublic,
-	      });
-	      seqPart.seq = this.seqPart.seq.substring(CHUNK_SIZE);
-	      seqPart.start += CHUNK_SIZE;
-	    }
-	  }
-	}
+        const {
+          header, seq, start, end,
+        } = seqPart;
+        bulkOp.insert({
+          header,
+          seq,
+          start,
+          end,
+          genomeId,
+          permission,
+          isPublic,
+        });
+      }
+      const header = line.substring(1).split(' ')[0];
+      this.seqPart = new SeqPart({ header });
+    } else {
+      // process sequence line
+      seqPart.seq += line.trim();
+      if (seqPart.seq.length > CHUNK_SIZE) {
+        seqPart.end += CHUNK_SIZE;
+        const { header, start, end } = seqPart;
+        const seq = seqPart.seq.substring(0, CHUNK_SIZE);
+        bulkOp.insert({
+          header,
+          seq,
+          start,
+          end,
+          genomeId,
+          permission,
+          isPublic,
+        });
+        seqPart.seq = this.seqPart.seq.substring(CHUNK_SIZE);
+        seqPart.start += CHUNK_SIZE;
+      }
+    }
+  }
 
-	/**
-	 * Adds the remaining sequence as a bulk insertion job and executes the bulk operation
-	 * @return {[type]} [description]
-	 */
-	finalize = () => {
-	  const {
-	    genomeId, permission, isPublic,
-	    seqPart, bulkOp,
-	  } = this;
+  /**
+   * Adds the remaining sequence as a bulk insertion job and executes the bulk operation
+   * @return {[type]} [description]
+   */
+  finalize = () => {
+    const {
+      genomeId, permission, isPublic,
+      seqPart, bulkOp,
+    } = this;
 
-	  seqPart.end += seqPart.seq.length;
+    seqPart.end += seqPart.seq.length;
 
-	  const {
-	    header, seq, start, end,
-	  } = seqPart;
+    const {
+      header, seq, start, end,
+    } = seqPart;
 
-	  bulkOp.insert({
-	    header,
-	    seq,
-	    start,
-	    end,
-	    genomeId,
-	    isPublic,
-	    permission,
-	  });
-	  return bulkOp.execute();
-	}
+    bulkOp.insert({
+      header,
+      seq,
+      start,
+      end,
+      genomeId,
+      isPublic,
+      permission,
+    });
+    return bulkOp.execute();
+  }
 }
 
 /**

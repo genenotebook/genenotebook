@@ -3,7 +3,7 @@ import { Roles } from 'meteor/alanning:roles';
 
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 
-import { Genes } from '/imports/api/genes/gene_collection.js';
+import { Genes } from '/imports/api/genes/geneCollection.js';
 import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 import { Interpro } from '/imports/api/genes/interpro_collection.js';
 import {
@@ -15,6 +15,7 @@ import {
   ExperimentInfo,
   Transcriptomes,
 } from '/imports/api/transcriptomes/transcriptome_collection.js';
+import { Files } from '/imports/api/files/fileCollection.js';
 
 function availableGenomes({ userId }) {
   const roles = Roles.getRolesForUser(userId);
@@ -24,6 +25,10 @@ function availableGenomes({ userId }) {
     })
     .map((genome) => genome._id);
   return genomeIds;
+}
+
+function hasOwnProperty(obj, property) {
+  return Object.prototype.hasOwnProperty.call(obj, property);
 }
 
 // publish user role assignment https://github.com/Meteor-Community-Packages/meteor-roles
@@ -40,17 +45,19 @@ Meteor.publish(null, function() {
 });
 
 Meteor.publish({
+  genomeFiles() {
+    return Files.find({ type: 'genome' });
+  },
   genes({ query = {}, limit, sort = { ID: 1 } }) {
     const publication = this;
     const genomeIds = availableGenomes(publication);
-    if (query.hasOwnProperty('genomeId')) {
-      const queryGenomeIds = query.genomeId.$in.filter((genomeId) => genomeIds.includes(genomeId));
-      query.genomeId.$in = queryGenomeIds;
-    } else {
-      query.genomeId = { $in: genomeIds };
-    }
+    const queryGenomeIds = hasOwnProperty(query, 'genomeId')
+      ? query.genomeId.$in.filter((genomeId) => genomeIds.includes(genomeId))
+      : genomeIds;
 
-    return Genes.find(query, { sort, limit });
+    const transformedQuery = { ...query, genomeId: { $in: queryGenomeIds } };
+
+    return Genes.find(transformedQuery, { sort, limit });
   },
   singleGene({ geneId, transcriptId }) {
     const publication = this;

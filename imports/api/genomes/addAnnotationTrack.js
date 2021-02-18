@@ -10,7 +10,9 @@ import Papa from 'papaparse';
 import fs from 'fs';
 import { isEmpty, partition, omit } from 'lodash';
 
-import { Genes, GeneSchema, VALID_INTERVAL_TYPES } from '/imports/api/genes/gene_collection.js';
+import {
+  Genes, GeneSchema, VALID_INTERVAL_TYPES,
+} from '/imports/api/genes/geneCollection.js';
 import { genomeSequenceCollection, genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 import logger from '/imports/api/util/logger.js';
 import { parseAttributeString } from '/imports/api/util/util.js';

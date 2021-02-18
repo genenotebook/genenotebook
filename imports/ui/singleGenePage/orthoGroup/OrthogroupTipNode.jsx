@@ -5,7 +5,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import randomColor from 'randomcolor';
 
-import { Genes } from '/imports/api/genes/gene_collection.js';
+import { Genes } from '/imports/api/genes/geneCollection.js';
 
 import { branch, compose } from '/imports/ui/util/uiUtil.jsx';
 
