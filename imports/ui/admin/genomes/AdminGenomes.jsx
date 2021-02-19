@@ -23,18 +23,39 @@ function adminGenomesDataTracker() {
   };
 }
 
-function UploadModal() {
+function UploadModal({ closeModal }) {
+  function startUpload() {
+
+  }
+  const validInput = false;
   return (
-    <div>
-      <div className="backdrop" />
-      <div className="modal" role="dialog">
-        <div className="modal-dialog" role="document">
-          <div className="modal-content">
-            <div className="modal-header">
-              Upload files
-            </div>
-          </div>
-        </div>
+    <div className="modal upload-dialog">
+      <div className="modal-background" />
+      <div className="modal-card">
+        <header className="modal-card-head">
+          <p className="modal-card-title">
+            Upload genome file
+          </p>
+          <button
+            type="button"
+            className="delete is-pulled-right"
+            aria-label="close"
+            onClick={closeModal}
+          />
+        </header>
+        <section className="modal-card-body">
+          Select file
+        </section>
+        <footer className="modal-card-foot">
+          <button
+            type="button"
+            className="button is-success is-small is-light is-outlined"
+            disabled={validInput}
+            onClick={startUpload}
+          >
+            Upload
+          </button>
+        </footer>
       </div>
     </div>
   );
@@ -44,6 +65,9 @@ function AdminGenomes({ genomes }) {
   const [showUploadDialog, setUploadDialog] = useState(false);
   function toggleUploadDialog() {
     setUploadDialog(!showUploadDialog);
+  }
+  function closeUploadDialog() {
+    setUploadDialog(false);
   }
   const columns = [
     'Reference name',
@@ -88,7 +112,7 @@ function AdminGenomes({ genomes }) {
           ))}
         </tbody>
       </table>
-      { showUploadDialog && <UploadModal />}
+      { showUploadDialog && <UploadModal closeModal={closeUploadDialog} />}
     </>
   );
 }
