@@ -108,7 +108,7 @@
     "babel-runtime": "^6.26.0",
     "chai": "^4.2.0",
     "enzyme": "^3.10.0",
-    "enzyme-adapter-react-16": "^1.15.1",
+    "enzyme-adapter-react-16": "^1.15.2",
     "eslint": "^7.0.0",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-import-resolver-meteor": "^0.4.0",
