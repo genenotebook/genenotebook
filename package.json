@@ -83,7 +83,7 @@
     "react-container-dimensions": "^1.4.1",
     "react-dom": "^17.0.0",
     "react-mounter": "^1.2.0",
-    "react-resize-detector": "^6.0.0",
+    "react-resize-detector": "^6.3.1",
     "react-router-dom": "^5.1.2",
     "react-select": "^4.0.0",
     "reactstrap": "^8.4.0",
