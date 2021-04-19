@@ -34,7 +34,7 @@
   "deprecated": false,
   "description": "Class for Meteor jobCollection for use both within meteor.js and with pure node.js workers",
   "devDependencies": {
-    "chai": "^4.0.2",
+    "chai": "^4.2.0",
     "coffeescript": "^2.3.2",
     "fibers": "^5.0.0",
     "mocha": "^8.0.0",
