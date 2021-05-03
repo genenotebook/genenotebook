@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
+import { Roles } from 'meteor/alanning:roles';
 
 import SimpleSchema from 'simpl-schema';
 
@@ -13,9 +14,9 @@ import { attributeCollection } from './attributeCollection.js';
  * Map function for mongodb mapreduce
  */
 const mapFunction = function() {
-  // Use 'var' instead of 'let'! This will be executed in mongodb, which does not know 'const/let'
   const gene = this;
   if (typeof gene.attributes !== 'undefined') {
+    // eslint-disable-next-line no-undef
     emit(null, { attributeKeys: Object.keys(gene.attributes) });
   }
 };
@@ -23,18 +24,16 @@ const mapFunction = function() {
 /**
  * Reduce function for mongodb mapreduce
  * @param  {String} _key    [description]
- * @param  {Array	} values [description]
+ * @param  {Array} values [description]
  * @return {Object}        [description]
  */
 const reduceFunction = function(_key, values) {
-  // Use 'var' instead of 'let'! This will be executed in mongodb, which does not know 'const/let'
   const attributeKeySet = new Set();
   values.forEach((value) => {
     value.attributeKeys.forEach((attributeKey) => {
       attributeKeySet.add(attributeKey);
     });
   });
-  // Use 'var' instead of 'let'! This will be executed in mongodb, which does not know 'const/let'
   const attributeKeys = Array.from(attributeKeySet);
   return { attributeKeys };
 };
@@ -86,12 +85,12 @@ const removeOldAttributes = ({ genomeId }) => {
     ],
   }).fetch().filter((attribute) => {
     const count = Genes.find({
-      genomeId,
+      // genomeId,
       [attribute.query]: {
         $exists: true,
       },
     }).count();
-    logger.log(`${attribute.query} ${count}`);
+    logger.log(`Query "${attribute.query}" occurs ${count} times`);
     return count === 0;
   }).map((attribute) => attribute._id);
 
@@ -104,10 +103,10 @@ const removeOldAttributes = ({ genomeId }) => {
   return update;
 };
 
-export const scanGeneAttributes = new ValidatedMethod({
+const scanGeneAttributes = new ValidatedMethod({
   name: 'scanGeneAttributes',
   validate: new SimpleSchema({
-    genomeId: { type: String },
+    genomeId: String,
   }).validator(),
   applyOptions: {
     noRetry: true,
@@ -139,3 +138,5 @@ export const scanGeneAttributes = new ValidatedMethod({
     }
   },
 });
+
+export default scanGeneAttributes;

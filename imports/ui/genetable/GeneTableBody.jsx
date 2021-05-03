@@ -36,7 +36,7 @@ const VISUALIZATIONS = {
  */
 function dataTracker({
   query = {},
-  sort = { _id: -1 },
+  sort = { ID: 1 },
   limit,
   selectedGenes,
   updateSelection,

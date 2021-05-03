@@ -1,21 +1,29 @@
 import { Meteor } from 'meteor/meteor';
 import { Roles } from 'meteor/alanning:roles';
-
+// jobqueue
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
-
+// genes
 import { Genes } from '/imports/api/genes/geneCollection.js';
 import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
-import { Interpro } from '/imports/api/genes/interpro_collection.js';
+import { dbxrefCollection } from '/imports/api/genes/dbxrefCollection.js';
+import { EditHistory } from '/imports/api/genes/edithistory_collection.js';
+// orthogroups
 import {
   orthogroupCollection,
 } from '/imports/api/genes/orthogroup_collection.js';
-import { EditHistory } from '/imports/api/genes/edithistory_collection.js';
+// genomes
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
+// transcriptomes
 import {
   ExperimentInfo,
   Transcriptomes,
 } from '/imports/api/transcriptomes/transcriptome_collection.js';
+// files
 import { Files } from '/imports/api/files/fileCollection.js';
+// methods
+import fetchDbxref from '/imports/api/methods/fetchDbxref.js';
+// utilities
+import { DBXREF_REGEX } from '/imports/api/util/util.js';
 
 function availableGenomes({ userId }) {
   const roles = Roles.getRolesForUser(userId);
@@ -47,6 +55,17 @@ Meteor.publish(null, function() {
 Meteor.publish({
   genomeFiles() {
     return Files.find({ type: 'genome' });
+  },
+  dbxref({ dbxrefId }) {
+    const dbxref = dbxrefCollection.findOne({ dbxrefId });
+    if (
+      typeof dbxref === 'undefined'
+      && !DBXREF_REGEX.go.test(dbxrefId) // temporarily disable GO lookup due to 504 responses
+      // || dbxref.updated < new Date(Date.now() - 864e5)
+    ) {
+      fetchDbxref.call({ dbxrefId });
+    }
+    return dbxrefCollection.find({ dbxrefId });
   },
   genes({ query = {}, limit, sort = { ID: 1 } }) {
     const publication = this;
@@ -156,12 +175,6 @@ Meteor.publish({
   },
   orthogroups(ID) {
     return orthogroupCollection.find({ ID });
-  },
-  interpro() {
-    if (!this.userId) {
-      this.stop();
-    }
-    return Interpro.find({});
   },
   editHistory() {
     if (!this.userId) {

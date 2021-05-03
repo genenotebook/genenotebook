@@ -1,0 +1,13 @@
+{
+  "name": "genenotebook_scripts",
+  "version": "0.3.1-0",
+  "description": "Data loading scripts for GeneNoteBook",
+  "author": "Rens Holmer",
+  "license": "ISC",
+  "dependencies": {
+    "asteroid": "^2.0.3",
+    "tail": "^2.0.3",
+    "commander": "^7.0.0",
+    "ws": "^7.0.0"
+  }
+}

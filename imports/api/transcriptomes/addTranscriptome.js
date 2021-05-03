@@ -37,10 +37,10 @@ const parseKallistoTsv = ({
     skipEmptyLines: true,
     comments: '#',
     header: true,
-    error(error, file) {
+    error(error, _file) {
       reject(new Meteor.Error(error));
     },
-    complete({ data }, file) {
+    complete({ data }, _file) {
       let nInserted = 0;
 
       const genomeId = getGenomeId(data);

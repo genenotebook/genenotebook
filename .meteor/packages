@@ -40,5 +40,6 @@ meteortesting:mocha
 dburles:factory
 meteortesting:browser-tests
 meteortesting:mocha-core
-typescript
+typescript@4.1.2
 ostrio:files
+fetch
