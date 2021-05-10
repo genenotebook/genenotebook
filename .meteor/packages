@@ -5,12 +5,12 @@
 # but you can also edit it by hand.
 
 meteor-base@1.4.0             # Packages every Meteor app needs to have
-mongo@1.10.1                   # The database Meteor supports right now
+mongo@1.11.0                   # The database Meteor supports right now
 session@1.2.0                 # Client-side reactive dictionary for your app
 tracker@1.2.0                 # Meteor's client-side reactive programming library
 
 es5-shim@4.8.0                # ECMAScript 5 compatibility for older browsers.
-ecmascript@0.15.0             # Enable ECMAScript2015+ syntax in app code
+ecmascript@0.15.1             # Enable ECMAScript2015+ syntax in app code
 
 accounts-password@1.7.0
 ecmascript-runtime@0.7.0
@@ -35,11 +35,11 @@ react-meteor-data@2.0.0!
 fourseven:scss
 mhagmajer:server-router
 static-html
-vsivsi:job-collection
+local:job-collection
 meteortesting:mocha
 dburles:factory
 meteortesting:browser-tests
 meteortesting:mocha-core
-typescript@4.1.2
+typescript@4.2.2
 ostrio:files
-fetch
+fetch@0.1.1

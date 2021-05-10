@@ -19,7 +19,7 @@ import {
   Transcriptomes,
 } from '/imports/api/transcriptomes/transcriptome_collection.js';
 // files
-import { Files } from '/imports/api/files/fileCollection.js';
+import { fileCollection } from '/imports/api/files/fileCollection.js';
 // methods
 import fetchDbxref from '/imports/api/methods/fetchDbxref.js';
 // utilities
@@ -54,7 +54,7 @@ Meteor.publish(null, function() {
 
 Meteor.publish({
   genomeFiles() {
-    return Files.find({ type: 'genome' });
+    return fileCollection.collection.find({ type: 'genome' });
   },
   dbxref({ dbxrefId }) {
     const dbxref = dbxrefCollection.findOne({ dbxrefId });

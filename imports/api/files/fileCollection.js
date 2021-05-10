@@ -3,13 +3,15 @@ import SimpleSchema from 'simpl-schema';
 
 const MAX_FILE_SIZE = 1073741824; // 1GB
 
-const Files = new FilesCollection({
+const fileCollection = new FilesCollection({
   collectionName: 'genomeFiles',
-  allowClientCode: false,
+  // allowClientCode: false,
+  disableDownload: true,
   onbeforeunloadMessage() {
     return 'Upload in progress, upload will be aborted if you leave this page!';
   },
   onBeforeUpload(file) {
+    // console.log(`Uploading ${file}`);
     if (file.size <= MAX_FILE_SIZE) {
       return true;
     }
@@ -17,8 +19,8 @@ const Files = new FilesCollection({
   },
 });
 
-const fileSchema = new SimpleSchema(Files.schema);
+const fileSchema = new SimpleSchema(fileCollection.schema);
 
-Files.collection.attachSchema(fileSchema);
+fileCollection.collection.attachSchema(fileSchema);
 
-export { Files, fileSchema };
+export { fileCollection, fileSchema };

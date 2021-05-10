@@ -40,7 +40,7 @@ jobQueue.processJobs(
           $in: genomeIds,
         },
       })
-      .map(genome => genome.annotationTrack.blastDb[dbType])
+      .map((genome) => genome.annotationTrack.blastDb[dbType])
       .join(' ');
 
     const options = [

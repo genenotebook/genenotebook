@@ -5,7 +5,7 @@ import SimpleSchema from 'simpl-schema';
 import hash from 'object-hash';
 
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
-import { Job } from 'meteor/vsivsi:job-collection';
+import { Job } from 'meteor/local:job-collection';
 
 import logger from '/imports/api/util/logger.js';
 
