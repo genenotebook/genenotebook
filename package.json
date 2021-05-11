@@ -51,7 +51,7 @@
     "@babel/runtime": "^7.8.3",
     "asteroid": "^2.0.3",
     "bcrypt": "^5.0.0",
-    "bootstrap": "^4.4.1",
+    "bootstrap": "^5.0.0",
     "buffer-shims": "^1.0.0",
     "bufferutil": "^4.0.1",
     "child-process": "^1.0.2",
