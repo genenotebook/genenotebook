@@ -33,13 +33,10 @@ const addGenome = new ValidatedMethod({
       throw new Meteor.Error(`Existing genome: ${genomeName}`);
     }
 
-    const { isServer, isClient } = Meteor;
-    console.log({ isServer, isClient });
-
-    const jobOptions = { fileName, genomeName };
-    const job = new Job(jobQueue, 'addGenome', jobOptions);
+    const job = new Job(jobQueue, 'addGenome', { fileName, genomeName });
     const jobId = job.priority('high').save();
-    return jobId;
+
+    return { jobId };
   },
 });
 

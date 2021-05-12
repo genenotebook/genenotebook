@@ -140,9 +140,7 @@ jobQueue.processJobs(
     concurrency: 1,
     payload: 1,
   },
-  (job, callback) => {
-    const { isServer, isClient } = Meteor;
-    console.log({ isServer, isClient });
+  async (job, callback) => {
     const { fileName, genomeName, permission = 'admin' } = job.data;
     logger.log(`Inserting ${fileName} as ${genomeName}`);
     const genomeId = genomeCollection.insert({
@@ -156,27 +154,17 @@ jobQueue.processJobs(
     const lineReader = readline.createInterface({
       input: fs.createReadStream(fileName, 'utf8'),
     });
-    // const { size: fileSize } = await fs.promises.stat(fileName);
-    const fileSize = 754851.0;
+    const { size: fileSize } = await fs.promises.stat(fileName);
     let processedBytes = 0; // assume one character equals one byte
     let processedLines = 0;
 
     const lineProcessor = new LineProcessor({ genomeId, permission });
-    lineReader.on('line', (line) => {
+    lineReader.on('line', async (line) => {
       processedBytes += line.length + 1; // also count \n
       processedLines += 1;
-      if ((processedLines % 1000) === 0) {
-        /*
-        job.progress(
-          processedBytes,
-          fileSize,
-          { echo: true },
-          (err) => {
-            if (err) logger.error(err);
-          },
-        );
-        */
-        console.log(processedBytes);
+      if ((processedLines % 10000) === 0) {
+        await job.progress(processedBytes, fileSize, { echo: true },
+          (err) => { if (err) logger.error(err); });
       }
       try {
         lineProcessor.process(line);
@@ -186,12 +174,14 @@ jobQueue.processJobs(
         callback();
       }
     });
-    lineReader.on('close', () => {
+    lineReader.on('close', async () => {
       try {
-        const result = lineProcessor.finalize();
-        job.done(result);
-        logger.log('Finished');
+        logger.log('File reading finished, start bulk insert');
+        const { ok, writeErrors, nInserted } = await lineProcessor.finalize();
+        logger.log(`Inserted in ${nInserted} chunks`);
+        job.done({ ok, writeErrors, nInserted });
       } catch (error) {
+        logger.error(error);
         job.fail({ error });
       }
       callback();

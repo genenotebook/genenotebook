@@ -87,20 +87,17 @@ class JobCollection extends JobCollectionBase {
         this._localServerMethods[methodName] = methodFunction;
       });
 
-      this._ddp_apply = (name, params, cb) => {
-        if (cb) {
-          return Meteor.defer(() => {
-            let result;
-            try {
-              result = this._localServerMethods[name].apply(this, params);
-            } catch (e) {
-              return cb(e);
-            }
-            return cb(null, result);
-          });
-        }
-        return this._localServerMethods[name].apply(this, params);
-      };
+      this._ddp_apply = (name, params, cb) => (cb
+        ? Meteor.defer(() => {
+          let result;
+          try {
+            result = this._localServerMethods[name].apply(this, params);
+          } catch (e) {
+            return cb(e);
+          }
+          return cb(null, result);
+        })
+        : this._localServerMethods[name].apply(this, params));
 
       Job._setDDPApply(this._ddp_apply, root);
 

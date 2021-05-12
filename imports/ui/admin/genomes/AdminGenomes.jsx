@@ -61,16 +61,16 @@ function insertFile({ file, meta, setUploadProgress }) {
 // eslint-disable-next-line no-underscore-dangle
 function _UploadModal({ closeModal }) {
   const [selectedFile, setSelectedFile] = useState(undefined);
+  const [genomeName, setGenomeName] = useState('');
   function fileSelectHandler({ target: { files } }) {
     setSelectedFile(files[0]);
+    if (!genomeName) setGenomeName(files[0].name);
   }
-  const [genomeName, setGenomeName] = useState(undefined);
+
   const [uploadProgress, setUploadProgress] = useState(undefined);
   const [addGenomeJob, setAddGenomeJob] = useState(undefined);
   function startUpload() {
-    console.log('startUpload');
     if (selectedFile) {
-      console.log({ selectedFile });
       insertFile({
         file: selectedFile,
         meta: {
@@ -78,13 +78,12 @@ function _UploadModal({ closeModal }) {
           genomeName,
         },
         setUploadProgress,
-      }).then((uploadedFile) =>
-        // console.log({ uploadedFile });
-        addGenome.call({
-          fileName: uploadedFile.path,
-          genomeName,
-        })).then((jobId) => {
+      }).then((uploadedFile) => addGenome.call({
+        fileName: uploadedFile.path,
+        genomeName,
+      })).then(({ jobId }) => {
         const job = jobQueue.getJob(jobId);
+        console.log({ jobId, job });
         setAddGenomeJob(job);
       });
     }
@@ -146,12 +145,18 @@ function _UploadModal({ closeModal }) {
               {uploadProgress}
             </progress>
             )}
+            {addGenomeJob
+            && (
+              <span>Inserting</span>
+            )}
             <div className="field">
+              <label htmlFor="username" className="label">
+                Genome name
+              </label>
               <input
                 type="text"
                 className="input is-small"
-                id="name"
-                aria-describedby="referenceName"
+                id="genomeName"
                 value={genomeName}
                 onChange={(event) => {
                   setGenomeName(event.target.value);

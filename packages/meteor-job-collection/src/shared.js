@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 /* eslint-disable no-underscore-dangle */
 /**
  * Copyright (C) 2014-2017 by Vaughn Iverson
@@ -200,7 +201,7 @@ class JobCollectionBase extends Mongo.Collection {
     return Job.removeJobs(this.root, ...params);
   }
 
-  setDDP(...params) {
+  static setDDP(...params) {
     return Job.setDDP(...params);
   }
 
@@ -374,10 +375,7 @@ class JobCollectionBase extends Mongo.Collection {
     return null;
   }
 
-  _checkDeps(job, dryRun) {
-    if (dryRun == null) {
-      dryRun = true;
-    }
+  _checkDeps(job, dryRun = true) {
     let cancel = false;
     const resolved = [];
     const failed = [];
@@ -403,7 +401,7 @@ class JobCollectionBase extends Mongo.Collection {
         cancel = true;
       }
 
-      for (const depJob of deps) {
+      deps.forEach((depJob) => {
         if (!this.jobStatusCancellable.includes(depJob.status)) {
           switch (depJob.status) {
             case status.COMPLETED:
@@ -440,7 +438,7 @@ class JobCollectionBase extends Mongo.Collection {
               );
           }
         }
-      }
+      });
 
       if (resolved.length !== 0 && !dryRun) {
         const mods = {
@@ -495,11 +493,11 @@ class JobCollectionBase extends Mongo.Collection {
     return true;
   }
 
-  _DDPMethod_startJobServer() {
+  static _DDPMethod_startJobServer() {
     return true;
   }
 
-  _DDPMethod_shutdownJobServer() {
+  static _DDPMethod_shutdownJobServer() {
     return true;
   }
 
@@ -537,6 +535,7 @@ class JobCollectionBase extends Mongo.Collection {
         transform: null,
       },
     ).fetch();
+    console.log({ ids, docs });
     if (docs != null ? docs.length : undefined) {
       if (this.scrub != null) {
         docs = docs.map((d) => this.scrub(d));
@@ -550,7 +549,7 @@ class JobCollectionBase extends Mongo.Collection {
     return null;
   }
 
-  _DDPMethod_getWork() {}
+  static _DDPMethod_getWork() {}
 
   _DDPMethod_jobRemove(ids, options = {}) {
     check(ids, Match.OneOf(Match.Where(_validId), [Match.Where(_validId)]));
@@ -668,6 +667,7 @@ class JobCollectionBase extends Mongo.Collection {
     return false;
   }
 
+  // eslint-disable-next-line class-methods-use-this
   _DDPMethod_jobReady() {
     // Don't simulate jobReady. It has a strong chance of causing issues with
     // Meteor on the client, particularly if an observeChanges() is triggering
@@ -971,7 +971,7 @@ class JobCollectionBase extends Mongo.Collection {
     const progress = {
       completed,
       total,
-      percent: 100 * completed / total,
+      percent: 100 * (completed / total),
     };
 
     check(
