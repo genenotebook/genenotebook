@@ -98,7 +98,7 @@
     "try-thread-sleep": "^2.0.0",
     "utf-8-validate": "^5.0.2",
     "webfontloader": "^1.6.28",
-    "ws": "^7.2.1",
+    "ws": "^7.4.5",
     "xml2js-es6-promise": "^1.1.1"
   },
   "devDependencies": {
