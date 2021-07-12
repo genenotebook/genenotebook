@@ -92,12 +92,14 @@
     "react-select": "^4.3.1",
     "rus-diff": "^1.1.0",
     "simpl-schema": "^1.10.2",
+    "spawn-promise": "^0.1.8",
     "tail": "^2.0.3",
     "thread-sleep": "^2.2.0",
     "try-thread-sleep": "^2.0.0",
     "utf-8-validate": "^5.0.5",
     "webfontloader": "^1.6.28",
-    "ws": "^7.4.4"
+    "ws": "^7.4.4",
+    "xml2js-es6-promise": "^1.1.1"
   },
   "devDependencies": {
     "@meteorjs/eslint-config-meteor": "^1.0.5",
@@ -112,7 +114,7 @@
     "eslint": "^7.26.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-import-resolver-meteor": "^0.4.0",
-    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-import": "^2.23.2",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-meteor": "^7.3.0",
     "eslint-plugin-react": "^7.22.0",

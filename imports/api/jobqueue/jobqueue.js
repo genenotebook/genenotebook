@@ -1,7 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+import { Roles } from 'meteor/alanning:roles';
 
 import { JobCollection, Job } from 'meteor/local:job-collection';
 import later from 'meteor-later';
+
+import logger from '/imports/api/util/logger.js';
 
 const jobQueue = new JobCollection('jobQueue',
   { noCollectionSuffix: true, later });
@@ -49,6 +52,21 @@ if (Meteor.isServer) {
     added() {
       return cleanup.trigger();
     },
+  });
+
+  const adminIds = Roles.getUsersInRole('admin').map(({ _id }) => _id);
+  jobQueue.allow({
+    admin: adminIds,
+  });
+
+  jobQueue.startJobServer((err, res = true) => {
+    if (err) {
+      logger.error(err);
+    } else if (res) {
+      logger.log('Jobqueue started');
+    } else {
+      logger.warn('Jobqueue failed to start');
+    }
   });
 }
 

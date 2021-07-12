@@ -3,13 +3,14 @@
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
-import React, { useEffect, useState } from 'react';
-import hash from 'object-hash';
+import React, { useState } from 'react';
 
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 import addGenome from '/imports/api/genomes/addGenome.js';
 import { fileCollection } from '/imports/api/files/fileCollection.js';
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
+
+import { JobProgressBar } from '/imports/ui/admin/jobqueue/AdminJobqueue.jsx';
 
 import {
   branch, compose, isLoading, Loading,
@@ -58,6 +59,22 @@ function insertFile({ file, meta, setUploadProgress }) {
   });
 }
 
+function addGenomePromise({ fileName, genomeName }) {
+  return new Promise((resolve, reject) => {
+    addGenome.call({ fileName, genomeName }, (err, { jobId }) => {
+      if (err) reject(err);
+      resolve(jobId);
+    });
+  });
+}
+
+const InsertJobProgress = withTracker(({ jobId }) => {
+  const subscription = Meteor.subscribe('jobQueue');
+  const loading = !subscription.ready();
+  const job = jobQueue.findOne({ _id: jobId });
+  return { ...job, loading };
+})(JobProgressBar);
+
 // eslint-disable-next-line no-underscore-dangle
 function _UploadModal({ closeModal }) {
   const [selectedFile, setSelectedFile] = useState(undefined);
@@ -67,8 +84,8 @@ function _UploadModal({ closeModal }) {
     if (!genomeName) setGenomeName(files[0].name);
   }
 
-  const [uploadProgress, setUploadProgress] = useState(undefined);
-  const [addGenomeJob, setAddGenomeJob] = useState(undefined);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [addGenomeJobId, setAddGenomeJobId] = useState(undefined);
   function startUpload() {
     if (selectedFile) {
       insertFile({
@@ -78,22 +95,12 @@ function _UploadModal({ closeModal }) {
           genomeName,
         },
         setUploadProgress,
-      }).then((uploadedFile) => addGenome.call({
+      }).then((uploadedFile) => addGenomePromise({
         fileName: uploadedFile.path,
         genomeName,
-      })).then(({ jobId }) => {
-        const job = jobQueue.getJob(jobId);
-        console.log({ jobId, job });
-        setAddGenomeJob(job);
-      });
+      })).then(setAddGenomeJobId);
     }
   }
-
-  useEffect(() => {
-    if (addGenomeJob && addGenomeJob.status === 'ready') {
-      alert('Upload completed');
-    }
-  }, [addGenomeJob]);
 
   return (
     <div className="modal upload-dialog">
@@ -119,6 +126,7 @@ function _UploadModal({ closeModal }) {
                   type="file"
                   onChange={fileSelectHandler}
                   name="resume"
+                  disabled={!!uploadProgress}
                 />
                 <span className="file-cta">
                   <span className="file-icon">
@@ -135,19 +143,23 @@ function _UploadModal({ closeModal }) {
                 </span>
               </label>
             </div>
-            {uploadProgress
+            {!!uploadProgress
             && (
-            <progress
-              className="progress is-small"
-              value={uploadProgress}
-              max="100"
-            >
-              {uploadProgress}
-            </progress>
+            <>
+              <span>Uploading</span>
+              <progress
+                className="progress is-small"
+                value={uploadProgress}
+                max="100"
+              />
+            </>
             )}
-            {addGenomeJob
+            {!!addGenomeJobId
             && (
-              <span>Inserting</span>
+              <>
+                <span>{`Inserting, job ID ${addGenomeJobId} `}</span>
+                <InsertJobProgress jobId={addGenomeJobId} />
+              </>
             )}
             <div className="field">
               <label htmlFor="username" className="label">
@@ -161,6 +173,7 @@ function _UploadModal({ closeModal }) {
                 onChange={(event) => {
                   setGenomeName(event.target.value);
                 }}
+                disabled={!!uploadProgress}
               />
               <small id="referenceNameHelp" className="help">
                 Genome names must be unique
@@ -235,7 +248,7 @@ function AdminGenomes({ genomes }) {
         </thead>
         <tbody>
           {genomes.map((genome) => (
-            <GenomeInfo key={hash(genome.annotationTrack || {})} {...genome} />
+            <GenomeInfo key={genome.name} {...genome} />
           ))}
         </tbody>
       </table>

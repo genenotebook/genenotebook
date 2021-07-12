@@ -535,7 +535,6 @@ class JobCollectionBase extends Mongo.Collection {
         transform: null,
       },
     ).fetch();
-    console.log({ ids, docs });
     if (docs != null ? docs.length : undefined) {
       if (this.scrub != null) {
         docs = docs.map((d) => this.scrub(d));
