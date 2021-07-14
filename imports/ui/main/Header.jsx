@@ -94,14 +94,8 @@ function NavBar() {
             />
           </figure>
         </NavLink>
-        <NavLink id="gene-link" to="/genes" className="navbar-item" activeClassName="active">
-          Genes
-        </NavLink>
-        <NavLink to="/blast" className="navbar-item" activeClassName="active">
-          Blast
-        </NavLink>
         <button
-          className={`navbar-burger burger button ${activeText}`}
+          className={`navbar-burger is-small burger button ${activeText}`}
           type="button"
           onClick={() => {
             setShow(!show);
@@ -114,6 +108,12 @@ function NavBar() {
       </div>
       <div className={`navbar-menu ${activeText}`}>
         <div className="navbar-start">
+          <NavLink id="gene-link" to="/genes" className="navbar-item" activeClassName="active">
+            Genes
+          </NavLink>
+          <NavLink to="/blast" className="navbar-item" activeClassName="active">
+            Blast
+          </NavLink>
           <SearchBar />
         </div>
         <div className="navbar-end">

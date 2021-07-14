@@ -14,7 +14,6 @@ import {
   branch, compose, isLoading, Loading,
 } from '/imports/ui/util/uiUtil.jsx';
 
-
 const attributeTracker = ({ location }) => {
   const {
     search, state: _state = {},
