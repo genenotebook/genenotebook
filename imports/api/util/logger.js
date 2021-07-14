@@ -1,11 +1,15 @@
-/* eslint-disable class-methods-use-this */
+/* eslint-disable no-console */
+/* eslint-disable  */
 import { Meteor } from 'meteor/meteor';
 
 class Logger {
-  constructor({ logging = true, warning = true, debugging = true }) {
+  constructor({
+    logging = true, warning = true, debugging = true, error = true,
+  }) {
     this.logging = logging;
     this.warning = warning;
     this.debugging = debugging;
+    this.error = error;
   }
 
   get dateTime() {
@@ -23,8 +27,14 @@ class Logger {
   debug(message) {
     if (this.debugging) console.debug('## DEBUG:', this.dateTime, message);
   }
+
+  error(message) {
+    if (this.error) console.error('## ERROR:', this.dateTime, message);
+  }
 }
 
-const logger = Meteor.isDevelopment ? console : new Logger({ debugging: false });
+const logger = Meteor.isDevelopment
+  ? console
+  : new Logger({ debugging: false });
 
 export default logger;

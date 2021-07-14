@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
+- Meteor version 2.0
+
 ### Fixed
 
 - Option parsing for CLI
@@ -27,16 +29,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
-- Meteor version 1.9
+- Meteor version 1.10
 - Node.js version >12
+- MongoDB version 4.2
 - Fully migrated all react components to new hooks API
 - Upgraded to `alanning:roles@3.2.0`
-- Modified user permission schemas to comply with `alanning:roles@3.2.0` for the following collections: `users`, `genomeCollection`, `genomeSequenceCollection`, `ExperimentInfo`, `Transcriptomes`
-
+- __BACKWARDS INCOMPATIBLE:__
+Modified user permission schemas to comply with `alanning:roles@3.2.0` for the following collections: `users`, `genomeCollection`, `genomeSequenceCollection`, `ExperimentInfo`, `Transcriptomes`. Existing servers attempt to fix this with automatic schema migration.
 ### Fixed
 
 - Footer correctly displays version info on production builds
-- Plot tooltips can be closed by clicking anywhere on the screen, similar to dropdown menu
+- Plot tooltips can be closed by clicking anywhere on the screen, similar to dropdown menu 
+- Various orthogroup loading fixes: results are properly returned to the cli and loading an orthogroup with an existing ID throws an error.
 
 ## [0.1.16] 2019-05-02
 

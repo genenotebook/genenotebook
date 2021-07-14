@@ -5,11 +5,12 @@ import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose } from 'recompose';
 
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 
-import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
+import {
+  branch, compose, isLoading, Loading,
+} from '/imports/ui/util/uiUtil.jsx';
 
 import serverRouterClient from '/imports/startup/client/download-routes.js';
 
@@ -114,14 +115,6 @@ function downloadDataTracker({ match }) {
   };
 }
 
-const withConditionalRendering = compose(
-  withTracker(downloadDataTracker),
-  withEither(jobNotFound, JobNotFound),
-  withEither(isLoading, Loading),
-  withEither(isWaiting, Waiting),
-  withEither(isRunning, Running),
-);
-
 function Download({ job }) {
   const fileName = job.result.value;
   const redirectUrl = `${Meteor.absoluteUrl()}download/file/${fileName}`;
@@ -142,4 +135,10 @@ Download.propTypes = {
   job: PropTypes.object.isRequired,
 };
 
-export default withConditionalRendering(Download);
+export default compose(
+  withTracker(downloadDataTracker),
+  branch(jobNotFound, JobNotFound),
+  branch(isLoading, Loading),
+  branch(isWaiting, Waiting),
+  branch(isRunning, Running),
+)(Download);

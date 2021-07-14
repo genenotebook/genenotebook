@@ -1,12 +1,11 @@
-/* eslint-disable react/no-multi-comp */
+/* eslint-disable react/prop-types */
 import React, { useState } from 'react';
-// import { isEqual } from 'lodash';
 
 import updateGenome from '/imports/api/genomes/updateGenome.js';
 import removeGenome from '/imports/api/genomes/removeGenome.js';
 import logger from '/imports/api/util/logger.js';
 
-import PermissionSelect from '/imports/ui/util/PermissionSelect.jsx';
+import PermissionSelect from '/imports/ui/util/PermissionSelect.tsx';
 
 import AnnotationInfo from './AnnotationInfo.jsx';
 
@@ -46,7 +45,7 @@ function EditGenomeInfo({
       name: genomeName,
       organism,
       description,
-      permissions,
+      permission,
       isPublic,
       annotationTrack,
     }, (err) => {
@@ -67,10 +66,10 @@ function EditGenomeInfo({
   return (
     <tr>
       <td>
-        <div className="form-group">
+        <div className="field">
           <input
             type="text"
-            className="form-control form-control-sm"
+            className="input is-small"
             id="name"
             aria-describedby="referenceName"
             value={genomeName}
@@ -78,38 +77,34 @@ function EditGenomeInfo({
               setGenomeName(event.target.value);
             }}
           />
-          <small id="referenceNameHelp" className="form-text text-muted">
+          <small id="referenceNameHelp" className="help">
             Genome names must be unique
           </small>
         </div>
       </td>
       <td>
-        <div className="form-group">
-          <input
-            type="text"
-            className="form-control form-control-sm"
-            id="organism"
-            aria-describedby="organism"
-            value={organism}
-            onChange={(event) => {
-              setOrganism(event.target.value);
-            }}
-          />
-        </div>
+        <input
+          type="text"
+          className="input is-small"
+          id="organism"
+          aria-describedby="organism"
+          value={organism}
+          onChange={(event) => {
+            setOrganism(event.target.value);
+          }}
+        />
       </td>
       <td>
-        <div className="form-group">
-          <textarea
-            className="form-control form-control-sm"
-            id="description"
-            aria-describedby="description"
-            rows="3"
-            value={description}
-            onChange={(event) => {
-              setDescription(event.target.value);
-            }}
-          />
-        </div>
+        <textarea
+          className="textarea is-small"
+          id="description"
+          aria-describedby="description"
+          rows="2"
+          value={description}
+          onChange={(event) => {
+            setDescription(event.target.value);
+          }}
+        />
       </td>
       <td>
         <input
@@ -136,53 +131,48 @@ function EditGenomeInfo({
         />
       </td>
       <td>
-        <table style={{ width: '100%' }}>
-          <tbody>
-            <tr>
-              <td>
-                <div className="btn-group btn-group-justified">
-                  <button
-                    type="button"
-                    onClick={saveChanges}
-                    className="btn btn-success btn-sm px-2 py-0"
-                    disabled={!hasChanges}
-                  >
-                    <span className="icon-check" />
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    onClick={toggleEdit}
-                    className="btn btn-outline-dark btn-sm px-2 py-0"
-                  >
-                    <span className="icon-cancel" />
-                    Cancel
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <button
-                  type="button"
-                  onClick={() => {
-                    removeGenome.call({ genomeId }, (err) => {
-                      if (err) {
-                        logger.warn(err);
-                        alert(err);
-                      }
-                    });
-                  }}
-                  className="btn btn-danger btn-sm px-2 py-0 btn-block"
-                  name={genomeId}
-                >
-                  <span className="icon-exclamation" />
-                  Delete genome
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <ul>
+          <li>
+            <div className="buttons has-addons are-small">
+              <button
+                type="button"
+                onClick={saveChanges}
+                className={`button ${hasChanges ? 'is-success is-light is-outlined' : ''}`}
+                disabled={!hasChanges}
+              >
+                <span className="icon-check" />
+                Save
+              </button>
+              <button
+                type="button"
+                onClick={toggleEdit}
+                className="button"
+              >
+                <span className="icon-cancel" />
+                Cancel
+              </button>
+            </div>
+          </li>
+          <li>
+            <button
+              type="button"
+              onClick={() => {
+                removeGenome.call({ genomeId }, (err) => {
+                  if (err) {
+                    logger.warn(err);
+                    alert(err);
+                  }
+                });
+              }}
+              className="button is-small is-danger is-light is-outlined is-fullwidth"
+              name={genomeId}
+            >
+              <span className="icon-exclamation" />
+              Delete genome
+              <span className="icon-exclamation" />
+            </button>
+          </li>
+        </ul>
       </td>
     </tr>
   );
@@ -219,17 +209,15 @@ function GenomeInfoLine({
         />
       </td>
       <td>
-        <div className="btn-group">
-          <button
-            type="button"
-            onClick={toggleEdit}
-            name={genomeId}
-            className="btn btn-outline-dark btn-sm px-2 py-0"
-          >
-            <span className="icon-pencil" />
-            Edit&nbsp;
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={toggleEdit}
+          name={genomeId}
+          className="button is-small is-fullwidth"
+        >
+          <span className="icon-pencil" />
+          {' Edit'}
+        </button>
       </td>
     </tr>
   );
@@ -241,8 +229,10 @@ export default function GenomeInfo(props) {
     setIsEditing(!isEditing);
   }
   return isEditing ? (
+    // eslint-disable-next-line react/jsx-props-no-spreading
     <EditGenomeInfo {...props} toggleEdit={toggleEdit} />
   ) : (
-    <GenomeInfoLine {...props} toggleEdit={toggleEdit} />
-  );
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      <GenomeInfoLine {...props} toggleEdit={toggleEdit} />
+    );
 }

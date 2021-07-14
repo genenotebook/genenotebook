@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import { Meteor } from 'meteor/meteor';
 
 import React from 'react';
@@ -28,13 +29,13 @@ export default function App() {
     <Router basename={basename}>
       <>
         <Header />
-        <main role="main" className="h-100">
+        <main role="main" className="has-background-light">
           <Switch>
             <Route exact path="/" component={LandingPage} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/register" component={Register} />
-            <Route exact path="/genes" render={(props) => <GeneTable genomeDataCache={genomeDataCache} {...props}/>} />
-            <Route path="/gene/:geneId" render={(props) => <SingleGenePage genomeDataCache={genomeDataCache} {...props}/>} />
+            <Route exact path="/genes" render={(props) => <GeneTable genomeDataCache={genomeDataCache} {...props} />} />
+            <Route path="/gene/:geneId" render={(props) => <SingleGenePage genomeDataCache={genomeDataCache} {...props} />} />
             <Route exact path="/blast" component={SubmitBlast} />
             <Route path="/blast/:jobId" component={BlastResult} />
             <Route exact path="/profile" component={UserProfile} />

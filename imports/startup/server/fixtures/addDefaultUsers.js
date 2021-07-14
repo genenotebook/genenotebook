@@ -32,8 +32,8 @@ export default function addDefaultUsers() {
 
   // Add default users
   if (Meteor.users.find().count() === 0 && 'accounts' in Meteor.settings) {
-    Meteor.settings.accounts.forEach(account => {
-      logger.log('Adding default user ' + account.username);
+    Meteor.settings.accounts.forEach((account) => {
+      logger.log(`Adding default user ${account.username}`);
 
       const { role, ...userInfos } = account;
       const accountId = Accounts.createUser(userInfos);

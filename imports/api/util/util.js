@@ -1,12 +1,23 @@
 /* eslint-disable no-param-reassign, no-case-declarations */
 import logger from '/imports/api/util/logger.js';
 
+const DBXREF_REGEX = {
+  go: /^(GO:[0-9]{7})$/,
+  interpro: /^(InterPro:IPR[0-9]{6})$/,
+};
+
+DBXREF_REGEX.combined = new RegExp(
+  Object.values(DBXREF_REGEX)
+    .map((val) => val.source)
+    .join('|'),
+);
+
 /**
  * Parse gff3 attribute column into key:value object.
  * @param  {String} attributeString Raw gff3 attribute column string
  * @return {Object}                 Key:value pairs of attributes.
  */
-export const parseAttributeString = attributeString => attributeString.split(';').reduce((attributes, stringPart) => {
+const parseAttributeString = (attributeString) => attributeString.split(';').reduce((attributes, stringPart) => {
   const [key, value] = stringPart.split('=');
   if (typeof key !== 'undefined' && typeof value !== 'undefined') {
     attributes[key] = value
@@ -23,7 +34,7 @@ export const parseAttributeString = attributeString => attributeString.split(';'
  * @param  {String} attributeString Raw gff3 attribute column string
  * @return {Object}                 Key:value pairs of attributes.
  */
-export const debugParseAttributeString = (attributeString) => {
+const debugParseAttributeString = (attributeString) => {
   const arr = attributeString.split(';');
   logger.debug(arr);
   const attributes = arr.reduce((attr, stringPart) => {
@@ -47,7 +58,7 @@ export const debugParseAttributeString = (attributeString) => {
  * @param  {String} seq String representing DNA constisting of alphabet AaCcGgTtNn
  * @return {String}     String representing DNA: reverse complement of input
  */
-export const reverseComplement = (seq) => {
+const reverseComplement = (seq) => {
   const comp = {
     A: 'T',
     T: 'A',
@@ -62,7 +73,7 @@ export const reverseComplement = (seq) => {
   };
   const seqArray = seq.split('');
   const revSeqArray = seqArray.reverse();
-  const revCompSeqArray = revSeqArray.map(nuc => comp[nuc]);
+  const revCompSeqArray = revSeqArray.map((nuc) => comp[nuc]);
   const revCompSeq = revCompSeqArray.join('');
   return revCompSeq;
 };
@@ -154,16 +165,16 @@ export const translate = (seq) => {
  * @return {Array}     Array with objects, where each object has a transcriptId,
  *                        nucleotide sequence and protein sequence field
  */
-export const getGeneSequences = (gene) => {
-  const transcripts = gene.subfeatures.filter(subfeature => subfeature.type === 'mRNA');
+const getGeneSequences = (gene) => {
+  const transcripts = gene.subfeatures.filter((subfeature) => subfeature.type === 'mRNA');
   const sequences = transcripts.map((transcript) => {
     const cdsArray = gene.subfeatures
       .filter(
-        subfeature => subfeature.parents.indexOf(transcript.ID) >= 0 && subfeature.type === 'CDS',
+        (subfeature) => subfeature.parents.indexOf(transcript.ID) >= 0 && subfeature.type === 'CDS',
       )
       .sort((a, b) => a.start - b.start);
 
-    const rawSeq = cdsArray.map(cds => cds.seq).join('');
+    const rawSeq = cdsArray.map((cds) => cds.seq).join('');
 
     const forward = gene.strand === '+';
     const phase = forward ? cdsArray[0].phase : cdsArray[cdsArray.length - 1].phase;
@@ -183,7 +194,7 @@ export const getGeneSequences = (gene) => {
   return sequences;
 };
 
-export const parseNewick = (newickString) => {
+const parseNewick = (newickString) => {
   // Adapted from Jason Davies https://github.com/jasondavies/newick.js
   const ancestors = [];
   const tokens = newickString.split(/\s*(;|\(|\)|,|:)\s*/);
@@ -227,4 +238,9 @@ export const parseNewick = (newickString) => {
     geneIds,
     size: 0.5 * (nNodes + 1), // geneIds.length
   };
+};
+
+export {
+  DBXREF_REGEX, parseAttributeString, debugParseAttributeString,
+  reverseComplement, getGeneSequences, parseNewick,
 };

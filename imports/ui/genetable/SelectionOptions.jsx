@@ -13,10 +13,12 @@ export default function SelectionOptions({
   selectedAllGenes,
   toggleDownloadDialog,
 }) {
-  return Array.from(selectedGenes).length > 0 || selectedAllGenes ? (
+  const hasSelectedGenes = Array.from(selectedGenes).length > 0;
+  return hasSelectedGenes || selectedAllGenes ? (
     <button
       type="button"
-      className="btn btn-sm btn-success px-2 py-0"
+      className="button is-small is-success is-light is-outlined"
+      title="Select genes to enable download"
       onClick={toggleDownloadDialog}
     >
       <span className="icon-download" aria-hidden="true" />
@@ -25,9 +27,8 @@ export default function SelectionOptions({
   ) : (
     <button
       type="button"
-      className="btn btn-sm btn-outline-secondary px-2 py-0 border"
+      className="button is-small is-static"
       title="Make a selection to download data"
-      disabled
     >
       <span className="icon-block" aria-hidden="true" />
       Download

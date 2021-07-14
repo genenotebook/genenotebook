@@ -1,3 +1,7 @@
-.sample-select {
-  justify-content: flex-end;
+section#expression {
+  .dropdown {
+    span.sample-numbers {
+      font-size: 0.6rem !important;
+    }
+  }
 }

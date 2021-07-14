@@ -1,0 +1,13 @@
+toc:
+  - name: README
+    file: README.md
+  - name: Types
+  - Path
+  - ArgsMapper
+  - Route
+  - ServerRouterContext
+  - Routes
+  - name: Classes
+  - ServerRouter
+  - AuthenticationRequiredError
+  - ServerRouterClient

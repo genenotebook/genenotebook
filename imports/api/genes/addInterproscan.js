@@ -8,11 +8,13 @@ import fs from 'fs';
 
 // import { chunk } from 'lodash';
 
-import { Genes } from '/imports/api/genes/gene_collection.js';
+import { Genes } from '/imports/api/genes/geneCollection.js';
 // import { Interpro } from '/imports/api/genes/interpro_collection.js';
 import logger from '/imports/api/util/logger.js';
 
-import { parseAttributeString, debugParseAttributeString } from '/imports/api/util/util.js';
+import {
+  parseAttributeString, debugParseAttributeString, DBXREF_REGEX,
+} from '/imports/api/util/util.js';
 
 const logAttributeError = ({
   lineNumber, line, attributeString, error,
@@ -33,7 +35,7 @@ class InterproscanProcessor {
   parse = (line) => {
     this.lineNumber += 1;
     const [seqId, source, type, start, end,
-      score, _strand, _phase, attributeString] = line;
+      score, , , attributeString] = line;
 
     if (type === 'protein_match') {
       if (typeof attributeString !== 'undefined') {
@@ -52,18 +54,22 @@ class InterproscanProcessor {
         const dbUpdate = { $addToSet: {} };
 
         const {
-          Name, Dbxref = [], Ontology_term = [],
+          Name, Dbxref: _dbxref = [], Ontology_term = [],
           signature_desc = [],
         } = attributes;
+        const Dbxref = _dbxref
+          .filter((xref) => DBXREF_REGEX.combined.test(xref));
 
         const proteinDomain = {
           start, end, source, score, name: Name[0],
         };
 
-        const interproIds = Dbxref.filter((xref) => /InterPro/.test(xref)).map((interproId) => {
-          const [_db, id] = interproId.split(':');
-          return id;
-        });
+        const interproIds = Dbxref
+          .filter((xref) => /InterPro/.test(xref))
+          .map((interproId) => {
+            const [, id] = interproId.split(':');
+            return id;
+          });
 
         if (interproIds.length) {
           proteinDomain.interproId = interproIds[0];
@@ -82,11 +88,12 @@ class InterproscanProcessor {
 
         if (Ontology_term.length) {
           proteinDomain.Ontology_term = Ontology_term;
-          dbUpdate.$addToSet['attributes.Ontology_term'] = { $each: Ontology_term };
+          dbUpdate.$addToSet['attributes.Ontology_term'] = {
+            $each: Ontology_term,
+          };
         }
 
         dbUpdate.$addToSet['subfeatures.$.protein_domains'] = proteinDomain;
-
 
         this.bulkOp.find({ 'subfeatures.ID': seqId }).update(dbUpdate);
       } else {
@@ -176,7 +183,7 @@ const parseInterproscanGff = (fileName) => new Promise((resolve, reject) => {
 const addInterproscan = new ValidatedMethod({
   name: 'addInterproscan',
   validate: new SimpleSchema({
-    fileName: { type: String },
+    fileName: String,
   }).validator(),
   applyOptions: {
     noRetry: true,

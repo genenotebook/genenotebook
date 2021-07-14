@@ -1,5 +1,8 @@
 th {
   font-weight: normal;
+  .header-element {
+    flex-grow: 1 !important;
+  }
 }
 
 .dropdown-menu-right {
@@ -8,13 +11,11 @@ th {
 
 .sort-wrapper {
   padding-bottom: 10px;
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
 }
 
 .has-sort, .has-query {
   background-color: lighten(#28a745, 50%);
   border-radius: 0.25rem;
-}
-
-.genetable-dropdown {
-  opacity: 1 !important;
 }

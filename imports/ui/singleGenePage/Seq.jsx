@@ -13,10 +13,10 @@ function Controls({
   const seqTypes = ['nucl', 'prot'];
   return (
     <>
-      <div className="btn-group btn-group-sm sequence-toggle float-right" role="group">
+      <div className="buttons are-small has-addons sequence-toggle is-pulled-right" role="group">
         {
         seqTypes.map((sType) => {
-          const active = sType === seqType ? 'active' : 'border';
+          const active = sType === seqType ? 'is-info is-light' : '';
           const label = sType === 'prot' ? 'Protein' : 'Nucleotide';
           return (
             <button
@@ -24,7 +24,7 @@ function Controls({
               id={sType}
               type="button"
               onClick={() => setSeqType(sType)}
-              className={`btn btn-outline-dark px-2 py-0 ${active}`}
+              className={`button ${active}`}
             >
               { label }
             </button>
@@ -32,36 +32,47 @@ function Controls({
         })
       }
       </div>
-
-      <div className="btn-group btn-group-sm float-right">
-        <Dropdown>
-          <DropdownButton className="btn btn-sm btn-outline-dark dropdown-toggle px-2 py-0 border">
+      <div className="field has-addons is-pulled-right">
+        <div className="control">
+          <button type="button" className="button is-small is-static">
             { selectedTranscript }
-          </DropdownButton>
-          <DropdownMenu>
-            <h6 className="dropdown-header">Select transcript</h6>
-            {
-          transcripts.map((transcript) => (
-            <li key={transcript}>
-              <button
-                type="button"
-                // id={transcript}
-                className="btn btn-link select-transcript-seq dropdown-item"
-                onClick={() => setSelectedTranscript(transcript)}
-              >
-                { transcript }
+          </button>
+        </div>
+        <div className="control">
+          <div className="dropdown is-hoverable is-right">
+            <div className="dropdown-trigger">
+              <button type="button" className="button is-small">
+                V
               </button>
-            </li>
-          ))
-        }
-          </DropdownMenu>
-        </Dropdown>
+            </div>
+
+            <div className="dropdown-menu" role="menu">
+              <div className="dropdown-content">
+                <div className="dropdown-item">
+                  <h6 className="is-h6 dropdown-item dropdown-header">
+                    Select transcript:
+                  </h6>
+                </div>
+
+                {
+                  transcripts.map((transcript) => (
+                    <div key={transcript} className="dropdown-item">
+                      <a onClick={() => setSelectedTranscript(transcript)}>
+                        { transcript }
+                      </a>
+                    </div>
+                  ))
+                }
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
 }
 
-export default function SeqContainer({ gene, maxLength = 300 }) {
+export default function SeqContainer({ gene, maxLength = 1200 }) {
   const transcripts = gene.subfeatures
     .filter((sub) => sub.type === 'mRNA')
     .map((transcript) => transcript.ID)
@@ -72,9 +83,11 @@ export default function SeqContainer({ gene, maxLength = 300 }) {
 
   const sequences = getGeneSequences(gene);
   const sequence = find(sequences, { ID: selectedTranscript });
+  const exceedsMaxLength = sequence[seqType].length > maxLength;
   const showSequence = showAll
     ? sequence[seqType]
-    : `${sequence[seqType].slice(0, maxLength)}...`;
+    : `${sequence[seqType].slice(0, maxLength)}
+      ${exceedsMaxLength ? '...' : ''}`;
   const buttonText = showAll
     ? 'Show less'
     : 'Show more ...';
@@ -89,20 +102,23 @@ export default function SeqContainer({ gene, maxLength = 300 }) {
         seqType={seqType}
         setSeqType={setSeqType}
       />
-      <h3>Coding Sequence</h3>
+      <h4 className="subtitle is-4">Coding Sequence</h4>
       <div className="card seq-container">
         <p className="seq">
           {`>${selectedTranscript} `}
           <br />
           { showSequence }
         </p>
+        { exceedsMaxLength
+        && (
         <button
           type="button"
-          className="btn btn-link"
+          className="is-link"
           onClick={() => setShowAll(!showAll)}
         >
           <small>{ buttonText }</small>
         </button>
+        )}
       </div>
     </div>
   );

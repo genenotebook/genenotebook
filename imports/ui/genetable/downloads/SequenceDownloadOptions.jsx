@@ -1,4 +1,4 @@
-/* eslint-disable jsx-a11y/label-has-associated-control, jsx-a11y/label-has-for */
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState } from 'react';
 
 function SequenceDownloadOptions({ options, updateOptions }) {
@@ -15,15 +15,14 @@ function SequenceDownloadOptions({ options, updateOptions }) {
   }
   return (
     <form>
-      <div className="row">
-        <div className="col-sm-4">Sequence type</div>
-        <div className="col-sm-8">
+      <div className="field">
+        <label className="label">Sequence type</label>
+        <div className="control">
           {['nucl', 'prot'].map((seqTypeOption) => {
             const checked = seqType === seqTypeOption ? 'checked' : '';
             return (
-              <div key={seqTypeOption} className="form-check">
+              <label className="radio">
                 <input
-                  className="form-check-input"
                   type="radio"
                   id={seqTypeOption}
                   checked={checked}
@@ -33,18 +32,19 @@ function SequenceDownloadOptions({ options, updateOptions }) {
                     });
                   }}
                 />
-                <label className="form-check-label" htmlFor={seqTypeOption}>
-                  {seqTypeOption === 'nucl' ? 'Nucleotide' : 'Protein'}
-                </label>
-              </div>
+                {seqTypeOption === 'nucl' ? 'Nucleotide' : 'Protein'}
+              </label>
             );
           })}
         </div>
       </div>
-      <div className="row">
-        <div className="col-sm-4">File format</div>
-        <div className="col-sm-8">
-          <div className="form-check">
+
+      <div className="field">
+        <label className="label">
+          File format
+        </label>
+        <div className="control">
+          <label className="checkbox">
             <input
               className="form-check-input"
               type="checkbox"
@@ -52,18 +52,18 @@ function SequenceDownloadOptions({ options, updateOptions }) {
               defaultChecked
               disabled
             />
-            <label className="form-check-label" htmlFor="file-format">
-              {fileFormat}
-            </label>
-          </div>
+            { fileFormat }
+          </label>
         </div>
       </div>
-      <div className="row">
-        <div className="col-sm-4">Primary transcript only</div>
-        <div className="col-sm-8">
-          <div className="form-check">
+
+      <div className="field">
+        <label className="label">
+          Isoforms
+        </label>
+        <div className="control">
+          <label className="checkbox">
             <input
-              className="form-check-input"
               type="checkbox"
               id="primary-transcript-only"
               checked={primaryTranscriptOnly}
@@ -73,7 +73,8 @@ function SequenceDownloadOptions({ options, updateOptions }) {
                 });
               }}
             />
-          </div>
+            Primary transcript only
+          </label>
         </div>
       </div>
     </form>

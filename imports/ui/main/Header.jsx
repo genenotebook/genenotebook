@@ -5,8 +5,6 @@ import { Roles } from 'meteor/alanning:roles';
 import React, { useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 
-import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
-
 import SearchBar from './SearchBar.jsx';
 import PageloadPopup from './PageloadPopup.jsx';
 
@@ -22,45 +20,40 @@ function adminTracker() {
 
 function LoggedInButton({ isAdmin }) {
   return (
-    <Dropdown>
-      <DropdownButton className="btn btn-sm btn-outline-dark dropdown-toggle border">
-        <span className="icon-user" aria-hidden="true" />
-      </DropdownButton>
-      <DropdownMenu className="dropdown-menu header-menu px-2">
-        <Link to="/profile" className="dropdown-item featuremenu-item">
+    <div className="navbar-item has-dropdown is-hoverable">
+      <button type="button" className="button is-small navbar-link user-button">
+        <span className="icon-user" />
+      </button>
+      <div className="navbar-dropdown is-right">
+        <Link to="/profile" className="navbar-item">
           <span className="icon-pencil" />
-          &nbsp;User profile
+            &nbsp;User profile
         </Link>
-        <button
-          type="button"
-          role="menuitem"
-          className="dropdown-item featuremenu-item disabled text-muted"
-          disabled
-        >
+        <Link to="/#" className="navbar-item" disabled>
           <span className="icon-clipboard" />
-          &nbsp;Favourites
-        </button>
-        <div className="dropdown-divider" />
+            &nbsp;Favourites
+        </Link>
+        <hr className="navbar-divider" />
         { isAdmin && (
           <>
-            <Link to="/admin" className="dropdown-item featuremenu-item">
+            <Link to="/admin" className="navbar-item">
               <span className="icon-cog" />
-              &nbsp;Admin settings
+                &nbsp;Admin settings
             </Link>
             <div className="dropdown-divider" />
           </>
         )}
         <button
           type="button"
-          className="btn btn-outline-danger btn-sm btn-block"
+          className="button is-fullwidth is-danger is-light"
           id="signout"
           onClick={Meteor.logout}
         >
           <span className="icon-logout" />
-          &nbsp;Sign out
+            &nbsp;Sign out
         </button>
-      </DropdownMenu>
-    </Dropdown>
+      </div>
+    </div>
   );
 }
 
@@ -68,10 +61,12 @@ const LoggedInButtonWithTracker = withTracker(adminTracker)(LoggedInButton);
 
 function LoggedOutButton() {
   return (
-    <Link to="/login" className="btn btn-primary btn-sm" id="signin">
-      <span className="icon-login" aria-hidden="true" />
+    <div className="navbar-item">
+      <Link to="/login" className="button is-small is-link" id="signin">
+        <span className="icon-login" aria-hidden="true" />
       &nbsp;Sign in
-    </Link>
+      </Link>
+    </div>
   );
 }
 
@@ -84,45 +79,44 @@ const UserButtons = withTracker(() => {
 
 function NavBar() {
   const [show, setShow] = useState(false);
+  const activeText = show ? 'is-active' : '';
   const urlPrefix = Meteor.absoluteUrl();
   return (
-    <nav className="navbar navbar-expand-md bg-light navbar-light py-0">
-      <div className="container">
-        <NavLink to="/" className="navbar-brand" activeClassName="active">
-          <small>
+    <nav className="navbar is-white" role="navigation">
+      <div className="navbar-brand">
+        <NavLink to="/" activeClassName="active">
+          <figure className="image is-32x32">
             <img
+              id="navbar-brand-image"
               src={`${urlPrefix}logo.svg`}
-              alt="GeneNoteBook logo"
-              className="navbar-logo rounded-circle"
+              alt="GeneNoteBook"
+              className="is-rounded"
             />
-          </small>
+          </figure>
         </NavLink>
         <button
-          className="navbar-toggler"
+          className={`navbar-burger is-small burger button ${activeText}`}
           type="button"
           onClick={() => {
-            setShow(false);
+            setShow(!show);
           }}
         >
-          <span className="navbar-toggler-icon" />
+          <span aria-hidden="true" />
+          <span aria-hidden="true" />
+          <span aria-hidden="true" />
         </button>
-        <div
-          className={`collapse navbar-collapse justify-content-between ${show ? 'show' : ''}`}
-          id="navbar"
-        >
-          <ul className="navbar-nav">
-            <li className="nav-item">
-              <NavLink to="/genes" className="nav-link" activeClassName="active">
-                Genes
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink to="/blast" className="nav-link" activeClassName="active">
-                Blast
-              </NavLink>
-            </li>
-          </ul>
+      </div>
+      <div className={`navbar-menu ${activeText}`}>
+        <div className="navbar-start">
+          <NavLink id="gene-link" to="/genes" className="navbar-item" activeClassName="active">
+            Genes
+          </NavLink>
+          <NavLink to="/blast" className="navbar-item" activeClassName="active">
+            Blast
+          </NavLink>
           <SearchBar />
+        </div>
+        <div className="navbar-end">
           <UserButtons />
         </div>
       </div>
@@ -134,7 +128,7 @@ export default function Header() {
   const [showPageloadPopup, togglePageloadPopup] = useState(false);
   return (
     <>
-      <header className="navigation border" role="banner">
+      <header role="banner">
         <NavBar />
       </header>
       {showPageloadPopup && (

@@ -1,14 +1,30 @@
-.header-menu {
-  margin-left: -7.4rem !important;
-}
+$nav-height: 2.5rem;
 
-.navbar-logo {
-  margin-top: -5px;
-  width: 30px;//25%;
-}
-
-.navbar-brand {
-  margin-right: 0rem !important;
-  padding-top: 0px;
-  padding-bottom: 0px;
+nav {
+  &.navbar {
+    min-height: unset !important;
+    height: $nav-height;
+    .navbar-start {
+      margin-left: auto;
+      margin-right: unset !important;
+    }
+    
+    .navbar-item {
+      .user-button {
+        padding-top: 0.4rem;
+        margin-top: 0.3rem;
+        margin-right: 1rem;
+      }
+    }
+  
+    #navbar-brand-image {
+      margin-top: .1rem;
+      margin-left: .7rem;
+    }
+  }
+  button.navbar-burger {
+    font-size: .75rem;
+    min-height: unset !important;
+    height: $nav-height;
+  }
 }

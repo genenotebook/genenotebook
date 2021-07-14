@@ -1,0 +1,15 @@
+.admin-menu {
+	.title {
+		padding-top: 1rem;
+		margin: 0 0 1rem 1rem !important;
+	}
+	.tabs {
+		ul {
+			padding-left: 1rem !important;
+		}
+	}
+	.modal {
+		display: inline !important;
+  	z-index: 1000 !important;
+	}
+}

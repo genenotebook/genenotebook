@@ -1,29 +1,11 @@
-.feature-panel{
-	height:85%;
+.single-gene-page {
+	.title {
+		padding-top: 1rem;
+		margin: 0 0 1rem 1rem !important;
+	}
+	.tabs {
+		ul {
+			padding-left: 1rem !important;
+		}
+	}
 }
-
-.feature-info{
-	height:79%;
-	overflow-y: scroll;
-}
-
-p.seq {
-	overflow-wrap: break-word;
-	word-wrap: break-word;
-	overflow: wrap;
-	white-space:wrap;
-	font-family: 'Roboto Mono', monospace;
-	font-size: 0.8em;
-}
-
-p.msa {
-	line-height:75%;
-}
-
-.well.alignment {
-	overflow: auto;
-	white-space:nowrap;
-	font-family: 'Roboto Mono', monospace;
-	font-size: 0.8em;
-}
-

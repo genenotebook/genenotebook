@@ -1,0 +1,26 @@
+form.genome-name {
+  margin-left: 1rem;
+}
+
+li.list-item.replica-group {
+  &.is-editing {
+    background-color: lighten(hsl(204, 86%, 53%), 42%) !important; // lighten bulma info color
+    box-shadow: 0 2px 3px hsl(204, 86%, 53%), 0 0 0 1px hsl(204, 86%, 53%);
+    border-color: hsl(204, 86%, 53%) !important;
+  }
+  .level {
+    margin-bottom: 0.5rem;
+  }
+  .field {
+    margin-bottom: 0 !important;
+    .field-label {
+      flex-basis: auto !important;
+    }
+    .field-body {
+      display: initial !important;
+    }
+  }
+  .edit-buttons {
+    margin-left: 1rem;
+  }
+}

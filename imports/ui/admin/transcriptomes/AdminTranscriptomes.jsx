@@ -1,19 +1,21 @@
+/* eslint-disable react/prop-types */
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import React from 'react';
-import { compose } from 'recompose';
 
 import { ExperimentInfo }
   from '/imports/api/transcriptomes/transcriptome_collection.js';
-import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
+import { genomeCollection }
+  from '/imports/api/genomes/genomeCollection.js';
 
-import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
+import {
+  branch, compose, isLoading, Loading,
+} from '/imports/ui/util/uiUtil.jsx';
 
 import GenomeExperiment from './GenomeExperiment.jsx';
 
 import './AdminTranscriptomes.scss';
-
 
 function dataTracker() {
   const expInfoSub = Meteor.subscribe('experimentInfo');
@@ -30,32 +32,31 @@ function dataTracker() {
   };
 }
 
-const withConditionalRendering = compose(
-  withTracker(dataTracker),
-  withEither(isLoading, Loading),
-);
-
 function AdminTranscriptomes({ experiments, genomes }) {
   return (
-    <div>
+    <div className="box">
       <hr />
-      <ul className="list-group list-group-flush">
+      <ul className="list is-hoverable">
         {
-        genomes.map((genome) => {
-          const genomeExperiments = experiments.filter((experiment) => experiment.genomeId === genome._id);
-          return (
-            <li className="list-group-item" key={genome._id}>
-              <GenomeExperiment
-                genome={genome}
-                experiments={genomeExperiments}
-              />
-            </li>
-          );
-        })
-      }
+          genomes.map((genome) => {
+            const genomeExperiments = experiments
+              .filter((experiment) => experiment.genomeId === genome._id);
+            return (
+              <li className="list-item" key={genome._id}>
+                <GenomeExperiment
+                  genome={genome}
+                  experiments={genomeExperiments}
+                />
+              </li>
+            );
+          })
+        }
       </ul>
     </div>
   );
 }
 
-export default withConditionalRendering(AdminTranscriptomes);
+export default compose(
+  withTracker(dataTracker),
+  branch(isLoading, Loading),
+)(AdminTranscriptomes);

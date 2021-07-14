@@ -3,7 +3,7 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method';
 
 import SimpleSchema from 'simpl-schema';
 
-import { Genes } from '/imports/api/genes/gene_collection.js';
+import { Genes } from '/imports/api/genes/geneCollection.js';
 
 const getQueryCount = new ValidatedMethod({
   name: 'getQueryCount',

@@ -1,10 +1,10 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
-import { compose } from 'recompose';
 
-import { removeAnnotationTrack } from '/imports/api/genomes/removeAnnotationTrack.js';
+import { removeAnnotationTrack }
+  from '/imports/api/genomes/removeAnnotationTrack.js';
 
-import { withEither } from '/imports/ui/util/uiUtil.jsx';
+import { branch, compose } from '/imports/ui/util/uiUtil.jsx';
 
 import BlastDB from './BlastDB.jsx';
 
@@ -16,8 +16,7 @@ function NoAnnotation() {
   return (
     <button
       type="button"
-      className="btn btn-outline-secondary btn-sm px-2 py-0"
-      disabled
+      className="button is-small is-inactive"
     >
       <span className="icon-block" />
       No annotation
@@ -25,49 +24,41 @@ function NoAnnotation() {
   );
 }
 
-const withConditionalRendering = compose(
-  withEither(hasNoAnnotation, NoAnnotation),
-);
-
 function AnnotationInfo({
   genomeId, isEditing, name, blastDb,
 }) {
   return (
-    <table style={{ width: '100%' }}>
-      <tbody>
-        <tr title={name}>
-          <td>{`${name.substring(0, 10)}...`}</td>
-        </tr>
-        <tr>
-          <td>
-            <BlastDB
-              genomeId={genomeId}
-              isEditing={isEditing}
-              name={name}
-              blastDb={blastDb}
-            />
-          </td>
-        </tr>
-        {isEditing && (
-          <tr>
-            <td>
-              <button
-                type="button"
-                className="btn btn-danger btn-sm px-2 py-0 btn-block"
-                onClick={() => {
-                  removeAnnotationTrack.call({ genomeId });
-                }}
-                id={genomeId}
-              >
-                <span className="icon-exclamation" />
-                Delete annotation
-              </button>
-            </td>
-          </tr>
-        )}
-      </tbody>
-    </table>
+    <ul>
+      <li title={name}>
+        {`${name.substring(0, 15)}...`}
+      </li>
+      <li>
+        <BlastDB
+          genomeId={genomeId}
+          isEditing={isEditing}
+          name={name}
+          blastDb={blastDb}
+        />
+      </li>
+      {isEditing && (
+        <li>
+          <button
+            type="button"
+            className="button is-fullwidth is-danger is-outlined is-light is-fullwidth is-small"
+            onClick={() => {
+              removeAnnotationTrack.call({ genomeId });
+            }}
+            id={genomeId}
+          >
+            <span className="icon-exclamation" />
+            Delete annotation
+            <span className="icon-exclamation" />
+          </button>
+        </li>
+      )}
+    </ul>
   );
 }
-
-export default withConditionalRendering(AnnotationInfo);
+export default compose(
+  branch(hasNoAnnotation, NoAnnotation),
+)(AnnotationInfo);

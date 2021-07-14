@@ -6,15 +6,13 @@ import { withTracker } from 'meteor/react-meteor-data';
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Redirect, withRouter } from 'react-router-dom';
-import { compose } from 'recompose';
 import { cloneDeep } from 'lodash';
 
 import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 
-import { Dropdown, DropdownButton, DropdownMenu } from '/imports/ui/util/Dropdown.jsx';
-import { withEither, isLoading, Loading } from '/imports/ui/util/uiUtil.jsx';
-
-import './searchBar.scss';
+import {
+  branch, compose, isLoading, Loading,
+} from '/imports/ui/util/uiUtil.jsx';
 
 const attributeTracker = ({ location }) => {
   const {
@@ -48,12 +46,6 @@ const attributeTracker = ({ location }) => {
     redirected,
   };
 };
-
-const withConditionalRendering = compose(
-  withRouter,
-  withTracker(attributeTracker),
-  withEither(isLoading, Loading),
-);
 
 function SearchBar({
   selectedAttributes: initialSelectedAttributes,
@@ -124,10 +116,61 @@ function SearchBar({
 
   return (
     <form
-      className="form-inline search mx-auto"
+      className="navbar-item is-pulled-right"
       role="search"
       onSubmit={submit}
     >
+      <div className="field has-addons">
+        <div className="control has-dropdown">
+          <div className="dropdown is-hoverable">
+            <div className="dropdown-trigger">
+              <button type="button" className="button is-small">
+                <span className="icon">
+                  <span className="icon-down" />
+                </span>
+              </button>
+            </div>
+            <div className="dropdown-menu" id="dropdown-menu-search" role="menu">
+              <div className="dropdown-content">
+                <h6 className="is-h6 dropdown-item">Select attributes to search</h6>
+                {attributes.map(({ name }) => {
+                  const checked = selectedAttributes.has(name);
+                  return (
+                    <div className="dropdown-item" id={name} key={name}>
+                      <label className="checkbox">
+                        <input
+                          type="checkbox"
+                          defaultChecked={checked}
+                          onChange={toggleAttributeSelect}
+                          className="dropdown-checkbox is-small"
+                        />
+                        { name }
+                      </label>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="control">
+          <input
+            type="text"
+            className="input is-small"
+            placeholder="Search genes"
+            value={searchString}
+            onChange={(event) => setSearchString(event.target.value)}
+            onSubmit={submit}
+            ref={inputRef}
+          />
+        </div>
+        <div className="control">
+          <button type="submit" className="button is-small">
+            <span className="icon-search" />
+          </button>
+        </div>
+      </div>
+      {/*
       <div className="input-group input-group-sm">
         <div className="input-group-prepend">
           <Dropdown>
@@ -144,7 +187,7 @@ function SearchBar({
                   >
                     <input
                       type="checkbox"
-                      className="form-check-input"
+                      className="input is-small"
                       id={name}
                       checked={checked}
                       onChange={toggleAttributeSelect}
@@ -182,8 +225,13 @@ function SearchBar({
           </button>
         </div>
       </div>
+        */}
     </form>
   );
 }
 
-export default withConditionalRendering(SearchBar);
+export default compose(
+  withRouter,
+  withTracker(attributeTracker),
+  branch(isLoading, Loading),
+)(SearchBar);
