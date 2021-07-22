@@ -1,4 +1,3 @@
-/* eslint-disable max-classes-per-file */
 /* @flow */
 /* globals WebAppInternals: false */
 
@@ -192,12 +191,11 @@ export class ServerRouter {
     defaultRoutePath?: string,
     paths?: Array<Path>,
   |}) {
-    const { routes, defaultRoutePath, paths } = {
+    const { routes, defaultRoutePath, paths } = Object.assign({
       routes: ({}: any),
       defaultRoutePath: '/r/:name/:args*',
       paths: [],
-      ...options,
-    };
+    }, options);
 
     this._routes = {};
     this._paths = [];
@@ -292,9 +290,7 @@ export class ServerRouter {
    * Adds a single path.
    */
   addPath(data: Path) {
-    const {
-      path, options, route, args,
-    } = data;
+    const { path, options, route, args } = data;
     const tokens = [];
     const regexp = pathToRegexp(path, tokens, options);
     this._paths.push({
@@ -335,7 +331,7 @@ export class ServerRouter {
    * @example
    * WebApp.connectHandlers.use(serverRouter.middleware);
    */
-  // middleware: $PropertyType<this, '_middleware'>;
+  middleware: $PropertyType<this, '_middleware'>;
 
   _middleware(req: IncomingMessage, res: ServerResponse, next: (error?: any) => void) {
     const { pathname, query } = url.parse(req.url, true);

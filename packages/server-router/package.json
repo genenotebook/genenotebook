@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "server-router",
-  "version": "1.2.3",
+  "version": "1.2.5",
   "description": "Server router with authentication for Meteor",
   "scripts": {
     "clean": "rm -rf node_modules",
@@ -13,6 +13,8 @@
   "license": "MIT",
   "devDependencies": {
     "babel-eslint": "^7.2.3",
+    "babel-plugin-syntax-flow": "^6.18.0",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^15.0.1",
     "eslint-plugin-import": "^2.2.0",
