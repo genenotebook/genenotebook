@@ -10,12 +10,12 @@ Package.describe({
 });
 
 Npm.depends({
-  'path-to-regexp': '1.7.0',
-  'query-string': '4.3.4',
-  'url-parse': '1.1.9',
-  invariant: '2.2.2',
   'babel-plugin-syntax-flow': '6.18.0',
   'babel-plugin-transform-flow-strip-types': '6.22.0',
+  'path-to-regexp': '6.2.0',
+  'query-string': '7.0.1',
+  'url-parse': '1.5.3',
+  'invariant': '2.2.4',
 });
 
 Package.onUse((api) => {
