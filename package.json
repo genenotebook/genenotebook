@@ -15,7 +15,7 @@
     "dev_production": "NODE_OPTIONS=--max-old-space-size=8192 meteor run --production --settings settings.json",
     "reset": "meteor reset",
     "lint": "eslint imports",
-    "postversion": "pushd scripts && npm version $(jq -r .version ../package.json) && popd",
+    "postversion": "pushd cli && npm version $(jq -r .version ../package.json) && popd",
     "test": "TEST_CLIENT=0 TEST_BROWSER_DRIVER=puppeteer BABEL_ENV=COVERAGE COVERAGE=1 COVERAGE_OUT_HTML=1 COVERAGE_APP_FOLDER=$PWD/ meteor --verbose test --once --driver-package meteortesting:mocha --raw-logs"
   },
   "meteor": {
