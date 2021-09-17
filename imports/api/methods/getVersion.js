@@ -2,21 +2,25 @@
 // import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 
-import fs from 'fs';
+// import fs from 'fs';
 
 // import logger from '/imports/api/util/logger.js';
 
-let pkg = {};
+// const pkg = {};
 
 const getVersion = new ValidatedMethod({
   name: 'getVersion',
   validate: null,
   applyOptions: {
-    noRetry: true,
+    noRetry: false,
   },
   run() {
-    let version = '..';
+    let version = '...';
     if (!this.isSimulation) {
+      version = process.env.npm_package_version;
+      // console.log({ version });
+      /*
+      console.log({ process });
       const { argv } = process;
       const executable = argv[1];
       const isProduction = executable
@@ -35,6 +39,7 @@ const getVersion = new ValidatedMethod({
 
       pkg = JSON.parse(fs.readFileSync(pkgFile));
       version = pkg.version;
+      */
     }
     return version;
   },

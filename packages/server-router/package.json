@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "server-router",
-  "version": "1.2.3",
+  "version": "1.2.5",
   "description": "Server router with authentication for Meteor",
   "scripts": {
     "clean": "rm -rf node_modules",

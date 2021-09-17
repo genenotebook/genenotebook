@@ -1,5 +1,3 @@
-/* @flow */
-
 import { Tinytest } from 'meteor/tinytest';
 
 import { ServerRouter } from 'meteor/mhagmajer:server-router';

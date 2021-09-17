@@ -1,16 +1,9 @@
-
-
 /* globals document: false, window: false */
-
-import { EJSON } from "meteor/ejson";
-import { Meteor } from "meteor/meteor";
-import pathToRegexp from "path-to-regexp";
-import queryString from "query-string";
-import Url from "url-parse";
-
-type Routes = {
-  [name: string]: any | Routes;
-};
+import { EJSON } from 'meteor/ejson';
+import { Meteor } from 'meteor/meteor';
+import pathToRegexp from 'path-to-regexp';
+import queryString from 'query-string';
+import Url from 'url-parse';
 
 /**
  * Client for ServerRouter
@@ -31,48 +24,34 @@ type Routes = {
  * @param {string} [options.defaultRoutePath=/r/:name/:args*] Same as in {@link ServerRouter}.
  */
 export class ServerRouterClient<R extends Routes> {
-
-  constructor(options?: {
-    routes?: R;
-    defaultRoutePath?: string;
-  }) {
+  constructor(options) {
     const {
       routes,
       defaultRoutePath
     } = Object.assign({
-      routes: ({} as any),
+      routes: {},
       defaultRoutePath: '/r/:name/:args*'
     }, options);
     this._routes = routes;
     this._defaultRoutePath = pathToRegexp.compile(defaultRoutePath);
-
     this.path = this._createRouteHandlers();
     this.redirect = this._createRouteHandlers({
       redirect: true
     });
-
     const shouldRefresh = Array.from(document.getElementsByTagName('meta')).some(el => el.getAttribute('data-server-router-authentication-required'));
+
     if (!shouldRefresh || !Meteor.userId()) {
       return;
     }
+
     this.redirectTo(window.location.href);
   }
-
   /**
    * Convenient methods for redirecting to a server route with authentication.
    * @example
    * serverRouterClient.redirect.privateImages.img1(800, 600);
    */
-  redirect: R;
 
-  /**
-   * Convenient getters of paths for server routes. Compatible with static type checkers like Flow.
-   *
-   * Note: These methods return string, not Promise.
-   * @example
-   * console.log(serverRouterClient.path.privateImages.img1(800, 600));
-   */
-  path: R;
 
   /**
    * Redirects to given path with authentication. If you want to redirect to a publicly available
@@ -83,10 +62,9 @@ export class ServerRouterClient<R extends Routes> {
    *
    * Returns a promise so you catch any errors connected with the authentication itself.
    */
-  async redirectTo(path: string): Promise<void> {
+  async redirectTo(path) {
     window.location.href = await this.authenticatePath(path);
   }
-
   /**
    * Redirects to given route and args with authenication. Short for (example):
    * ```javascript
@@ -95,17 +73,21 @@ export class ServerRouterClient<R extends Routes> {
    *
    * Returns a promise for the same reason like {@link #ServerRouterClient#redirectTo}.
    */
-  async redirectToRoute(name: string, ...args: Array<any>) {
+
+
+  async redirectToRoute(name, ...args) {
     return this.redirectTo(this.getRoutePath(name, ...args));
   }
-
   /**
    * Returns authenticated version of given path, or the path itself if no current user.
    *
    * Throws on authentication problems.
    */
-  async authenticatePath(path: string): Promise<string> {
+
+
+  async authenticatePath(path) {
     const userId = Meteor.userId();
+
     if (!userId) {
       return path;
     }
@@ -119,7 +101,6 @@ export class ServerRouterClient<R extends Routes> {
         }
       });
     });
-
     const url = new Url(path);
     const query = queryString.parse(url.query);
     Object.assign(query, {
@@ -129,26 +110,24 @@ export class ServerRouterClient<R extends Routes> {
     url.set('query', queryString.stringify(query));
     return url.toString();
   }
-
   /**
    * Returns unauthenticated path for given route and args.
    */
-  getRoutePath(name: string, ...args: Array<any>): string {
-    return this._defaultRoutePath({ name, args: args.map(EJSON.stringify) });
+
+
+  getRoutePath(name, ...args) {
+    return this._defaultRoutePath({
+      name,
+      args: args.map(EJSON.stringify)
+    });
   }
 
-  _routes: R;
-  _defaultRoutePath: () => string;
-
-  _createRouteHandlers(options?: {
-    redirect?: boolean;
-  }): R {
+  _createRouteHandlers(options) {
     const {
       redirect
-    } = options || {};
+    } = options || {}; // non-object values are mapped to route calls
 
-    // non-object values are mapped to route calls
-    const routes: any = mapValuesDeep(this._routes, (value, name) => (...args) => {
+    const routes = mapValuesDeep(this._routes, (value, name) => (...args) => {
       const path = this.getRoutePath(name, ...args);
 
       if (!redirect) {
@@ -159,15 +138,15 @@ export class ServerRouterClient<R extends Routes> {
     });
     return routes;
   }
+
 }
 
-function mapValuesDeep(obj: {
-  [key: string]: any;
-}, mapper: (value: any, key: string) => any, keyPrefix?: string) {
+function mapValuesDeep(obj, mapper, keyPrefix) {
   const ret = {};
   Object.keys(obj).forEach(key => {
     const value = obj[key];
     const deepKey = (keyPrefix || '') + key;
+
     if (typeof value === 'object' && value != null) {
       ret[key] = mapValuesDeep(value, mapper, `${deepKey}.`);
     } else {
