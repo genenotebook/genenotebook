@@ -19,7 +19,7 @@ ls -l
 jq . package.json
 npm install
 popd 
-pushd scripts
+pushd cli
 npm install
 popd 
 cp -r cli/* $BUNDLE_NAME 

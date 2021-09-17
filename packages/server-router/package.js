@@ -10,12 +10,10 @@ Package.describe({
 });
 
 Npm.depends({
-  'babel-plugin-syntax-flow': '6.18.0',
-  'babel-plugin-transform-flow-strip-types': '6.22.0',
   'path-to-regexp': '6.2.0',
   'query-string': '7.0.1',
   'url-parse': '1.5.3',
-  'invariant': '2.2.4',
+  invariant: '2.2.4',
 });
 
 Package.onUse((api) => {
@@ -27,9 +25,10 @@ Package.onUse((api) => {
     'modules',
     'accounts-base',
     'webapp',
+    'typescript',
   ]);
-  api.mainModule('src/server/server-router.js', 'server');
-  api.mainModule('src/client/server-router-client.js', 'client');
+  api.mainModule('src/server/server-router.ts', 'server');
+  api.mainModule('src/client/server-router-client.ts', 'client');
 });
 
 Package.onTest((api) => {

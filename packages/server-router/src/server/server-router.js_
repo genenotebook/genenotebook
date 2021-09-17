@@ -78,10 +78,10 @@ type Path = {|
  * @param {ObjectMap<string, string>} query url query parameters (following `?`).
  * @returns {Array<any>} arguments that the route will be called with.
  */
-type ArgsMapper = (
+/* type ArgsMapper = (
   params: { [key: string]: string | Array<string> },
   query: { [key: string]: string }
-) => Array<any>;
+) => Array<any>; */
 
 /**
  * Path handler called with `this` bound to {@link ServerRouterContext}.

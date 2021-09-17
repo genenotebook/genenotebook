@@ -4,12 +4,11 @@ import { Meteor } from 'meteor/meteor';
 
 class Logger {
   constructor({
-    logging = true, warning = true, debugging = true, error = true,
+    logging = true, warning = true, debugging = true,
   }) {
     this.logging = logging;
     this.warning = warning;
     this.debugging = debugging;
-    this.error = error;
   }
 
   get dateTime() {
@@ -29,7 +28,7 @@ class Logger {
   }
 
   error(message) {
-    if (this.error) console.error('## ERROR:', this.dateTime, message);
+    console.error('## ERROR:', this.dateTime, message);
   }
 }
 
