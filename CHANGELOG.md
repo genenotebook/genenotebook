@@ -7,18 +7,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.3.0]
+
 ### Added
 
 - External links and descriptions on GO terms and INTERPRO ids
 - Make the list of default user accounts configurable using `settings.json` configuration file
+- Ability to upload genome sequence through the browser
 
 ### Changed
 
-- Meteor version 2.0
+- Meteor version 2.4
+- Node.js version 14
 
 ### Fixed
 
 - Option parsing for CLI
+- Version display in browser
 
 ## [0.2.0] 2020-01-22
 
