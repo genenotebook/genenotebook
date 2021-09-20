@@ -349,4 +349,38 @@ const remove = program.command('remove [type]', 'Remove data from a running Gene
 
 const list = program.command('list', 'List contents of a running GeneNoteBook server');
 
+// add
+const user = program
+  .command('user[command]')
+  .description('Interact with GeneNoteBook users')
+  .usage('[command]');
+
+const setUserPassword = user
+    .command('setpassword')
+
+setUserPassword.description('Set an user password')
+  .usage('[options]')
+  .arguments('<username> <password>')
+  .requiredOption('-u, --username <adminUsername>', 'GeneNoteBook admin username')
+  .requiredOption('-p, --password <adminPassword>', 'GeneNoteBook admin password')
+  .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
+  .action((username,password), {
+    adminUsername, adminPassword, port = 3000,
+  }) => {
+    if (!(username && password && adminUsername && adminPassword)) {
+      setUserPassword.help();
+    }
+
+    new GeneNoteBookConnection({ adminUsername, adminPassword, port })
+      .call('setUserPassword', { username, password });
+  })
+  .on('--help', function () {
+    console.log(`
+Example:
+    genenotebook user setpassword -u admin -p admin username newpassword
+    `);
+  })
+  .exitOverride(customExitOverride(setUserPassword));
+
+
 program.parse(process.argv);
