@@ -351,7 +351,7 @@ const list = program.command('list', 'List contents of a running GeneNoteBook se
 
 // add
 const user = program
-  .command('user[command]')
+  .command('user [command]')
   .description('Interact with GeneNoteBook users')
   .usage('[command]');
 
@@ -360,19 +360,18 @@ const setUserPassword = user
 
 setUserPassword.description('Set an user password')
   .usage('[options]')
-  .arguments('<username> <password>')
+  .arguments('<userName> <newPassword>')
   .requiredOption('-u, --username <adminUsername>', 'GeneNoteBook admin username')
   .requiredOption('-p, --password <adminPassword>', 'GeneNoteBook admin password')
   .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
-  .action((username,password), {
-    adminUsername, adminPassword, port = 3000,
-  }) => {
-    if (!(username && password && adminUsername && adminPassword)) {
+  .action((userName, newPassword, {username, password, port = 3000,}) => {
+
+    if (!(userName && newPassword && username && password)) {
       setUserPassword.help();
     }
 
-    new GeneNoteBookConnection({ adminUsername, adminPassword, port })
-      .call('setUserPassword', { username, password });
+    new GeneNoteBookConnection({ username, password, port })
+      .call('testUserPassword', { userName, newPassword });
   })
   .on('--help', function () {
     console.log(`
