@@ -27,3 +27,4 @@ jq ".version = $(jq .version package.json)" cli/package.json > \
   $BUNDLE_NAME/package.json
 cp -r testdata.tgz $BUNDLE_NAME 
 cp -r LICENSE $BUNDLE_NAME 
+cp -r settings.json $BUNDLE_NAME
