@@ -31,7 +31,14 @@ export default function addDefaultUsers() {
   });
 
   // Add default users
-  if (Meteor.users.find().count() === 0 && 'accounts' in Meteor.settings) {
+  if (Meteor.users.find().count() === 0 /* && 'accounts' in Meteor.settings */) {
+    const userId = Accounts.createUser({
+      username: 'admin',
+      password: 'admin',
+      // role: 'admin',
+    });
+    Roles.addUsersToRoles(userId, 'admin');
+    /*
     Meteor.settings.accounts.forEach((account) => {
       logger.log(`Adding default user ${account.username}`);
 
@@ -39,5 +46,6 @@ export default function addDefaultUsers() {
       const accountId = Accounts.createUser(userInfos);
       Roles.addUsersToRoles(accountId, role);
     });
+    */
   }
 }

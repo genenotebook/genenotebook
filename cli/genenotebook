@@ -207,8 +207,7 @@ const add = program
   .usage('[command]');
 
 // add genome
-const addGenome = add
-  .command('genome');
+const addGenome = add.command('genome');
 
 addGenome.description('Add reference genome')
   .usage('[options] <genome fasta file>')
@@ -240,8 +239,7 @@ Example:
   .exitOverride(customExitOverride(addGenome));
 
 // add annotation
-const addAnnotation = add
-  .command('annotation');
+const addAnnotation = add.command('annotation');
 
 addAnnotation
   .description('Add fasta formatted reference genome to a running GeneNoteBook server')
@@ -271,8 +269,7 @@ addAnnotation
   .exitOverride(customExitOverride(addAnnotation));
 
 // add transcriptome
-const addTranscriptome = add
-  .command('transcriptome');
+const addTranscriptome = add.command('transcriptome');
 
 addTranscriptome
   .description('Add Kallisto quantified gene expression to a running GeneNoteBook server')
@@ -304,8 +301,7 @@ addTranscriptome
   .exitOverride(customExitOverride(addTranscriptome));
 
 // add interproscan
-const addInterproscan = add
-  .command('interproscan');
+const addInterproscan = add.command('interproscan');
 
 addInterproscan.description(
   'Add InterProScan results to a running GeneNoteBook server',
@@ -328,8 +324,7 @@ addInterproscan.description(
   .exitOverride(customExitOverride(addInterproscan));
 
 // add orthogroups
-const addOrthogroups = add
-  .command('orthogroups');
+const addOrthogroups = add.command('orthogroups');
 
 addOrthogroups.description('Add Orthogroup phylogenetic trees to a running GeneNoteBook server')
   .usage('[options] <Folder with (e.g. OrthoFinder) tree files>')
@@ -348,7 +343,7 @@ addOrthogroups.description('Add Orthogroup phylogenetic trees to a running GeneN
     new GeneNoteBookConnection({ username, password, port })
       .call('addOrthogroups', { folderName });
   })
-  .exitOverride(customExitOverride(addInterproscan));
+  .exitOverride(customExitOverride(addOrthogroups));
 
 const remove = program.command('remove [type]', 'Remove data from a running GeneNoteBook server');
 
@@ -357,20 +352,20 @@ const list = program.command('list', 'List contents of a running GeneNoteBook se
 // add
 const user = program
   .command('user [command]')
-  .description('Interact with GeneNoteBook users')
+  .description('Add/modify/delete user profiles of a running genenotebook server')
   .usage('[command]');
 
-const setUserPassword = user
-    .command('setpassword')
+const setUserPassword = user.command('setpassword');
 
 setUserPassword.description('Set an user password')
   .usage('[options]')
   .arguments('<userName> <newPassword>')
-  .requiredOption('-u, --username <adminUsername>', 'GeneNoteBook admin username')
-  .requiredOption('-p, --password <adminPassword>', 'GeneNoteBook admin password')
+  .requiredOption('-u, --username <adminUsername>',
+    'GeneNoteBook admin username')
+  .requiredOption('-p, --password <adminPassword>',
+    'GeneNoteBook admin password')
   .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
-  .action((userName, newPassword, {username, password, port = 3000,}) => {
-
+  .action((userName, newPassword, { username, password, port = 3000 }) => {
     if (!(userName && newPassword && username && password)) {
       setUserPassword.help();
     }
@@ -386,5 +381,6 @@ Example:
   })
   .exitOverride(customExitOverride(setUserPassword));
 
+const addUser = user.command('add');
 
 program.parse(process.argv);

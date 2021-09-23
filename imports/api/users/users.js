@@ -69,7 +69,7 @@ export const setUserPassword = new ValidatedMethod({
     }
 
     if (!this.isSimulation) {
-      return Accounts.setPassword(userId, newPassword);
+      Accounts.setPassword(userId, newPassword);
     }
   },
 });
@@ -84,7 +84,6 @@ export const setUsernamePassword = new ValidatedMethod({
     noRetry: true,
   },
   run({ userName, newPassword }) {
-
     if (!this.userId) {
       throw new Meteor.Error('not-autorized');
     }
@@ -93,15 +92,15 @@ export const setUsernamePassword = new ValidatedMethod({
       throw new Meteor.Error('not-authorized');
     }
 
-    const user = Accounts.findUserByUsername(userName)
+    const user = Accounts.findUserByUsername(userName);
     if (!user) {
       throw new Meteor.Error('not-found');
     }
 
     if (!this.isSimulation) {
       Accounts.setPassword(user._id, newPassword);
-      const jobStatus = "ok"
-      return { jobStatus }
+      const jobStatus = 'ok';
+      return { jobStatus };
     }
   },
 });
