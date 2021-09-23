@@ -73,3 +73,35 @@ export const setUserPassword = new ValidatedMethod({
     }
   },
 });
+
+export const setUsernamePassword = new ValidatedMethod({
+  name: 'setUsernamePassword',
+  validate: new SimpleSchema({
+    userName: String,
+    newPassword: String,
+  }).validator(),
+  applyOptions: {
+    noRetry: true,
+  },
+  run({ userName, newPassword }) {
+
+    if (!this.userId) {
+      throw new Meteor.Error('not-autorized');
+    }
+
+    if (!Roles.userIsInRole(this.userId, 'admin')) {
+      throw new Meteor.Error('not-authorized');
+    }
+
+    const user = Accounts.findUserByUsername(userName)
+    if (!user) {
+      throw new Meteor.Error('not-found');
+    }
+
+    if (!this.isSimulation) {
+      Accounts.setPassword(user._id, newPassword);
+      const jobStatus = "ok"
+      return { jobStatus }
+    }
+  },
+});
