@@ -95,7 +95,7 @@ export const setUsernamePassword = new ValidatedMethod({
 
     const user = Accounts.findUserByUsername(userName)
     if (!user) {
-      throw new Meteor.Error('not-autorized');
+      throw new Meteor.Error('not-found');
     }
 
     if (!this.isSimulation) {
