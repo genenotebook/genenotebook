@@ -60,7 +60,6 @@ export const setUserPassword = new ValidatedMethod({
     noRetry: true,
   },
   run({ userId, newPassword }) {
-
     if (!this.userId) {
       throw new Meteor.Error('not-autorized');
     }
@@ -75,8 +74,8 @@ export const setUserPassword = new ValidatedMethod({
   },
 });
 
-export const testUserPassword = new ValidatedMethod({
-  name: 'testUserPassword',
+export const setUsernamePassword = new ValidatedMethod({
+  name: 'setUsernamePassword',
   validate: new SimpleSchema({
     userName: String,
     newPassword: String,

@@ -375,7 +375,7 @@ setUserPassword.description('Set an user password')
     }
 
     new GeneNoteBookConnection({ username, password, port })
-      .call('testUserPassword', { userName, newPassword });
+      .call('setUsernamePassword', { userName, newPassword });
   })
   .on('--help', function () {
     console.log(`
