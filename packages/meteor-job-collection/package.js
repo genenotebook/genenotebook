@@ -1,9 +1,11 @@
+/* global Package: false */
+
 /**
  * Copyright (C) 2014-2017 by Vaughn Iverson
  * job-collection is free software released under the MIT/X11 license.
  * See included LICENSE file for details.
  */
-const currentVersion = '1.6.1_1';
+const currentVersion = '1.6.1';
 
 Package.describe({
   summary: 'A persistent and reactive job queue for Meteor, supporting distributed workers that can run anywhere',
@@ -11,10 +13,6 @@ Package.describe({
   version: currentVersion,
   git: 'https://github.com/vsivsi/meteor-job-collection.git',
 });
-
-// Npm.depends({
-//  'meteor-job': '1.5.2',
-// });
 
 Package.onUse(function(api) {
   api.versionsFrom('1.6.1');
@@ -27,9 +25,6 @@ Package.onUse(function(api) {
 
   api.mainModule('client.js', 'client', { lazy: true });
   api.mainModule('server.js', 'server', { lazy: true });
-
-  // api.export('Job');
-  // api.export('JobCollection');
 });
 
 Package.onTest(function (api) {

@@ -1,6 +1,6 @@
 /* global Package: false, Npm: false */
 
-const currentVersion = '1.2.7_0';
+const currentVersion = '1.2.7';
 
 Package.describe({
   name: 'mhagmajer:server-router',
