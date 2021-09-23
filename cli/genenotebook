@@ -134,8 +134,8 @@ function startMongoDaemon(dbPath, mongoPort) {
 }
 
 async function startGeneNoteBook(cmd) {
-  const PORT = parseInt(cmd.port, 10) || 3000;
-  const ROOT_URL = cmd.rootUrl || `http://localhost:${PORT}`;
+  const PORT = parseInt(cmd.opts().port, 10) || 3000;
+  const ROOT_URL = cmd.opts().rootUrl || `http://localhost:${PORT}`;
   const opts = { PORT, ROOT_URL };
 
   if (fs.existsSync('settings.json') && !('METEOR_SETTINGS' in process.env)) {
@@ -143,14 +143,14 @@ async function startGeneNoteBook(cmd) {
     Object.assign(opts, { METEOR_SETTINGS });
   }
 
-  if (cmd.mongoUrl) {
-    if (cmd.dbPath) {
+  if (cmd.opts().mongoUrl) {
+    if (cmd.opts().dbPath) {
       throw new Error('--db-path and --mongo-url are mutually exclusive');
     }
-    Object.assign(opts, { MONGO_URL: cmd.mongoUrl });
+    Object.assign(opts, { MONGO_URL: cmd.opts().mongoUrl });
   } else {
-    const dbPath = cmd.dbPath || './db';
-    const mongoPort = cmd.mongoPort || 27017;
+    const dbPath = cmd.opts().dbPath || './db';
+    const mongoPort = cmd.opts().mongoPort || 27017;
     const { MONGO_URL, mongoDaemon } = await startMongoDaemon(
       path.resolve(dbPath),
       mongoPort,
