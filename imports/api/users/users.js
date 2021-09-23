@@ -101,7 +101,8 @@ export const testUserPassword = new ValidatedMethod({
 
     if (!this.isSimulation) {
       Accounts.setPassword(user._id, newPassword);
-      return "Ok"
+      const jobStatus = "ok"
+      return { jobStatus }
     }
   },
 });

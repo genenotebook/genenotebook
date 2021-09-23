@@ -49,13 +49,17 @@ class GeneNoteBookConnection {
       .then((loginResult) => {
         logger.log(`Established connection to ${this.connection.endpoint}`);
         return this.connection.call(methodName, methodOpts);
-      }).then(({ result, jobId }) => {
+      }).then(({ result, jobId, jobStatus }) => {
         if (jobId) {
           logger.log(`Job ID ${jobId}`);
         } else if (result) {
           const { nInserted } = result;
           logger.log(
             `Server method ${methodName} succesfully inserted ${nInserted} elements`,
+          );
+        } else if (jobStatus) {
+          logger.log(
+            `Job status: ${jobStatus}`,
           );
         } else {
           logger.error('Undefined server response');
