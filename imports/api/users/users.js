@@ -102,5 +102,6 @@ export const setUsernamePassword = new ValidatedMethod({
       const jobStatus = 'ok';
       return { jobStatus };
     }
+    return null;
   },
 });

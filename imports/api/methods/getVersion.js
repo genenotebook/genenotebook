@@ -17,29 +17,7 @@ const getVersion = new ValidatedMethod({
   run() {
     let version = '...';
     if (!this.isSimulation) {
-      version = process.env.npm_package_version;
-      // console.log({ version });
-      /*
-      console.log({ process });
-      const { argv } = process;
-      const executable = argv[1];
-      const isProduction = executable
-        .split('/')
-        .slice(-1)
-        .pop() === 'genenotebook-run.js';
-
-      const splitPosition = isProduction ? -1 : -4;
-
-      const folder = executable
-        .split('/')
-        .slice(0, splitPosition)
-        .join('/');
-
-      const pkgFile = `${folder}/package.json`;
-
-      pkg = JSON.parse(fs.readFileSync(pkgFile));
-      version = pkg.version;
-      */
+      version = process.env.GNB_VERSION;
     }
     return version;
   },

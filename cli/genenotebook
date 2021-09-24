@@ -2,7 +2,7 @@
 /* eslint-disable no-underscore-dangle, no-console */
 
 const commander = require('commander');
-const fs = require('fs');
+// const fs = require('fs');
 const { Tail } = require('tail');
 const { spawn, exec } = require('child_process');
 const path = require('path');
@@ -84,7 +84,7 @@ function checkMongoLog(logPath) {
   });
 }
 
-function startMongoDaemon(dbPath, mongoPort) {
+function startMongoDaemon(dbPath, mongoPort, dbStartupTimeout = 10000) {
   const dataFolderPath = `${dbPath}/data`;
   const logFolderPath = `${dbPath}/log`;
   exec(`mkdir -p ${dataFolderPath} ${logFolderPath}`);
@@ -129,22 +129,17 @@ function startMongoDaemon(dbPath, mongoPort) {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(connection);
-    }, 10000);
+    }, dbStartupTimeout);
   });
 }
 
 async function startGeneNoteBook(cmd) {
   const {
-    port, rootUrl, mongoUrl, dbPath, mongoPort = 27017,
+    port, rootUrl, mongoUrl, dbPath, mongoPort = 27017, dbStartupTimeout,
   } = cmd.opts();
   const PORT = parseInt(port, 10) || 3000;
   const ROOT_URL = rootUrl || `http://localhost:${PORT}`;
-  const opts = { PORT, ROOT_URL };
-
-  if (fs.existsSync('settings.json') && !('METEOR_SETTINGS' in process.env)) {
-    const METEOR_SETTINGS = fs.readFileSync('settings.json', 'utf8');
-    Object.assign(opts, { METEOR_SETTINGS });
-  }
+  const opts = { PORT, ROOT_URL, GNB_VERSION: pkginfo.version };
 
   if (mongoUrl) {
     if (dbPath) {
@@ -155,6 +150,7 @@ async function startGeneNoteBook(cmd) {
     const { MONGO_URL, mongoDaemon } = await startMongoDaemon(
       path.resolve(dbPath || './db'),
       mongoPort,
+      dbStartupTimeout,
     );
     Object.assign(opts, { MONGO_URL });
     process.on('exit', function () {
@@ -191,6 +187,9 @@ program
   )
   .option(
     '--mongo-port [port]', 'Port on which the mongo daemon will serve. Default: 27017',
+  )
+  .option(
+    '--db-startup-timeout [timeout (ms)]', 'Timeout to wait for mongo daemon to start. Default 10,000ms',
   )
   .option(
     '-r, --root-url [url]',

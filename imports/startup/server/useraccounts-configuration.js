@@ -18,9 +18,9 @@ Accounts.onCreateUser((options, user) => {
 });
 
 Accounts.onLogout(({ user }) => {
-  logger.debug({ user });
+  logger.debug('logout', { user });
   if (user) {
-    logger.debug('logout', user._id);
+    logger.debug(`logout ${user.username} (${user._id})`);
     Meteor.users.update(
       {
         _id: user._id,
