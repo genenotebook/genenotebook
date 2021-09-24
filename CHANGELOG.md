@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 
 - Once again fixed version display
+- Popover menus
 
 ## [0.3.1] 2021-09-22
 
