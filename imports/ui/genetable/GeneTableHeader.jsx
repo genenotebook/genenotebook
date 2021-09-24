@@ -207,7 +207,7 @@ function HeaderElement({
                     })}
                   </div>
                   <hr className="dropdown-divider" />
-                  <div className={`dropdown-item query-wrapper ${hasQuery ? 'has-query' : ''}`}>
+                  <div className={`dropdown-item query-wrapper ${hasQuery && 'has-query'}`}>
                     <h6 className="is-h6 dropdown-item dropdown-header">
                       Filter:
                     </h6>

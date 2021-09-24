@@ -14,6 +14,9 @@ Accounts.onCreateUser((options, user) => {
       last_name: '',
     };
   }
+  if (typeof user.emails === 'undefined') {
+    user.emails = [];
+  }
   return user;
 });
 

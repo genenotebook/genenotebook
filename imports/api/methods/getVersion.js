@@ -1,12 +1,4 @@
-/* eslint-disable import/no-dynamic-require */
-// import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
-
-// import fs from 'fs';
-
-// import logger from '/imports/api/util/logger.js';
-
-// const pkg = {};
 
 const getVersion = new ValidatedMethod({
   name: 'getVersion',

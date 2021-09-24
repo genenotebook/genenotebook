@@ -7,7 +7,7 @@ import randomColor from 'randomcolor';
 import Color from 'color';
 
 import AttributeValue from '/imports/ui/genetable/columns/AttributeValue.jsx';
-
+import { Seq } from '/imports/ui/singleGenePage/Seq.jsx';
 import {
   Popover, PopoverTrigger, PopoverBody,
 } from '/imports/ui/util/Popover.jsx';
@@ -68,47 +68,43 @@ function IntervalInfo({
   ID, type, start, end, phase, attributes, seq,
 }) {
   return (
-    <nav className="panel">
-      <p className="panel-heading">
-        {ID}
-      </p>
-      <div className="panel-body">
-        <table className="table is-hoverable is-narrow is-small">
-          <tbody>
-            <tr>
-              <td>Type</td>
-              <td>{type}</td>
-            </tr>
-            <tr>
-              <td>Coordinates</td>
-              <td>{`${start}..${end}`}</td>
-            </tr>
-            <tr>
-              <td>Phase</td>
-              <td>{phase}</td>
-            </tr>
-            {Object
-              .entries(attributes)
-              .map(([attributeName, attributeValue]) => (
-                <tr key={attributeName}>
-                  <td>{attributeName}</td>
-                  <td>
-                    <AttributeValue attributeValue={attributeValue} />
-                  </td>
-                </tr>
-              ))}
-            <tr>
-              <td colSpan="2">
-                <h6>{`${type} sequence`}</h6>
-                <div className="card exon-sequence">
-                  <AttributeValue attributeValue={seq} />
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </nav>
+
+    <div className="panel-body">
+      <table className="table is-hoverable is-narrow is-small">
+        <tbody>
+          <tr>
+            <td>Type</td>
+            <td>{type}</td>
+          </tr>
+          <tr>
+            <td>Coordinates</td>
+            <td>{`${start}..${end}`}</td>
+          </tr>
+          <tr>
+            <td>Phase</td>
+            <td>{phase}</td>
+          </tr>
+          {Object
+            .entries(attributes)
+            .map(([attributeName, attributeValue]) => (
+              <tr key={attributeName}>
+                <td>{attributeName}</td>
+                <td>
+                  <AttributeValue attributeValue={attributeValue} />
+                </td>
+              </tr>
+            ))}
+          <tr>
+            <td colSpan="2">
+              <h6>{`${type} sequence`}</h6>
+              <div className="card exon-sequence">
+                <Seq header={ID} sequence={seq} maxLength={50} fontSize=".6rem" />
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   );
 }
 
@@ -143,10 +139,10 @@ function Exon({
           id={targetId}
         />
       </PopoverTrigger>
-      <PopoverBody>
+      <PopoverBody header={ID}>
         <IntervalInfo
           {...{
-            ID, type, start, end, phase, attributes, seq,
+            type, start, end, phase, attributes, seq,
           }}
         />
       </PopoverBody>
@@ -267,7 +263,7 @@ export default function Genemodel({
   const start = Math.max(0, gene.start - padding);
   const end = gene.end + padding;
 
-  const transcripts = gene.subfeatures.filter((subfeature) => subfeature.type === 'mRNA');
+  const transcripts = gene.subfeatures.filter(({ type }) => type === 'mRNA');
 
   const height = showXAxis
     ? 14 * transcripts.length + 46
@@ -293,7 +289,7 @@ export default function Genemodel({
           <h4 className="subtitle is-4">Genemodel</h4>
         </>
       )}
-      <div id="genemodel" className="card genemodel">
+      <div id={gene.ID} className="card genemodel">
         <svg width={width} height={height} className="genemodel-container">
           <GenemodelGroup gene={gene} transcripts={transcripts} width={width} scale={scale} />
           {showXAxis && (
