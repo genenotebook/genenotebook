@@ -86,6 +86,7 @@
     "prop-types": "^15.7.2",
     "randomcolor": "^0.6.0",
     "react": "^17.0.0",
+    "react-bio-viz": "0.0.7",
     "react-dom": "^17.0.0",
     "react-mounter": "^1.2.0",
     "react-popper": "^2.2.4",

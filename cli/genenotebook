@@ -67,6 +67,7 @@ class GeneNoteBookConnection {
         this.connection.disconnect();
       }).catch(({ error }) => {
         logger.error(error);
+        console.log(error);
         this.connection.disconnect();
       });
   }
@@ -340,7 +341,7 @@ addOrthogroups.description('Add Orthogroup phylogenetic trees to a running GeneN
     }
 
     new GeneNoteBookConnection({ username, password, port })
-      .call('addOrthogroups', { folderName });
+      .call('addOrthogroupTrees', { folderName });
   })
   .exitOverride(customExitOverride(addOrthogroups));
 

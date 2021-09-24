@@ -39,7 +39,7 @@ function addOrthogroups {
   ./cli/genenotebook add orthogroups -u admin -p admin testdata/testorthogroups
 }
 
-addGenome &&\
+# addGenome &&\
 addAnnotation &&\
 addInterproscan &&\
 addTranscriptomes &&\

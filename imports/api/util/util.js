@@ -204,15 +204,15 @@ const parseNewick = (newickString) => {
   let nNodes = 0;
   tokens.forEach((token, tokenIndex) => {
     switch (token) {
-      case '(': // new branchset
+      case '(': // new subtree (children of current tree)
         subtree = {};
-        tree.branchset = [subtree];
+        tree.children = [subtree];
         ancestors.push(tree);
         tree = subtree;
         break;
       case ',': // another branch
         subtree = {};
-        ancestors[ancestors.length - 1].branchset.push(subtree);
+        ancestors[ancestors.length - 1].children.push(subtree);
         tree = subtree;
         break;
       case ')': // optional name next

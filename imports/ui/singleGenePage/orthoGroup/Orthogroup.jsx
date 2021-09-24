@@ -3,11 +3,13 @@ import { withTracker } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
 
 import React from 'react';
-import ReactResizeDetector from 'react-resize-detector';
-import { cluster, hierarchy } from 'd3';
+// import ReactResizeDetector from 'react-resize-detector';
+// import { cluster, hierarchy } from 'd3';
 
 import { parseNewick } from '/imports/api/util/util.js';
 import { orthogroupCollection } from '/imports/api/genes/orthogroup_collection.js';
+
+import { Tree } from 'react-bio-viz';
 
 import {
   branch, compose, isLoading, Loading,
@@ -44,14 +46,14 @@ function orthogroupDataTracker({ gene, ...props }) {
     ...props,
   };
 }
-
+/*
 function TreeBranch({ node, chronogram = true }) {
   const offset = chronogram ? 0 : 20;
   const multiplier = chronogram ? 1 : -10;
   const value = chronogram ? 'y' : 'value';
   const style = { fill: 'none', stroke: 'black', strokeWidth: 1 };
-  const d = `M${offset + (node.parent[value] * multiplier)},${node.parent.x} 
-      L${offset + (node.parent[value] * multiplier)},${node.x} 
+  const d = `M${offset + (node.parent[value] * multiplier)},${node.parent.x}
+      L${offset + (node.parent[value] * multiplier)},${node.x}
       L${offset + (node[value] * multiplier)},${node.x}`;
   return <path d={d} style={style} />;
 }
@@ -120,6 +122,7 @@ function Tree({
     </div>
   );
 }
+*/
 
 function Header() {
   return (
@@ -135,7 +138,7 @@ function Orthogroup({ orthogroup, showHeader = false }) {
   return (
     <div id="orthogroup">
       {showHeader && <Header />}
-      <Tree tree={tree} size={size} />
+      <Tree tree={tree} height={size * 15} cladogram shadeBranchBySupport={false} />
     </div>
   );
 }
