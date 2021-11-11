@@ -10,9 +10,13 @@ body {
   }
 }
 
-.dropdown-item {
-  padding: 0 1rem 0 1rem !important;
+.dropdown-content {
+  .dropdown-item {
+    padding: 0 1rem .5rem 1rem !important;
+    margin: 0.25rem 0;
+  }
 }
+
 
 input[type='checkbox'], input[type='radio'] {
   margin-right: .5rem;

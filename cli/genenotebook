@@ -65,7 +65,7 @@ class GeneNoteBookConnection {
           logger.error('Undefined server response');
         }
         this.connection.disconnect();
-      }).catch(({ error }) => {
+      }).catch((error) => {
         logger.error(error);
         console.log(error);
         this.connection.disconnect();
@@ -228,7 +228,7 @@ addGenome.description('Add reference genome')
     const genomeName = name || fileName.split('/').pop();
 
     new GeneNoteBookConnection({ username, password, port })
-      .call('addGenome', { genomeName, fileName });
+      .call('addGenome', { genomeName, fileName, async: false });
   })
   .on('--help', function () {
     console.log(`
