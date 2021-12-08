@@ -396,7 +396,6 @@ createUser.description('Create a new user')
   .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
   .action((userName, passWord, { username, password, port = 3000 }) => {
     if (!(userName && passWord && username, password)) {
-      console.log('hi');
       createUser.help();
     }
 

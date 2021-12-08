@@ -92,15 +92,15 @@ export const setUsernamePassword = new ValidatedMethod({
       throw new Meteor.Error('not-authorized');
     }
 
-    const user = Accounts.findUserByUsername(userName)
+    const user = Accounts.findUserByUsername(userName);
     if (!user) {
       throw new Meteor.Error('not-found');
     }
 
     if (!this.isSimulation) {
       Accounts.setPassword(user._id, newPassword);
-      const jobStatus = "ok"
-      return { jobStatus }
+      const jobStatus = 'ok';
+      return { jobStatus };
     }
   },
 });
@@ -115,17 +115,19 @@ export const createUserAccount = new ValidatedMethod({
     noRetry: true,
   },
   run({ userName, passWord }) {
-    console.log('Create a new user !');
-    console.log('Username :', { userName });
-    console.log('Password :', { passWord });
-    // Accounts.createUser({ username, email, password }, (err) => {
-    //    if (err) {
-    //      setPassword('');
-    //      setPasswordRepeat('');
-    //      alert(err.reason);
-    //    } else {
-    //      setRedirect(true);
-    //    }
-    //  });
+    if (!Roles.userIsInRole(this.userId, 'admin')) {
+      throw new Meteor.Error('not-authorized');
+    }
+
+    const user = Accounts.findUserByUsername(userName);
+    if (!user) {
+      try {
+        Accounts.createUser({ username: userName, password: passWord });
+      } catch (e) {
+        throw new Meteor.Error(e);
+      }
+    } else {
+      throw new Meteor.Error('Username already exists.');
+    }
   },
 });
