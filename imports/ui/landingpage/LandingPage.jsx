@@ -125,6 +125,7 @@ function LandingPage() {
       <section className="hero is-small is-light is-bold">
         <div className="hero-body">
           <h1 className="title"> GeneNoteBook </h1>
+          <h1>Add cli test 1</h1>
           <h2 className="subtitle"> A collaborative notebook for genes and genomes </h2>
           <div className="box">
             <p className="font-weight-light">

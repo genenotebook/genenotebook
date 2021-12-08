@@ -84,7 +84,6 @@ export const setUsernamePassword = new ValidatedMethod({
     noRetry: true,
   },
   run({ userName, newPassword }) {
-
     if (!this.userId) {
       throw new Meteor.Error('not-autorized');
     }
@@ -103,5 +102,30 @@ export const setUsernamePassword = new ValidatedMethod({
       const jobStatus = "ok"
       return { jobStatus }
     }
+  },
+});
+
+export const createUserAccount = new ValidatedMethod({
+  name: 'createUserAccount',
+  validate: new SimpleSchema({
+    userName: String,
+    passWord: String,
+  }).validator(),
+  applyOptions: {
+    noRetry: true,
+  },
+  run({ userName, passWord }) {
+    console.log('Create a new user !');
+    console.log('Username :', { userName });
+    console.log('Password :', { passWord });
+    // Accounts.createUser({ username, email, password }, (err) => {
+    //    if (err) {
+    //      setPassword('');
+    //      setPasswordRepeat('');
+    //      alert(err.reason);
+    //    } else {
+    //      setRedirect(true);
+    //    }
+    //  });
   },
 });

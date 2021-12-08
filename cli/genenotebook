@@ -360,7 +360,7 @@ const user = program
   .usage('[command]');
 
 const setUserPassword = user
-    .command('setpassword')
+  .command('setpassword');
 
 setUserPassword.description('Set an user password')
   .usage('[options]')
@@ -368,8 +368,7 @@ setUserPassword.description('Set an user password')
   .requiredOption('-u, --username <adminUsername>', 'GeneNoteBook admin username')
   .requiredOption('-p, --password <adminPassword>', 'GeneNoteBook admin password')
   .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
-  .action((userName, newPassword, {username, password, port = 3000,}) => {
-
+  .action((userName, newPassword, { username, password, port = 3000 }) => {
     if (!(userName && newPassword && username && password)) {
       setUserPassword.help();
     }
@@ -385,5 +384,33 @@ Example:
   })
   .exitOverride(customExitOverride(setUserPassword));
 
+// Create and registre new user.
+const createUser = user
+  .command('createuser');
+
+createUser.description('Create a new user')
+  .usage('[option]')
+  .arguments('<username> <password>')
+  .requiredOption('-u, --username <adminUsername>', 'GeneNoteBook admin username')
+  .requiredOption('-p, --password <adminPassword>', 'GeneNoteBook admin password')
+  .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
+  .action((userName, passWord, { username, password, port = 3000 }) => {
+    if (!(userName && passWord && username, password)) {
+      console.log('hi');
+      createUser.help();
+    }
+
+    new GeneNoteBookConnection({ username, password, port })
+      .call('createUserAccount', { userName, passWord });
+  })
+  .on('--help', function () {
+    console.log(`
+Example:
+    genenotebook user createuser -u admin -p admin newUserName hisPassword
+    `);
+  })
+  .exitOverride();
+
+// Remove an user account.
 
 program.parse(process.argv);
