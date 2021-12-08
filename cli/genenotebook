@@ -411,5 +411,29 @@ Example:
   .exitOverride();
 
 // Remove an user account.
+const removeUser = user
+  .command('removeuser');
+
+removeUser.description('Remove an user account')
+  .usage('[option]')
+  .arguments('<username>')
+  .requiredOption('-u, --username <adminUsername>', 'GeneNoteBook admin username')
+  .requiredOption('-p, --password <adminPassword>', 'GeneNoteBook admin password')
+  .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
+  .action((userName, { username, password, port = 3000 }) => {
+    if (!(userName && username, password)) {
+      removeUser.help();
+    }
+
+    new GeneNoteBookConnection({ username, password, port })
+      .call('removeUserAccount', { userName });
+  })
+  .on('--help', function () {
+    console.log(`
+Example:
+    genenotebook user removeuser -u admin -p admin userName
+    `);
+  })
+  .exitOverride();
 
 program.parse(process.argv);

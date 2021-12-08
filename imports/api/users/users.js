@@ -131,3 +131,29 @@ export const createUserAccount = new ValidatedMethod({
     }
   },
 });
+
+export const removeUserAccount = new ValidatedMethod({
+  name: 'removeUserAccount',
+  validate: new SimpleSchema({
+    userName: String,
+  }).validator(),
+  applyOptions: {
+    noRetry: true,
+  },
+  run({ userName }) {
+    if (!Roles.userIsInRole(this.userId, 'admin')) {
+      throw new Meteor.Error('not-authorized to remove an user');
+    }
+
+    const user = Accounts.findUserByUsername(userName);
+    if (user) {
+      try {
+        Meteor.users.remove(user);
+      } catch (e) {
+        throw new Meteor.Error(e);
+      }
+    } else {
+      throw new Meteor.Error('undefined user');
+    }
+  },
+});
