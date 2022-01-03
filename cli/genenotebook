@@ -436,4 +436,24 @@ Example:
   })
   .exitOverride();
 
+// Bulk operations
+const bulkOperation = user
+  .command('bulk');
+
+bulkOperation.description('')
+  .usage('[option]')
+  .argument('<users.json')
+  .requiredOption('-bulk, --jsonfile <file.json>', 'The json file with user information')
+  .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
+  .action(() => {
+
+  })
+  .on('--help', function() {
+    console.log(`
+Example:
+    genenotebook user -u admin -p admin -bulk users.json
+   `);
+  })
+  .exitOverride();
+
 program.parse(process.argv);
