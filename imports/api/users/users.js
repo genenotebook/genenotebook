@@ -157,3 +157,16 @@ export const removeUserAccount = new ValidatedMethod({
     }
   },
 });
+
+export const bulkAccount = new ValidatedMethod({
+  name: 'bulkAccount',
+  validate: new SimpleSchema({
+    bulkJson: String,
+  }).validator(),
+  applyOptions: {
+    noRetry: true,
+  },
+  run({ bulkJson }) {
+
+  },
+});

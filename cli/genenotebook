@@ -440,18 +440,33 @@ Example:
 const bulkOperation = user
   .command('bulk');
 
-bulkOperation.description('')
+bulkOperation.description('Bulk operation')
   .usage('[option]')
-  .argument('<users.json')
-  .requiredOption('-bulk, --jsonfile <file.json>', 'The json file with user information')
+  .argument('<.json>')
+  .requiredOption('-u, --username <adminUsername>', 'GeneNoteBook admin username')
+  .requiredOption('-p, --password <adminPassword>', 'GeneNoteBook admin password')
   .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
-  .action(() => {
+  .action((bulkFile, { username, password, port = 3000 }) => {
+    if (!(bulkFile && username, password)) {
+      bulkOperation.help();
+    }
 
+    // Parse the .json file.
+    try {
+      const data = fs.readFileSync(bulkFile, 'utf8');
+
+
+
+      new GeneNoteBookConnection({ username, password, port })
+        .call('bulkAccount', JSON.parse(data));
+    } catch (err) {
+      console.log('Error: ENOENT: no such file : ', bulkFile);
+    }
   })
   .on('--help', function() {
     console.log(`
 Example:
-    genenotebook user -u admin -p admin -bulk users.json
+    genenotebook user bulk accounts.json -u admin -p admin
    `);
   })
   .exitOverride();
