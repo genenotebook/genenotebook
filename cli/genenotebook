@@ -405,7 +405,7 @@ createUser.description('Create a new user')
   .on('--help', function () {
     console.log(`
 Example:
-    genenotebook user createuser -u admin -p admin newUserName hisPassword
+    genenotebook user createuser newUserName hisPassword -u admin -p admin
     `);
   })
   .exitOverride();
@@ -431,18 +431,24 @@ removeUser.description('Remove an user account')
   .on('--help', function () {
     console.log(`
 Example:
-    genenotebook user removeuser -u admin -p admin userName
+    genenotebook user removeuser userName -u admin -p admin
     `);
   })
   .exitOverride();
 
+// Bulk operation.
+const bulk = program
+  .command('bulk [command]')
+  .description('Interact with GeneNoteBook users')
+  .usage('[command]');
+
 // Bulk operations
-const bulkOperation = user
-  .command('bulk');
+const bulkOperation = bulk
+  .command('json');
 
 bulkOperation.description('Bulk operation')
   .usage('[option]')
-  .argument('<.json>')
+  .argument('<path-to-json-file.json>')
   .requiredOption('-u, --username <adminUsername>', 'GeneNoteBook admin username')
   .requiredOption('-p, --password <adminPassword>', 'GeneNoteBook admin password')
   .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
@@ -451,22 +457,29 @@ bulkOperation.description('Bulk operation')
       bulkOperation.help();
     }
 
-    // Parse the .json file.
+    let data;
+
+    // Read the json file.
     try {
-      const data = fs.readFileSync(bulkFile, 'utf8');
-
-
-
-      new GeneNoteBookConnection({ username, password, port })
-        .call('bulkAccount', JSON.parse(data));
+      data = fs.readFileSync(bulkFile, 'utf8');
     } catch (err) {
       console.log('Error: ENOENT: no such file : ', bulkFile);
+      return;
     }
+
+    // Parse the json file.
+    const json = JSON.parse(data);
+    json.accounts.forEach((account) => {
+      const passWord = account.password;
+      const userName = account.username;
+      new GeneNoteBookConnection({ username, password, port })
+        .call('createUserAccount', { userName, passWord });
+    });
   })
   .on('--help', function() {
     console.log(`
 Example:
-    genenotebook user bulk accounts.json -u admin -p admin
+    genenotebook bulk json users.json -u admin -p admin
    `);
   })
   .exitOverride();
