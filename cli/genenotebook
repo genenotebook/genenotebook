@@ -357,7 +357,7 @@ const user = program
 
 const setUserPassword = user.command('setpassword');
 
-setUserPassword.description('Set an user password')
+setUserPassword.description('Set the password of a specific user')
   .usage('[options]')
   .arguments('<userName> <newPassword>')
   .requiredOption('-u, --username <adminUsername>',
@@ -382,5 +382,29 @@ Example:
   .exitOverride(customExitOverride(setUserPassword));
 
 const addUser = user.command('add');
+
+addUser.description('Add a user account')
+  .usage('[options]')
+  .arguments('<newUserName> <newPassword>')
+  .requiredOption('-u, --username <adminUsername>',
+    'GeneNoteBook admin username')
+  .requiredOption('-p, --password <adminPassword>',
+    'GeneNoteBook admin password')
+  .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
+  .action((userName, newPassword, { username, password, port = 3000 }) => {
+    if (!(userName && newPassword && username && password)) {
+      addUser.help();
+    }
+
+    new GeneNoteBookConnection({ username, password, port })
+      .call('addUser', { userName, newPassword });
+  })
+  .on('--help', function () {
+    console.log(`
+Example:
+    genenotebook user add -u admin -p admin newUserName newPassword
+    `);
+  })
+  .exitOverride(customExitOverride(addUser));
 
 program.parse(process.argv);
