@@ -362,7 +362,7 @@ const user = program
 const setUserPassword = user
   .command('setpassword');
 
-setUserPassword.description('Set an user password')
+setUserPassword.description('Set the password of a specific user')
   .usage('[options]')
   .arguments('<userName> <newPassword>')
   .requiredOption('-u, --username <adminUsername>', 'GeneNoteBook admin username')
@@ -384,37 +384,53 @@ Example:
   })
   .exitOverride(customExitOverride(setUserPassword));
 
-// Create and registre new user.
-const createUser = user
-  .command('createuser');
+// Create new user account.
+const addUser = user
+  .command('add');
 
-createUser.description('Create a new user')
+addUser.description('Add a new user account')
   .usage('[option]')
-  .arguments('<username> <password>')
+  .arguments('<newUserName> <newPassword>')
   .requiredOption('-u, --username <adminUsername>', 'GeneNoteBook admin username')
   .requiredOption('-p, --password <adminPassword>', 'GeneNoteBook admin password')
   .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
-  .action((userName, passWord, { username, password, port = 3000 }) => {
-    if (!(userName && passWord && username, password)) {
-      createUser.help();
+  .option('-e, --email [email]', 'User email')
+  .option('-f, --first-name <userFirstName>', 'User first name')
+  .option('-l, --last-name <userLastName>', 'User last name')
+  .option('-r, --role <userRole>', 'User role e.g: registered, user, curator, admin')
+  .action((userName, newPassword, {
+    username, password, port = 3000, ...opts
+  }) => {
+    if (!(userName && newPassword && username, password)) {
+      addUser.help();
     }
 
     new GeneNoteBookConnection({ username, password, port })
-      .call('createUserAccount', { userName, passWord });
+      .call('addUser', {
+        userName,
+        newPassword,
+        userEmail: opts.email,
+        userFirstName: opts.firstName,
+        userLastName: opts.lastName,
+      });
   })
   .on('--help', function () {
     console.log(`
 Example:
-    genenotebook user createuser newUserName hisPassword -u admin -p admin
+    genenotebook user add newUserName newPassword -u admin -p admin
+or
+    genenotebook user add newUserName new Password -e userMail -f userFirstName -l userLastName -r userRole -u admin -p admin
+or
+    genenotebook user add newUserName new Password --email userMail --first-name userFirstName --last-name userLastName --role userRole -u admin -p admin
     `);
   })
   .exitOverride();
 
-// Remove an user account.
+// Remove a user account.
 const removeUser = user
-  .command('removeuser');
+  .command('rm');
 
-removeUser.description('Remove an user account')
+removeUser.description('Remove a user account')
   .usage('[option]')
   .arguments('<username>')
   .requiredOption('-u, --username <adminUsername>', 'GeneNoteBook admin username')
@@ -442,7 +458,7 @@ const bulk = program
   .description('Interact with GeneNoteBook users')
   .usage('[command]');
 
-// Bulk operations
+// Bulk operations.
 const bulkOperation = bulk
   .command('json');
 
@@ -470,10 +486,18 @@ bulkOperation.description('Bulk operation')
     // Parse the json file.
     const json = JSON.parse(data);
     json.accounts.forEach((account) => {
-      const passWord = account.password;
-      const userName = account.username;
       new GeneNoteBookConnection({ username, password, port })
-        .call('createUserAccount', { userName, passWord });
+        .call('addUser', {
+          userName: account.username,
+          userEmail: account.email,
+          passWord: account.password,
+        }, (err, res) => {
+          if (err) {
+            logger.error(err);
+          } else {
+            console.log(res);
+          }
+        });
     });
   })
   .on('--help', function() {

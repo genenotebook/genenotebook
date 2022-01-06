@@ -105,24 +105,45 @@ export const setUsernamePassword = new ValidatedMethod({
   },
 });
 
-export const createUserAccount = new ValidatedMethod({
-  name: 'createUserAccount',
+export const addUser = new ValidatedMethod({
+  name: 'addUser',
   validate: new SimpleSchema({
     userName: String,
-    passWord: String,
+    newPassword: String,
+    userEmail: String,
+    userFirstName: String,
+    userLastName: String,
   }).validator(),
   applyOptions: {
     noRetry: true,
   },
-  run({ userName, passWord }) {
+  run({
+    userName,
+    passWord,
+    userEmail,
+    userFirstName,
+    userLastName,
+  }) {
     if (!Roles.userIsInRole(this.userId, 'admin')) {
       throw new Meteor.Error('not-authorized');
     }
 
-    const user = Accounts.findUserByUsername(userName);
-    if (!user) {
+    if (!Accounts.findUserByUsername(userName)) {
       try {
-        Accounts.createUser({ username: userName, password: passWord });
+        // Create user account.
+        const userId = Accounts.createUser({
+          username: userName,
+          email: userEmail,
+          password: passWord,
+        });
+
+        // Update user profile.
+        Meteor.users.update({ _id: userId }, {
+          $set: {
+            'profile.first_name': userFirstName,
+            'profile.last_name': userLastName,
+          },
+        });
       } catch (e) {
         throw new Meteor.Error(e);
       }
