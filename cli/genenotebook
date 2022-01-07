@@ -419,9 +419,9 @@ addUser.description('Add a new user account')
 Example:
     genenotebook user add newUserName newPassword -u admin -p admin
 or
-    genenotebook user add newUserName new Password -e userMail -f userFirstName -l userLastName -r userRole -u admin -p admin
+    genenotebook user add newUserName newPassword -e userMail -f userFirstName -l userLastName -r userRole -u admin -p admin
 or
-    genenotebook user add newUserName new Password --email userMail --first-name userFirstName --last-name userLastName --role userRole -u admin -p admin
+    genenotebook user add newUserName newPassword --email userMail --first-name userFirstName --last-name userLastName --role userRole -u admin -p admin
     `);
   })
   .exitOverride();
