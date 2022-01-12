@@ -113,6 +113,7 @@ export const addUser = new ValidatedMethod({
     userEmail: String,
     userFirstName: String,
     userLastName: String,
+    userRole: String,
   }).validator(),
   applyOptions: {
     noRetry: true,
@@ -123,12 +124,15 @@ export const addUser = new ValidatedMethod({
     userEmail,
     userFirstName,
     userLastName,
+    userRole,
   }) {
     if (!Roles.userIsInRole(this.userId, 'admin')) {
       throw new Meteor.Error('not-authorized');
     }
 
-    if (!Accounts.findUserByUsername(userName)) {
+    const user = Accounts.findUserByUsername(userName);
+
+    if (!user) {
       try {
         // Create user account.
         const userId = Accounts.createUser({
@@ -144,11 +148,29 @@ export const addUser = new ValidatedMethod({
             'profile.last_name': userLastName,
           },
         });
+
+        // Update role.
+        if (userRole) {
+          Roles.setUserRoles(userId, userRole);
+        }
       } catch (e) {
         throw new Meteor.Error(e);
       }
     } else {
-      throw new Meteor.Error('Username already exists.');
+      // Update user.
+      Meteor.users.update({ _id: user }, {
+        $set: {
+          userName,
+          userEmail,
+          'profile.first_name': userFirstName,
+          'profile.last_name': userLastName,
+        },
+      });
+
+      // Update role.
+      if (userRole) {
+        Roles.setUserRoles(user, userRole);
+      }
     }
   },
 });

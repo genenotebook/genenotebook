@@ -447,7 +447,7 @@ removeUser.description('Remove a user account')
   .on('--help', function () {
     console.log(`
 Example:
-    genenotebook user removeuser userName -u admin -p admin
+    genenotebook user rm userName -u admin -p admin
     `);
   })
   .exitOverride();
@@ -473,15 +473,13 @@ bulkOperation.description('Bulk operation')
       bulkOperation.help();
     }
 
-    let data;
-
     // Read the json file.
-    try {
-      data = fs.readFileSync(bulkFile, 'utf8');
-    } catch (err) {
-      console.log('Error: ENOENT: no such file : ', bulkFile);
-      return;
-    }
+    const data = fs.readFile(bulkFile, 'utf8', (err) => {
+      if (err) {
+        logger.error(err);
+        return;
+      }
+    });
 
     // Parse the json file.
     const json = JSON.parse(data);
@@ -491,6 +489,9 @@ bulkOperation.description('Bulk operation')
           userName: account.username,
           userEmail: account.email,
           passWord: account.password,
+          userFirstName: account.profile.first_name,
+          userLastName: account.profile.last_name,
+          userRole: account.role,
         }, (err, res) => {
           if (err) {
             logger.error(err);
