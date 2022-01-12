@@ -405,13 +405,24 @@ addUser.description('Add a new user account')
       addUser.help();
     }
 
+    const email = (opts.email === 'undefined' ? opts.email : '');
+    const firstname = (opts.firstName === 'undefined' ? opts.firstName : '');
+    const lastname = (opts.lastName === 'undefined' ? opts.lastName : '');
+    const role = (opts.role === 'undefined' ? opts.role : 'guest');
+
+    console.log('email :', email);
+    console.log('first name', firstname);
+    console.log('last name', lastname);
+    console.log('role', role);
+
     new GeneNoteBookConnection({ username, password, port })
       .call('addUser', {
         userName,
         newPassword,
-        userEmail: opts.email,
-        userFirstName: opts.firstName,
-        userLastName: opts.lastName,
+        userEmail: email,
+        userFirstName: firstname,
+        userLastName: lastname,
+        userRole: role,
       });
   })
   .on('--help', function () {
@@ -474,10 +485,9 @@ bulkOperation.description('Bulk operation')
     }
 
     // Read the json file.
-    const data = fs.readFile(bulkFile, 'utf8', (err) => {
+    const data = fs.readFileSync(bulkFile, 'utf8', (err) => {
       if (err) {
         logger.error(err);
-        return;
       }
     });
 
