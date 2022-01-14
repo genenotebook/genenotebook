@@ -50,6 +50,53 @@ export const updateUserInfo = new ValidatedMethod({
   },
 });
 
+export const editUserInfo = new ValidatedMethod({
+  name: 'editUserInfo',
+  validate: new SimpleSchema({
+    username: String,
+    profile: {
+      type: Object,
+    },
+    'profile.first_name': {
+      type: String,
+      optional: true,
+    },
+    'profile.last_name': {
+      type: String,
+      optional: true,
+    },
+    // emails: Array,
+    // 'emails.$': Object,
+    // 'emails.$.address': String,
+    // 'emails.$.verified': Boolean,
+  }).validator(),
+  applyOptions: {
+    noRetry: true,
+  },
+  run({
+    username, profile,
+  }) {
+    if (!Roles.userIsInRole(this.userId, 'admin')) {
+      throw new Meteor.Error('not-authorized');
+    }
+
+    const userId = Accounts.findUserByUsername(username);
+    if (!userId) {
+      throw new Meteor.Error(`Cannot find a user with the name : ${username} .`);
+    }
+
+    Meteor.users.update(userId, {
+      $set: {
+        'profile.first_name': profile.first_name,
+        'profile.last_name': profile.last_name,
+      },
+    });
+
+    const jobStatus = `Success to edit the ${username} user account.`;
+    return { jobStatus };
+  },
+});
+
 export const setUserPassword = new ValidatedMethod({
   name: 'setUserPassword',
   validate: new SimpleSchema({
@@ -120,7 +167,7 @@ export const addUser = new ValidatedMethod({
   },
   run({
     userName,
-    passWord,
+    newPassword,
     userEmail,
     userFirstName,
     userLastName,
@@ -130,48 +177,27 @@ export const addUser = new ValidatedMethod({
       throw new Meteor.Error('not-authorized');
     }
 
-    const user = Accounts.findUserByUsername(userName);
+    if (!Accounts.findUserByUsername(userName)) {
+      const userId = Accounts.createUser({
+        username: userName,
+        email: userEmail,
+        password: newPassword,
+      });
 
-    if (!user) {
-      try {
-        // Create user account.
-        const userId = Accounts.createUser({
-          username: userName,
-          email: userEmail,
-          password: passWord,
-        });
-
-        // Update user profile.
-        Meteor.users.update({ _id: userId }, {
-          $set: {
-            'profile.first_name': userFirstName,
-            'profile.last_name': userLastName,
-          },
-        });
-
-        // Update role.
-        if (userRole) {
-          Roles.setUserRoles(userId, userRole);
-        }
-      } catch (e) {
-        throw new Meteor.Error(e);
-      }
-    } else {
-      // Update user.
-      Meteor.users.update({ _id: user }, {
+      Meteor.users.update({ _id: userId }, {
         $set: {
-          userName,
-          userEmail,
           'profile.first_name': userFirstName,
           'profile.last_name': userLastName,
         },
       });
 
-      // Update role.
-      if (userRole) {
-        Roles.setUserRoles(user, userRole);
-      }
+      Roles.setUserRoles(userId, userRole);
+    } else {
+      throw new Meteor.Error('Username already exists.');
     }
+
+    const jobStatus = `Success to create the ${userName} user account.`;
+    return { jobStatus };
   },
 });
 
@@ -198,5 +224,8 @@ export const removeUserAccount = new ValidatedMethod({
     } else {
       throw new Meteor.Error('undefined user');
     }
+
+    const jobStatus = `Success to remove ${userName} account.`;
+    return { jobStatus };
   },
 });
