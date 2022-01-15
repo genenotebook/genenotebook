@@ -483,28 +483,29 @@ editUser.description('Edit or update the information of a user account.')
       editUser.help();
     }
 
-    const editProfile = {
-      first_name: opts.firstName,
-      last_name: opts.lastName,
-    };
-
-    // const editEmail = [
-    //   {
-    //     address: 'ok@a.com',
-    //     verified: false,
-    //   },
-    // ];
-
     new GeneNoteBookConnection({ username, password, port })
       .call('editUserInfo', {
         username: userName,
-        profile: editProfile,
+        profile: {
+          first_name: opts.firstName,
+          last_name: opts.lastName,
+        },
+        emails: [
+          {
+            address: opts.email,
+            verified: false,
+          },
+        ],
       });
   })
   .on('--help', function () {
     console.log(`
 Example:
     genenotebook user edit userName -u admin -p admin
+or
+    genenotebook user edit userName -e userMail -f userFirstName -l userLastName  -u admin -p admin
+or
+    genenotebook user edit userName --email userMail --first-name userFirstName --last-name userLastName -u admin -p admin
     `);
   })
   .exitOverride();

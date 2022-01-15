@@ -65,16 +65,27 @@ export const editUserInfo = new ValidatedMethod({
       type: String,
       optional: true,
     },
-    // emails: Array,
-    // 'emails.$': Object,
-    // 'emails.$.address': String,
-    // 'emails.$.verified': Boolean,
+    emails: {
+      type: Array,
+      optional: true,
+    },
+    'emails.$': {
+      type: Object,
+    },
+    'emails.$.address': {
+      type: String,
+      optional: true,
+    },
+    'emails.$.verified': {
+      type: Boolean,
+      optional: true,
+    },
   }).validator(),
   applyOptions: {
     noRetry: true,
   },
   run({
-    username, profile,
+    username, profile, emails,
   }) {
     if (!Roles.userIsInRole(this.userId, 'admin')) {
       throw new Meteor.Error('not-authorized');
@@ -89,6 +100,8 @@ export const editUserInfo = new ValidatedMethod({
       $set: {
         'profile.first_name': profile.first_name,
         'profile.last_name': profile.last_name,
+        'emails.0.address': emails[0].address,
+        'emails.0.verified': emails[0].verified,
       },
     });
 
