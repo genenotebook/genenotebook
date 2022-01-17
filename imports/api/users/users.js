@@ -54,9 +54,7 @@ export const editUserInfo = new ValidatedMethod({
   name: 'editUserInfo',
   validate: new SimpleSchema({
     username: String,
-    profile: {
-      type: Object,
-    },
+    profile: Object,
     'profile.first_name': {
       type: String,
       optional: true,
@@ -69,15 +67,10 @@ export const editUserInfo = new ValidatedMethod({
       type: Array,
       optional: true,
     },
-    'emails.$': {
-      type: Object,
-    },
+    'emails.$': Object,
     'emails.$.address': {
       type: String,
-      optional: true,
-    },
-    'emails.$.verified': {
-      type: Boolean,
+      regEx: SimpleSchema.RegEx.Email,
       optional: true,
     },
   }).validator(),
@@ -93,7 +86,7 @@ export const editUserInfo = new ValidatedMethod({
 
     const userId = Accounts.findUserByUsername(username);
     if (!userId) {
-      throw new Meteor.Error(`Cannot find a user with the name : ${username} .`);
+      throw new Meteor.Error(`Cannot find a user with the name : ${username}.`);
     }
 
     Meteor.users.update(userId, {
@@ -101,7 +94,7 @@ export const editUserInfo = new ValidatedMethod({
         'profile.first_name': profile.first_name,
         'profile.last_name': profile.last_name,
         'emails.0.address': emails[0].address,
-        'emails.0.verified': emails[0].verified,
+        'emails.0.verified': false,
       },
     });
 
@@ -170,10 +163,23 @@ export const addUser = new ValidatedMethod({
   validate: new SimpleSchema({
     userName: String,
     newPassword: String,
-    userEmail: String,
-    userFirstName: String,
-    userLastName: String,
-    userRole: String,
+    userEmail: {
+      type: String,
+      optional: true,
+    },
+    userFirstName: {
+      type: String,
+      optional: true,
+    },
+    userLastName: {
+      type: String,
+      optional: true,
+    },
+    userRole: {
+      type: String,
+      allowedValues: ROLES,
+      optional: true,
+    },
   }).validator(),
   applyOptions: {
     noRetry: true,
@@ -191,20 +197,37 @@ export const addUser = new ValidatedMethod({
     }
 
     if (!Accounts.findUserByUsername(userName)) {
-      const userId = Accounts.createUser({
-        username: userName,
-        email: userEmail,
-        password: newPassword,
-      });
+      if (userEmail) {
+        const userId = Accounts.createUser({
+          username: userName,
+          email: userEmail,
+          password: newPassword,
+        });
 
-      Meteor.users.update({ _id: userId }, {
-        $set: {
-          'profile.first_name': userFirstName,
-          'profile.last_name': userLastName,
-        },
-      });
+        Meteor.users.update({ _id: userId }, {
+          $set: {
+            'profile.first_name': userFirstName,
+            'profile.last_name': userLastName,
+          },
+        });
 
-      Roles.setUserRoles(userId, userRole);
+        Roles.setUserRoles(userId, userRole);
+      } else {
+        const userId = Accounts.createUser({
+          username: userName,
+          password: newPassword,
+        });
+
+        Meteor.users.update({ _id: userId }, {
+          $set: {
+            'profile.first_name': userFirstName,
+            'profile.last_name': userLastName,
+            'emails': [],
+          },
+        });
+
+        Roles.setUserRoles(userId, userRole);
+      }
     } else {
       throw new Meteor.Error('Username already exists.');
     }
