@@ -167,7 +167,10 @@ export const addUser = new ValidatedMethod({
       type: String,
       optional: true,
     },
-    profile: Object,
+    profile: {
+      type: Object,
+      optional: true,
+    },
     'profile.first_name': {
       type: String,
       optional: true,
@@ -179,7 +182,6 @@ export const addUser = new ValidatedMethod({
     role: {
       type: String,
       allowedValues: ROLES,
-      optional: true,
     },
   }).validator(),
   applyOptions: {
