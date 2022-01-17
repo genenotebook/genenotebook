@@ -54,7 +54,10 @@ export const editUserInfo = new ValidatedMethod({
   name: 'editUserInfo',
   validate: new SimpleSchema({
     username: String,
-    profile: Object,
+    profile: {
+      type: Object,
+      optional: true,
+    },
     'profile.first_name': {
       type: String,
       optional: true,
@@ -89,14 +92,18 @@ export const editUserInfo = new ValidatedMethod({
       throw new Meteor.Error(`Cannot find a user with the name : ${username}.`);
     }
 
-    Meteor.users.update(userId, {
-      $set: {
-        'profile.first_name': profile.first_name,
-        'profile.last_name': profile.last_name,
-        'emails.0.address': emails[0].address,
-        'emails.0.verified': false,
-      },
-    });
+    try {
+      Meteor.users.update(userId, {
+        $set: {
+          'profile.first_name': profile.first_name,
+          'profile.last_name': profile.last_name,
+          'emails.0.address': emails[0].address,
+          'emails.0.verified': false,
+        },
+      });
+    } catch (err) {
+      throw new Meteor.Error(JSON.stringify(err));
+    }
 
     const jobStatus = `Success to edit the ${username} user account.`;
     return { jobStatus };
@@ -188,11 +195,7 @@ export const addUser = new ValidatedMethod({
     noRetry: true,
   },
   run({
-    userName,
-    newPassword,
-    emails,
-    profile,
-    role,
+    userName, newPassword, emails, profile, role,
   }) {
     if (!Roles.userIsInRole(this.userId, 'admin')) {
       throw new Meteor.Error('not-authorized');
@@ -245,8 +248,8 @@ export const removeUserAccount = new ValidatedMethod({
     if (user) {
       try {
         Meteor.users.remove(user);
-      } catch (e) {
-        throw new Meteor.Error(e);
+      } catch (err) {
+        throw new Meteor.Error(err);
       }
     } else {
       throw new Meteor.Error('undefined user');
