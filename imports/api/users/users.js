@@ -163,19 +163,20 @@ export const addUser = new ValidatedMethod({
   validate: new SimpleSchema({
     userName: String,
     newPassword: String,
-    userEmail: {
+    emails: {
       type: String,
       optional: true,
     },
-    userFirstName: {
+    profile: Object,
+    'profile.first_name': {
       type: String,
       optional: true,
     },
-    userLastName: {
+    'profile.last_name': {
       type: String,
       optional: true,
     },
-    userRole: {
+    role: {
       type: String,
       allowedValues: ROLES,
       optional: true,
@@ -187,46 +188,34 @@ export const addUser = new ValidatedMethod({
   run({
     userName,
     newPassword,
-    userEmail,
-    userFirstName,
-    userLastName,
-    userRole,
+    emails,
+    profile,
+    role,
   }) {
     if (!Roles.userIsInRole(this.userId, 'admin')) {
       throw new Meteor.Error('not-authorized');
     }
 
     if (!Accounts.findUserByUsername(userName)) {
-      if (userEmail) {
+      if (emails) {
         const userId = Accounts.createUser({
           username: userName,
-          email: userEmail,
+          email: emails,
           password: newPassword,
+          profile,
         });
 
-        Meteor.users.update({ _id: userId }, {
-          $set: {
-            'profile.first_name': userFirstName,
-            'profile.last_name': userLastName,
-          },
-        });
-
-        Roles.setUserRoles(userId, userRole);
+        Roles.setUserRoles(userId, role);
       } else {
         const userId = Accounts.createUser({
           username: userName,
           password: newPassword,
+          profile,
         });
 
-        Meteor.users.update({ _id: userId }, {
-          $set: {
-            'profile.first_name': userFirstName,
-            'profile.last_name': userLastName,
-            'emails': [],
-          },
-        });
+        Meteor.users.update({ _id: userId }, { $set: { 'emails': [] } });
 
-        Roles.setUserRoles(userId, userRole);
+        Roles.setUserRoles(userId, role);
       }
     } else {
       throw new Meteor.Error('Username already exists.');

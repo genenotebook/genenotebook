@@ -405,16 +405,18 @@ addUser.description('Add a new user account')
       addUser.help();
     }
 
-    const role = (opts.role === undefined ? 'registered' : opts.role);
+    const userRole = (opts.role === undefined ? 'registered' : opts.role);
 
     new GeneNoteBookConnection({ username, password, port })
       .call('addUser', {
         userName,
         newPassword,
-        userEmail: opts.email,
-        userFirstName: opts.firstName,
-        userLastName: opts.lastName,
-        userRole: role,
+        emails: opts.email,
+        profile: {
+          first_name: opts.firstName,
+          last_name: opts.lastName,
+        },
+        role: userRole,
       });
   })
   .on('--help', function () {
