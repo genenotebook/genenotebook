@@ -168,10 +168,11 @@ export const setUsernamePassword = new ValidatedMethod({
 export const addUser = new ValidatedMethod({
   name: 'addUser',
   validate: new SimpleSchema({
-    userName: String,
-    newPassword: String,
+    userName: { type: String },
+    newPassword: { type: String },
     emails: {
       type: String,
+      regEx: SimpleSchema.RegEx.Email,
       optional: true,
     },
     profile: {
@@ -234,25 +235,29 @@ export const addUser = new ValidatedMethod({
 export const removeUserAccount = new ValidatedMethod({
   name: 'removeUserAccount',
   validate: new SimpleSchema({
-    userName: String,
+    userName: { type: String },
   }).validator(),
   applyOptions: {
     noRetry: true,
   },
   run({ userName }) {
     if (!Roles.userIsInRole(this.userId, 'admin')) {
-      throw new Meteor.Error('not-authorized to remove an user');
+      throw new Meteor.Error('not-authorized to remove a user');
     }
 
     const user = Accounts.findUserByUsername(userName);
     if (user) {
-      try {
-        Meteor.users.remove(user);
-      } catch (err) {
-        throw new Meteor.Error(err);
+      if (user._id === this.userId && Roles.getUsersInRole('admin').count() === 1) {
+        throw new Meteor.Error('Impossible to delete yourself because you are the only admin of genenotebook.');
+      } else {
+        try {
+          Meteor.users.remove(user);
+        } catch (err) {
+          throw new Meteor.Error(err);
+        }
       }
     } else {
-      throw new Meteor.Error('undefined user');
+      throw new Meteor.Error(`Cannot find a user with the name : ${userName}.`);
     }
 
     const jobStatus = `Success to remove ${userName} account.`;

@@ -461,7 +461,7 @@ Example:
 const editUser = user
   .command('edit');
 
-editUser.description('Edit or update the information of a user account.')
+editUser.description('Edit the information of a user account.')
   .usage('[option]')
   .arguments('<username>')
   .requiredOption('-u, --username <adminUsername>', 'GeneNoteBook admin username')
@@ -499,17 +499,16 @@ or
   })
   .exitOverride();
 
-// Bulk operation.
+// Bulk operations.
 const bulk = program
   .command('bulk [command]')
   .description('Interact with GeneNoteBook users')
   .usage('[command]');
 
-// Bulk operations.
 const bulkOperation = bulk
   .command('json');
 
-bulkOperation.description('Bulk operation')
+bulkOperation.description('Bulk user operation')
   .usage('[option]')
   .argument('<path-to-json-file.json>')
   .requiredOption('-u, --username <adminUsername>', 'GeneNoteBook admin username')
@@ -520,30 +519,19 @@ bulkOperation.description('Bulk operation')
       bulkOperation.help();
     }
 
-    // Read the json file.
-    const data = fs.readFileSync(bulkFile, 'utf8', (err) => {
-      if (err) {
-        logger.error(err);
-      }
-    });
+    const data = JSON.parse(fs.readFileSync(bulkFile, 'utf8'));
 
-    // Parse the json file.
-    const json = JSON.parse(data);
-    json.accounts.forEach((account) => {
+    data.accounts.forEach((account) => {
       new GeneNoteBookConnection({ username, password, port })
         .call('addUser', {
           userName: account.username,
-          userEmail: account.email,
-          passWord: account.password,
-          userFirstName: account.profile.first_name,
-          userLastName: account.profile.last_name,
-          userRole: account.role,
-        }, (err, res) => {
-          if (err) {
-            logger.error(err);
-          } else {
-            console.log(res);
-          }
+          newPassword: account.password,
+          emails: account.email,
+          profile: {
+            first_name: account.profile.first_name,
+            last_name: account.profile.last_name,
+          },
+          role: account.role,
         });
     });
   })
