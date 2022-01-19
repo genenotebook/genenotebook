@@ -15,16 +15,15 @@ const addGenome = new ValidatedMethod({
   validate: new SimpleSchema({
     fileName: String,
     genomeName: String,
+    async: Boolean,
   }).validator(),
   applyOptions: {
-    // noRetry: true,
     onResultReceived: (err, res) => {
       if (err) logger.error(err);
-      console.log({ res });
       return res;
     },
   },
-  run({ fileName, genomeName }) {
+  run({ fileName, genomeName, async }) {
     if (!this.userId) {
       throw new Meteor.Error('not-authorized');
     }
@@ -41,13 +40,17 @@ const addGenome = new ValidatedMethod({
 
     const job = new Job(jobQueue, 'addGenome', { fileName, genomeName });
     const jobId = job.priority('high').save();
+    if (async) return { jobId };
 
-    const { isServer, isClient } = Meteor;
-    console.log({
-      isServer, isClient, jobId,
-    });
+    // Continue with synchronous processing
+    let { status } = job.doc;
+    logger.debug(`Job status: ${status}`);
+    while (status !== 'completed') {
+      const { doc } = job.refresh();
+      status = doc.status;
+    }
 
-    return { jobId };
+    return { result: job.doc.result };
   },
 });
 

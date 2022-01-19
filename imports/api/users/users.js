@@ -138,7 +138,7 @@ export const setUserPassword = new ValidatedMethod({
     }
 
     if (!this.isSimulation) {
-      return Accounts.setPassword(userId, newPassword);
+      Accounts.setPassword(userId, newPassword);
     }
   },
 });
@@ -171,6 +171,7 @@ export const setUsernamePassword = new ValidatedMethod({
       const jobStatus = 'ok';
       return { jobStatus };
     }
+    return null;
   },
 });
 

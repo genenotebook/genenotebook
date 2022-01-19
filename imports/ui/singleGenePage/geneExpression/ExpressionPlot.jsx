@@ -156,32 +156,29 @@ function ExpressionDot({
           fill="white"
         />
       </PopoverTrigger>
-      <PopoverBody>
-        <nav className="panel">
-          <p className="panel-heading">{sampleName}</p>
-          <div className="panel-block">
-            <table className="table is-small is-narrow is-hoverable">
-              <tbody>
-                <tr>
-                  <td>TPM</td>
-                  <td>{tpm}</td>
-                </tr>
-                <tr>
-                  <td>EST counts</td>
-                  <td>{est_counts}</td>
-                </tr>
-                <tr>
-                  <td>Description</td>
-                  <td>{description}</td>
-                </tr>
-                <tr>
-                  <td>Replica group</td>
-                  <td>{replicaGroup}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </nav>
+      <PopoverBody header={sampleName}>
+        <div className="panel-block">
+          <table className="table is-small is-narrow is-hoverable">
+            <tbody>
+              <tr>
+                <td>TPM</td>
+                <td>{tpm}</td>
+              </tr>
+              <tr>
+                <td>EST counts</td>
+                <td>{est_counts}</td>
+              </tr>
+              <tr>
+                <td>Description</td>
+                <td>{description}</td>
+              </tr>
+              <tr>
+                <td>Replica group</td>
+                <td>{replicaGroup}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </PopoverBody>
     </Popover>
   );

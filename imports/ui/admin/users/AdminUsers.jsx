@@ -22,7 +22,7 @@ function adminUsersDataTracker() {
 
 function AdminUserInfo({ user }) {
   const {
-    _id, username, emails, profile, createdAt,
+    _id, username, emails = [], profile, createdAt,
   } = user;
   const { first_name, last_name } = profile;
   const roles = Roles.getRolesForUser(_id);

@@ -7,9 +7,24 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [0.3.1] 2021-09-22
+### Added
+
+- User accounts can be added/changed/removed from the CLI
+- `--dbStartupTimeout` option to `genenotebook run` to allow specifying how long to wait for the mongo daemon to start
+
+### Changed
+
+- Removed `settings.json`
+- Phylogenetic tree now made with react-bio-viz
 
 ### Fixed
+
+- Once again fixed version display
+- Popover menus
+
+## [0.3.1] 2021-09-22
+
+### Changed
 
 - settings.json is now properly copied to production builds
 

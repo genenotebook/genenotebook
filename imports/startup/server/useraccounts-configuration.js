@@ -14,13 +14,16 @@ Accounts.onCreateUser((options, user) => {
       last_name: '',
     };
   }
+  if (typeof user.emails === 'undefined') {
+    user.emails = [];
+  }
   return user;
 });
 
 Accounts.onLogout(({ user }) => {
-  logger.debug({ user });
+  logger.debug('logout', { user });
   if (user) {
-    logger.debug('logout', user._id);
+    logger.debug(`logout ${user.username} (${user._id})`);
     Meteor.users.update(
       {
         _id: user._id,

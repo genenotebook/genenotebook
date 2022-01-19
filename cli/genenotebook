@@ -2,7 +2,7 @@
 /* eslint-disable no-underscore-dangle, no-console */
 
 const commander = require('commander');
-const fs = require('fs');
+// const fs = require('fs');
 const { Tail } = require('tail');
 const { spawn, exec } = require('child_process');
 const path = require('path');
@@ -65,8 +65,9 @@ class GeneNoteBookConnection {
           logger.error('Undefined server response');
         }
         this.connection.disconnect();
-      }).catch(({ error }) => {
+      }).catch((error) => {
         logger.error(error);
+        console.log(error);
         this.connection.disconnect();
       });
   }
@@ -84,7 +85,7 @@ function checkMongoLog(logPath) {
   });
 }
 
-function startMongoDaemon(dbPath, mongoPort) {
+function startMongoDaemon(dbPath, mongoPort, dbStartupTimeout = 10000) {
   const dataFolderPath = `${dbPath}/data`;
   const logFolderPath = `${dbPath}/log`;
   exec(`mkdir -p ${dataFolderPath} ${logFolderPath}`);
@@ -129,31 +130,28 @@ function startMongoDaemon(dbPath, mongoPort) {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(connection);
-    }, 10000);
+    }, dbStartupTimeout);
   });
 }
 
 async function startGeneNoteBook(cmd) {
-  const PORT = parseInt(cmd.opts().port, 10) || 3000;
-  const ROOT_URL = cmd.opts().rootUrl || `http://localhost:${PORT}`;
-  const opts = { PORT, ROOT_URL };
+  const {
+    port, rootUrl, mongoUrl, dbPath, mongoPort = 27017, dbStartupTimeout,
+  } = cmd.opts();
+  const PORT = parseInt(port, 10) || 3000;
+  const ROOT_URL = rootUrl || `http://localhost:${PORT}`;
+  const opts = { PORT, ROOT_URL, GNB_VERSION: pkginfo.version };
 
-  if (fs.existsSync('settings.json') && !('METEOR_SETTINGS' in process.env)) {
-    const METEOR_SETTINGS = fs.readFileSync('settings.json', 'utf8');
-    Object.assign(opts, { METEOR_SETTINGS });
-  }
-
-  if (cmd.opts().mongoUrl) {
-    if (cmd.opts().dbPath) {
+  if (mongoUrl) {
+    if (dbPath) {
       throw new Error('--db-path and --mongo-url are mutually exclusive');
     }
-    Object.assign(opts, { MONGO_URL: cmd.opts().mongoUrl });
+    Object.assign(opts, { MONGO_URL: mongoUrl });
   } else {
-    const dbPath = cmd.opts().dbPath || './db';
-    const mongoPort = cmd.opts().mongoPort || 27017;
     const { MONGO_URL, mongoDaemon } = await startMongoDaemon(
-      path.resolve(dbPath),
+      path.resolve(dbPath || './db'),
       mongoPort,
+      dbStartupTimeout,
     );
     Object.assign(opts, { MONGO_URL });
     process.on('exit', function () {
@@ -192,6 +190,9 @@ program
     '--mongo-port [port]', 'Port on which the mongo daemon will serve. Default: 27017',
   )
   .option(
+    '--db-startup-timeout [timeout (ms)]', 'Timeout to wait for mongo daemon to start. Default 10,000ms',
+  )
+  .option(
     '-r, --root-url [url]',
     'Root URL on which GeneNoteBook will be accessed. Default: http://localhost',
   )
@@ -206,8 +207,7 @@ const add = program
   .usage('[command]');
 
 // add genome
-const addGenome = add
-  .command('genome');
+const addGenome = add.command('genome');
 
 addGenome.description('Add reference genome')
   .usage('[options] <genome fasta file>')
@@ -228,7 +228,7 @@ addGenome.description('Add reference genome')
     const genomeName = name || fileName.split('/').pop();
 
     new GeneNoteBookConnection({ username, password, port })
-      .call('addGenome', { genomeName, fileName });
+      .call('addGenome', { genomeName, fileName, async: false });
   })
   .on('--help', function () {
     console.log(`
@@ -239,8 +239,7 @@ Example:
   .exitOverride(customExitOverride(addGenome));
 
 // add annotation
-const addAnnotation = add
-  .command('annotation');
+const addAnnotation = add.command('annotation');
 
 addAnnotation
   .description('Add fasta formatted reference genome to a running GeneNoteBook server')
@@ -270,8 +269,7 @@ addAnnotation
   .exitOverride(customExitOverride(addAnnotation));
 
 // add transcriptome
-const addTranscriptome = add
-  .command('transcriptome');
+const addTranscriptome = add.command('transcriptome');
 
 addTranscriptome
   .description('Add Kallisto quantified gene expression to a running GeneNoteBook server')
@@ -303,8 +301,7 @@ addTranscriptome
   .exitOverride(customExitOverride(addTranscriptome));
 
 // add interproscan
-const addInterproscan = add
-  .command('interproscan');
+const addInterproscan = add.command('interproscan');
 
 addInterproscan.description(
   'Add InterProScan results to a running GeneNoteBook server',
@@ -327,8 +324,7 @@ addInterproscan.description(
   .exitOverride(customExitOverride(addInterproscan));
 
 // add orthogroups
-const addOrthogroups = add
-  .command('orthogroups');
+const addOrthogroups = add.command('orthogroups');
 
 addOrthogroups.description('Add Orthogroup phylogenetic trees to a running GeneNoteBook server')
   .usage('[options] <Folder with (e.g. OrthoFinder) tree files>')
@@ -345,9 +341,9 @@ addOrthogroups.description('Add Orthogroup phylogenetic trees to a running GeneN
     }
 
     new GeneNoteBookConnection({ username, password, port })
-      .call('addOrthogroups', { folderName });
+      .call('addOrthogroupTrees', { folderName });
   })
-  .exitOverride(customExitOverride(addInterproscan));
+  .exitOverride(customExitOverride(addOrthogroups));
 
 const remove = program.command('remove [type]', 'Remove data from a running GeneNoteBook server');
 
@@ -356,17 +352,18 @@ const list = program.command('list', 'List contents of a running GeneNoteBook se
 // add
 const user = program
   .command('user [command]')
-  .description('Interact with GeneNoteBook users')
+  .description('Add/modify/delete user profiles of a running genenotebook server')
   .usage('[command]');
 
-const setUserPassword = user
-  .command('setpassword');
+const setUserPassword = user.command('setpassword');
 
 setUserPassword.description('Set the password of a specific user')
   .usage('[options]')
   .arguments('<userName> <newPassword>')
-  .requiredOption('-u, --username <adminUsername>', 'GeneNoteBook admin username')
-  .requiredOption('-p, --password <adminPassword>', 'GeneNoteBook admin password')
+  .requiredOption('-u, --username <adminUsername>',
+    'GeneNoteBook admin username')
+  .requiredOption('-p, --password <adminPassword>',
+    'GeneNoteBook admin password')
   .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
   .action((userName, newPassword, { username, password, port = 3000 }) => {
     if (!(userName && newPassword && username && password)) {
@@ -391,16 +388,16 @@ const addUser = user
 addUser.description('Add a new user account')
   .usage('[option]')
   .arguments('<newUserName> <newPassword>')
-  .requiredOption('-u, --username <adminUsername>', 'GeneNoteBook admin username')
-  .requiredOption('-p, --password <adminPassword>', 'GeneNoteBook admin password')
+  .requiredOption('-u, --username <adminUsername>',
+                  'GeneNoteBook admin username')
+  .requiredOption('-p, --password <adminPassword>',
+                  'GeneNoteBook admin password')
   .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
   .option('-e, --email [email]', 'User email')
   .option('-f, --first-name <userFirstName>', 'User first name')
   .option('-l, --last-name <userLastName>', 'User last name')
   .option('-r, --role <userRole>', 'User role e.g: registered, user, curator, admin')
-  .action((userName, newPassword, {
-    username, password, port = 3000, ...opts
-  }) => {
+  .action((userName, newPassword, { username, password, port = 3000, ...opts }) => {
     if (!(userName && newPassword && username, password)) {
       addUser.help();
     }

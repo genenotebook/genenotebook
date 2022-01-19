@@ -1,9 +1,10 @@
-/* @flow */
 /* global Package: false, Npm: false */
+
+const currentVersion = '1.2.7';
 
 Package.describe({
   name: 'mhagmajer:server-router',
-  version: '1.2.6',
+  version: currentVersion,
   summary: 'Server router with authentication for Meteor',
   git: 'https://github.com/mhagmajer/server-router',
   documentation: 'README.md',
