@@ -37,7 +37,13 @@ function AdminUserInfo({ user }) {
       <td>
         {`${first_name} ${last_name}`}
       </td>
-      {emails.length > 0 ? <td>{emails[0].address}</td> : <td></td>}
+      <td>
+        <ul>
+          {emails.map(({ address = '' }) => (
+            <li key={address}>{address}</li>
+          ))}
+        </ul>
+      </td>
       <td>{formatDate(createdAt)}</td>
       <td>
         {role}

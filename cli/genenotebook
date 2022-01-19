@@ -388,16 +388,16 @@ const addUser = user
 addUser.description('Add a new user account')
   .usage('[option]')
   .arguments('<newUserName> <newPassword>')
-  .requiredOption('-u, --username <adminUsername>',
-                  'GeneNoteBook admin username')
-  .requiredOption('-p, --password <adminPassword>',
-                  'GeneNoteBook admin password')
+  .requiredOption('-u, --username <adminUsername>', 'GeneNoteBook admin username')
+  .requiredOption('-p, --password <adminPassword>', 'GeneNoteBook admin password')
   .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
   .option('-e, --email [email]', 'User email')
   .option('-f, --first-name <userFirstName>', 'User first name')
   .option('-l, --last-name <userLastName>', 'User last name')
   .option('-r, --role <userRole>', 'User role e.g: registered, user, curator, admin')
-  .action((userName, newPassword, { username, password, port = 3000, ...opts }) => {
+  .action((userName, newPassword, {
+    username, password, port = 3000, ...opts
+  }) => {
     if (!(userName && newPassword && username, password)) {
       addUser.help();
     }
