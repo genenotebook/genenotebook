@@ -427,7 +427,7 @@ or
     genenotebook user add newUserName newPassword --email userMail --first-name userFirstName --last-name userLastName --role userRole -u admin -p admin
     `);
   })
-  .exitOverride();
+  .exitOverride(customExitOverride(addUser));
 
 // Remove a user account.
 const removeUser = user
@@ -453,7 +453,7 @@ Example:
     genenotebook user rm userName -u admin -p admin
     `);
   })
-  .exitOverride();
+  .exitOverride(customExitOverride(removeUser));
 
 // Edit or update the information of a user account.
 const editUser = user
@@ -497,7 +497,7 @@ or
     genenotebook user edit userName --email userMail --first-name userFirstName --last-name userLastName -u admin -p admin
     `);
   })
-  .exitOverride();
+  .exitOverride(customExitOverride(editUser));
 
 // Bulk operations.
 const bulk = program
@@ -541,6 +541,6 @@ Example:
     genenotebook bulk json users.json -u admin -p admin
    `);
   })
-  .exitOverride();
+  .exitOverride(customExitOverride(bulkOperation));
 
 program.parse(process.argv);
