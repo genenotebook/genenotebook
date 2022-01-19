@@ -405,8 +405,6 @@ addUser.description('Add a new user account')
       addUser.help();
     }
 
-    const userRole = (opts.role === undefined ? 'registered' : opts.role);
-
     new GeneNoteBookConnection({ username, password, port })
       .call('addUser', {
         userName,
@@ -416,7 +414,7 @@ addUser.description('Add a new user account')
           first_name: opts.firstName,
           last_name: opts.lastName,
         },
-        role: userRole,
+        role: opts.role,
       });
   })
   .on('--help', function () {
@@ -470,6 +468,7 @@ editUser.description('Edit the information of a user account.')
   .option('-e, --email [email]', 'User email')
   .option('-f, --first-name <userFirstName>', 'User first name')
   .option('-l, --last-name <userLastName>', 'User last name')
+  .option('-r, --role <userRole>', 'User role e.g: registered, user, curator, admin')
   .action((userName, {
     username, password, port = 3000, ...opts
   }) => {
@@ -485,6 +484,7 @@ editUser.description('Edit the information of a user account.')
           last_name: opts.lastName,
         },
         emails: [{ address: opts.email }],
+        role: opts.role,
       });
   })
   .on('--help', function () {

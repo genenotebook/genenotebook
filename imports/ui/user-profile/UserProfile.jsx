@@ -148,7 +148,7 @@ function Profile({
 }
 
 function EmailAddress({ emails, onChange }) {
-  if (emails) {
+  if (emails.length) {
     return emails.map((email, i) => {
     // start counting at 1
       const index = i + 1;

@@ -37,7 +37,7 @@ function AdminUserInfo({ user }) {
       <td>
         {`${first_name} ${last_name}`}
       </td>
-      <td>{emails[0].address}</td>
+      {emails.length > 0 ? <td>{emails[0].address}</td> : <td></td>}
       <td>{formatDate(createdAt)}</td>
       <td>
         {role}

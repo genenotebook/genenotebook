@@ -53,7 +53,7 @@ export const updateUserInfo = new ValidatedMethod({
 export const editUserInfo = new ValidatedMethod({
   name: 'editUserInfo',
   validate: new SimpleSchema({
-    username: String,
+    username: { type: String },
     profile: {
       type: Object,
       optional: true,
@@ -70,10 +70,15 @@ export const editUserInfo = new ValidatedMethod({
       type: Array,
       optional: true,
     },
-    'emails.$': Object,
+    'emails.$': { type: Object },
     'emails.$.address': {
       type: String,
       regEx: SimpleSchema.RegEx.Email,
+      optional: true,
+    },
+    role: {
+      type: String,
+      allowedValues: ROLES,
       optional: true,
     },
   }).validator(),
@@ -81,7 +86,7 @@ export const editUserInfo = new ValidatedMethod({
     noRetry: true,
   },
   run({
-    username, profile, emails,
+    username, profile, emails, role,
   }) {
     if (!Roles.userIsInRole(this.userId, 'admin')) {
       throw new Meteor.Error('not-authorized');
@@ -101,6 +106,10 @@ export const editUserInfo = new ValidatedMethod({
           'emails.0.verified': false,
         },
       });
+
+      if (role) {
+        Roles.setUserRoles(userId, role);
+      }
     } catch (err) {
       throw new Meteor.Error(JSON.stringify(err));
     }
@@ -190,6 +199,7 @@ export const addUser = new ValidatedMethod({
     role: {
       type: String,
       allowedValues: ROLES,
+      optional: true,
     },
   }).validator(),
   applyOptions: {
@@ -202,6 +212,8 @@ export const addUser = new ValidatedMethod({
       throw new Meteor.Error('not-authorized');
     }
 
+    const userRole = (role === undefined ? 'registered' : role);
+
     if (!Accounts.findUserByUsername(userName)) {
       if (emails) {
         const userId = Accounts.createUser({
@@ -211,7 +223,7 @@ export const addUser = new ValidatedMethod({
           profile,
         });
 
-        Roles.setUserRoles(userId, role);
+        Roles.setUserRoles(userId, userRole);
       } else {
         const userId = Accounts.createUser({
           username: userName,
@@ -221,7 +233,7 @@ export const addUser = new ValidatedMethod({
 
         Meteor.users.update({ _id: userId }, { $set: { 'emails': [] } });
 
-        Roles.setUserRoles(userId, role);
+        Roles.setUserRoles(userId, userRole);
       }
     } else {
       throw new Meteor.Error('Username already exists.');
