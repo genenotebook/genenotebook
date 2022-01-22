@@ -121,7 +121,7 @@
     "eslint-plugin-meteor": "^7.3.0",
     "eslint-plugin-react": "^7.25.1",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "node-fetch": "^2.6.2",
+    "node-fetch": "^3.1.1",
     "puppeteer": "^10.0.0"
   }
 }
