@@ -1,7 +1,7 @@
 import jobQueue from './jobqueue.js';
 import spawn from 'spawn-promise';
 
-import xml2js from 'xml2js-es6-promise';
+import { parseStringPromise } from 'xml2js';
 
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 import logger from '/imports/api/util/logger.js';
@@ -64,7 +64,7 @@ jobQueue.processJobs(
     spawn(blastType, options, input)
       .then((result) => {
         logger.log('blast finished');
-        return xml2js(result.toString());
+        return parseStringPromise(result.toString());
       })
       .then((resultJson) => {
         // eslint-disable-next-line no-param-reassign, max-len
