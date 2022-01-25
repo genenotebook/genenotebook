@@ -381,30 +381,163 @@ Example:
   })
   .exitOverride(customExitOverride(setUserPassword));
 
-const addUser = user.command('add');
+// Create new user account.
+const addUser = user
+  .command('add');
 
-addUser.description('Add a user account')
-  .usage('[options]')
+addUser.description('Add a new user account')
+  .usage('[option]')
   .arguments('<newUserName> <newPassword>')
-  .requiredOption('-u, --username <adminUsername>',
-    'GeneNoteBook admin username')
-  .requiredOption('-p, --password <adminPassword>',
-    'GeneNoteBook admin password')
+  .requiredOption('-u, --username <adminUsername>', 'GeneNoteBook admin username')
+  .requiredOption('-p, --password <adminPassword>', 'GeneNoteBook admin password')
   .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
-  .action((userName, newPassword, { username, password, port = 3000 }) => {
-    if (!(userName && newPassword && username && password)) {
+  .option('-e, --email [email]', 'User email')
+  .option('-f, --first-name <userFirstName>', 'User first name')
+  .option('-l, --last-name <userLastName>', 'User last name')
+  .option('-r, --role <userRole>', 'User role e.g: registered, user, curator, admin')
+  .action((userName, newPassword, {
+    username, password, port = 3000, ...opts
+  }) => {
+    if (!(userName && newPassword && username, password)) {
       addUser.help();
     }
 
     new GeneNoteBookConnection({ username, password, port })
-      .call('addUser', { userName, newPassword });
+      .call('addUser', {
+        userName,
+        newPassword,
+        emails: opts.email,
+        profile: {
+          first_name: opts.firstName,
+          last_name: opts.lastName,
+        },
+        role: opts.role,
+      });
   })
   .on('--help', function () {
     console.log(`
 Example:
-    genenotebook user add -u admin -p admin newUserName newPassword
+    genenotebook user add newUserName newPassword -u admin -p admin
+or
+    genenotebook user add newUserName newPassword -e userMail -f userFirstName -l userLastName -r userRole -u admin -p admin
+or
+    genenotebook user add newUserName newPassword --email userMail --first-name userFirstName --last-name userLastName --role userRole -u admin -p admin
     `);
   })
   .exitOverride(customExitOverride(addUser));
+
+// Remove a user account.
+const removeUser = user
+  .command('rm');
+
+removeUser.description('Remove a user account')
+  .usage('[option]')
+  .arguments('<username>')
+  .requiredOption('-u, --username <adminUsername>', 'GeneNoteBook admin username')
+  .requiredOption('-p, --password <adminPassword>', 'GeneNoteBook admin password')
+  .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
+  .action((userName, { username, password, port = 3000 }) => {
+    if (!(userName && username, password)) {
+      removeUser.help();
+    }
+
+    new GeneNoteBookConnection({ username, password, port })
+      .call('removeUserAccount', { userName });
+  })
+  .on('--help', function () {
+    console.log(`
+Example:
+    genenotebook user rm userName -u admin -p admin
+    `);
+  })
+  .exitOverride(customExitOverride(removeUser));
+
+// Edit or update the information of a user account.
+const editUser = user
+  .command('edit');
+
+editUser.description('Edit the information of a user account.')
+  .usage('[option]')
+  .arguments('<username>')
+  .requiredOption('-u, --username <adminUsername>', 'GeneNoteBook admin username')
+  .requiredOption('-p, --password <adminPassword>', 'GeneNoteBook admin password')
+  .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
+  .option('-e, --email [email]', 'User email')
+  .option('-f, --first-name <userFirstName>', 'User first name')
+  .option('-l, --last-name <userLastName>', 'User last name')
+  .option('-r, --role <userRole>', 'User role e.g: registered, user, curator, admin')
+  .action((userName, {
+    username, password, port = 3000, ...opts
+  }) => {
+    if (!(userName && username, password)) {
+      editUser.help();
+    }
+
+    new GeneNoteBookConnection({ username, password, port })
+      .call('editUserInfo', {
+        username: userName,
+        profile: {
+          first_name: opts.firstName,
+          last_name: opts.lastName,
+        },
+        emails: [{ address: opts.email }],
+        role: opts.role,
+      });
+  })
+  .on('--help', function () {
+    console.log(`
+Example:
+    genenotebook user edit userName -u admin -p admin
+or
+    genenotebook user edit userName -e userMail -f userFirstName -l userLastName  -u admin -p admin
+or
+    genenotebook user edit userName --email userMail --first-name userFirstName --last-name userLastName -u admin -p admin
+    `);
+  })
+  .exitOverride(customExitOverride(editUser));
+
+// Bulk operations.
+const bulk = program
+  .command('bulk [command]')
+  .description('Interact with GeneNoteBook users')
+  .usage('[command]');
+
+const bulkOperation = bulk
+  .command('json');
+
+bulkOperation.description('Bulk user operation')
+  .usage('[option]')
+  .argument('<path-to-json-file.json>')
+  .requiredOption('-u, --username <adminUsername>', 'GeneNoteBook admin username')
+  .requiredOption('-p, --password <adminPassword>', 'GeneNoteBook admin password')
+  .option('--port [port]', 'Port on which GeneNoteBook is running. Default: 3000')
+  .action((bulkFile, { username, password, port = 3000 }) => {
+    if (!(bulkFile && username, password)) {
+      bulkOperation.help();
+    }
+
+    const data = JSON.parse(fs.readFileSync(bulkFile, 'utf8'));
+
+    data.accounts.forEach((account) => {
+      new GeneNoteBookConnection({ username, password, port })
+        .call('addUser', {
+          userName: account.username,
+          newPassword: account.password,
+          emails: account.email,
+          profile: {
+            first_name: account.profile.first_name,
+            last_name: account.profile.last_name,
+          },
+          role: account.role,
+        });
+    });
+  })
+  .on('--help', function() {
+    console.log(`
+Example:
+    genenotebook bulk json users.json -u admin -p admin
+   `);
+  })
+  .exitOverride(customExitOverride(bulkOperation));
 
 program.parse(process.argv);
