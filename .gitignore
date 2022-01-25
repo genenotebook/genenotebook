@@ -2,7 +2,7 @@
 data/*
 db/*
 cli/db/*
-testdata/*
+tests/testdata/*
 api-docs
 node_modules
 production_settings.json
