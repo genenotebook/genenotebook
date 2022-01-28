@@ -33,6 +33,8 @@ async function addOrthogroupTree({ fileName, session }) {
   const treeNewick = fs.readFileSync(fileName, 'utf8');
   const { size, geneIds } = parseNewick(treeNewick);
 
+  logger.debug({ treeNewick });
+
   // Set up data to insert
   const orthogroupData = {
     ID: orthogroupId,
@@ -41,7 +43,7 @@ async function addOrthogroupTree({ fileName, session }) {
     geneIds,
   };
 
-  // Validate data agains orthogroup schema
+  // Validate data against orthogroup schema
   // this throws an error for invalid data
   await orthogroupSchema.validate(orthogroupData);
 

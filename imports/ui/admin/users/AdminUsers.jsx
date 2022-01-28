@@ -22,7 +22,7 @@ function adminUsersDataTracker() {
 
 function AdminUserInfo({ user }) {
   const {
-    _id, username, emails, profile, createdAt,
+    _id, username, emails = [], profile, createdAt,
   } = user;
   const { first_name, last_name } = profile;
   const roles = Roles.getRolesForUser(_id);
@@ -37,7 +37,13 @@ function AdminUserInfo({ user }) {
       <td>
         {`${first_name} ${last_name}`}
       </td>
-      <td>{emails[0].address}</td>
+      <td>
+        <ul>
+          {emails.map(({ address = '' }) => (
+            <li key={address}>{address}</li>
+          ))}
+        </ul>
+      </td>
       <td>{formatDate(createdAt)}</td>
       <td>
         {role}

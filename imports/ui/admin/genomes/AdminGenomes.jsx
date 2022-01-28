@@ -61,7 +61,7 @@ function insertFile({ file, meta, setUploadProgress }) {
 
 function addGenomePromise({ fileName, genomeName }) {
   return new Promise((resolve, reject) => {
-    addGenome.call({ fileName, genomeName }, (err, { jobId }) => {
+    addGenome.call({ fileName, genomeName, async: true }, (err, { jobId }) => {
       if (err) reject(err);
       resolve(jobId);
     });

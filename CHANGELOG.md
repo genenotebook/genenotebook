@@ -7,11 +7,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [0.3.1] 2021-09-22
+### Added
+
+- User accounts can be added/changed/removed from the CLI
+- Bulk operations for user account management through CLI
+- `--dbStartupTimeout` option to `genenotebook run` to allow specifying how long to wait for the mongo daemon to start
+- `--dbCacheSizeGB` option to `genenotebook run` to allow specifying how many GBs of RAM can be used for mongodb cache.
+
+### Changed
+
+- Removed `settings.json`
+- Phylogenetic tree now made with react-bio-viz
+- Meteor version 2.5.6
 
 ### Fixed
 
-- settings.json is now properly copied to production builds
+- Once again fixed version display
+- Popover menus
 
 ## [0.3.0] 2021-09-17
 
@@ -45,12 +57,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - MongoDB version 4.2
 - Fully migrated all react components to new hooks API
 - Upgraded to `alanning:roles@3.2.0`
-- __BACKWARDS INCOMPATIBLE:__
-Modified user permission schemas to comply with `alanning:roles@3.2.0` for the following collections: `users`, `genomeCollection`, `genomeSequenceCollection`, `ExperimentInfo`, `Transcriptomes`. Existing servers attempt to fix this with automatic schema migration.
+- **BACKWARDS INCOMPATIBLE:**
+  Modified user permission schemas to comply with `alanning:roles@3.2.0` for the following collections: `users`, `genomeCollection`, `genomeSequenceCollection`, `ExperimentInfo`, `Transcriptomes`. Existing servers attempt to fix this with automatic schema migration.
+
 ### Fixed
 
 - Footer correctly displays version info on production builds
-- Plot tooltips can be closed by clicking anywhere on the screen, similar to dropdown menu 
+- Plot tooltips can be closed by clicking anywhere on the screen, similar to dropdown menu
 - Various orthogroup loading fixes: results are properly returned to the cli and loading an orthogroup with an existing ID throws an error.
 
 ## [0.1.16] 2019-05-02

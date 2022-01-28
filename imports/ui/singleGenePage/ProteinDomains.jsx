@@ -194,60 +194,55 @@ function ProteinDomain({
           id={targetId}
         />
       </PopoverTrigger>
-      <PopoverBody>
-        <nav className="panel">
-          <p className="panel-heading">
-            { name }
-          </p>
-          <div className="panel-block">
-            <table className="table is-small is-narrow is-hoverable">
-              <tbody>
-                <tr>
-                  <td>Signature description</td>
-                  <td>{signature_desc || 'Not available'}</td>
-                </tr>
-                <tr>
-                  <td>Coordinates</td>
-                  <td>
-                    {`${start}..${end}`}
-                  </td>
-                </tr>
-                <tr>
-                  <td>Score</td>
-                  <td>{score}</td>
-                </tr>
-                <tr>
-                  <td>Source</td>
-                  <td>{source}</td>
-                </tr>
-                { Dbxref.length > 0 && (
-                  <tr>
-                    <td>Dbxref</td>
-                    <td>
-                      <ul>
-                        { Dbxref.map((xref) => (
-                          <li key={xref}>{ xref }</li>
-                        ))}
-                      </ul>
-                    </td>
-                  </tr>
-                )}
-                { Ontology_term.length > 0 && (
-                  <tr>
-                    <td>Ontology term</td>
-                    <td>
-                      <ul>
-                        { Ontology_term.map((term) => (
-                          <li key={term}>{ term }</li>
-                        ))}
-                      </ul>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </nav>
+      <PopoverBody header={name}>
+        <div className="panel-block">
+          <table className="table is-small is-narrow is-hoverable">
+            <tbody>
+              <tr>
+                <td>Signature description</td>
+                <td>{signature_desc || 'Not available'}</td>
+              </tr>
+              <tr>
+                <td>Coordinates</td>
+                <td>
+                  {`${start}..${end}`}
+                </td>
+              </tr>
+              <tr>
+                <td>Score</td>
+                <td>{score}</td>
+              </tr>
+              <tr>
+                <td>Source</td>
+                <td>{source}</td>
+              </tr>
+              { Dbxref.length > 0 && (
+              <tr>
+                <td>Dbxref</td>
+                <td>
+                  <ul>
+                    { Dbxref.map((xref) => (
+                      <li key={xref}>{ xref }</li>
+                    ))}
+                  </ul>
+                </td>
+              </tr>
+              )}
+              { Ontology_term.length > 0 && (
+              <tr>
+                <td>Ontology term</td>
+                <td>
+                  <ul>
+                    { Ontology_term.map((term) => (
+                      <li key={term}>{ term }</li>
+                    ))}
+                  </ul>
+                </td>
+              </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </PopoverBody>
     </Popover>
   );
