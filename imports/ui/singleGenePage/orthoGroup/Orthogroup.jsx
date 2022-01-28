@@ -12,7 +12,10 @@ import { orthogroupCollection } from '/imports/api/genes/orthogroup_collection.j
 import { Tree } from 'react-bio-viz';
 
 import {
-  branch, compose, isLoading, Loading,
+  branch,
+  compose,
+  isLoading,
+  Loading,
 } from '/imports/ui/util/uiUtil.jsx';
 
 import OrthogroupTipNode from './OrthogroupTipNode.jsx';
@@ -138,7 +141,12 @@ function Orthogroup({ orthogroup, showHeader = false }) {
   return (
     <div id="orthogroup">
       {showHeader && <Header />}
-      <Tree tree={tree} height={size * 15} cladogram shadeBranchBySupport={false} />
+      <Tree
+        tree={tree}
+        height={size * 15}
+        cladogram
+        shadeBranchBySupport={false}
+      />
     </div>
   );
 }
@@ -146,5 +154,5 @@ function Orthogroup({ orthogroup, showHeader = false }) {
 export default compose(
   withTracker(orthogroupDataTracker),
   branch(isLoading, Loading),
-  branch(hasNoOrthogroup, NoOrthogroup),
+  branch(hasNoOrthogroup, NoOrthogroup)
 )(Orthogroup);

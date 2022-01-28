@@ -25,12 +25,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Once again fixed version display
 - Popover menus
 
-## [0.3.1] 2021-09-22
-
-### Changed
-
-- settings.json is now properly copied to production builds
-
 ## [0.3.0] 2021-09-17
 
 ### Added
