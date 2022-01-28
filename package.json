@@ -38,7 +38,16 @@
     }
   },
   "eslintConfig": {
-    "extends": "@meteorjs/eslint-config-meteor",
+    "extends": [
+      "@meteorjs/eslint-config-meteor",
+      "plugin:prettier/recommended"
+    ],
+    "plugins": [
+      "prettier"
+    ],
+    "rules": {
+      "prettier/prettier": "error"
+    },
     "settings": {
       "import/resolver": {
         "meteor": {
@@ -49,6 +58,12 @@
         }
       }
     }
+  },
+  "prettier": {
+    "singleQuote": true,
+    "tabWidth": 2,
+    "useTabs": false,
+    "semi": true
   },
   "dependencies": {
     "@babel/runtime": "^7.16.3",
@@ -113,13 +128,16 @@
     "chai": "^4.3.3",
     "eslint": "^7.32.0",
     "eslint-config-airbnb": "^18.2.1",
+    "eslint-config-prettier": "^8.3.0",
     "eslint-import-resolver-meteor": "^0.4.0",
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-meteor": "^7.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.27.0",
     "eslint-plugin-react-hooks": "^4.3.0",
     "node-fetch": "^2.6.6",
+    "prettier": "^2.5.1",
     "puppeteer": "^13.1.2"
   }
 }
