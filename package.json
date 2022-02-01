@@ -106,7 +106,7 @@
     "react-popper": "^2.2.4",
     "react-resize-detector": "^6.7.6",
     "react-router-dom": "^6.0.0",
-    "react-select": "^4.3.1",
+    "react-select": "^5.0.0",
     "rus-diff": "^1.1.0",
     "simpl-schema": "^1.10.2",
     "spawn-promise": "^0.1.8",
