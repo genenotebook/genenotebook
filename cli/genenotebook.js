@@ -4,7 +4,7 @@
 const commander = require('commander');
 const fs = require('fs');
 const { Tail } = require('tail');
-const { spawn, exec } = require('child_process');
+const { spawn, execFileSync } = require('child_process');
 const path = require('path');
 const asteroid = require('asteroid');
 const WebSocket = require('ws');
@@ -96,7 +96,7 @@ function startMongoDaemon(
 ) {
   const dataFolderPath = `${dbPath}/data`;
   const logFolderPath = `${dbPath}/log`;
-  exec(`mkdir -p ${dataFolderPath} ${logFolderPath}`);
+  execFileSync('mkdir', ['-p', dataFolderPath, logFolderPath]);
   const logPath = `${dbPath}/log/mongod.log`;
 
   logger.log(`Using DB path: ${dbPath}`);
