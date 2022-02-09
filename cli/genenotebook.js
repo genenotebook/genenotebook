@@ -368,8 +368,14 @@ addInterproscan
   .description('Add InterProScan results to a running GeneNoteBook server')
   .usage('[options] <InterProScan gff3 output file>')
   .arguments('<file>')
-  .option('-u, --username <username>', 'GeneNoteBook admin username')
-  .option('-p, --password <password>', 'GeneNoteBook admin password')
+  .requiredOption(
+    '-u, --username <adminUsername>',
+    'GeneNoteBook admin username'
+  )
+  .requiredOption(
+    '-p, --password <adminPassword>',
+    'GeneNoteBook admin password'
+  )
   .option(
     '--port [port]',
     'Port on which GeneNoteBook is running. Default: 3000'
@@ -381,10 +387,22 @@ addInterproscan
     if (!(fileName && username && password)) {
       addInterproscan.help();
     }
-    new GeneNoteBookConnection({ username, password, port }).call(
-      'addInterproscan',
-      { fileName }
-    );
+
+    const extentionFile = path.extname(file);
+
+    new GeneNoteBookConnection({ username, password, port })
+      .call('addInterproscan', {
+        fileName,
+        formatOutput: extentionFile,
+      });
+  })
+  .on('--help', function() {
+    console.log(`
+Example:
+    genenotebook add interproscan testdata.iprscan.gff3 -u admin -p admin
+or
+    genenotebook add interproscan testdata.iprscan.tsv -u admin -p admin
+    `);
   })
   .exitOverride(customExitOverride(addInterproscan));
 
