@@ -11,10 +11,7 @@ class InterproscanProcessor {
     this.bulkOp = Genes.rawCollection().initializeUnorderedBulkOp();
   }
 
-  finalize = () => {
-    logger.log('Close the dataset.');
-    this.bulkOp.execute();
-  };
+  finalize = () => this.bulkOp.execute();
 }
 
 const addInterproscan = new ValidatedMethod({

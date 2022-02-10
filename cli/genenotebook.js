@@ -393,14 +393,15 @@ addInterproscan
       addInterproscan.help();
     }
 
-    const extFile = path.extname(file).replace(/\./g, '');
     let parserType;
+    const extensionFile = path.extname(file).replace(/\./g, '');
+
     if (['tsv', 'gff3'].includes(parser)) {
       parserType = parser;
-    } else if (['tsv', 'gff3'].includes(extFile)) {
-      parserType = extFile;
+    } else if (['tsv', 'gff3'].includes(extensionFile)) {
+      parserType = extensionFile;
     } else {
-      logger.error('--parser parameter is not provided');
+      logger.error('--parser parameter is not defined');
       addInterproscan.help();
     }
 

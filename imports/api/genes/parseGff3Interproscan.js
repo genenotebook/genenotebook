@@ -59,11 +59,9 @@ class ParseGff3File extends InterproscanProcessor {
             start, end, source, score, name: Name[0],
           };
 
-          // Return only expressions for Interproscan.
           const Dbxref = _dbxref
             .filter((xref) => DBXREF_REGEX.combined.test(xref));
 
-          // Retrieve the interposcan ID (e.g: IPR001048 in InterPro:IPR001048).
           const interproIds = Dbxref
             .filter((xref) => /InterPro/.test(xref))
             .map((interproId) => {
@@ -71,7 +69,6 @@ class ParseGff3File extends InterproscanProcessor {
               return id;
             });
 
-          // Initializes the interproId and signatureDescription keys in proteinDomain.
           if (interproIds.length) {
             proteinDomain.interproId = interproIds[0];
           } else {
@@ -82,14 +79,11 @@ class ParseGff3File extends InterproscanProcessor {
             proteinDomain.signature_desc = signatureDescription[0];
           }
 
-          // Add array of Dbxref (e.g : InterPro:IPR002376, KEGG:00670+2.1.2.9) in
-          // proteinDomain and database.
           if (Dbxref.length) {
             proteinDomain.Dbxref = Dbxref;
             dbUpdate.$addToSet['attributes.Dbxref'] = { $each: Dbxref };
           }
 
-          // e.g: GO:0009058","GO:0016742.
           if (OntologyTerm.length) {
             proteinDomain.Ontology_term = OntologyTerm;
             dbUpdate.$addToSet['attributes.Ontology_term'] = {
@@ -98,8 +92,6 @@ class ParseGff3File extends InterproscanProcessor {
           }
 
           dbUpdate.$addToSet['subfeatures.$.protein_domains'] = proteinDomain;
-
-          // Binds subfeatures.ID with the seqID of the .gff3 and update.
           this.bulkOp.find({ 'subfeatures.ID': seqId }).update(dbUpdate);
         }
       }
