@@ -12,7 +12,7 @@ jobQueue.processJobs(
     payload: 1,
   },
   async (job, callback) => {
-    const { fileName, formatOutput } = job.data;
+    const { fileName, parser } = job.data;
     logger.log(`Add ${fileName} interproscan file.`);
 
     const rl = readline.createInterface({
@@ -21,12 +21,12 @@ jobQueue.processJobs(
     });
 
     let lineProcessor;
-    switch (formatOutput) {
-      case '.tsv':
+    switch (parser) {
+      case 'tsv':
         logger.log('Format : .tsv');
         lineProcessor = new ParseTsvFile();
         break;
-      case '.gff3':
+      case 'gff3':
         logger.log('Format : .gff3');
         lineProcessor = new ParseGff3File();
         break;
@@ -34,7 +34,6 @@ jobQueue.processJobs(
 
     let lineNbr = 0;
 
-    // https://stackoverflow.com/questions/6156501/read-a-file-one-line-at-a-time-in-node-js
     rl.on('line', async (line) => {
       lineNbr += 1;
 
@@ -51,7 +50,7 @@ jobQueue.processJobs(
       }
     });
 
-    // Occurrs when all lines are read.
+    // Occurs when all lines are read.
     rl.on('close', async () => {
       try {
         logger.log('File reading finished');

@@ -1,7 +1,7 @@
-import { InitializeGenes } from '/imports/api/genes/addInterproscan.js';
+import { InterproscanProcessor } from '/imports/api/genes/addInterproscan.js';
 import logger from '/imports/api/util/logger.js';
 
-class ParseTsvFile extends InitializeGenes {
+class ParseTsvFile extends InterproscanProcessor {
   parse = (line) => {
     const [
       seqId,

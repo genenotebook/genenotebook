@@ -1,4 +1,4 @@
-import { InitializeGenes } from '/imports/api/genes/addInterproscan.js';
+import { InterproscanProcessor } from '/imports/api/genes/addInterproscan.js';
 import { Meteor } from 'meteor/meteor';
 import logger from '/imports/api/util/logger.js';
 import {
@@ -15,7 +15,7 @@ const logAttributeError = ({
   throw new Meteor.Error(error);
 };
 
-class ParseGff3File extends InitializeGenes {
+class ParseGff3File extends InterproscanProcessor {
   isProteinMatch = (type) => {
     if (type === 'protein_match') {
       return true;

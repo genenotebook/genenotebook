@@ -6,7 +6,7 @@ import { Roles } from 'meteor/alanning:roles';
 import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor';
 
-class InitializeGenes {
+class InterproscanProcessor {
   constructor() {
     this.bulkOp = Genes.rawCollection().initializeUnorderedBulkOp();
   }
@@ -21,15 +21,15 @@ const addInterproscan = new ValidatedMethod({
   name: 'addInterproscan',
   validate: new SimpleSchema({
     fileName: { type: String },
-    formatOutput: {
+    parser: {
       type: String,
-      allowedValues: ['.tsv', '.gff3'],
+      allowedValues: ['tsv', 'gff3'],
     },
   }).validator(),
   applyOptions: {
     noRetry: true,
   },
-  run({ fileName, formatOutput }) {
+  run({ fileName, parser }) {
     if (!this.userId) {
       throw new Meteor.Error('not-authorized');
     }
@@ -37,7 +37,7 @@ const addInterproscan = new ValidatedMethod({
       throw new Meteor.Error('not-authorized');
     }
 
-    const job = new Job(jobQueue, 'addInterproscan', { fileName, formatOutput });
+    const job = new Job(jobQueue, 'addInterproscan', { fileName, parser });
     const jobId = job.priority('high').save();
 
     // Continue with synchronous processing
@@ -53,4 +53,4 @@ const addInterproscan = new ValidatedMethod({
 });
 
 export default addInterproscan;
-export { InitializeGenes };
+export { InterproscanProcessor };

@@ -356,52 +356,66 @@ addTranscriptome
         sampleName,
         replicaGroup,
         description,
-      }
+      },
     );
   })
   .exitOverride(customExitOverride(addTranscriptome));
 
-// add interproscan
+// Add interproscan file
 const addInterproscan = add.command('interproscan');
 
 addInterproscan
   .description('Add InterProScan results to a running GeneNoteBook server')
-  .usage('[options] <InterProScan gff3 output file>')
+  .usage('[options] <InterProScan gff3 or tsv output file>')
   .arguments('<file>')
   .requiredOption(
     '-u, --username <adminUsername>',
-    'GeneNoteBook admin username'
+    'GeneNoteBook admin username',
   )
   .requiredOption(
     '-p, --password <adminPassword>',
-    'GeneNoteBook admin password'
+    'GeneNoteBook admin password',
   )
   .option(
     '--port [port]',
-    'Port on which GeneNoteBook is running. Default: 3000'
+    'Port on which GeneNoteBook is running. Default: 3000',
   )
-  .action((file, { username, password, port = 3000 }) => {
+  .option(
+    '--parser [parser]',
+    `Choose a parser for an InterProScan output file. Can parse .gff3 and .tsv
+    extensions.`,
+  )
+  .action((file, { username, password, port = 3000, parser }) => {
     if (typeof file !== 'string') addInterproscan.help();
-    const fileName = path.resolve(file);
 
+    const fileName = path.resolve(file);
     if (!(fileName && username && password)) {
       addInterproscan.help();
     }
 
-    const extentionFile = path.extname(file);
+    const extFile = path.extname(file).replace(/\./g, '');
+    let parserType;
+    if (['tsv', 'gff3'].includes(parser)) {
+      parserType = parser;
+    } else if (['tsv', 'gff3'].includes(extFile)) {
+      parserType = extFile;
+    } else {
+      logger.error('--parser parameter is not provided');
+      addInterproscan.help();
+    }
 
     new GeneNoteBookConnection({ username, password, port })
       .call('addInterproscan', {
         fileName,
-        formatOutput: extentionFile,
+        parser: parserType,
       });
   })
-  .on('--help', function() {
+  .on('--help', () => {
     console.log(`
 Example:
     genenotebook add interproscan testdata.iprscan.gff3 -u admin -p admin
 or
-    genenotebook add interproscan testdata.iprscan.tsv -u admin -p admin
+    genenotebook add interproscan testdata.iprscan --parser tsv -u admin -p admin
     `);
   })
   .exitOverride(customExitOverride(addInterproscan));
