@@ -381,8 +381,8 @@ addInterproscan
     'Port on which GeneNoteBook is running. Default: 3000',
   )
   .option(
-    '--parser [parser]',
-    `Choose a parser for an InterProScan output file. Can parse .gff3 and .tsv
+    '--format [parser]',
+    `Choose a parser for the interproscan output files. Parses .gff3 and .tsv
     extensions.`,
   )
   .action((file, { username, password, port = 3000, parser }) => {
@@ -401,7 +401,7 @@ addInterproscan
     } else if (['tsv', 'gff3'].includes(extensionFile)) {
       parserType = extensionFile;
     } else {
-      logger.error('--parser parameter is not defined');
+      logger.error('--format parameter is not defined');
       addInterproscan.help();
     }
 
@@ -416,7 +416,7 @@ addInterproscan
 Example:
     genenotebook add interproscan testdata.iprscan.gff3 -u admin -p admin
 or
-    genenotebook add interproscan testdata.iprscan --parser tsv -u admin -p admin
+    genenotebook add interproscan testdata.iprscan --format tsv -u admin -p admin
     `);
   })
   .exitOverride(customExitOverride(addInterproscan));
