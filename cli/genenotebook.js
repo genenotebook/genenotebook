@@ -385,7 +385,7 @@ addInterproscan
     `Choose a parser for the interproscan output files. Parses .gff3 and .tsv
     extensions.`,
   )
-  .action((file, { username, password, port = 3000, parser }) => {
+  .action((file, { username, password, port = 3000, format }) => {
     if (typeof file !== 'string') addInterproscan.help();
 
     const fileName = path.resolve(file);
@@ -393,16 +393,26 @@ addInterproscan
       addInterproscan.help();
     }
 
-    let parserType;
+    const parserAccepted = ['tsv', 'gff3', 'xml'];
     const extensionFile = path.extname(file).replace(/\./g, '');
+    let parserType = format;
 
-    if (['tsv', 'gff3'].includes(parser)) {
-      parserType = parser;
-    } else if (['tsv', 'gff3'].includes(extensionFile)) {
-      parserType = extensionFile;
+    if (parserType) {
+      if (!parserAccepted.includes(parserType)) {
+        logger.error(`
+Error: unknow format : ${parserType}. To specify --format, choose a format
+compatible with InterProScan e.g : "gff3", "tsv" or "xml".`);
+        addInterproscan.help();
+      }
     } else {
-      logger.error('--format parameter is not defined');
-      addInterproscan.help();
+      if (parserAccepted.includes(extensionFile)) {
+        parserType = extensionFile;
+      } else {
+        logger.error(`
+Error : unknow file extension : ${extensionFile}. Must specify --format when
+file extension is not "tsv", "gff3" or "xml".`);
+        addInterproscan.help();
+      }
     }
 
     new GeneNoteBookConnection({ username, password, port })
