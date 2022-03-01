@@ -94,7 +94,7 @@
     "meteor-babel-helpers": "0.0.3",
     "meteor-later": "^1.2.0",
     "meteor-node-stubs": "^1.1.0",
-    "node-gyp": "^8.4.0",
+    "node-gyp": "^9.0.0",
     "object-hash": "^2.2.0",
     "papaparse": "^5.3.1",
     "pkginfo": "^0.4.1",
