@@ -388,6 +388,46 @@ addInterproscan
   })
   .exitOverride(customExitOverride(addInterproscan));
 
+// Add eggnog annotations file.
+const addEggnog = add.command('eggnog');
+
+addEggnog
+  .description('Add EggNog results to a running GeneNoteBook server')
+  .usage('[options] <EggNog tsv output file>')
+  .arguments('<file>')
+  .requiredOption(
+    '-u, --username <adminUsername>',
+    'GeneNoteBook admin username',
+  )
+  .requiredOption(
+    '-p, --password <adminPassword>',
+    'GeneNoteBook admin password',
+  )
+  .option(
+    '--port [port]',
+    'Port on which GeneNoteBook is running. Default: 3000',
+  )
+  .action((file, { username, password, port = 3000 }) => {
+    if (typeof file !== 'string') addEggnog.help();
+
+    const fileName = path.resolve(file);
+    if (!(fileName && username && password)) {
+      addEggnog.help();
+    }
+
+    new GeneNoteBookConnection({ username, password, port })
+      .call('addEggnog', {
+        fileName,
+      });
+  })
+  .on('--help', () => {
+    console.log(`
+Example:
+    genenotebook add eggnog eggnog_annotations.tsv -u admin -p admin
+    `);
+  })
+  .exitOverride(customExitOverride(addEggnog));
+
 // add orthogroups
 const addOrthogroups = add.command('orthogroups');
 
