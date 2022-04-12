@@ -7,6 +7,7 @@ import { Genes } from '/imports/api/genes/geneCollection.js';
 import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 import { dbxrefCollection } from '/imports/api/genes/dbxrefCollection.js';
 import { EditHistory } from '/imports/api/genes/edithistory_collection.js';
+import { eggnogCollection } from '/imports/api/genes/eggnog/eggnogCollection.js';
 // orthogroups
 import {
   orthogroupCollection,
@@ -24,6 +25,8 @@ import { fileCollection } from '/imports/api/files/fileCollection.js';
 import fetchDbxref from '/imports/api/methods/fetchDbxref.js';
 // utilities
 import { DBXREF_REGEX } from '/imports/api/util/util.js';
+
+import logger from '/imports/api/util/logger.js';
 
 function availableGenomes({ userId }) {
   const roles = Roles.getRolesForUser(userId);
@@ -113,6 +116,7 @@ Meteor.publish({
     return Meteor.roles.find({});
   },
   attributes() {
+    logger.log('prouuuuuuuut');
     const publication = this;
 
     const genomeIds = availableGenomes(publication);
@@ -172,6 +176,11 @@ Meteor.publish({
     return genomeCollection.find({
       $or: [{ permission: { $in: roles } }, { isPublic: true }],
     });
+  },
+  eggnog() {
+    const eggnog = eggnogCollection.find({});
+    logger.log('eggnog publish :', eggnog);
+    return eggnog;
   },
   orthogroups(ID) {
     return orthogroupCollection.find({ ID });

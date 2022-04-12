@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { branch, compose } from '/imports/ui/util/uiUtil.jsx';
 import { Genes } from '/imports/api/genes/geneCollection.js';
 import { withTracker } from 'meteor/react-meteor-data';
+import { Meteor } from 'meteor/meteor';
+import { eggnogCollection } from '/imports/api/genes/eggnog/eggnogCollection.js';
 import './eggnog.scss';
 
 function Header() {
@@ -32,9 +34,14 @@ function NoEggnog({ showHeader }) {
 }
 
 function eggnogDataTracker({ gene }) {
-  const eggnogAnnotation = Genes.findOne({ ID: gene.ID }).eggnog;
-  const eggnog = (Object.keys(eggnogAnnotation).length === 0 ? undefined : eggnogAnnotation);
+  const eggnogId = Genes.findOne({ ID: gene.ID }).eggnogId;
+
+  const eggnogSub = Meteor.subscribe('eggnog');
+  const loading = !eggnogSub.ready();
+  const eggnog = eggnogCollection.findOne({ _id: eggnogId });
+
   return {
+    loading,
     gene,
     eggnog,
   };

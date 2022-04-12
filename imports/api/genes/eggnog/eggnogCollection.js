@@ -1,4 +1,5 @@
 import SimpleSchema from 'simpl-schema';
+import { Mongo } from 'meteor/mongo';
 
 const eggnogSchema = new SimpleSchema({
   query_name: {
@@ -115,4 +116,6 @@ const eggnogSchema = new SimpleSchema({
   },
 });
 
-export { eggnogSchema };
+const eggnogCollection = new Mongo.Collection('eggnog');
+
+export { eggnogCollection, eggnogSchema };

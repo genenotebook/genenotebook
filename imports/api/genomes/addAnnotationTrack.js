@@ -52,12 +52,12 @@ const Interval = class Interval {
     this.ID = attributes.ID[0];
     delete attributes.ID;
 
-    const eggnog = {};
+    //const eggnog = {};
 
     if (typeof attributes.Parent === 'undefined') {
       // top level feature
       Object.assign(this, {
-        seqid, source, strand, genomeId, eggnog,
+        seqid, source, strand, genomeId
       });
     } else {
       // sub feature
@@ -67,7 +67,7 @@ const Interval = class Interval {
     }
 
     Object.assign(this, {
-      type, start, end, score, attributes, eggnog,
+      type, start, end, score, attributes,
     });
   }
 };

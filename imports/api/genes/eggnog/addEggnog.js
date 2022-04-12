@@ -5,10 +5,12 @@ import logger from '/imports/api/util/logger.js';
 import { Roles } from 'meteor/alanning:roles';
 import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor';
+import { eggnogCollection } from '/imports/api/genes/eggnog/eggnogCollection.js';
 
 class EggnogProcessor {
   constructor() {
-    this.bulkOp = Genes.rawCollection().initializeUnorderedBulkOp();
+    this.genesDb = Genes.rawCollection();
+    this.eggnogDb = eggnogCollection.rawCollection();
   }
 
   parse = (line) => {
@@ -53,13 +55,27 @@ class EggnogProcessor {
         }
       }
 
-      this.bulkOp.find({ 'subfeatures.ID': query_name }).update({ $set: { eggnog: annotations }} );
+      // If find subfeatures
+      const subfeatureIsFind = this.genesDb.findOne({ 'subfeatures.ID': query_name });
+      logger.log('subfeatureIsFind :', subfeatureIsFind);
+
+      // Then create a new _id to share between genes and eggnog collections.
+      // const _id = new Mongo.ObjectID()
+      // logger.log("Shared _id :", _id);
+
+      const eggnogId = eggnogCollection.insert(annotations);
+      logger.log('eggnogId :', eggnogId);
+
+      //
+      this.genesDb.update( { 'subfeatures.ID': query_name }, { $set: { eggnogId: eggnogId }})
+
+      //this.bulkOp.find({ 'subfeatures.ID': query_name }).update({ $set: { eggnog: annotations }} );
     }
   }
 
-  finalize = () => {
-    return this.bulkOp.execute();
-  }
+  // finalize = () => {
+  //   return this.bulkOp.execute();
+  // }
 }
 
 const addEggnog = new ValidatedMethod({

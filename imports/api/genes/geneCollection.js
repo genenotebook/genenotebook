@@ -1,4 +1,4 @@
-import { eggnogSchema } from '/imports/api/genes/eggnog/eggnogCollection.js';
+//import { eggnogSchema } from '/imports/api/genes/eggnog/eggnogCollection.js';
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
@@ -52,12 +52,12 @@ const IntervalBaseSchema = new SimpleSchema({
     // index: true,
     label: 'Any attributes',
   },
-  eggnog: {
-    type: eggnogSchema,
-    optional: true,
-    blackbox: true,
-    label: 'Eggnog annotations',
-  },
+  // eggnog: {
+  //   type: eggnogSchema,
+  //   optional: true,
+  //   blackbox: true,
+  //   label: 'Eggnog annotations',
+  // },
   children: {
     type: Array, // [String],
     optional: true,
@@ -148,6 +148,12 @@ const GeneSchema = new SimpleSchema({
     index: true,
     optional: true,
     label: 'Orthogroup DB identifier (_id in orthogroup collection)',
+  },
+  eggnogId: {
+    type: String,
+    index: true,
+    optional: true,
+    label: 'eggnog DB identifier (_id in eggnog collection)',
   },
   seqid: {
     type: String,

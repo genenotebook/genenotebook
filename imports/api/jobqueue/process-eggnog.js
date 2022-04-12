@@ -45,10 +45,11 @@ jobQueue.processJobs(
     rl.on('close', async () => {
       try {
         logger.log('File reading finished');
-        const { nMatched } = await lineProcessor.finalize();
-        const nInserted = nMatched;
-        logger.log(`Matched to ${nMatched} gene(s).`);
-        job.done({ nInserted });
+        // const { nMatched } = await lineProcessor.finalize();
+        // const nInserted = nMatched;
+        // logger.log(`Matched to ${nMatched} gene(s).`);
+        // job.done({ nInserted });
+        job.done();
       } catch (err) {
         logger.error(err);
         job.fail({ err });
