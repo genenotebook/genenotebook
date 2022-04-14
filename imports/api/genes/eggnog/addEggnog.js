@@ -9,19 +9,21 @@ import { eggnogCollection } from '/imports/api/genes/eggnog/eggnogCollection.js'
 
 class EggnogProcessor {
   constructor() {
+    // Not a bulk mongo suite.
     this.genesDb = Genes.rawCollection();
-    this.eggnogDb = eggnogCollection.rawCollection();
   }
 
   parse = (line) => {
     if (!(line[0] === '#' || line.split('\t').length <= 1)) {
 
+      // Get all eggnog informations line by line and separated by tabs.
       const [ query_name, seed_eggNOG_ortholog, seed_ortholog_evalue,
         seed_ortholog_score, eggNOG_OGs, max_annot_lvl, cog_category,
         description, preferred_name, gos, ec, kegg_ko, kegg_Pathway,
         kegg_Module, kegg_Reaction, kegg_rclass, brite, kegg_TC, cazy,
         biGG_Reaction, pfams, ] = line.split('\t');
 
+      // Organize data in a dictionary.
       const annotations= {
         'query_name': query_name,
         'seed_eggNOG_ortholog': seed_eggNOG_ortholog,
@@ -46,6 +48,8 @@ class EggnogProcessor {
         'PFAMs': pfams
       }
 
+      // Filters undefined data (with a dash) and splits into an array for
+      // comma-separated data.
       for (const [key, value] of Object.entries(annotations)) {
         if (value[0] === '-') {
           annotations[key] = ' ';
@@ -55,27 +59,38 @@ class EggnogProcessor {
         }
       }
 
-      // If find subfeatures
-      const subfeatureIsFind = this.genesDb.findOne({ 'subfeatures.ID': query_name });
-      logger.log('subfeatureIsFind :', subfeatureIsFind);
+      // If subfeatures is found in genes database (e.g: ID =
+      // MMUCEDO_000002-T1).
+      const subfeatureIsFound = this.genesDb.findOne(
+        { 'subfeatures.ID': query_name }
+      );
 
-      // Then create a new _id to share between genes and eggnog collections.
-      // const _id = new Mongo.ObjectID()
-      // logger.log("Shared _id :", _id);
 
-      const eggnogId = eggnogCollection.insert(annotations);
-      logger.log('eggnogId :', eggnogId);
+      if (typeof subfeatureIsFound !== 'undefined') {
 
-      //
-      this.genesDb.update( { 'subfeatures.ID': query_name }, { $set: { eggnogId: eggnogId }})
+        // Update or insert if no matching documents were found.
+        const documentEggnog = eggnogCollection.upsert(
+          { 'query_name': query_name }, // selector.
+          annotations, // modifier.
+        );
 
-      //this.bulkOp.find({ 'subfeatures.ID': query_name }).update({ $set: { eggnog: annotations }} );
+        // Update eggnogId in genes database only if a new eggnog document is
+        // created (and not updated).
+        if (typeof documentEggnog.insertedId !== 'undefined') {
+          this.genesDb.update(
+            { 'subfeatures.ID': query_name },
+            { $set: { eggnogId: documentEggnog.insertedId } }
+          );
+        }
+
+      } else {
+        logger.warn(`
+Warning ! ${query_name} eggnog annotation did
+not find a matching protein domain in the genes database.
+${query_name} is not added to the eggnog database.`);
+      }
     }
   }
-
-  // finalize = () => {
-  //   return this.bulkOp.execute();
-  // }
 }
 
 const addEggnog = new ValidatedMethod({

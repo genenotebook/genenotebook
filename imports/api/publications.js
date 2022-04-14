@@ -26,8 +26,6 @@ import fetchDbxref from '/imports/api/methods/fetchDbxref.js';
 // utilities
 import { DBXREF_REGEX } from '/imports/api/util/util.js';
 
-import logger from '/imports/api/util/logger.js';
-
 function availableGenomes({ userId }) {
   const roles = Roles.getRolesForUser(userId);
   const genomeIds = genomeCollection
@@ -116,7 +114,6 @@ Meteor.publish({
     return Meteor.roles.find({});
   },
   attributes() {
-    logger.log('prouuuuuuuut');
     const publication = this;
 
     const genomeIds = availableGenomes(publication);
@@ -179,7 +176,6 @@ Meteor.publish({
   },
   eggnog() {
     const eggnog = eggnogCollection.find({});
-    logger.log('eggnog publish :', eggnog);
     return eggnog;
   },
   orthogroups(ID) {
