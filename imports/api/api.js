@@ -16,6 +16,7 @@ import './genomes/removeGenome.js';
 import './genomes/addAnnotationTrack.js';
 import './genomes/removeAnnotationTrack.js';
 
+import './genes/interproscan.js';
 import './genes/addInterproscan.js';
 import './genes/eggnog/addEggnog.js'
 import './genes/addOrthogroupTrees.js';

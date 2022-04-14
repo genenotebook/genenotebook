@@ -392,8 +392,8 @@ addInterproscan
 const addEggnog = add.command('eggnog');
 
 addEggnog
-  .description('Add EggNog results to a running GeneNoteBook server')
-  .usage('[options] <EggNog tsv output file>')
+  .description('Add EggNog-mapper results to a running GeneNoteBook server')
+  .usage('[options] <EggNog-mapper tsv output file>')
   .arguments('<file>')
   .requiredOption(
     '-u, --username <adminUsername>',

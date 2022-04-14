@@ -111,7 +111,7 @@ function SingleGenePage({ gene, genome = {} }) {
               </li>
               <li>
                 <a href="#eggnog">
-                  Eggnog
+                  EggNOG
                 </a>
               </li>
               <li>

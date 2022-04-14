@@ -11,7 +11,7 @@ function Header() {
   return (
     <>
       <hr />
-      <h4 className="subtitle is-4">eggNOG annotations</h4>
+      <h4 className="subtitle is-4">EggNOG annotations</h4>
     </>
   );
 }
@@ -26,7 +26,7 @@ function NoEggnog({ showHeader }) {
       {showHeader && <Header />}
       <article className="message no-orthogroup" role="alert">
         <div className="message-body">
-          <p className="has-text-grey">No eggnog annotations found</p>
+          <p className="has-text-grey">No EggNOG annotations found</p>
         </div>
       </article>
     </>
@@ -445,7 +445,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
                   ,
                 </span>
                 <p>
-                  Best protein match in eggNOG.
+                  Best protein match in EggNOG.
                 </p>
               </div>
 
@@ -482,7 +482,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
         <tbody>
           <tr>
             <th colSpan="2" className="is-light">
-              eggNOG Orthologous Groups
+              EggNOG Orthologous Groups
             </th>
           </tr>
           <tr>
@@ -493,7 +493,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
                   {'\u24d8'}
                 </span>
                 <p>
-                  List of matching eggNOG Orthologous Groups.
+                  List of matching EggNOG Orthologous Groups.
                 </p>
               </div>
             </td>
