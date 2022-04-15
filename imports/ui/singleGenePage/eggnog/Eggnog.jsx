@@ -280,18 +280,19 @@ function GeneOntology({ gosID }) {
   );
 }
 
-function KeggReactionApi({ reaction }) {
+function KeggApi({ database, query }) {
   // e.g: https://rest.kegg.jp/find/reaction/R04405
   // e.g for reaction https://rest.kegg.jp/find/reaction/R04405
   // e.g only ko : https://rest.kegg.jp/find/ko/ko:K00549
+  // e.g rclass database https://rest.kegg.jp/find/rclass/RC00002
 
-  // From kegg reaction api.
-  const keggReactionApi = 'https://rest.kegg.jp/find/reaction/';
+  // From kegg query api.
+  const keggQueryApi = `https://rest.kegg.jp/find/${database}/`;
   const [description, setDescription] = useState('');
   const [loading, isLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${keggReactionApi}${reaction}`)
+    fetch(`${keggQueryApi}${query}`)
       .then((response) => {
         if (response.ok) {
           return response.text();
@@ -300,9 +301,21 @@ function KeggReactionApi({ reaction }) {
       })
       .then((data) => {
         isLoading(false);
-        // Get the definition of the Kegg Reaction.
-        const definition = data.split('\t')[1].split(';')[1];
-        setDescription(definition);
+
+        let content;
+
+        // Get the KEGG Query.
+        switch(database) {
+          case 'reaction':
+            content = data.split('\t')[1].split(';')[1];
+            break;
+          case 'rclass':
+            content = data.split('\t')[1];
+            break;
+          default:
+            content = data;
+        }
+        setDescription(content);
       });
   }, [description, loading]);
 
@@ -321,32 +334,35 @@ function KeggReactionApi({ reaction }) {
   );
 }
 
-function KeggReaction({ reactionId }) {
-  const KeggReactionUrl = 'https://www.genome.jp/entry/';
+function Kegg({ database, query }) {
+  const KeggEntryUrl = 'https://www.genome.jp/entry/';
 
-  const KeggRecAttribute = (Array.isArray(reactionId)
-    ? reactionId.map((ID) => {
+  const KeggRecAttribute = (Array.isArray(query)
+    ? query.map((ID) => {
       return (
         <div className="seed_eggnog_ortholog_table">
           <a
-            href={`${KeggReactionUrl}${ID}`}
+            href={`${KeggEntryUrl}${ID}`}
             target="_blank"
             rel="noreferrer"
           >
             {ID}
           </a>
-          <KeggReactionApi reaction={ID} />
+          <KeggApi database={database} query={ID} />
         </div>
       );
     })
     : (
-      <a
-        href={`${KeggReactionUrl}${reactionId}`}
-        target="_blank"
-        rel="noreferrer"
-      >
-        {reactionId}
-      </a>
+      <div>
+        <a
+          href={`${KeggEntryUrl}${query}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {query}
+        </a>
+        <KeggApi database={database} query={query} />
+      </div>
     ));
 
   return (
@@ -697,7 +713,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
               </div>
             </td>
             <td>
-              <KeggReaction reactionId={eggnog.KEGG_Reaction} />
+              <Kegg database="reaction" query={eggnog.KEGG_Reaction} />
             </td>
           </tr>
           <tr>
@@ -720,10 +736,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
               </div>
             </td>
             <td>
-              <LinkedComponent
-                values={eggnog.KEGG_rclass}
-                url="https://www.genome.jp/entry/"
-              />
+              <Kegg database="rclass" query={eggnog.KEGG_rclass} />
             </td>
           </tr>
           <tr>
