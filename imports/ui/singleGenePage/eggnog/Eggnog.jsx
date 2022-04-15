@@ -281,9 +281,8 @@ function GeneOntology({ gosID }) {
 }
 
 function KeggApi({ database, query }) {
-  // e.g: https://rest.kegg.jp/find/reaction/R04405
-  // e.g for reaction https://rest.kegg.jp/find/reaction/R04405
-  // e.g only ko : https://rest.kegg.jp/find/ko/ko:K00549
+  // e.g reaction https://rest.kegg.jp/find/reaction/R04405
+  // e.g ko : https://rest.kegg.jp/find/ko/ko:K00549
   // e.g rclass database https://rest.kegg.jp/find/rclass/RC00002
 
   // From kegg query api.
@@ -311,6 +310,9 @@ function KeggApi({ database, query }) {
             break;
           case 'rclass':
             content = data.split('\t')[1];
+            break;
+          case 'ko':
+            content = data.split('\t')[1].split(';')[1];
             break;
           default:
             content = data;
@@ -676,12 +678,24 @@ function ArrayEggnogAnnotations({ eggnog }) {
             </td>
           </tr>
           <tr>
-            <td>KEGG ko</td>
             <td>
-              <LinkedComponent
-                values={eggnog.KEGG_ko}
-                url="https://www.genome.jp/entry/"
-              />
+              KEGG ko
+              <div className="help-tip">
+                <span>
+                  {'\u24d8'}
+                </span>
+                <p>
+                  The KO (KEGG Orthology) database is a database of molecular
+                  functions represented in terms of functional orthologs.
+                  <br />
+                  <a href="https://www.genome.jp/kegg/reaction/" target="_blank" rel="noreferrer">
+                    (source : https://www.genome.jp/kegg/ko.html)
+                  </a>
+                </p>
+              </div>
+            </td>
+            <td>
+              <Kegg database="ko" query={eggnog.KEGG_ko} />
             </td>
           </tr>
           <tr>
