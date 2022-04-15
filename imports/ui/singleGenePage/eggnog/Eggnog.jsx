@@ -280,6 +280,80 @@ function GeneOntology({ gosID }) {
   );
 }
 
+function KeggReactionApi({ reaction }) {
+  // e.g: https://rest.kegg.jp/find/reaction/R04405
+  // e.g for reaction https://rest.kegg.jp/find/reaction/R04405
+  // e.g only ko : https://rest.kegg.jp/find/ko/ko:K00549
+
+  // From kegg reaction api.
+  const keggReactionApi = 'https://rest.kegg.jp/find/reaction/';
+  const [description, setDescription] = useState('');
+  const [loading, isLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`${keggReactionApi}${reaction}`)
+      .then((response) => {
+        if (response.ok) {
+          return response.text();
+        }
+        throw response;
+      })
+      .then((data) => {
+        isLoading(false);
+        // Get the definition of the Kegg Reaction.
+        const definition = data.split('\t')[1].split(';')[1];
+        setDescription(definition);
+      });
+  }, [description, loading]);
+
+  return (
+    <div>
+      {
+        loading
+          ? (
+            <p className="loadingContent">...</p>
+          )
+          : (
+            <p className="gogcategory">{description}</p>
+          )
+      }
+    </div>
+  );
+}
+
+function KeggReaction({ reactionId }) {
+  const KeggReactionUrl = 'https://www.genome.jp/entry/';
+
+  const KeggRecAttribute = (Array.isArray(reactionId)
+    ? reactionId.map((ID) => {
+      return (
+        <div className="seed_eggnog_ortholog_table">
+          <a
+            href={`${KeggReactionUrl}${ID}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {ID}
+          </a>
+          <KeggReactionApi reaction={ID} />
+        </div>
+      );
+    })
+    : (
+      <a
+        href={`${KeggReactionUrl}${reactionId}`}
+        target="_blank"
+        rel="noreferrer"
+      >
+        {reactionId}
+      </a>
+    ));
+
+  return (
+    <EggnogGeneralInformations informations={KeggRecAttribute} maxArray={2} />
+  );
+}
+
 function Cazy({ cazy }) {
   const cazyUrl = 'http://www.cazy.org/';
 
@@ -349,9 +423,9 @@ function LinkedComponent({ values, url }) {
   );
 }
 
-function EggnogGeneralInformations({ informations }) {
+function EggnogGeneralInformations({ informations, maxArray = 5 }) {
   const maxChar = 70;
-  const maxArrayLines = 5;
+  const maxArrayLines = maxArray;
   const infoIsArray = Array.isArray(informations);
   const isMaxArray = informations.length > maxArrayLines;
   const isMaxChar = informations.length > maxChar;
@@ -388,7 +462,7 @@ function EggnogGeneralInformations({ informations }) {
       if (openInfo) {
         return 'Show less';
       }
-      return `Show ${informations.length - 1} more ...`;
+      return `Show ${informations.length - maxArrayLines } more ...`;
     } else {
       if (openInfo) {
         return 'Show less';
@@ -402,7 +476,7 @@ function EggnogGeneralInformations({ informations }) {
       {
         infoIsArray
           ? (
-            <ul>
+            <ul className="scrolling-goterms">
               { descArray.map((value, index) => (
                 <li key={index}>{ value }</li>
               ))}
@@ -557,7 +631,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
             {
               eggnog.GOs.length > 0 && eggnog.GOs[0] !== ' '
                 ? (
-                  <td className="scrolling-goterms">
+                  <td>
                     <GeneOntology gosID={eggnog.GOs} />
                   </td>
                 )
@@ -604,16 +678,47 @@ function ArrayEggnogAnnotations({ eggnog }) {
             </td>
           </tr>
           <tr>
-            <td>KEGG reaction</td>
             <td>
-              <LinkedComponent
-                values={eggnog.KEGG_Reaction}
-                url="https://www.genome.jp/entry/"
-              />
+              KEGG reaction
+              <div className="help-tip">
+                <span>
+                  {'\u24d8'}
+                </span>
+                <p>
+                  KEGG REACTION is a database of chemical reactions, mostly
+                  enzymatic reactions, containing all reactions that appear in
+                  the KEGG metabolic pathway maps and additional reactions that
+                  appear only in the Enzyme Nomenclature.
+                  <br />
+                  <a href="https://www.genome.jp/kegg/reaction/" target="_blank" rel="noreferrer">
+                    (source : https://www.genome.jp/kegg/reaction/)
+                  </a>
+                </p>
+              </div>
+            </td>
+            <td>
+              <KeggReaction reactionId={eggnog.KEGG_Reaction} />
             </td>
           </tr>
           <tr>
-            <td>KEGG rclass</td>
+            <td>
+              KEGG rclass
+              <div className="help-tip">
+                <span>
+                  {'\u24d8'}
+                </span>
+                <p>
+                  KEGG RCLASS contains classification of reactions based on the
+                  chemical structure transformation patterns of
+                  substrate-product pairs (reactant pairs), which are
+                  represented by the so-called RDM patterns.
+                  <br />
+                  <a href="https://www.genome.jp/kegg/reaction/" target="_blank" rel="noreferrer">
+                    (source : https://www.genome.jp/kegg/reaction/)
+                  </a>
+                </p>
+              </div>
+            </td>
             <td>
               <LinkedComponent
                 values={eggnog.KEGG_rclass}
