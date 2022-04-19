@@ -197,6 +197,8 @@ function GogCategory({ category }) {
     T: 'Signal Transduction',
     U: 'Intracellular trafficing and secretion',
     Y: 'Nuclear structure',
+    V: 'Defense mechanisms',
+    W: 'Extracellular structures',
     Z: 'Cytoskeleton',
     R: 'General Functional Prediction only',
     S: 'Function Unknown',
@@ -281,12 +283,22 @@ function GeneOntology({ gosID }) {
 }
 
 function KeggApi({ database, query }) {
-  // e.g reaction https://rest.kegg.jp/find/reaction/R04405
+  // e.g reaction : https://rest.kegg.jp/find/reaction/R04405
   // e.g ko : https://rest.kegg.jp/find/ko/ko:K00549
-  // e.g rclass database https://rest.kegg.jp/find/rclass/RC00002
+  // e.g rclass : https://rest.kegg.jp/find/rclass/RC00002
+  // e.g brite : https://rest.kegg.jp/find/brite/ko00001
+  // e.g pathway : https://rest.kegg.jp/list/map01110
 
   // From kegg query api.
-  const keggQueryApi = `https://rest.kegg.jp/find/${database}/`;
+  let keggQueryApi;
+  switch (database) {
+    case 'pathway':
+    case 'enzyme':
+      keggQueryApi = 'https://rest.kegg.jp/list/';
+      break;
+    default:
+      keggQueryApi = `https://rest.kegg.jp/find/${database}/`;
+  }
   const [description, setDescription] = useState('');
   const [loading, isLoading] = useState(true);
 
@@ -304,15 +316,16 @@ function KeggApi({ database, query }) {
         let content;
 
         // Get the KEGG Query.
-        switch(database) {
+        switch (database) {
           case 'reaction':
+          case 'ko':
             content = data.split('\t')[1].split(';')[1];
             break;
           case 'rclass':
+          case 'brite':
+          case 'enzyme':
+          case 'pathway':
             content = data.split('\t')[1];
-            break;
-          case 'ko':
-            content = data.split('\t')[1].split(';')[1];
             break;
           default:
             content = data;
@@ -337,7 +350,14 @@ function KeggApi({ database, query }) {
 }
 
 function Kegg({ database, query }) {
-  const KeggEntryUrl = 'https://www.genome.jp/entry/';
+  let KeggEntryUrl;
+  switch (database) {
+    case 'brite':
+      KeggEntryUrl = 'https://www.genome.jp/brite/';
+      break;
+    default:
+      KeggEntryUrl = 'https://www.genome.jp/entry/';
+  }
 
   const KeggRecAttribute = (Array.isArray(query)
     ? query.map((ID) => {
@@ -394,7 +414,47 @@ function Cazy({ cazy }) {
   );
 }
 
+function BiggApi({ models, genes }) {
+  // e.g api http://bigg.ucsd.edu/api/v2/models/iMM904/genes/YER091C
+  const biggQueryApi = `http://bigg.ucsd.edu/api/v2/models/${models}/genes/${genes}`;
+
+  const [description, setDescription] = useState('');
+  const [loading, isLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(biggQueryApi)
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw response;
+      })
+      .then((data) => {
+        isLoading(false);
+
+        const content = data.reactions[0].name;
+        setDescription(content);
+      });
+  }, [description, loading]);
+
+  return (
+    <div>
+      {
+        loading
+          ? (
+            <p className="loadingContent">...</p>
+          )
+          : (
+            <p className="gogcategory">{description}</p>
+          )
+      }
+    </div>
+  );
+}
+
 function BiggReaction({ reaction }) {
+  if (reaction === ' ') return <p />;
+  // e.g : http://bigg.ucsd.edu/models/iMM904/genes/YER091C
   const biggModelsUrl = 'http://bigg.ucsd.edu/models/';
   const biggGenesUrl = '/genes/';
 
@@ -403,19 +463,106 @@ function BiggReaction({ reaction }) {
   const biggReactionUrl = (Array.isArray(reaction)
     ? reaction.map((val) => {
       return (
+        <div>
+          <a
+            href={biggModelsUrl.concat(val.split('.')[0], biggGenesUrl, val.split('.')[1])}
+            target="_blank"
+            rel="noreferrer"
+          >
+            { val }
+          </a>
+          <BiggApi models={val.split('.')[0]} genes={val.split('.')[1]} />
+        </div>
+      );
+    })
+    : (
+      <div>
         <a
-          href={biggModelsUrl.concat(val.split('.')[0], biggGenesUrl, val.split('.')[1])}
+          href={biggModelsUrl.concat(reaction.split('.')[0], biggGenesUrl, reaction.split('.')[1])}
           target="_blank"
           rel="noreferrer"
         >
-          { val }
+          { reaction }
         </a>
-      );
-    })
-    : <a href={biggModelsUrl.concat(reaction.split('.')[0], biggGenesUrl, reaction.split('.')[1])} target="_blank" rel="noreferrer">{ reaction }</a>);
+        <BiggApi models={reaction.split('.')[0]} genes={reaction.split('.')[1]}/>
+      </div>
+    ));
 
   return (
     <EggnogGeneralInformations informations={biggReactionUrl} />
+  );
+}
+
+function PfamsApi({ id }) {
+  // e.g : https://pfam.xfam.org/family/Meth_synt_1/desc
+  const PfamsQueryApi = `https://pfam.xfam.org/family/${id}/desc`;
+
+  const [description, setDescription] = useState('');
+  const [loading, isLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(PfamsQueryApi)
+      .then((response) => {
+        if (response.ok) {
+          return response.text();
+        }
+        throw response;
+      })
+      .then((data) => {
+        isLoading(false);
+        setDescription(data);
+      });
+  }, [description, loading]);
+
+  return (
+    <div>
+      {
+        loading
+          ? (
+            <p className="loadingContent">...</p>
+          )
+          : (
+            <p className="gogcategory">{description}</p>
+          )
+      }
+    </div>
+  );
+}
+
+function Pfams({ family }) {
+  // e.g : https://pfam.xfam.org/family/Meth_synt_1
+  const PfamsUrl = 'https://pfam.xfam.org/family/';
+
+  const PfamsLibrary = (Array.isArray(family)
+    ? family.map((val) => {
+      return (
+        <div>
+          <a
+            href={`${PfamsUrl}${val}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            { val }
+          </a>
+          <PfamsApi id={val} />
+        </div>
+      );
+    })
+    : (
+      <div>
+        <a
+          href={`${PfamsUrl}${family}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          { family }
+        </a>
+        <PfamsApi id={family} />
+      </div>
+    ));
+
+  return (
+    <EggnogGeneralInformations informations={PfamsLibrary} />
   );
 }
 
@@ -594,7 +741,18 @@ function ArrayEggnogAnnotations({ eggnog }) {
             </td>
           </tr>
           <tr>
-            <td>Maximum annotation level</td>
+            <td>
+              Maximum annotation level
+              <div className="help-tip">
+                <span>
+                  {'\u24d8'}
+                </span>
+                <p>
+                  The level of widest OG used to retrieve orthologs for
+                  annotations.
+                </p>
+              </div>
+            </td>
             <td>
               <MaxAnnotLvl annot={eggnog.max_annot_lvl} />
             </td>
@@ -616,7 +774,17 @@ function ArrayEggnogAnnotations({ eggnog }) {
             </td>
           </tr>
           <tr>
-            <td>Description</td>
+            <td>
+              Description
+              <div className="help-tip">
+                <span>
+                  {'\u24d8'}
+                </span>
+                <p>
+                  EggNOG functional description inferred from best matching OG.
+                </p>
+              </div>
+            </td>
             <td>
               <EggnogGeneralInformations informations={eggnog.Description} />
             </td>
@@ -666,15 +834,12 @@ function ArrayEggnogAnnotations({ eggnog }) {
                   {'\u24d8'}
                 </span>
                 <p>
-                  EC numbers specify enzyme-catalysed reactions.
+                  The Enzyme Commission number (EC number).
                 </p>
               </div>
             </td>
             <td>
-              <LinkedComponent
-                values={eggnog.EC}
-                url="https://enzyme.expasy.org/EC/"
-              />
+              <Kegg database="enzyme" query={eggnog.EC} />
             </td>
           </tr>
           <tr>
@@ -699,12 +864,25 @@ function ArrayEggnogAnnotations({ eggnog }) {
             </td>
           </tr>
           <tr>
-            <td>KEGG pathway</td>
             <td>
-              <LinkedComponent
-                values={eggnog.KEGG_Pathway}
-                url="https://www.genome.jp/entry/"
-              />
+              KEGG pathway
+              <div className="help-tip">
+                <span>
+                  {'\u24d8'}
+                </span>
+                <p>
+                  KEGG PATHWAY is a collection of manually drawn pathway maps
+                  representing our knowledge of the molecular interaction,
+                  reaction and relation networks.
+                  <br />
+                  <a href="https://www.genome.jp/kegg/pathway.html" target="_blank" rel="noreferrer">
+                    (source : https://www.genome.jp/kegg/pathway.html)
+                  </a>
+                </p>
+              </div>
+            </td>
+            <td>
+              <Kegg database="pathway" query={eggnog.KEGG_Pathway} />
             </td>
           </tr>
           <tr>
@@ -754,16 +932,44 @@ function ArrayEggnogAnnotations({ eggnog }) {
             </td>
           </tr>
           <tr>
-            <td>BRITE</td>
             <td>
-              <LinkedComponent
-                values={eggnog.BRITE}
-                url="https://www.genome.jp/brite/"
-              />
+              KEGG BRITE
+              <div className="help-tip">
+                <span>
+                  {'\u24d8'}
+                </span>
+                <p>
+                  KEGG BRITE is a collection of hierarchical classification
+                  systems capturing functional hierarchies of various biological
+                  objects, especially those represented as KEGG objects.
+                  <br />
+                  <a href="https://www.genome.jp/kegg/brite.html" target="_blank" rel="noreferrer">
+                    (source : https://www.genome.jp/kegg/brite.html)
+                  </a>
+                </p>
+              </div>
+            </td>
+            <td>
+              <Kegg database="brite" query={eggnog.BRITE} />
             </td>
           </tr>
           <tr>
-            <td>KEGG tc</td>
+            <td>
+              KEGG TC (Transporter Classification)
+              <div className="help-tip">
+                <span>
+                  {'\u24d8'}
+                </span>
+                <p>
+                  Classification system for membrane transport proteins known as
+                  the Transporter Classification (TC) system.
+                  <br />
+                  <a href="https://www.tcdb.org/" target="_blank" rel="noreferrer">
+                    (source : https://www.tcdb.org/)
+                  </a>
+                </p>
+              </div>
+            </td>
             <td>
               <LinkedComponent
                 values={eggnog.KEGG_TC}
@@ -772,24 +978,65 @@ function ArrayEggnogAnnotations({ eggnog }) {
             </td>
           </tr>
           <tr>
-            <td>CAZy</td>
+            <td>
+              CAZy
+              <div className="help-tip">
+                <span>
+                  {'\u24d8'}
+                </span>
+                <p>
+                  Best hit with
+                  <b> Carbohydrate-Active enZYmes </b>
+                  database.
+                  <br />
+                  <a href="http://www.cazy.org/" target="_blank" rel="noreferrer">
+                    (source : http://www.cazy.org/)
+                  </a>
+                </p>
+              </div>
+            </td>
             <td>
               <Cazy cazy={eggnog.CAZy} />
             </td>
           </tr>
           <tr>
-            <td>BiGG reaction</td>
+            <td>
+              BiGG reaction
+              <div className="help-tip">
+                <span>
+                  {'\u24d8'}
+                </span>
+                <p>
+                  List of predicted BiGG metabolic reactions.
+                  <br />
+                  <a href="http://bigg.ucsd.edu/" target="_blank" rel="noreferrer">
+                    (source : http://bigg.ucsd.edu/)
+                  </a>
+                </p>
+              </div>
+            </td>
             <td>
               <BiggReaction reaction={eggnog.BiGG_Reaction} />
             </td>
           </tr>
           <tr>
-            <td>PFAMs</td>
             <td>
-              <LinkedComponent
-                values={eggnog.PFAMs}
-                url="https://pfam.xfam.org/family/"
-              />
+              PFAMs
+              <div className="help-tip">
+                <span>
+                  {'\u24d8'}
+                </span>
+                <p>
+                  The Pfam database is a large collection of protein families.
+                  <br />
+                  <a href="https://pfam.xfam.org/" target="_blank" rel="noreferrer">
+                    (source : https://pfam.xfam.org/)
+                  </a>
+                </p>
+              </div>
+            </td>
+            <td>
+              <Pfams family={eggnog.PFAMs} />
             </td>
           </tr>
         </tbody>
