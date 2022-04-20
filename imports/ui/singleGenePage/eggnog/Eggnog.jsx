@@ -1,10 +1,10 @@
 /* eslint-disable react/prop-types */
-import React, { useEffect, useState } from 'react';
+import { eggnogCollection } from '/imports/api/genes/eggnog/eggnogCollection.js';
 import { branch, compose } from '/imports/ui/util/uiUtil.jsx';
 import { Genes } from '/imports/api/genes/geneCollection.js';
 import { withTracker } from 'meteor/react-meteor-data';
+import React, { useEffect, useState } from 'react';
 import { Meteor } from 'meteor/meteor';
-import { eggnogCollection } from '/imports/api/genes/eggnog/eggnogCollection.js';
 import './eggnog.scss';
 
 function Header() {
@@ -51,20 +51,29 @@ function SeedEggNOGOrtholog({ seed, evalue, score }) {
   const uniprotUrl = 'https://www.uniprot.org/uniprot/';
 
   // Split to get uniprot id (e.g: 36080.S2K726 -> S2K726).
-  const uniprotID = seed.split('.')[1];
+  let uniprotID;
+  if (seed) {
+    uniprotID = seed.split('.')[1];
+  } else {
+    uniprotID = '';
+  }
 
   // Set 'e' to exponential unicode (e.g: 6.14e-161 -> 6.14ₑ-161)
-  const expEvalue = (evalue.indexOf('e') > -1
-    ? (
-      <span>
-        {evalue.split('e')[0]}
-        {'\u2091'}
-        <sup>
-          {evalue.split('e')[1]}
-        </sup>
-      </span>
-    )
-    : <span>{evalue}</span>);
+  let expEvalue;
+  if (typeof evalue !== 'undefined') {
+    expEvalue = (evalue.indexOf('e') > -1
+      ? (
+        <span>
+          {evalue.split('e')[0]}
+          {'\u2091'}
+          <sup>
+            {evalue.split('e')[1]}
+          </sup>
+        </span>
+      )
+      : <span>{evalue}</span>
+    );
+  }
 
   return (
     <td className="seed_eggnog_ortholog_table">
@@ -415,7 +424,7 @@ function Cazy({ cazy }) {
 }
 
 function BiggApi({ models, genes }) {
-  // e.g api http://bigg.ucsd.edu/api/v2/models/iMM904/genes/YER091C
+  // e.g : api http://bigg.ucsd.edu/api/v2/models/iMM904/genes/YER091C
   const biggQueryApi = `http://bigg.ucsd.edu/api/v2/models/${models}/genes/${genes}`;
 
   const [description, setDescription] = useState('');
@@ -432,7 +441,12 @@ function BiggApi({ models, genes }) {
       .then((data) => {
         isLoading(false);
 
-        const content = data.reactions[0].name;
+        let content = '';
+        for (let i = 0; i < data.reactions.length; i++) {
+          content += data.reactions[i].name;
+          if (i === data.reactions.length - 1) break;
+          content = content.concat('; ');
+        }
         setDescription(content);
       });
   }, [description, loading]);
@@ -627,7 +641,7 @@ function EggnogGeneralInformations({ informations, maxArray = 5 }) {
       if (openInfo) {
         return 'Show less';
       }
-      return `Show ${informations.length - maxArrayLines } more ...`;
+      return `Show ${informations.length - maxArrayLines} more ...`;
     } else {
       if (openInfo) {
         return 'Show less';
@@ -737,7 +751,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
               </div>
             </td>
             <td>
-              <EggnogOGs orthologousGroups={eggnog.eggNOG_OGs} />
+              { eggnog.eggNOG_OGs && <EggnogOGs orthologousGroups={eggnog.eggNOG_OGs} /> }
             </td>
           </tr>
           <tr>
@@ -754,7 +768,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
               </div>
             </td>
             <td>
-              <MaxAnnotLvl annot={eggnog.max_annot_lvl} />
+              { eggnog.max_annot_lvl && <MaxAnnotLvl annot={eggnog.max_annot_lvl} /> }
             </td>
           </tr>
           <tr>
@@ -770,7 +784,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
               </div>
             </td>
             <td>
-              <GogCategory category={eggnog.COG_category} />
+              { eggnog.COG_category && <GogCategory category={eggnog.COG_category} /> }
             </td>
           </tr>
           <tr>
@@ -786,7 +800,12 @@ function ArrayEggnogAnnotations({ eggnog }) {
               </div>
             </td>
             <td>
-              <EggnogGeneralInformations informations={eggnog.Description} />
+              {
+                eggnog.Description
+                  && (
+                    <EggnogGeneralInformations informations={eggnog.Description} />
+                  )
+              }
             </td>
           </tr>
           <tr>
@@ -814,17 +833,9 @@ function ArrayEggnogAnnotations({ eggnog }) {
                 </p>
               </div>
             </td>
-            {
-              eggnog.GOs.length > 0 && eggnog.GOs[0] !== ' '
-                ? (
-                  <td>
-                    <GeneOntology gosID={eggnog.GOs} />
-                  </td>
-                )
-                : (
-                  <td> </td>
-                )
-            }
+            <td>
+              { eggnog.GOs && <GeneOntology gosID={eggnog.GOs} /> }
+            </td>
           </tr>
           <tr>
             <td>
@@ -839,7 +850,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
               </div>
             </td>
             <td>
-              <Kegg database="enzyme" query={eggnog.EC} />
+              { eggnog.EC && <Kegg database="enzyme" query={eggnog.EC} /> }
             </td>
           </tr>
           <tr>
@@ -860,7 +871,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
               </div>
             </td>
             <td>
-              <Kegg database="ko" query={eggnog.KEGG_ko} />
+              { eggnog.KEGG_ko && <Kegg database="ko" query={eggnog.KEGG_ko} /> }
             </td>
           </tr>
           <tr>
@@ -882,7 +893,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
               </div>
             </td>
             <td>
-              <Kegg database="pathway" query={eggnog.KEGG_Pathway} />
+              { eggnog.KEGG_Pathway && <Kegg database="pathway" query={eggnog.KEGG_Pathway} /> }
             </td>
           </tr>
           <tr>
@@ -905,7 +916,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
               </div>
             </td>
             <td>
-              <Kegg database="reaction" query={eggnog.KEGG_Reaction} />
+              { eggnog.KEGG_Reaction && <Kegg database="reaction" query={eggnog.KEGG_Reaction} /> }
             </td>
           </tr>
           <tr>
@@ -928,7 +939,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
               </div>
             </td>
             <td>
-              <Kegg database="rclass" query={eggnog.KEGG_rclass} />
+              { eggnog.KEGG_rclass && <Kegg database="rclass" query={eggnog.KEGG_rclass} /> }
             </td>
           </tr>
           <tr>
@@ -950,7 +961,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
               </div>
             </td>
             <td>
-              <Kegg database="brite" query={eggnog.BRITE} />
+              { eggnog.BRITE && <Kegg database="brite" query={eggnog.BRITE} /> }
             </td>
           </tr>
           <tr>
@@ -971,10 +982,15 @@ function ArrayEggnogAnnotations({ eggnog }) {
               </div>
             </td>
             <td>
-              <LinkedComponent
-                values={eggnog.KEGG_TC}
-                url="https://tcdb.org/search/result.php?tc="
-              />
+              {
+                eggnog.KEGG_TC
+                  && (
+                    <LinkedComponent
+                      values={eggnog.KEGG_TC}
+                      url="https://tcdb.org/search/result.php?tc="
+                    />
+                  )
+              }
             </td>
           </tr>
           <tr>
@@ -996,7 +1012,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
               </div>
             </td>
             <td>
-              <Cazy cazy={eggnog.CAZy} />
+              { eggnog.CAZy && <Cazy cazy={eggnog.CAZy} /> }
             </td>
           </tr>
           <tr>
@@ -1016,7 +1032,7 @@ function ArrayEggnogAnnotations({ eggnog }) {
               </div>
             </td>
             <td>
-              <BiggReaction reaction={eggnog.BiGG_Reaction} />
+              { eggnog.BiGG_Reaction && <BiggReaction reaction={eggnog.BiGG_Reaction} />}
             </td>
           </tr>
           <tr>
@@ -1036,9 +1052,20 @@ function ArrayEggnogAnnotations({ eggnog }) {
               </div>
             </td>
             <td>
-              <Pfams family={eggnog.PFAMs} />
+              { eggnog.PFAMs && <Pfams family={eggnog.PFAMs} /> }
             </td>
           </tr>
+          {
+            eggnog.md5
+              && (
+                <tr>
+                  <td>md5</td>
+                  <td>
+                    {eggnog.md5}
+                  </td>
+                </tr>
+              )
+          }
         </tbody>
       </table>
     </div>

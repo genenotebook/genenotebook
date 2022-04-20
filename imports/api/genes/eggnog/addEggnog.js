@@ -52,7 +52,7 @@ class EggnogProcessor {
       // comma-separated data.
       for (const [key, value] of Object.entries(annotations)) {
         if (value[0] === '-') {
-          annotations[key] = ' ';
+          annotations[key] = undefined;
         }
         if( value.indexOf(',') > -1 ) {
           annotations[key] = value.split(',');
@@ -65,7 +65,6 @@ class EggnogProcessor {
         { 'subfeatures.ID': query_name }
       );
 
-
       if (typeof subfeatureIsFound !== 'undefined') {
 
         // Update or insert if no matching documents were found.
@@ -74,12 +73,19 @@ class EggnogProcessor {
           annotations, // modifier.
         );
 
-        // Update eggnogId in genes database only if a new eggnog document is
-        // created (and not updated).
+        // Update eggnogId in genes database.
         if (typeof documentEggnog.insertedId !== 'undefined') {
+          // Eggnog _id is created.
           this.genesDb.update(
             { 'subfeatures.ID': query_name },
             { $set: { eggnogId: documentEggnog.insertedId } }
+          );
+        } else {
+          // Eggnog already exists.
+          const eggnogIdentifiant = eggnogCollection.findOne({ 'query_name': query_name })._id;
+          this.genesDb.update(
+            { 'subfeatures.ID': query_name },
+            { $set: { eggnogId: eggnogIdentifiant } }
           );
         }
 
