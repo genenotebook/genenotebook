@@ -662,7 +662,7 @@ function EggnogGeneralInformations({ informations, maxArray = 5 }) {
             </ul>
           )
           : (
-            <p>{ descChar }</p>
+            <div>{ descChar }</div>
           )
       }
       { (isMaxArray && infoIsArray) || (isMaxChar && !infoIsArray)
