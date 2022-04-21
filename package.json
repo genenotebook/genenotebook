@@ -80,7 +80,7 @@
     "commander": "^9.0.0",
     "core-js": "^3.20.3",
     "core-util-is": "^1.0.3",
-    "d3": "7.3.0",
+    "d3": "7.4.4",
     "documentation": "^13.2.5",
     "dot-object": "^2.1.4",
     "fibers": "^5.0.0",
