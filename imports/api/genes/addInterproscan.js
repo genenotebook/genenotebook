@@ -13,12 +13,16 @@ import { Genes } from '/imports/api/genes/geneCollection.js';
 import logger from '/imports/api/util/logger.js';
 
 import {
-  parseAttributeString, debugParseAttributeString, DBXREF_REGEX,
+  parseAttributeString,
+  debugParseAttributeString,
+  DBXREF_REGEX,
 } from '/imports/api/util/util.js';
 
-const logAttributeError = ({
-  lineNumber, line, attributeString, error,
-}) => {
+/**
+ *
+ * @param {*} param0
+ */
+const logAttributeError = ({ lineNumber, line, attributeString, error }) => {
   logger.warn(`Error line ${lineNumber}`);
   logger.warn(line.join('\t'));
   logger.warn(attributeString);
@@ -26,6 +30,10 @@ const logAttributeError = ({
   throw new Meteor.Error(error);
 };
 
+/**
+ * @method parse
+ * @method finalize
+ */
 class InterproscanProcessor {
   constructor() {
     this.bulkOp = Genes.rawCollection().initializeUnorderedBulkOp();
@@ -34,8 +42,7 @@ class InterproscanProcessor {
 
   parse = (line) => {
     this.lineNumber += 1;
-    const [seqId, source, type, start, end,
-      score, , , attributeString] = line;
+    const [seqId, source, type, start, end, score, , , attributeString] = line;
 
     if (type === 'protein_match') {
       if (typeof attributeString !== 'undefined') {
@@ -54,22 +61,29 @@ class InterproscanProcessor {
         const dbUpdate = { $addToSet: {} };
 
         const {
-          Name, Dbxref: _dbxref = [], Ontology_term = [],
+          Name,
+          Dbxref: _dbxref = [],
+          Ontology_term = [],
           signature_desc = [],
         } = attributes;
-        const Dbxref = _dbxref
-          .filter((xref) => DBXREF_REGEX.combined.test(xref));
+        const Dbxref = _dbxref.filter((xref) =>
+          DBXREF_REGEX.combined.test(xref)
+        );
 
         const proteinDomain = {
-          start, end, source, score, name: Name[0],
+          start,
+          end,
+          source,
+          score,
+          name: Name[0],
         };
 
-        const interproIds = Dbxref
-          .filter((xref) => /InterPro/.test(xref))
-          .map((interproId) => {
+        const interproIds = Dbxref.filter((xref) => /InterPro/.test(xref)).map(
+          (interproId) => {
             const [, id] = interproId.split(':');
             return id;
-          });
+          }
+        );
 
         if (interproIds.length) {
           proteinDomain.interproId = interproIds[0];
@@ -101,9 +115,9 @@ class InterproscanProcessor {
         logger.warn(line.join('\t'));
       }
     }
-  }
+  };
 
-  finalize = () => this.bulkOp.execute()
+  finalize = () => this.bulkOp.execute();
 }
 /*
 const scanInterproApi = interproIds => {
@@ -139,47 +153,57 @@ const scanInterproApi = interproIds => {
   })
 }
 */
-const parseInterproscanGff = (fileName) => new Promise((resolve, reject) => {
-  logger.log('addInterproscan', fileName);
 
-  let lineNumber = 0;
+/**
+ *
+ * @param {*} fileName
+ * @returns Promise
+ */
+const parseInterproscanGff = (fileName) =>
+  new Promise((resolve, reject) => {
+    logger.log('addInterproscan', fileName);
 
-  const fileHandle = fs.readFileSync(fileName, { encoding: 'binary' });
+    let lineNumber = 0;
 
-  // const allInterproIds = new Set();
+    const fileHandle = fs.readFileSync(fileName, { encoding: 'binary' });
 
-  const lineProcessor = new InterproscanProcessor();
+    // const allInterproIds = new Set();
 
-  Papa.parse(fileHandle, {
-    delimiter: '\t',
-    dynamicTyping: true,
-    skipEmptyLines: true,
-    error(error) {
-      reject(error);
-    },
-    step({ data }, parser) {
-      lineNumber += 1;
-      if (lineNumber % 100 === 0) {
-        logger.debug(`Processed ${lineNumber} lines`);
-      }
-      if (data[0] === '#') {
-        if (/fasta/i.test(data[0])) {
-          logger.log('Encountered fasta section, stopped parsing');
-          parser.abort();
+    const lineProcessor = new InterproscanProcessor();
+
+    Papa.parse(fileHandle, {
+      delimiter: '\t',
+      dynamicTyping: true,
+      skipEmptyLines: true,
+      error(error) {
+        reject(error);
+      },
+      step({ data }, parser) {
+        lineNumber += 1;
+        if (lineNumber % 100 === 0) {
+          logger.debug(`Processed ${lineNumber} lines`);
         }
-      } else {
-        lineProcessor.parse(data);
-      }
-    },
-    complete() {
-      logger.log('Executing bulk operation');
-      const bulkOpResults = lineProcessor.finalize();
-      logger.log('Finished');
-      resolve(bulkOpResults);
-    },
+        if (data[0] === '#') {
+          if (/fasta/i.test(data[0])) {
+            logger.log('Encountered fasta section, stopped parsing');
+            parser.abort();
+          }
+        } else {
+          lineProcessor.parse(data);
+        }
+      },
+      complete() {
+        logger.log('Executing bulk operation');
+        const bulkOpResults = lineProcessor.finalize();
+        logger.log('Finished');
+        resolve(bulkOpResults);
+      },
+    });
   });
-});
 
+/**
+ * @param {*} fileName
+ */
 const addInterproscan = new ValidatedMethod({
   name: 'addInterproscan',
   validate: new SimpleSchema({
@@ -195,11 +219,10 @@ const addInterproscan = new ValidatedMethod({
     if (!Roles.userIsInRole(this.userId, 'admin')) {
       throw new Meteor.Error('not-authorized');
     }
-    return parseInterproscanGff(fileName)
-      .catch((error) => {
-        logger.warn(error);
-        throw new Meteor.Error(error);
-      });
+    return parseInterproscanGff(fileName).catch((error) => {
+      logger.warn(error);
+      throw new Meteor.Error(error);
+    });
   },
 });
 

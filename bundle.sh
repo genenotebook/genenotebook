@@ -24,7 +24,6 @@ pushd cli
 npm install
 popd 
 cp -r cli/* $BUNDLE_NAME 
-mv $BUNDLE_NAME/genenotebook.js $BUNDLE_NAME/genenotebook
 jq ".version = $(jq .version package.json)" cli/package.json > \
   $BUNDLE_NAME/package.json
 cp -r tests/testdata.tgz $BUNDLE_NAME 
