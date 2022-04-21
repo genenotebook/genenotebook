@@ -237,7 +237,7 @@ function GogCategory({ category }) {
 
 function DescriptionGeneOntologyApi({ goterm }) {
   const [description, setDescription] = useState('');
-  const GOsApi = 'http://api.geneontology.org/api/bioentity/';
+  const GOsApi = 'https://api.geneontology.org/api/bioentity/';
 
   // May cause Cross-Origin Request Blocked error.
   useEffect(() => {
