@@ -81,24 +81,21 @@ function IntervalInfo({ ID, type, start, end, phase, attributes, seq }) {
             <td>Phase</td>
             <td>{phase}</td>
           </tr>
-          {Object.entries(attributes).map(([attributeName, attributeValue]) => (
-            <tr key={attributeName}>
-              <td>{attributeName}</td>
-              <td>
-                <AttributeValue attributeValue={attributeValue} />
-              </td>
-            </tr>
-          ))}
+          {Object
+            .entries(attributes)
+            .map(([attributeName, attributeValue]) => (
+              <tr key={attributeName}>
+                <td>{attributeName}</td>
+                <td>
+                  <AttributeValue attributeValue={attributeValue} />
+                </td>
+              </tr>
+            ))}
           <tr>
             <td colSpan="2">
               <h6>{`${type} sequence`}</h6>
               <div className="card exon-sequence">
-                <Seq
-                  header={ID}
-                  sequence={seq}
-                  maxLength={50}
-                  fontSize=".6rem"
-                />
+                <Seq header={ID} sequence={seq} maxLength={50} fontSize=".6rem" />
               </div>
             </td>
           </tr>
@@ -150,12 +147,7 @@ function Exon({
       <PopoverBody header={ID}>
         <IntervalInfo
           {...{
-            type,
-            start,
-            end,
-            phase,
-            attributes,
-            seq,
+            type, start, end, phase, attributes, seq,
           }}
         />
       </PopoverBody>
