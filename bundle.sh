@@ -26,5 +26,5 @@ popd
 cp -r cli/* $BUNDLE_NAME
 jq ".version = $(jq .version package.json)" cli/package.json > \
   $BUNDLE_NAME/package.json
-cp -r tests/testdata.tgz $BUNDLE_NAME
-cp -r LICENSE $BUNDLE_NAME
+cp -r tests/testdata.tgz $BUNDLE_NAME 
+cp -r LICENSE $BUNDLE_NAME 

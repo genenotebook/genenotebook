@@ -6,6 +6,10 @@ import { Roles } from 'meteor/alanning:roles';
 import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor';
 
+/**
+ * @method parse
+ * @method finalize
+ */
 class InterproscanProcessor {
   constructor() {
     this.bulkOp = Genes.rawCollection().initializeUnorderedBulkOp();
@@ -14,6 +18,9 @@ class InterproscanProcessor {
   finalize = () => this.bulkOp.execute();
 }
 
+/**
+ * @param {*} fileName
+ */
 const addInterproscan = new ValidatedMethod({
   name: 'addInterproscan',
   validate: new SimpleSchema({

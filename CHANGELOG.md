@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+- Support for additional InterproScan file formats (tsv, gff, xml)
+
+## [0.3.1] 2021-01-28
+
+### Added
+
 - User accounts can be added/changed/removed from the CLI
 - Bulk operations for user account management through CLI
 - `--dbStartupTimeout` option to `genenotebook run` to allow specifying how long to wait for the mongo daemon to start
