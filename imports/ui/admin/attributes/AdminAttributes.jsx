@@ -8,8 +8,8 @@ import { attributeCollection }
   from '/imports/api/genes/attributeCollection.js';
 import { genomeCollection }
   from '/imports/api/genomes/genomeCollection.js';
-import { scanGeneAttributes }
-  from '/imports/api/genes/scanGeneAttributes.js';
+// import scanGeneAttributes
+//   from '/imports/api/genes/scanGeneAttributes.js';
 
 import {
   branch, compose, isLoading, Loading,
@@ -34,7 +34,7 @@ function AdminAttributes({ attributes, genomes }) {
   function scanAttributes(event) {
     event.preventDefault();
     genomes.forEach(({ _id: genomeId }) => {
-      scanGeneAttributes.call({ genomeId });
+      Meteor.call('scanGeneAttributes', { genomeId });
     });
   }
   return (

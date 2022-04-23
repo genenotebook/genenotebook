@@ -3,11 +3,11 @@
  * job-collection is free software released under the MIT/X11 license.
  * See included LICENSE file for details.
  */
-import { Meteor } from "meteor/meteor";
-import JobCollectionBase from "./shared";
+import { Meteor } from 'meteor/meteor';
+import JobCollectionBase from './shared';
 
 class JobCollection extends JobCollectionBase {
-  constructor(root = "queue", options = {}) {
+  constructor(root = 'queue', options = {}) {
     // Call super's constructor
     super(root, options);
 
@@ -22,18 +22,21 @@ class JobCollection extends JobCollectionBase {
   }
 
   // Warning Stubs for server-only calls
-  allow() {
-    throw new Error("Server-only function jc.allow() invoked on client.");
+  static allow() {
+    throw new Error('Server-only function jc.allow() invoked on client.');
   }
-  deny() {
-    throw new Error("Server-only function jc.deny() invoked on client.");
+
+  static deny() {
+    throw new Error('Server-only function jc.deny() invoked on client.');
   }
-  promote() {
-    throw new Error("Server-only function jc.promote() invoked on client.");
+
+  static promote() {
+    throw new Error('Server-only function jc.promote() invoked on client.');
   }
-  setLogStream() {
+
+  static setLogStream() {
     throw new Error(
-      "Server-only function jc.setLogStream() invoked on client."
+      'Server-only function jc.setLogStream() invoked on client.',
     );
   }
 

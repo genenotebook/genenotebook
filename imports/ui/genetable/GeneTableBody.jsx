@@ -5,7 +5,7 @@ import React, { useEffect } from 'react';
 import dot from 'dot-object';
 import { find } from 'lodash';
 
-import { Genes } from '/imports/api/genes/gene_collection.js';
+import { Genes } from '/imports/api/genes/geneCollection.js';
 
 import { branch, compose } from '/imports/ui/util/uiUtil.jsx';
 
@@ -36,7 +36,7 @@ const VISUALIZATIONS = {
  */
 function dataTracker({
   query = {},
-  sort = { _id: -1 },
+  sort = { ID: 1 },
   limit,
   selectedGenes,
   updateSelection,

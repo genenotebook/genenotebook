@@ -3,19 +3,22 @@ th {
   .header-element {
     flex-grow: 1 !important;
   }
+  &#gene-id {
+    width: 10rem;
+  }
 }
 
 .dropdown-menu-right {
   margin-left: -10rem !important;
 }
 
-.sort-wrapper {
-  padding-bottom: 10px;
-  margin-left: 0.25rem;
-  margin-right: 0.25rem;
+.dropdown-item .sort-wrapper {
+  // padding: 0rem 1rem !important;
+  // margin-left: 0.25rem;
+  // margin-right: 0.25rem;
 }
 
 .has-sort, .has-query {
   background-color: lighten(#28a745, 50%);
-  border-radius: 0.25rem;
+  border-radius: 0.2rem;
 }

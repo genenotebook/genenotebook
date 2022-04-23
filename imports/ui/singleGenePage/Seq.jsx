@@ -72,6 +72,39 @@ function Controls({
   );
 }
 
+export function Seq({
+  header, sequence, maxLength, fontSize,
+}) {
+  const [showAll, setShowAll] = useState(false);
+  const exceedsMaxLength = sequence.length > maxLength;
+  const showSequence = showAll
+    ? sequence
+    : `${sequence.slice(0, maxLength)}
+      ${exceedsMaxLength ? '...' : ''}`;
+  const buttonText = showAll
+    ? 'Show less'
+    : 'Show more ...';
+  return (
+    <>
+      <p className="seq" style={{ fontSize }}>
+        {`>${header} `}
+        <br />
+        {showSequence}
+      </p>
+      {exceedsMaxLength
+        && (
+          <button
+            type="button"
+            className="is-link"
+            onClick={() => setShowAll(!showAll)}
+          >
+            <small>{buttonText}</small>
+          </button>
+        )}
+    </>
+  );
+}
+
 export default function SeqContainer({ gene, maxLength = 1200 }) {
   const transcripts = gene.subfeatures
     .filter((sub) => sub.type === 'mRNA')
@@ -79,18 +112,9 @@ export default function SeqContainer({ gene, maxLength = 1200 }) {
     .sort();
   const [selectedTranscript, setSelectedTranscript] = useState(transcripts[0]);
   const [seqType, setSeqType] = useState('nucl');
-  const [showAll, setShowAll] = useState(false);
 
   const sequences = getGeneSequences(gene);
   const sequence = find(sequences, { ID: selectedTranscript });
-  const exceedsMaxLength = sequence[seqType].length > maxLength;
-  const showSequence = showAll
-    ? sequence[seqType]
-    : `${sequence[seqType].slice(0, maxLength)}
-      ${exceedsMaxLength ? '...' : ''}`;
-  const buttonText = showAll
-    ? 'Show less'
-    : 'Show more ...';
 
   return (
     <div id="sequence">
@@ -104,21 +128,12 @@ export default function SeqContainer({ gene, maxLength = 1200 }) {
       />
       <h4 className="subtitle is-4">Coding Sequence</h4>
       <div className="card seq-container">
-        <p className="seq">
-          {`>${selectedTranscript} `}
-          <br />
-          { showSequence }
-        </p>
-        { exceedsMaxLength
-        && (
-        <button
-          type="button"
-          className="is-link"
-          onClick={() => setShowAll(!showAll)}
-        >
-          <small>{ buttonText }</small>
-        </button>
-        )}
+        <Seq
+          header={selectedTranscript}
+          sequence={sequence[seqType]}
+          maxLenght={maxLength}
+          fontSize=".8rem"
+        />
       </div>
     </div>
   );

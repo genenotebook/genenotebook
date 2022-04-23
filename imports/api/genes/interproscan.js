@@ -1,4 +1,4 @@
-/*import { Meteor } from 'meteor/meteor';
+/* import { Meteor } from 'meteor/meteor';
 import { Roles } from 'meteor/alanning:roles';
 
 import request from 'request';
@@ -6,10 +6,10 @@ import Future from 'fibers/future';
 
 import { getGeneSequences } from '/imports/api/util/util.js';
 
-import { Genes } from '/imports/api/genes/gene_collection.js'; 
+import { Genes } from '/imports/api/genes/gene_collection.js';
 
 const revcomp = (seq) => {
-  const comp = {  
+  const comp = {
     'A':'T','a':'t',
     'T':'A','t':'a',
     'C':'G','c':'g',
@@ -23,7 +23,6 @@ const revcomp = (seq) => {
   const revCompSeq = revCompSeqArray.join('')
   return revCompSeq
 }
-
 
 const translate = (seq) => {
   const trans = {
@@ -66,7 +65,7 @@ const makeFasta = (gene) => {
   let sequences = transcripts.map( (transcript) => {
     let transcriptSeq = `>${transcript.ID}\n`;
     let transcriptPep = `>${transcript.ID}\n`;
-    let cdsArray = gene.subfeatures.filter( (sub) => { 
+    let cdsArray = gene.subfeatures.filter( (sub) => {
       return sub.parents.indexOf(transcript.ID) >= 0 && sub.type === 'CDS'
     }).sort( (a,b) => {
       return a.start - b.start
@@ -74,14 +73,14 @@ const makeFasta = (gene) => {
 
     let refStart = 10e99;
     //let referenceSubscription = Meteor.subscribe('references',gene.seqid)
-    
+
     //find all reference fragments overlapping the mRNA feature
-    let referenceArray = References.find({ 
-      header: gene.seqid, 
-      $and: [ 
-        { start: {$lte: gene.end} }, 
+    let referenceArray = References.find({
+      header: gene.seqid,
+      $and: [
+        { start: {$lte: gene.end} },
         { end: {$gte: gene.start} }
-      ] 
+      ]
     }).fetch()
 
     if (referenceArray.length){
@@ -107,7 +106,7 @@ const makeFasta = (gene) => {
       } else {
         phase = cdsArray[0].phase
       }
-   
+
       if ([1,2].indexOf(phase) >= 0){
         seq = seq.slice(phase)
       }
@@ -115,7 +114,7 @@ const makeFasta = (gene) => {
       let pep = translate(seq.toUpperCase());
 
       transcriptSeq += seq;
-      
+
       transcriptPep += pep;
       transcriptPep = transcriptPep.split('*').join('X')
     }
@@ -135,8 +134,8 @@ function submitInterpro(sequenceId,peptide){
       sequence: peptide
     }
   }, (error, response, jobId) => {
-    console.log('error:', error); // Print the error if one occurred 
-    console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received 
+    console.log('error:', error); // Print the error if one occurred
+    console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
     console.log('requestId:', jobId);
     submitJob.return(jobId)
   })
@@ -188,7 +187,7 @@ Meteor.methods({
     //this.unblock();
     const gene = Genes.findOne({ID: geneId})
     const sequences = getGeneSequences(gene)
-    const results = sequences.map((sequence) => { 
+    const results = sequences.map((sequence) => {
 
       // interproscan does not like stop codons, just replace all with X
       let pep = sequence.pep.split('*').join('X')
@@ -202,18 +201,17 @@ Meteor.methods({
       })
 
       const finished = fut.wait();
-      
+
       let results;
 
       if (finished === 'FINISHED'){
         results = getInterproResults(jobId)
         console.log(results)
         Genes.update({'subfeatures.ID':sequence.ID},{$set:{interproscan:results[0].matches}})
-      } 
+      }
 
       return results
     })
-    
 
     return results
   }

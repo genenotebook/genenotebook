@@ -14,7 +14,6 @@ import logger from '/imports/api/util/logger.js';
 import submitBlastJob from '/imports/api/blast/submitblastjob.js';
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 
-
 import './submitblast.scss';
 
 /**

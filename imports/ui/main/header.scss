@@ -10,12 +10,7 @@ nav {
     }
     
     .navbar-item {
-      height: $nav-height;
-      &#gene-link {
-        margin-left: 1rem;
-      }
       .user-button {
-        padding-bottom: 1rem;
         padding-top: 0.4rem;
         margin-top: 0.3rem;
         margin-right: 1rem;
@@ -26,5 +21,10 @@ nav {
       margin-top: .1rem;
       margin-left: .7rem;
     }
+  }
+  button.navbar-burger {
+    font-size: .75rem;
+    min-height: unset !important;
+    height: $nav-height;
   }
 }

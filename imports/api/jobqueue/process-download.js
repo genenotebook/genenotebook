@@ -5,7 +5,7 @@ import zlib from 'zlib';
 
 import { getGeneSequences } from '/imports/api/util/util.js';
 import logger from '/imports/api/util/logger.js';
-import { Genes } from '/imports/api/genes/gene_collection.js';
+import { Genes } from '/imports/api/genes/geneCollection.js';
 import {
   Transcriptomes,
   ExperimentInfo,
@@ -64,7 +64,7 @@ function formatTsv({ gene, options }) {
   // Options contains the transcriptome samples to include
   const { ID: geneId } = gene;
   const { selectedSamples } = options;
-  const line = selectedSamples.map(replicaGroup => ExperimentInfo.find({ replicaGroup })
+  const line = selectedSamples.map((replicaGroup) => ExperimentInfo.find({ replicaGroup })
     .fetch()
     .map(({ _id }) => _id)
     .sort()

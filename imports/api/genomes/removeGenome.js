@@ -5,7 +5,7 @@ import { Roles } from 'meteor/alanning:roles';
 import SimpleSchema from 'simpl-schema';
 
 import { genomeCollection, genomeSequenceCollection } from './genomeCollection.js';
-import { Genes } from '/imports/api/genes/gene_collection.js';
+import { Genes } from '/imports/api/genes/geneCollection.js';
 import logger from '/imports/api/util/logger.js';
 
 // import { removeAnnotationTrack } from './removeAnnotationTrack.js';

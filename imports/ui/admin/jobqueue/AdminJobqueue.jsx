@@ -99,6 +99,7 @@ function JobInfo({ job, loading }) {
   return (
     <tr key={jobId}>
       <td><Status {...job} /></td>
+      <td><code>{job._id}</code></td>
       <td>{job.type}</td>
       <td>{formatDate(job.created)}</td>
       <td>{job.data.userId}</td>
@@ -157,7 +158,7 @@ function AdminJobqueue({ loading, jobs }) {
           <tr>
             {
               [
-                'Status', 'Type', 'Created', 'User', 'Progress', 'Actions',
+                'Status', 'ID', 'Type', 'Created', 'User', 'Progress', 'Actions',
               ].map((label) => (
                 <th key={label} scope="col">
                   <button

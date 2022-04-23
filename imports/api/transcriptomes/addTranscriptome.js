@@ -3,13 +3,13 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { Roles } from 'meteor/alanning:roles';
 
 import SimpleSchema from 'simpl-schema';
-// import assert from 'assert';
 import Papa from 'papaparse';
 import fs from 'fs';
 
-// import { Tracks } from '/imports/api/genomes/track_collection.js';
-import { Genes } from '/imports/api/genes/gene_collection.js';
-import { ExperimentInfo, Transcriptomes } from '/imports/api/transcriptomes/transcriptome_collection.js';
+import { Genes } from '/imports/api/genes/geneCollection.js';
+import {
+  ExperimentInfo, Transcriptomes,
+} from '/imports/api/transcriptomes/transcriptome_collection.js';
 import logger from '/imports/api/util/logger.js';
 
 const getGenomeId = (data) => {
@@ -37,10 +37,10 @@ const parseKallistoTsv = ({
     skipEmptyLines: true,
     comments: '#',
     header: true,
-    error(error, file) {
+    error(error, _file) {
       reject(new Meteor.Error(error));
     },
-    complete({ data }, file) {
+    complete({ data }, _file) {
       let nInserted = 0;
 
       const genomeId = getGenomeId(data);

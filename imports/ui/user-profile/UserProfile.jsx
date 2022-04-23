@@ -148,25 +148,43 @@ function Profile({
 }
 
 function EmailAddress({ emails, onChange }) {
-  return emails.map((email, i) => {
+  if (emails.length) {
+    return emails.map((email, i) => {
     // start counting at 1
-    const index = i + 1;
+      const index = i + 1;
+      return (
+        <div className="field" key={`email${index}`}>
+          <label htmlFor={`email${index}`} className="label">
+            Email address
+          </label>
+          <input
+            type="email"
+            className="input is-small"
+            id={`email${index}`}
+            onChange={onChange}
+            value={email.address}
+            disabled
+          />
+        </div>
+      );
+    });
+  } else {
     return (
-      <div className="field" key={`email${index}`}>
-        <label htmlFor={`email${index}`} className="label">
+      <div>
+        <label htmlFor="" className="label">
           Email address
         </label>
         <input
           type="email"
           className="input is-small"
-          id={`email${index}`}
+          id=""
           onChange={onChange}
-          value={email.address}
+          value="No email address defined"
           disabled
         />
       </div>
     );
-  });
+  }
 }
 
 function AdminAccountCheck({ _id: userId }) {

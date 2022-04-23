@@ -79,7 +79,7 @@ const UserButtons = withTracker(() => {
 
 function NavBar() {
   const [show, setShow] = useState(false);
-  const isActive = show ? 'is-active' : '';
+  const activeText = show ? 'is-active' : '';
   const urlPrefix = Meteor.absoluteUrl();
   return (
     <nav className="navbar is-white" role="navigation">
@@ -95,7 +95,7 @@ function NavBar() {
           </figure>
         </NavLink>
         <button
-          className={`navbar-burger burger button ${isActive}`}
+          className={`navbar-burger is-small burger button ${activeText}`}
           type="button"
           onClick={() => {
             setShow(!show);
@@ -105,15 +105,15 @@ function NavBar() {
           <span aria-hidden="true" />
           <span aria-hidden="true" />
         </button>
-        <NavLink id="gene-link" to="/genes" className="navbar-item" activeClassName="active">
-          Genes
-        </NavLink>
-        <NavLink to="/blast" className="navbar-item" activeClassName="active">
-          Blast
-        </NavLink>
       </div>
-      <div className={`navbar-menu ${isActive}`}>
+      <div className={`navbar-menu ${activeText}`}>
         <div className="navbar-start">
+          <NavLink id="gene-link" to="/genes" className="navbar-item" activeClassName="active">
+            Genes
+          </NavLink>
+          <NavLink to="/blast" className="navbar-item" activeClassName="active">
+            Blast
+          </NavLink>
           <SearchBar />
         </div>
         <div className="navbar-end">

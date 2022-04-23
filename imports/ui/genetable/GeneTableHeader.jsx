@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-for */
 import React, { useState, useEffect } from 'react';
-import Select from 'react-select';
-import { cloneDeep, isEqual, isEmpty } from 'lodash';
+import { cloneDeep } from 'lodash';
 
 import logger from '/imports/api/util/logger.js';
 
@@ -11,18 +10,6 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-class SelectionOption extends Object {
-  constructor(optionName) {
-    super();
-    this.value = optionName;
-    this.label = optionName;
-  }
-}
-
-/**
- * [QUERY_TYPES description]
- * @type {Array}
- */
 const QUERY_TYPES = [
   'None',
   'Present',
@@ -31,14 +18,8 @@ const QUERY_TYPES = [
   'Does not equal',
   'Contains',
   'Does not contain',
-].map((query) => new SelectionOption(query));
+];
 
-/**
- * [description]
- * @param  {[type]} options.queryLabel [description]
- * @param  {[type]} options.queryValue [description]
- * @return {[type]}                    [description]
- */
 function formatQuery({ queryLabel, queryValue }) {
   const queryArray = queryValue.split(/\n|↵|\|/);
   switch (queryLabel) {
@@ -64,61 +45,79 @@ function formatQuery({ queryLabel, queryValue }) {
   }
 }
 
-function formatLabelValue({ attribute, query }) {
-  let queryLabel = 'None';
-  let queryValue = '';
-  let attributeQuery = {};
-  if (query.$or && hasOwnProperty(query.$or[0], attribute.query)) {
-    attributeQuery = query.$or[0][attribute.query];
-  } else if (hasOwnProperty(query, attribute.query)) {
-    attributeQuery = query[attribute.query];
-  }
-
-  if (hasOwnProperty(attributeQuery, '$exists')) {
-    if (attributeQuery.$exists) {
-      queryLabel = 'Present';
-    } else {
-      queryLabel = 'Not present';
+/**
+ * Higher Order Component that returns a wrapper
+ * component expecting attribute and query props, where the wrapped
+ * component expects queryLabel and queryValue props.
+ * @param {*} Component
+ * @returns Component
+ */
+function formatAttributeQuery(Component) {
+  return ({ attribute, query, ...props }) => {
+    let queryLabel = 'None';
+    let queryValue = '';
+    let attributeQuery = {};
+    if (query.$or && hasOwnProperty(query.$or[0], attribute.query)) {
+      attributeQuery = query.$or[0][attribute.query];
+    } else if (hasOwnProperty(query, attribute.query)) {
+      attributeQuery = query[attribute.query];
     }
-  } else if (hasOwnProperty(attributeQuery, '$in')) {
-    queryLabel = 'Equals';
-    queryValue = attributeQuery.$in;
-  } else if (hasOwnProperty(attributeQuery, '$nin')) {
-    queryLabel = 'Does not equal';
-    queryValue = attributeQuery.$nin;
-  } else if (hasOwnProperty(attributeQuery, '$regex')) {
-    queryLabel = 'Contains';
-    queryValue = attributeQuery.$regex;
-  } else if (hasOwnProperty(attributeQuery, '$not')) {
-    queryLabel = 'Does not contain';
-    queryValue = attributeQuery.$not.$regex;
-  }
 
-  if (Array.isArray(queryValue)) {
-    queryValue = queryValue.join('\n');
-  }
+    if (hasOwnProperty(attributeQuery, '$exists')) {
+      if (attributeQuery.$exists) {
+        queryLabel = 'Present';
+      } else {
+        queryLabel = 'Not present';
+      }
+    } else if (hasOwnProperty(attributeQuery, '$in')) {
+      queryLabel = 'Equals';
+      queryValue = attributeQuery.$in;
+    } else if (hasOwnProperty(attributeQuery, '$nin')) {
+      queryLabel = 'Does not equal';
+      queryValue = attributeQuery.$nin;
+    } else if (hasOwnProperty(attributeQuery, '$regex')) {
+      queryLabel = 'Contains';
+      queryValue = attributeQuery.$regex;
+    } else if (hasOwnProperty(attributeQuery, '$not')) {
+      queryLabel = 'Does not contain';
+      queryValue = attributeQuery.$not.$regex;
+    }
 
-  return [queryLabel, queryValue];
+    if (Array.isArray(queryValue)) {
+      queryValue = queryValue.join('\n');
+    }
+    return (
+      <Component
+        queryLabel={queryLabel}
+        queryValue={queryValue}
+        query={query}
+        attribute={attribute}
+        {...props}
+      />
+    );
+  };
 }
 
-function HeaderElement({
-  attribute, query, updateQuery, cancelQuery, sort, updateSort,
+function BaseHeaderElement({
+  attribute, query, updateQuery, cancelQuery, queryLabel, queryValue, sort, updateSort,
 }) {
-  let [currentQueryLabel, currentQueryValue] = formatLabelValue({ attribute, query });
   const [attributeQuery, setAttributeQuery] = useState({
-    queryLabel: currentQueryLabel,
-    queryValue: currentQueryValue,
+    newQueryLabel: queryLabel,
+    newQueryValue: queryValue,
   });
-  const { queryLabel, queryValue } = attributeQuery;
+  const { newQueryLabel, newQueryValue } = attributeQuery;
   const [queryLoading, setQueryLoading] = useState(false);
+  const [isDropdown, setIsDropdown] = useState(false);
+  function toggleIsDropdown() {
+    setIsDropdown(!isDropdown);
+  }
 
   useEffect(() => {
-    [currentQueryLabel, currentQueryValue] = formatLabelValue({ attribute, query });
     setAttributeQuery({
-      queryLabel: currentQueryLabel,
-      queryValue: currentQueryValue,
+      newQueryLabel: queryLabel,
+      newQueryValue: queryValue,
     });
-  }, [query]);
+  }, [queryLabel, queryValue]);
 
   function triggerQueryUpdate() {
     const newQuery = cloneDeep(query);
@@ -127,7 +126,10 @@ function HeaderElement({
         delete newQuery[attribute.query];
       }
     } else {
-      newQuery[attribute.query] = formatQuery({ ...attributeQuery }); // attributeQuery;
+      newQuery[attribute.query] = formatQuery({
+        queryLabel: newQueryLabel,
+        queryValue: newQueryValue,
+      });
     }
     setQueryLoading(true);
     updateQuery(newQuery, () => {
@@ -143,20 +145,21 @@ function HeaderElement({
     }
   }
 
-  const hasQuery = currentQueryLabel !== 'None';
-  const hasNewQuery = currentQueryLabel !== queryLabel
-    || currentQueryValue !== queryValue;
+  const hasQuery = queryLabel !== 'None';
   const hasSort = typeof sort !== 'undefined'
     && hasOwnProperty(sort, attribute.query);
+  const hasNewQuery = newQueryLabel !== queryLabel
+    || newQueryValue !== queryValue;
 
   const buttonClass = hasQuery || hasSort || queryLoading
     ? 'is-success is-light is-outlined'
     : '';
-  const orientation = attribute.name === 'Gene ID' ? 'left' : 'right';
-  const colStyle = attribute.name === 'Gene ID' ? { width: '10rem' } : {};
 
   return (
-    <th scope="col" style={{ ...colStyle }}>
+    <th
+      scope="col"
+      id={attribute.name.toLowerCase().replace(' ', '-')}
+    >
       <div className="field has-addons header-element" role="group">
         <div className="control header-element">
           <button
@@ -172,9 +175,13 @@ function HeaderElement({
         </div>
         <div className="control">
           {attribute.name !== 'Genome' && (
-            <div className="dropdown is-hoverable columnselect">
+            <div className={`dropdown ${isDropdown ? 'is-active' : ''}`}>
               <div className="dropdown-trigger">
-                <button type="button" className={`button is-small ${buttonClass} ${queryLoading ? 'is-loading' : ''}`}>
+                <button
+                  type="button"
+                  className={`button is-small ${buttonClass} ${queryLoading ? 'is-loading' : ''}`}
+                  onClick={toggleIsDropdown}
+                >
                   <span className="icon">
                     <span className="icon-down" />
                   </span>
@@ -207,32 +214,38 @@ function HeaderElement({
                     })}
                   </div>
                   <hr className="dropdown-divider" />
-                  <div className={`dropdown-item query-wrapper ${hasQuery ? 'has-query' : ''}`}>
+                  <div className={`dropdown-item query-wrapper ${hasQuery && 'has-query'}`}>
                     <h6 className="is-h6 dropdown-item dropdown-header">
                       Filter:
                     </h6>
-                    <Select
-                      className="control"
-                      // closeMenuOnSelect={false}
-                      value={new SelectionOption(queryLabel)}
-                      options={QUERY_TYPES}
-                      onChange={({ label }) => {
-                        setAttributeQuery({
-                          queryLabel: label,
-                          queryValue,
-                        });
-                      }}
-                    />
-                    {['None', 'Present', 'Not present'].indexOf(queryLabel) < 0 ? (
+                    <div className="select is-small">
+                      <select
+                        value={newQueryLabel}
+                        onChange={(event) => {
+                          event.stopPropagation();
+                          setAttributeQuery({
+                            newQueryLabel: event.target.value,
+                            newQueryValue,
+                          });
+                        }}
+                      >
+                        {QUERY_TYPES.map((queryType) => (
+                          <option key={queryType} value={queryType}>
+                            {queryType}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    {['None', 'Present', 'Not present'].indexOf(newQueryLabel) < 0 ? (
                       <textarea
                         className="textarea"
                         onChange={({ target }) => {
                           setAttributeQuery({
-                            queryLabel,
-                            queryValue: target.value,
+                            newQueryLabel,
+                            newQueryValue: target.value,
                           });
                         }}
-                        value={queryValue}
+                        value={newQueryValue}
                       />
                     ) : null}
                   </div>
@@ -265,6 +278,8 @@ function HeaderElement({
   );
 }
 
+const HeaderElement = formatAttributeQuery(BaseHeaderElement);
+
 /**
  * [description]
  * @param  {[type]}    options.selectedColumns       [description]
@@ -283,6 +298,7 @@ function GeneTableHeader({
   selectedAllGenes,
   toggleSelectAllGenes,
   selectedVisualization,
+  query,
   ...props
 }) {
   const selectedAttributes = attributes
@@ -293,7 +309,6 @@ function GeneTableHeader({
       return `${a.name}`.localeCompare(b.name);
     });
 
-  const checkBoxColor = [...selectedGenes].length || selectedAllGenes ? 'black' : 'white';
   return (
     <thead>
       <tr>
@@ -302,6 +317,7 @@ function GeneTableHeader({
             key={attribute.name}
             label={attribute.name}
             attribute={attribute}
+            query={query}
             {...props}
           />
         ))}
@@ -322,7 +338,15 @@ function GeneTableHeader({
               onClick={toggleSelectAllGenes}
             >
               <span className="icon">
-                <span className="icon-check" aria-hidden="true" style={{ color: checkBoxColor }} />
+                <span
+                  className="icon-check"
+                  aria-hidden="true"
+                  style={{
+                    color: ([...selectedGenes].length || selectedAllGenes)
+                      ? 'black'
+                      : 'white',
+                  }}
+                />
               </span>
             </button>
           </div>

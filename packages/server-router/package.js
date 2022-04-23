@@ -1,31 +1,32 @@
-/* @flow */
 /* global Package: false, Npm: false */
+
+const currentVersion = '1.2.7';
 
 Package.describe({
   name: 'mhagmajer:server-router',
-  version: '1.2.3_1',
+  version: currentVersion,
   summary: 'Server router with authentication for Meteor',
   git: 'https://github.com/mhagmajer/server-router',
   documentation: 'README.md',
 });
 
 Npm.depends({
-  'path-to-regexp': '1.7.0',
-  'query-string': '4.3.4',
-  'url-parse': '1.1.9',
-  invariant: '2.2.2',
+  'path-to-regexp': '6.2.0',
+  'query-string': '7.1.1',
+  'url-parse': '1.5.4',
+  invariant: '2.2.4',
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('1.8.2');
+  api.versionsFrom('2.3.2');
   api.use([
-    'typescript@4.1.2',
     'underscore',
     'ejson',
     'ecmascript',
     'modules',
     'accounts-base',
     'webapp',
+    'typescript',
   ]);
   api.mainModule('src/server/server-router.ts', 'server');
   api.mainModule('src/client/server-router-client.ts', 'client');
@@ -33,7 +34,6 @@ Package.onUse((api) => {
 
 Package.onTest((api) => {
   api.use([
-    'typescript',
     'ecmascript',
     'tinytest',
     'mhagmajer:server-router',
