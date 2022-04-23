@@ -4,7 +4,7 @@
 const commander = require('commander');
 const fs = require('fs');
 const { Tail } = require('tail');
-const { spawn, exec } = require('child_process');
+const { spawn, execFileSync } = require('child_process');
 const path = require('path');
 const asteroid = require('asteroid');
 const WebSocket = require('ws');
@@ -96,7 +96,7 @@ function startMongoDaemon(
 ) {
   const dataFolderPath = `${dbPath}/data`;
   const logFolderPath = `${dbPath}/log`;
-  exec(`mkdir -p ${dataFolderPath} ${logFolderPath}`);
+  execFileSync('mkdir', ['-p', dataFolderPath, logFolderPath]);
   const logPath = `${dbPath}/log/mongod.log`;
 
   logger.log(`Using DB path: ${dbPath}`);
@@ -361,30 +361,73 @@ addTranscriptome
   })
   .exitOverride(customExitOverride(addTranscriptome));
 
-// add interproscan
+// Add interproscan file
 const addInterproscan = add.command('interproscan');
 
 addInterproscan
   .description('Add InterProScan results to a running GeneNoteBook server')
-  .usage('[options] <InterProScan gff3 output file>')
+  .usage('[options] <InterProScan gff3 or tsv output file>')
   .arguments('<file>')
-  .option('-u, --username <username>', 'GeneNoteBook admin username')
-  .option('-p, --password <password>', 'GeneNoteBook admin password')
+  .requiredOption(
+    '-u, --username <adminUsername>',
+    'GeneNoteBook admin username'
+  )
+  .requiredOption(
+    '-p, --password <adminPassword>',
+    'GeneNoteBook admin password'
+  )
   .option(
     '--port [port]',
     'Port on which GeneNoteBook is running. Default: 3000'
   )
-  .action((file, { username, password, port = 3000 }) => {
+  .option(
+    '--format [parser]',
+    `Choose a parser for the interproscan output files. Parses .gff3 and .tsv
+    extensions.`
+  )
+  .action((file, { username, password, port = 3000, format }) => {
     if (typeof file !== 'string') addInterproscan.help();
-    const fileName = path.resolve(file);
 
+    const fileName = path.resolve(file);
     if (!(fileName && username && password)) {
       addInterproscan.help();
     }
+
+    const parserAccepted = ['tsv', 'gff3', 'xml'];
+    const extensionFile = path.extname(file).replace(/\./g, '');
+    let parserType = format;
+
+    if (parserType) {
+      if (!parserAccepted.includes(parserType)) {
+        logger.error(`
+Error: unknow format : ${parserType}. To specify --format, choose a format
+compatible with InterProScan e.g : "gff3", "tsv" or "xml".`);
+        addInterproscan.help();
+      }
+    } else if (parserAccepted.includes(extensionFile)) {
+      parserType = extensionFile;
+    } else {
+      logger.error(`
+Error : unknow file extension : ${extensionFile}. Must specify --format when
+file extension is not "tsv", "gff3" or "xml".`);
+      addInterproscan.help();
+    }
+
     new GeneNoteBookConnection({ username, password, port }).call(
       'addInterproscan',
-      { fileName }
+      {
+        fileName,
+        parser: parserType,
+      }
     );
+  })
+  .on('--help', () => {
+    console.log(`
+Example:
+    genenotebook add interproscan testdata.iprscan.gff3 -u admin -p admin
+or
+    genenotebook add interproscan testdata.iprscan --format tsv -u admin -p admin
+    `);
   })
   .exitOverride(customExitOverride(addInterproscan));
 

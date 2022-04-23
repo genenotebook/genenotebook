@@ -9,14 +9,14 @@ import Color from 'color';
 import AttributeValue from '/imports/ui/genetable/columns/AttributeValue.jsx';
 import { Seq } from '/imports/ui/singleGenePage/Seq.jsx';
 import {
-  Popover, PopoverTrigger, PopoverBody,
+  Popover,
+  PopoverTrigger,
+  PopoverBody,
 } from '/imports/ui/util/Popover.jsx';
 
 import './genemodel.scss';
 
-function XAxis({
-  scale, numTicks, transform, seqid,
-}) {
+function XAxis({ scale, numTicks, transform, seqid }) {
   const formatNumber = new Intl.NumberFormat().format;
 
   const range = scale.range();
@@ -64,11 +64,8 @@ function XAxis({
   );
 }
 
-function IntervalInfo({
-  ID, type, start, end, phase, attributes, seq,
-}) {
+function IntervalInfo({ ID, type, start, end, phase, attributes, seq }) {
   return (
-
     <div className="panel-body">
       <table className="table is-hoverable is-narrow is-small">
         <tbody>
@@ -109,12 +106,20 @@ function IntervalInfo({
 }
 
 function Exon({
-  genomeId, start, end, type, phase, scale, attributes, ID, seq,
+  genomeId,
+  start,
+  end,
+  type,
+  phase,
+  scale,
+  attributes,
+  ID,
+  seq,
 }) {
   const targetId = `${type}-${start}-${end}`;
 
   const baseColor = new Color(
-    randomColor({ seed: genomeId + genomeId.slice(3) }),
+    randomColor({ seed: genomeId + genomeId.slice(3) })
   );
   const contrastColor = baseColor.isLight()
     ? baseColor.darken(0.5).saturate(0.3)
@@ -150,15 +155,11 @@ function Exon({
   );
 }
 
-function Transcript({
-  transcript, exons, scale, strand, genomeId, geneId,
-}) {
+function Transcript({ transcript, exons, scale, strand, genomeId, geneId }) {
   // put CDS exons last so they get drawn last and are placed on top
   exons.sort((exon1) => (exon1.type === 'CDS' ? 1 : -1));
 
-  const {
-    start, end, ID, attributes, seq, type,
-  } = transcript;
+  const { start, end, ID, attributes, seq, type } = transcript;
 
   const targetId = ID.replace(/\.|:/g, '_');
 
@@ -198,7 +199,13 @@ function Transcript({
         <PopoverBody>
           <IntervalInfo
             {...{
-              ID, type, start, end, phase: '.', attributes, seq,
+              ID,
+              type,
+              start,
+              end,
+              phase: '.',
+              attributes,
+              seq,
             }}
           />
         </PopoverBody>
@@ -218,13 +225,13 @@ function Transcript({
   );
 }
 
-export function GenemodelGroup({
-  gene, transcripts, scale,
-}) {
+export function GenemodelGroup({ gene, transcripts, scale }) {
   return (
     <g className="genemodel" transform="translate(0,4)">
       {transcripts.map((transcript, index) => {
-        const exons = gene.subfeatures.filter(({ parents }) => parents.indexOf(transcript.ID) >= 0);
+        const exons = gene.subfeatures.filter(
+          ({ parents }) => parents.indexOf(transcript.ID) >= 0
+        );
         const { ID: geneId, strand, genomeId } = gene;
         return (
           <g
@@ -282,8 +289,7 @@ export default function Genemodel({
 
   return (
     <>
-      {showHeader
-      && (
+      {showHeader && (
         <>
           <hr />
           <h4 className="subtitle is-4">Genemodel</h4>
@@ -291,26 +297,40 @@ export default function Genemodel({
       )}
       <div id={gene.ID} className="card genemodel">
         <svg width={width} height={height} className="genemodel-container">
-          <GenemodelGroup gene={gene} transcripts={transcripts} width={width} scale={scale} />
-          {showXAxis && (
-          <XAxis
+          <GenemodelGroup
+            gene={gene}
+            transcripts={transcripts}
+            width={width}
             scale={scale}
-            numTicks="2"
-            transform={`translate(0,${height - 22})`}
-            seqid={gene.seqid}
           />
+          {showXAxis && (
+            <XAxis
+              scale={scale}
+              numTicks="2"
+              transform={`translate(0,${height - 22})`}
+              seqid={gene.seqid}
+            />
           )}
           <defs>
-            <marker id="arrowEnd" markerWidth="15" markerHeight="10" refX="0" refY="5" orient="auto">
-              <path d="M0,5 L15,5 L10,10 M10,0 L15,5" fill="none" stroke="black" strokeWidth="1" />
+            <marker
+              id="arrowEnd"
+              markerWidth="15"
+              markerHeight="10"
+              refX="0"
+              refY="5"
+              orient="auto"
+            >
+              <path
+                d="M0,5 L15,5 L10,10 M10,0 L15,5"
+                fill="none"
+                stroke="black"
+                strokeWidth="1"
+              />
             </marker>
           </defs>
         </svg>
         {resizable && (
-        <ReactResizeDetector
-          handleWidth
-          onResize={(w) => setWidth(w)}
-        />
+          <ReactResizeDetector handleWidth onResize={(w) => setWidth(w)} />
         )}
       </div>
     </>

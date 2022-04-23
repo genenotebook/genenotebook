@@ -7,7 +7,6 @@ if (Meteor.isServer) {
   import '../imports/api/util/util.test.js';
 }
 
-
 if (Meteor.isClient) {
   if (Meteor.isAppTest) {
     import '/imports/ui/main/App.app-test.jsx';
