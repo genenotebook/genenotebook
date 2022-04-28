@@ -7,6 +7,7 @@ import { Genes } from '/imports/api/genes/geneCollection.js';
 import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 import { dbxrefCollection } from '/imports/api/genes/dbxrefCollection.js';
 import { EditHistory } from '/imports/api/genes/edithistory_collection.js';
+import { eggnogCollection } from '/imports/api/genes/eggnog/eggnogCollection.js';
 // orthogroups
 import {
   orthogroupCollection,
@@ -172,6 +173,10 @@ Meteor.publish({
     return genomeCollection.find({
       $or: [{ permission: { $in: roles } }, { isPublic: true }],
     });
+  },
+  eggnog() {
+    const eggnog = eggnogCollection.find({});
+    return eggnog;
   },
   orthogroups(ID) {
     return orthogroupCollection.find({ ID });

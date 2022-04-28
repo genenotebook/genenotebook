@@ -18,6 +18,7 @@ import './genomes/removeAnnotationTrack.js';
 
 import './genes/interproscan.js';
 import './genes/addInterproscan.js';
+import './genes/eggnog/addEggnog.js'
 import './genes/addOrthogroupTrees.js';
 import './genes/downloadGenes.js';
 import './genes/scanGeneAttributes.js';
@@ -42,3 +43,4 @@ import './jobqueue/process-makeBlastDb.js';
 import './jobqueue/process-blast.js';
 import './jobqueue/process-download.js';
 import './jobqueue/process-addGenome.js';
+import './jobqueue/process-eggnog.js'
