@@ -328,6 +328,88 @@ addAnnotation
   )
   .exitOverride(customExitOverride(addAnnotation));
 
+// Add diamond.
+const addDiamond = add.command('diamond');
+
+addDiamond
+  .description(
+    `Add Diamond output formats, including BLAST pairwise, tabular and XML to a
+running GeneNoteBook server.`,
+  ).usage('[options] <Diamond output formats .tsv, .tabular, .xml, .txt, .sam file>')
+  .arguments('<file>')
+  .requiredOption(
+    '-u, --username <adminUsername>',
+    'GeneNoteBook admin username',
+  )
+  .requiredOption(
+    '-p, --password <adminPassword>',
+    'GeneNoteBook admin password',
+  )
+  .option(
+    '--port [port]',
+    'Port on which GeneNoteBook is running. Default: 3000',
+  )
+  .option(
+    '--format [parser]',
+    `Choose a parser for the diamond output format. Parses .tsv, .tabular, .xml,
+   .txt, .sam extensions.`,
+  )
+  .action(
+    (
+      file,
+      {
+        username,
+        password,
+        port = 3000,
+        format,
+      },
+    ) => {
+      if (typeof file !== 'string') addDiamond.help();
+
+      const fileName = path.resolve(file);
+      if (!(fileName && username && password)) {
+        addDiamond.help();
+      }
+
+      const parserAccepted = ['tsv', 'tabular', 'xml', 'txt', 'sam'];
+      const extensionFile = path.extname(file).replace(/\./g, '');
+      let parserType = format;
+
+      if (parserType) {
+        if (!parserAccepted.includes(parserType)) {
+          logger.error(`
+Error: unknow format : ${parserType}. To specify --format, choose a format
+compatible with diamond e.g : "tsv", "tabular", "xml", "txt", "sam".`);
+          addDiamond.help();
+        }
+      } else if (parserAccepted.includes(extensionFile)) {
+        parserType = extensionFile;
+      } else {
+        logger.error(`
+Error : unknow file extension : ${extensionFile}. Must specify --format when
+file extension is not "tsv", "tabular", "xml", "txt", "sam".`);
+        addDiamond.help();
+      }
+
+      new GeneNoteBookConnection({ username, password, port }).call(
+        'addDiamond',
+        {
+          fileName,
+          parser: parserType,
+        },
+      );
+    },
+  )
+  .on('--help', () => {
+    console.log(`
+Example:
+    genenotebook add diamond testdata.xml -u admin -p admin
+or
+    genenotebook add diamond testdata.tabular --format tsv -u admin -p admin
+    `);
+  })
+  .exitOverride(customExitOverride(addDiamond));
+
 // add transcriptome
 const addTranscriptome = add.command('transcriptome');
 
