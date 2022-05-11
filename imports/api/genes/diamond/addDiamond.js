@@ -1,7 +1,15 @@
+import jobQueue, { Job } from '/imports/api/jobqueue/jobqueue.js';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
+import logger from '/imports/api/util/logger.js'
 import { Roles } from 'meteor/alanning:roles';
 import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor';
+
+class DiamondProcessor {
+  parse = (line) => {
+    logger.log(line);
+  };
+}
 
 const addDiamond = new ValidatedMethod({
   name: 'addDiamond',
@@ -24,10 +32,19 @@ const addDiamond = new ValidatedMethod({
     }
 
     console.log('file :', { fileName });
+    const job = new Job(jobQueue, 'addDiamond', { fileName });
+    const jobId = job.priority('high').save();
 
-    const jobStatus = `Success to add ouput ${fileName}.`;
-    return { jobStatus };
+    let { status } = job.doc;
+    logger.debug(`Job status: ${status}`);
+    while (status !== 'completed') {
+      const { doc } = job.refresh();
+      status = doc.status;
+    }
+
+    return { result: job.doc.result };
   },
 });
 
 export default addDiamond;
+export { DiamondProcessor };

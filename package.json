@@ -116,6 +116,7 @@
     "utf-8-validate": "^5.0.7",
     "webfontloader": "^1.6.28",
     "ws": "^8.2.3",
+    "xml-flow": "^1.0.4",
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
