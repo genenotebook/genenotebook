@@ -1,3 +1,4 @@
+/*eslint dot-notation: ["error", { "allowPattern": "^[a-z]+(_[a-z]+)+$" }]*/
 import { DiamondProcessor } from '/imports/api/genes/diamond/addDiamond.js';
 import logger from '/imports/api/util/logger.js';
 import jobQueue from './jobqueue.js';
@@ -54,26 +55,42 @@ jobQueue.processJobs(
           logger.log('split_iteration_query : ', split_iteration_query);
 
           // Next, check if any of the queries exist in the genes collection.
-          for (let b = 0; b < split_iteration_query.length; b++) {
-            // Query the genes collection.
-            const subfeatureIsFound = await this.genesDb.findOne(
-              { 'subfeatures.ID': split_iteration_query[b] },
-            );
+          (async () => {
+            split_iteration_query.forEach(async (iter) => {
+              const subfeatureIsFound = await this.genesDb.findOne(
+                { 'subfeatures.ID': iter },
+              );
+              if (typeof subfeatureIsFound !== 'undefined' && subfeatureIsFound !== null) {
+                logger.log(`subfeature : ${iter} is found !`);
+                // Here, get all diamond output informations.
+                const iteration_hits = obj['blastoutput_iterations'][i]['iteration_hits'];
+                iteration_hits.forEach((hit) => {
+                  // Global query details/
+                  const hitId = hit['hit_id'];
+                  const hitDef = hit['hit_def'];
+                  const hitAccession = hit['hit_accession'];
+                  logger.log('Id :', hitId);
+                  logger.log('Def :', hitDef);
+                  logger.log('Acc :', hitAccession);
 
-            if (typeof subfeatureIsFound !== 'undefined' && subfeatureIsFound !== null) {
-              logger.log(`subfeature : ${split_iteration_query[b]} is found !`);
-              break;
-            } else {
-              logger.warn(`Warning ! No sub-feature was found for ${split_iteration_query[b]}.`);
-            }
-          }
+                  // Specific query details.
+                  const hitHspScore = hit['hit_hsps']['hsp_score'];
+                  const hitEvalue = hit['hit_hsps']['hsp_evalue'];
+                  const hitQueryFrom = hit['hit_hsps']['hsp_query-from'];
+                  const hitQueryTo = hit['hit_hsps']['hsp_query-to'];
+                  logger.log('hit score :', hitHspScore);
+                  logger.log('hit evalue : ', hitEvalue);
+                  logger.log('hit query from : ', hitQueryFrom);
+                  logger.log('hit query to : ', hitQueryTo);
+                });
+              } else {
+                logger.warn(`Warning ! No sub-feature was found for ${iter}.`);
+              }
+            });
+          })();
         }
-
-        // if (obj['blastoutput_iterations']['iteration_query-def'] !== undefined) {
-        //   logger.log('iteration_query-def', obj['blastoutput_iterations']['iteration_query-def']);
-        // }
       }
-      //logger.log(obj);
+      // logger.log(obj);
     }).then(() => {
       logger.log('Done example xml parsing.');
       job.done();
