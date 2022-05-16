@@ -23,7 +23,7 @@ const addDiamond = new ValidatedMethod({
   applyOptions: {
     noRetry: true,
   },
-  run({ fileName }) {
+  run({ fileName, parser }) {
     if (!this.userId) {
       throw new Meteor.Error('not-authorized');
     }
@@ -32,7 +32,7 @@ const addDiamond = new ValidatedMethod({
     }
 
     console.log('file :', { fileName });
-    const job = new Job(jobQueue, 'addDiamond', { fileName });
+    const job = new Job(jobQueue, 'addDiamond', { fileName, parser });
     const jobId = job.priority('high').save();
 
     let { status } = job.doc;
