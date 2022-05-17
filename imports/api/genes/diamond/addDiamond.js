@@ -5,12 +5,6 @@ import { Roles } from 'meteor/alanning:roles';
 import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor';
 
-class DiamondProcessor {
-  parse = (line) => {
-    logger.log(line);
-  };
-}
-
 const addDiamond = new ValidatedMethod({
   name: 'addDiamond',
   validate: new SimpleSchema({
@@ -31,7 +25,6 @@ const addDiamond = new ValidatedMethod({
       throw new Meteor.Error('not-authorized');
     }
 
-    console.log('file :', { fileName });
     const job = new Job(jobQueue, 'addDiamond', { fileName, parser });
     const jobId = job.priority('high').save();
 
@@ -47,4 +40,3 @@ const addDiamond = new ValidatedMethod({
 });
 
 export default addDiamond;
-export { DiamondProcessor };
