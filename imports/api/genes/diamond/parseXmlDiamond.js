@@ -31,8 +31,21 @@ class DiamondXmlProcessor {
             // Update or insert if no matching documents were found.
             const documentDiamond = diamondCollection.upsert(
               { iteration_query: iter }, // selector.
-              { iteration_query: iter }, // modifier.
+              {
+                $set: // modifier.
+                {
+                  iteration_query: iter,
+                },
+              },
             );
+
+            // Search document ID only once.
+            let createHit = true;
+            let diamondId;
+            if (typeof documentDiamond.insertedId === 'undefined') {
+              createHit = false;
+              diamondId = diamondCollection.findOne({ 'iteration_query': iter })._id;
+            }
 
             // Here, get all diamond output informations.
             const iterationHits = obj['blastoutput_iterations'][i]['iteration_hits'];
@@ -73,7 +86,7 @@ class DiamondXmlProcessor {
               };
 
               // Update or insert if no matching documents were found.
-              if (typeof documentDiamond.insertedId !== 'undefined') {
+              if (createHit) {
                 diamondCollection.update(
                   { iteration_query: iter },
                   {
@@ -83,11 +96,10 @@ class DiamondXmlProcessor {
                   },
                 );
               } else {
-                const diamondId = diamondCollection.findOne({ 'iteration_query': iter })._id;
                 diamondCollection.update(
                   { _id: diamondId },
                   {
-                    $push: {
+                    $addToSet: {
                       iteration_hits: iterations,
                     },
                   },
