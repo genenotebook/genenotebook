@@ -16,7 +16,6 @@ class DiamondXmlProcessor {
 
         // Split 'MMUCEDO_000001-T1 MMUCEDO_000001'.
         const splitIterationQuery = iterationQuery.split(' ');
-        // logger.log('split_iteration_query : ', splitIterationQuery);
 
         // Next, check if any of the queries exist in the genes collection.
         splitIterationQuery.forEach(async (iter) => {
@@ -85,7 +84,7 @@ class DiamondXmlProcessor {
                 midline: hitMidline,
               };
 
-              // Update or insert if no matching documents were found.
+              // Update or create if no matching documents were found.
               if (createHit) {
                 diamondCollection.update(
                   { iteration_query: iter },

@@ -19,13 +19,15 @@ import './genomes/removeAnnotationTrack.js';
 import './genes/interproscan.js';
 import './genes/addInterproscan.js';
 import './genes/eggnog/addEggnog.js';
-import './genes/diamond/addDiamond.js';
-import './genes/diamond/parseXmlDiamond.js';
 import './genes/addOrthogroupTrees.js';
 import './genes/downloadGenes.js';
 import './genes/scanGeneAttributes.js';
 import './genes/updateAttributeInfo.js';
 import './genes/updateGene.js';
+
+import './genes/diamond/addDiamond.js';
+import './genes/diamond/parser/parseXmlDiamond.js';
+import './genes/diamond/parser/parseTsvDiamond.js';
 
 import './blast/makeblastdb.js';
 import './blast/removeblastdb.js';

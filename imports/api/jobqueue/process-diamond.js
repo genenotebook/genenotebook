@@ -1,4 +1,5 @@
-import DiamondXmlProcessor from '/imports/api/genes/diamond/parseXmlDiamond.js';
+import DiamondXmlProcessor from '/imports/api/genes/diamond/parser/parseXmlDiamond.js';
+import DiamondTsvProcessor from '/imports/api/genes/diamond/parser/parseTsvDiamond.js';
 import logger from '/imports/api/util/logger.js';
 import jobQueue from './jobqueue.js';
 import readline from 'readline';
@@ -15,7 +16,7 @@ jobQueue.processJobs(
     const { fileName, parser } = job.data;
     logger.log(`Add ${fileName} diamond file.`);
 
-    // A different parser for the xml file.
+    // Different parser for the xml file.
     if (parser === 'xml') {
       const stream = fs.createReadStream(fileName);
       const xml = new XmlFlow(stream);
@@ -49,11 +50,20 @@ jobQueue.processJobs(
         crlfDelay: Infinity,
       });
 
+      let lineProcessor;
+      switch (parser) {
+        case 'tsv':
+        case 'tabular':
+          logger.log(`Format : .${parser}`);
+          lineProcessor = new DiamondTsvProcessor();
+          break;
+      }
+
       const { size: fileSize } = await fs.promises.stat(fileName);
 
       rl.on('line', async (line) => {
         try {
-          logger.log(line);
+          lineProcessor.parse(line);
         } catch (err) {
           logger.error(err);
           job.fail({ err });
