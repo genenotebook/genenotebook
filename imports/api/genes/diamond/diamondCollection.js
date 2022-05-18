@@ -13,10 +13,6 @@ const diamondSchema = new SimpleSchema({
   'iteration_hits.$': {
     type: Object,
   },
-  'iteration_hits.$.num': {
-    type: Number,
-    label: 'Iteration position.',
-  },
   'iteration_hits.$.id': {
     type: String,
     label: 'Iteration identifier.',
