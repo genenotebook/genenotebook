@@ -79,6 +79,9 @@ jobQueue.processJobs(
       // Occurs when all lines are read.
       rl.on('close', async () => {
         try {
+          if (parser === 'txt') {
+            lineProcessor.lastOrder();
+          }
           logger.log('File reading finished');
           job.done();
         } catch (err) {
