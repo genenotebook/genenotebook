@@ -28,6 +28,7 @@ import './genes/updateGene.js';
 import './genes/diamond/addDiamond.js';
 import './genes/diamond/parser/parseXmlDiamond.js';
 import './genes/diamond/parser/parseTsvDiamond.js';
+import './genes/diamond/parser/parseTxtDiamond.js';
 
 import './blast/makeblastdb.js';
 import './blast/removeblastdb.js';

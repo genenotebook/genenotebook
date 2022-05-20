@@ -1,5 +1,6 @@
 import DiamondXmlProcessor from '/imports/api/genes/diamond/parser/parseXmlDiamond.js';
 import DiamondTsvProcessor from '/imports/api/genes/diamond/parser/parseTsvDiamond.js';
+import DiamondPairwiseProcessor from '/imports/api/genes/diamond/parser/parseTxtDiamond.js';
 import logger from '/imports/api/util/logger.js';
 import jobQueue from './jobqueue.js';
 import readline from 'readline';
@@ -56,6 +57,10 @@ jobQueue.processJobs(
         case 'tabular':
           logger.log(`Format : .${parser}`);
           lineProcessor = new DiamondTsvProcessor();
+          break;
+        case 'txt':
+          logger.log('Format : .txt');
+          lineProcessor = new DiamondPairwiseProcessor();
           break;
       }
 
