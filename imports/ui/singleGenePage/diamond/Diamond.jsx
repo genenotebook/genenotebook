@@ -45,12 +45,53 @@ function DiamondDataTracker({ gene }) {
   };
 }
 
+function DiamondRowQueryId({ hits_id }) {
+  return (
+    <svg>
+      <g>
+
+        {
+          hits_id.map((hit, index) => (
+            <>
+              <text x="15" y={(index * 20) + 13}>{hit}</text>
+              <polygon points={
+                [
+                  10, (index * 20),
+                  120, (index * 20),
+                  130, ((index * 20) + 7),
+                  120, ((index * 20) + 14),
+                  10, ((index * 20) + 14),
+                ]
+              }
+                stroke="black"
+                fill="none"
+              />
+            </>
+          ))
+        }
+      </g>
+    </svg>
+  );
+}
+
+function GlobalDiamondInformation({ diamond }) {
+  const diamondQueryId = diamond.iteration_hits.map((hit) => hit.id);
+
+  return (
+    <div>
+      <div>
+        <DiamondRowQueryId hits_id={diamondQueryId} />
+      </div>
+    </div>
+  );
+}
+
 function DiamondBlast({ showHeader = false, diamond }) {
   return (
     <>
       { showHeader && <Header />}
       <div>
-        <h1>Diamond ?</h1>
+        <GlobalDiamondInformation diamond={diamond} />
       </div>
     </>
   );
