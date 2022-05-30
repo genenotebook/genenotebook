@@ -38,12 +38,23 @@ class DiamondXmlProcessor {
               },
             );
 
-            // Search document ID only once.
+            // Search document ID only once and update diamondId in genes database.
             let createHit = true;
             let diamondId;
             if (typeof documentDiamond.insertedId === 'undefined') {
               createHit = false;
-              diamondId = diamondCollection.findOne({ 'iteration_query': iter })._id;
+              // Diamond already exists.
+              const diamondIdentifiant = diamondCollection.findOne({ 'iteration_query': iter })._id;
+              this.genesDb.update(
+                { 'subfeatures.ID': iter },
+                { $set: { diamondId: diamondIdentifiant } },
+              );
+            } else {
+              // Diamond _id is created.
+              this.genesDb.update(
+                { 'subfeatures.ID': iter },
+                { $set: { diamondId: documentDiamond.insertedId } },
+              );
             }
 
             // Here, get all diamond output informations.
