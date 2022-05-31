@@ -89,10 +89,43 @@ function TopBarSequence({ length, scale }) {
   console.log("start", start);
   console.log("end", end);
   console.log("range", range);
+
+  const nbrTicks = 11;
+  const textTicks = [];
+
+  const stepSize = Math.round((end - start) / nbrTicks);
+
+  for (let i = 1; i < nbrTicks; i += 1) {
+    textTicks.push(start + i * stepSize);
+  }
+
   return (
     <svg width={range[1] + 10}>
       <g>
-        <line x1={range[0]} y1="12.5" x2={range[1]} y2="12.5" stroke="black" />
+        <line x1={range[0]} y1="15" x2={range[1]} y2="15" stroke="black" />
+        <g>
+          <line x1={range[0]} y1="10" x2={range[0]} y2="15" stroke="black" />
+          <text x={range[0]} y="4" dy="5" textAnchor="middle" fontSize="10">
+            0
+          </text>
+        </g>
+        {textTicks.map((tick) => {
+          const pos = scale(tick);
+          return (
+            <g key={tick}>
+              <line x1={pos} x2={pos} y1="10" y2="15" stroke="black" />
+              <text x={pos} y="4" dy="5" textAnchor="middle" fontSize="10">
+                {tick}
+              </text>
+            </g>
+          );
+        })}
+        <g>
+          <line x1={range[1]} y1="10" x2={range[1]} y2="15" stroke="black" />
+          <text x={range[1]} y="4" dy="5" textAnchor="middle" fontSize="10">
+            {length}
+          </text>
+        </g>
       </g>
     </svg>
   );
