@@ -135,17 +135,17 @@ function TopBarSequence({ length, scale }) {
 
 function DiamondCoverLines({ diamond, scale }) {
   const range = scale.range();
-  console.log('DiamondCoverLine :', range);
-  console.log(diamond.iteration_hits[0]['query-from']);
-  const queryFrom = diamond.iteration_hits[0]['query-from'];
-  const queryTo = diamond.iteration_hits[0]['query-to'];
-  const posX = scale(queryFrom);
-  const widthRect = scale((queryTo - queryFrom));
-  console.log("widthRect :", widthRect);
-  console.log(diamond.iteration_hits[0]['query-to']);
   return (
     <svg width={range[1]}>
-      <rect x={posX} y="0" width={widthRect} height="12" stroke="black" />
+      {
+        diamond.iteration_hits.map((hit, index) => {
+          const posX = scale(hit['query-from']);
+          const wRect = scale(hit['query-to'] - hit['query-from']);
+          return (
+            <rect key={hit.id} x={posX} y={(index * (12 + 8))} width={wRect} height="12" stroke="gray" />
+          );
+        })
+      }
     </svg>
   );
 }
