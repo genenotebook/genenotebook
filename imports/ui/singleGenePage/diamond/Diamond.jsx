@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import React, { useState } from 'react';
 import './diamond.scss';
 import { scaleLinear } from 'd3';
+import { getGeneSequences } from '/imports/api/util/util.js';
 
 function Header() {
   return (
@@ -42,9 +43,11 @@ function DiamondDataTracker({ gene }) {
   const loading = !diamondSub.ready();
   const diamond = diamondCollection.findOne({ _id: diamondId });
 
-  const genesStart = queryGenes.start;
-  const genesEnd = queryGenes.end;
-  const genesLength = (genesEnd - genesStart) + 1;
+  const sequences = getGeneSequences(gene);
+  console.log("seq diamond data tracker :", sequences);
+
+  // Put condition for bastn or bastp.
+  const genesLength = sequences[0].prot.length;
 
   return {
     loading,
@@ -92,7 +95,6 @@ function TopBarSequence({ length, scale }) {
 
   const nbrTicks = 11;
   const textTicks = [];
-
   const stepSize = Math.round((end - start) / nbrTicks);
 
   for (let i = 1; i < nbrTicks; i += 1) {
@@ -100,7 +102,7 @@ function TopBarSequence({ length, scale }) {
   }
 
   return (
-    <svg width={range[1] + 10}>
+    <svg width={range[1] + 10} height="16">
       <g>
         <line x1={range[0]} y1="15" x2={range[1]} y2="15" stroke="black" />
         <g>
@@ -127,6 +129,23 @@ function TopBarSequence({ length, scale }) {
           </text>
         </g>
       </g>
+    </svg>
+  );
+}
+
+function DiamondCoverLines({ diamond, scale }) {
+  const range = scale.range();
+  console.log('DiamondCoverLine :', range);
+  console.log(diamond.iteration_hits[0]['query-from']);
+  const queryFrom = diamond.iteration_hits[0]['query-from'];
+  const queryTo = diamond.iteration_hits[0]['query-to'];
+  const posX = scale(queryFrom);
+  const widthRect = scale((queryTo - queryFrom));
+  console.log("widthRect :", widthRect);
+  console.log(diamond.iteration_hits[0]['query-to']);
+  return (
+    <svg width={range[1]}>
+      <rect x={posX} y="0" width={widthRect} height="12" stroke="black" />
     </svg>
   );
 }
@@ -163,6 +182,7 @@ function GlobalDiamondInformation({ diamond, length, initialWidth = 200}) {
             <TopBarSequence length={length} scale={scale} />
           </div>
           <div>
+            <DiamondCoverLines diamond={diamond} scale={scale} />
           </div>
         </div>
         <ReactResizeDetector handleWidth onResize={(w) => setWidth(w)} />
