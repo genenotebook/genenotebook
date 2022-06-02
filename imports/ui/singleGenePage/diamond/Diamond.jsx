@@ -57,9 +57,9 @@ function DiamondDataTracker({ gene }) {
   };
 }
 
-function ArrowQueryId({ hits_id }) {
+function ArrowQueryId({ hits_id, height }) {
   return (
-    <svg width="135">
+    <svg height={height}>
       <g>
         {
           hits_id.map((hit, index) => (
@@ -133,10 +133,10 @@ function TopBarSequence({ length, scale }) {
   );
 }
 
-function DiamondCoverLines({ diamond, scale }) {
+function DiamondCoverLines({ diamond, scale, height }) {
   const range = scale.range();
   return (
-    <svg width={range[1]}>
+    <svg width={range[1]} height={height}>
       {
         diamond.iteration_hits.map((hit, index) => {
           const posX = scale(hit['query-from']);
@@ -162,6 +162,8 @@ function GlobalDiamondInformation({ diamond, length, initialWidth = 200}) {
     right: 20,
   };
 
+  const height = ((diamond.iteration_hits.length + 1) * 20);
+
   const scale = scaleLinear()
     .domain([0, length])
     .range([margin.left, width - margin.right - 140]);
@@ -174,7 +176,7 @@ function GlobalDiamondInformation({ diamond, length, initialWidth = 200}) {
             <h2 className="title-query-sequences">Sequence</h2>
           </div>
           <div className="list-query-sequences">
-            <ArrowQueryId hits_id={diamondQueryId} />
+            <ArrowQueryId hits_id={diamondQueryId} height={height} />
           </div>
         </div>
         <div>
@@ -182,7 +184,7 @@ function GlobalDiamondInformation({ diamond, length, initialWidth = 200}) {
             <TopBarSequence length={length} scale={scale} />
           </div>
           <div>
-            <DiamondCoverLines diamond={diamond} scale={scale} />
+            <DiamondCoverLines diamond={diamond} scale={scale} height={height} />
           </div>
         </div>
         <ReactResizeDetector handleWidth onResize={(w) => setWidth(w)} />
