@@ -57,34 +57,6 @@ function DiamondDataTracker({ gene }) {
   };
 }
 
-function ArrowQueryId({ hits_id, height }) {
-  return (
-    <svg height={height}>
-      <g>
-        {
-          hits_id.map((hit, index) => (
-            <>
-              <text x="25" y={(index * 20) + 12} fontSize="13">{hit}</text>
-              <polygon points={
-                [
-                  10, (index * 20),
-                  120, (index * 20),
-                  130, ((index * 20) + 7),
-                  120, ((index * 20) + 14),
-                  10, ((index * 20) + 14),
-                ]
-              }
-                stroke="black"
-                fill="none"
-              />
-            </>
-          ))
-        }
-      </g>
-    </svg>
-  );
-}
-
 function TopBarSequence({ length, scale }) {
   const range = scale.range();
   const [start, end] = scale.domain();
@@ -102,7 +74,7 @@ function TopBarSequence({ length, scale }) {
   }
 
   return (
-    <svg width={range[1] + 10} height="16">
+    <svg width={range[1] + 10} height="16" transform="translate(134, 0)">
       <g>
         <line x1={range[0]} y1="15" x2={range[1]} y2="15" stroke="black" />
         <g>
@@ -133,16 +105,20 @@ function TopBarSequence({ length, scale }) {
   );
 }
 
-function DiamondCoverLines({ diamond, scale, height }) {
+function HitsCoverLines({ diamond, scale, height }) {
   const range = scale.range();
   return (
     <svg width={range[1]} height={height}>
       {
         diamond.iteration_hits.map((hit, index) => {
+          const queryHitId = hit.id;
           const posX = scale(hit['query-from']);
           const wRect = scale(hit['query-to'] - hit['query-from']);
           return (
-            <rect key={hit.id} x={posX} y={(index * (12 + 8))} width={wRect} height="12" stroke="#7f7f7f" fill="#7f7f7f" />
+            <g>
+              <text x="25" y={(index * (12 + 8) + 12)} fontSize="14">{queryHitId}</text>
+              <rect transform="translate(134, 0)" key={hit.id} x={posX} y={(index * (12 + 8))} width={wRect} height="12" stroke="#7f7f7f" fill="#7f7f7f" />
+            </g>
           );
         })
       }
@@ -151,8 +127,6 @@ function DiamondCoverLines({ diamond, scale, height }) {
 }
 
 function GlobalDiamondInformation({ diamond, length, initialWidth = 200}) {
-  const diamondQueryId = diamond.iteration_hits.map((hit) => hit.id);
-
   const [width, setWidth] = useState(initialWidth);
 
   const margin = {
@@ -201,21 +175,11 @@ function GlobalDiamondInformation({ diamond, length, initialWidth = 200}) {
 
       <div className="diamond-body">
         <div>
-          <div>
-            <h2 className="title-query-sequences">
-              Hits
-            </h2>
-          </div>
-          <div className="list-query-sequences">
-            <ArrowQueryId hits_id={diamondQueryId} height={height} />
-          </div>
-        </div>
-        <div>
           <div id="top-bar-sequence">
             <TopBarSequence length={length} scale={scale} />
           </div>
           <div>
-            <DiamondCoverLines diamond={diamond} scale={scale} height={height} />
+            <HitsCoverLines diamond={diamond} scale={scale} height={height} />
           </div>
         </div>
         <ReactResizeDetector handleWidth onResize={(w) => setWidth(w)} />
