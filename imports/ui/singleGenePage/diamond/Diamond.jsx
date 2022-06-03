@@ -64,7 +64,7 @@ function ArrowQueryId({ hits_id, height }) {
         {
           hits_id.map((hit, index) => (
             <>
-              <text x="15" y={(index * 20) + 13}>{hit}</text>
+              <text x="25" y={(index * 20) + 12} fontSize="13">{hit}</text>
               <polygon points={
                 [
                   10, (index * 20),
@@ -142,7 +142,7 @@ function DiamondCoverLines({ diamond, scale, height }) {
           const posX = scale(hit['query-from']);
           const wRect = scale(hit['query-to'] - hit['query-from']);
           return (
-            <rect key={hit.id} x={posX} y={(index * (12 + 8))} width={wRect} height="12" stroke="gray" />
+            <rect key={hit.id} x={posX} y={(index * (12 + 8))} width={wRect} height="12" stroke="#7f7f7f" fill="#7f7f7f" />
           );
         })
       }
@@ -170,10 +170,41 @@ function GlobalDiamondInformation({ diamond, length, initialWidth = 200}) {
 
   return (
     <div className="card">
+
+      <div id="general-diamond-informations">
+        <table className="table-diamond table">
+          <tbody>
+            <tr>
+              <th colSpan="2" className="is-light">
+                General informations
+              </th>
+            </tr>
+            <tr>
+              <td>Query sequence :</td>
+              <td>{diamond.iteration_query}</td>
+            </tr>
+            <tr>
+              <td>Algorithm :</td>
+              <td>blastp (protein-protein BLAST)</td>
+            </tr>
+            <tr>
+              <td>Database :</td>
+              <td>Non-redundant protein sequences (nr)</td>
+            </tr>
+            <tr>
+              <td>Total hits :</td>
+              <td>{diamond.iteration_hits.length}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
       <div className="diamond-body">
         <div>
           <div>
-            <h2 className="title-query-sequences">Sequence</h2>
+            <h2 className="title-query-sequences">
+              Hits
+            </h2>
           </div>
           <div className="list-query-sequences">
             <ArrowQueryId hits_id={diamondQueryId} height={height} />
@@ -189,6 +220,7 @@ function GlobalDiamondInformation({ diamond, length, initialWidth = 200}) {
         </div>
         <ReactResizeDetector handleWidth onResize={(w) => setWidth(w)} />
       </div>
+
     </div>
   );
 }

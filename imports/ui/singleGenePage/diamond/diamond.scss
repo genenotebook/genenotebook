@@ -1,6 +1,19 @@
 .diamond-body {
     display: flex;
-    // border: 1px solid black;
+    position: relative;
+    top: 20px;
+}
+
+#general-diamond-informations {
+    position: relative;
+    top: 15px;
+    left: 15px;
+}
+
+.table-diamond {
+    width: 50%;
+    height: auto;
+    // border: 1px solid red;
 }
 
 .title-query-sequences {
@@ -9,8 +22,8 @@
 }
 
 .list-query-sequences {
-    width: 140px;
-    // border: 1px solid black;
+    width: 135px;
+    margin-left: 10px;
 }
 
 #top-bar-sequence {
