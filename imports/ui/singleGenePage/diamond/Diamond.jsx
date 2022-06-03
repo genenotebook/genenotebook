@@ -8,6 +8,11 @@ import React, { useState } from 'react';
 import './diamond.scss';
 import { scaleLinear } from 'd3';
 import { getGeneSequences } from '/imports/api/util/util.js';
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverBody,
+} from '/imports/ui/util/Popover.jsx';
 
 function Header() {
   return (
@@ -105,10 +110,59 @@ function TopBarSequence({ length, scale }) {
   );
 }
 
+function HitIntervalinfo({ id, def, accession, length, bit_score, evalue, identity, positive, query_seq, midline }) {
+  return (
+    <div className="panel-body">
+      <table className="table is-hoverable is-narrow is-small">
+        <tr>
+          <td>Id :</td>
+          <td>{id}</td>
+        </tr>
+        <tr>
+          <td>Definition :</td>
+          <td>{def}</td>
+        </tr>
+        <tr>
+          <td>Accession :</td>
+          <td>{accession}</td>
+        </tr>
+        <tr>
+          <td>Length :</td>
+          <td>{length}</td>
+        </tr>
+        <tr>
+          <td>Bit-score :</td>
+          <td>{bit_score}</td>
+        </tr>
+        <tr>
+          <td>E-value :</td>
+          <td>{evalue}</td>
+        </tr>
+        <tr>
+          <td>Identity :</td>
+          <td>{identity}</td>
+        </tr>
+        <tr>
+          <td>Positive :</td>
+          <td>{positive}</td>
+        </tr>
+        {/* <tr> */}
+        {/*   <td>Query sequence :</td> */}
+        {/*   <td>{query_seq}</td> */}
+        {/* </tr> */}
+        {/* <tr> */}
+        {/*   <td>Midline</td> */}
+        {/*   <td>{midline}</td> */}
+        {/* </tr> */}
+      </table>
+    </div>
+  );
+}
+
 function HitsCoverLines({ diamond, scale, height }) {
   const range = scale.range();
   return (
-    <svg width={range[1]} height={height}>
+    <svg width={range[1] + 134} height={height}>
       {
         diamond.iteration_hits.map((hit, index) => {
           const queryHitId = hit.id;
@@ -117,7 +171,35 @@ function HitsCoverLines({ diamond, scale, height }) {
           return (
             <g>
               <text x="25" y={(index * (12 + 8) + 12)} fontSize="14">{queryHitId}</text>
-              <rect transform="translate(134, 0)" key={hit.id} x={posX} y={(index * (12 + 8))} width={wRect} height="12" stroke="#7f7f7f" fill="#7f7f7f" />
+              <Popover>
+                <PopoverTrigger>
+                  <rect
+                    className="hit-cover"
+                    transform="translate(134, 0)"
+                    key={hit.id}
+                    x={posX}
+                    y={(index * (12 + 8))}
+                    width={wRect}
+                    height="12"
+                    stroke="#7f7f7f"
+                    fill="#7f7f7f"
+                  />
+                </PopoverTrigger>
+                <PopoverBody header={hit.id}>
+                  <HitIntervalinfo
+                    id={hit.id}
+                    def={hit.def}
+                    accession={hit.accession}
+                    length={hit.length}
+                    bit_score={hit['bit-score']}
+                    evalue={hit.evalue}
+                    identity={hit.identity}
+                    positive={hit.positive}
+                    query_seq={hit['query-seq']}
+                    midline={hit.midline}
+                  />
+                </PopoverBody>
+              </Popover>
             </g>
           );
         })

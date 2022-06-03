@@ -29,3 +29,10 @@
 #top-bar-sequence {
     // border: 1px solid black;
 }
+
+.hit-cover:hover {
+    stroke: #209cee;
+    stroke-width: 2px;
+    stroke-linejoin: round;
+    cursor: pointer;
+}
