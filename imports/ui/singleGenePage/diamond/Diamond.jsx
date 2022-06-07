@@ -81,11 +81,11 @@ function TopBarSequence({ length, scale }) {
   return (
     <svg width={range[1] + 10} height="16" transform="translate(134, 0)">
       <g>
-        <line x1={range[0]} y1="15" x2={range[1]} y2="15" stroke="black" />
+        <line x1={scale(start + 1)} y1="15" x2={range[1]} y2="15" stroke="black" />
         <g>
-          <line x1={range[0]} y1="10" x2={range[0]} y2="15" stroke="black" />
-          <text x={range[0]} y="4" dy="5" textAnchor="middle" fontSize="10">
-            0
+          <line x1={scale(start + 1)} y1="10" x2={scale(start + 1)} y2="15" stroke="black" />
+          <text x={scale(start + 1)} y="4" dy="5" textAnchor="middle" fontSize="10">
+            1
           </text>
         </g>
         {textTicks.map((tick) => {
@@ -248,7 +248,7 @@ function GlobalDiamondInformation({ diamond, length, initialWidth = 200}) {
               <td>Non-redundant protein sequences (nr)</td>
             </tr>
             <tr>
-              <td>Total hits :</td>
+              <td>Total hits selected :</td>
               <td>{diamond.iteration_hits.length}</td>
             </tr>
           </tbody>
