@@ -16,7 +16,7 @@ export function PopoverTrigger({
 export function PopoverBody({
   children, showPopover, container,
   setPopperElement, styles, attributes,
-  togglePopover, header,
+  togglePopover, header, widthBody = 400,
 }) {
   if (!showPopover) {
     return null;
@@ -27,7 +27,7 @@ export function PopoverBody({
       ref={setPopperElement}
       style={{
         backgroundColor: 'white',
-        maxWidth: '400px',
+        maxWidth: `${widthBody}px`,
         ...styles.popper,
       }}
       {...attributes.popper}
