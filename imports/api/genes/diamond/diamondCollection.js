@@ -33,6 +33,10 @@ const diamondSchema = new SimpleSchema({
     type: Number,
     label: 'Bit-score.',
   },
+  'iteration_hits.$.score': {
+    type: Number,
+    label: 'score.',
+  },
   'iteration_hits.$.evalue': {
     type: String,
     label: 'E-value',
@@ -45,6 +49,14 @@ const diamondSchema = new SimpleSchema({
     type: Number,
     label: '',
   },
+  'iteration_hits.$.hit-from': {
+    type: Number,
+    label: '',
+  },
+  'iteration_hits.$.hit-to': {
+    type: Number,
+    label: '',
+  },
   'iteration_hits.$.identity': {
     type: Number,
     label: '',
@@ -52,6 +64,10 @@ const diamondSchema = new SimpleSchema({
   'iteration_hits.$.positive': {
     type: Number,
     label: '',
+  },
+  'iteration_hits.$.gaps': {
+    type: Number,
+    label: 'Hit gaps',
   },
   'iteration_hits.$.query-seq': {
     type: String,

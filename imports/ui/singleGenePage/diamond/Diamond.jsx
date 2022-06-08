@@ -137,7 +137,7 @@ function DescriptionLimited({ description }) {
 
   return (
     <>
-      { descChar }
+      <b>{ descChar }</b>
       {
         isMaxChar
           ? (
@@ -154,18 +154,49 @@ function DescriptionLimited({ description }) {
   );
 }
 
-function HitIntervalinfo({ id, def, accession, length, bit_score, evalue, identity, positive, query_seq, midline }) {
+function SequenceID({ id }) {
+  const ncbiUrl = 'https://www.ncbi.nlm.nih.gov/search/all/?term=';
+
+  return (
+    <a href={`${ncbiUrl}${id}`} target="_blank" rel="noreferrer">
+      { id }
+    </a>
+  );
+}
+
+function PourcentageView({ length_hit, length_sequence }) {
+  const pourcentage = ((length_hit / length_sequence ) * 100).toFixed(2);
+  return (
+    <p>{length_hit}/{length_sequence} ({pourcentage}%)</p>
+  );
+}
+
+function HitIntervalinfo({
+  id,
+  def,
+  accession,
+  length,
+  score,
+  bit_score,
+  evalue,
+  identity,
+  positive,
+  gaps,
+  query_seq,
+  midline
+}) {
   return (
     <div className="panel-body">
       <table className="table is-hoverable is-narrow is-small">
         <tr>
-          <td>Id :</td>
-          <td>{id}</td>
+          <td colSpan="2">
+            <DescriptionLimited description={def} />
+          </td>
         </tr>
         <tr>
-          <td colSpan="2">
-            <h6>Definition :</h6>
-            <DescriptionLimited description={def} />
+          <td>Sequence ID :</td>
+          <td>
+            <SequenceID id={id} />
           </td>
         </tr>
         <tr>
@@ -177,20 +208,30 @@ function HitIntervalinfo({ id, def, accession, length, bit_score, evalue, identi
           <td>{length}</td>
         </tr>
         <tr>
-          <td>Bit-score :</td>
-          <td>{bit_score}</td>
+          <td>Score :</td>
+          <td>{bit_score} bits ({score})</td>
         </tr>
         <tr>
-          <td>E-value :</td>
+          <td>Expect:</td>
           <td>{evalue}</td>
         </tr>
         <tr>
           <td>Identity :</td>
-          <td>{identity}</td>
+          <td>
+            <PourcentageView length_hit={identity} length_sequence={length} />
+          </td>
         </tr>
         <tr>
           <td>Positive :</td>
-          <td>{positive}</td>
+          <td>
+            <PourcentageView length_hit={positive} length_sequence={length} />
+          </td>
+        </tr>
+        <tr>
+          <td>Gaps :</td>
+          <td>
+            <PourcentageView length_hit={gaps} length_sequence={length} />
+          </td>
         </tr>
         <tr>
           <td colSpan="2">
@@ -239,16 +280,21 @@ function HitsCoverLines({ diamond, scale, height }) {
                     fill="#7f7f7f"
                   />
                 </PopoverTrigger>
-                <PopoverBody header={hit.id} widthBody={600}>
+                <PopoverBody
+                  header={hit.def.length > 49 ? hit.def.substring(0, 49).concat(' ...') : hit.def}
+                  widthBody={600}
+                >
                   <HitIntervalinfo
                     id={hit.id}
                     def={hit.def}
                     accession={hit.accession}
                     length={hit.length}
+                    score={hit.score}
                     bit_score={hit['bit-score']}
                     evalue={hit.evalue}
                     identity={hit.identity}
                     positive={hit.positive}
+                    gaps={hit.gaps}
                     query_seq={hit['query-seq']}
                     midline={hit.midline}
                   />

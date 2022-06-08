@@ -68,15 +68,19 @@ class DiamondXmlProcessor {
               const hitAccession = hit['hit_accession'];
 
               // Specific query details.
+              const hitHspBitScore = hit['hit_hsps']['hsp_bit-score'];
               const hitHspScore = hit['hit_hsps']['hsp_score'];
               const hitEvalue = hit['hit_hsps']['hsp_evalue'];
-              const hitQueryFrom = hit['hit_hsps']['hsp_query-from'];
-              const hitQueryTo = hit['hit_hsps']['hsp_query-to'];
+              const QueryFrom = hit['hit_hsps']['hsp_query-from'];
+              const QueryTo = hit['hit_hsps']['hsp_query-to'];
+              const hitFrom = hit['hit_hsps']['hsp_hit-from'];
+              const hitTo = hit['hit_hsps']['hsp_hit-to'];
               const hitLength = hit['hit_hsps']['hsp_align-len'];
               const hitIdentity = hit['hit_hsps']['hsp_identity'];
               const hitQuerySeq = hit['hit_hsps']['hsp_qseq'];
               const hitMidline = hit['hit_hsps']['hsp_midline'];
               const hitPositive = hit['hit_hsps']['hsp_positive'];
+              const hitGaps = hit['hit_hsps']['hsp_gaps'];
 
               // Organize diamont data in a dictionary.
               const iterations = {
@@ -85,12 +89,16 @@ class DiamondXmlProcessor {
                 def: hitDef,
                 accession: hitAccession,
                 length: hitLength,
-                'bit-score': hitHspScore,
+                'bit-score': hitHspBitScore,
+                score: hitHspScore,
                 evalue: hitEvalue,
-                'query-from': hitQueryFrom,
-                'query-to': hitQueryTo,
+                'query-from': QueryFrom,
+                'query-to': QueryTo,
+                'hit-from': hitFrom,
+                'hit-to': hitTo,
                 identity: hitIdentity,
                 positive: hitPositive,
+                gaps: hitGaps,
                 'query-seq': hitQuerySeq,
                 midline: hitMidline,
               };
