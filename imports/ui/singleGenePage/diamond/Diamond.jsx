@@ -192,7 +192,9 @@ function PreviewDiamondAlign({
 
     queryAlignTest += 'Query ';
     const maxSpaceCount = queryseq.length.toString().length;
-    const repeatSpace = ((maxSpaceCount - (i * 60).toString().length) + 1);
+    const repeatSpace = ((maxSpaceCount - (i * maxSplit).toString().length) + 1);
+    console.log('max space count : ', maxSpaceCount);
+    console.log('repeat space :', repeatSpace);
     queryAlignTest += Number(seqFrom) + (i * maxSplit);
     queryAlignTest += ' '.repeat(repeatSpace);
     queryAlignTest += ' ';
@@ -204,8 +206,11 @@ function PreviewDiamondAlign({
       queryAlignTest += ((i + 1) * maxSplit);
     }
     queryAlignTest += '\n';
+    queryAlignTest += ' '.repeat(7 + (i * maxSplit).toString().length + repeatSpace);
+    queryAlignTest += hitmidline.slice((i * maxSplit), ((i + 1) * maxSplit));
+    queryAlignTest += '\n';
   }
-  console.log('test :', queryAlignTest);
+  console.log(queryAlignTest);
   return (
     <pre style={{ margin: '0', lineHeight: '1', display: 'block', maxWidth: '600px', height: 'auto'}}>
       {queryAlignTest}
