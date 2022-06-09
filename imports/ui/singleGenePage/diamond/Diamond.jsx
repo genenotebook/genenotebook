@@ -171,6 +171,48 @@ function PourcentageView({ length_hit, length_sequence }) {
   );
 }
 
+function PreviewDiamondAlign({
+  seqFrom,
+  seqTo,
+  hitFrom,
+  hitTo,
+  queryseq,
+  hitmidline,
+}) {
+  const queryStr = 'Query';
+  const sbjctStr = 'Sbjct';
+
+  const queryAlign = queryStr.concat(' ', seqFrom, ' ', queryseq.slice(0, 60), ' ', seqTo);
+  console.log('Seq Align :', queryAlign);
+
+  let queryAlignTest = '';
+  const maxSplit = 50;
+  for (let i = 0; i < Math.floor(queryseq.length / maxSplit) + 1; i += 1) {
+    console.log('i :', i);
+
+    queryAlignTest += 'Query ';
+    const maxSpaceCount = queryseq.length.toString().length;
+    const repeatSpace = ((maxSpaceCount - (i * 60).toString().length) + 1);
+    queryAlignTest += Number(seqFrom) + (i * maxSplit);
+    queryAlignTest += ' '.repeat(repeatSpace);
+    queryAlignTest += ' ';
+    queryAlignTest += queryseq.slice((i * maxSplit), ((i + 1) * maxSplit));
+    queryAlignTest += ' ';
+    if (((i + 1) * maxSplit) >= queryseq.length) {
+      queryAlignTest += seqTo;
+    } else {
+      queryAlignTest += ((i + 1) * maxSplit);
+    }
+    queryAlignTest += '\n';
+  }
+  console.log('test :', queryAlignTest);
+  return (
+    <pre style={{ margin: '0', lineHeight: '1', display: 'block', maxWidth: '600px', height: 'auto'}}>
+      {queryAlignTest}
+    </pre>
+  );
+}
+
 function HitIntervalinfo({
   id,
   def,
@@ -183,7 +225,11 @@ function HitIntervalinfo({
   positive,
   gaps,
   query_seq,
-  midline
+  midline,
+  query_from,
+  query_to,
+  hit_from,
+  hit_to,
 }) {
   return (
     <div className="panel-body">
@@ -233,23 +279,31 @@ function HitIntervalinfo({
             <PourcentageView length_hit={gaps} length_sequence={length} />
           </td>
         </tr>
-        <tr>
-          <td colSpan="2">
-            <h6>Query sequence :</h6>
-            <div className="exon-sequence">
-              <Seq header={id} sequence={query_seq} maxLength={70} fontSize=".8rem" />
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td colSpan="2">
-            <h6>Midline :</h6>
-            <div className="exon-sequence">
-              <Seq header={id} sequence={midline} maxLength={70} fontSize=".8rem" />
-            </div>
-          </td>
-        </tr>
+        {/* <tr> */}
+        {/*   <td colSpan="2"> */}
+        {/*     <h6>Query sequence :</h6> */}
+        {/*     <div className="exon-sequence"> */}
+        {/*       <Seq header={id} sequence={query_seq} maxLength={70} fontSize=".8rem" /> */}
+        {/*     </div> */}
+        {/*   </td> */}
+        {/* </tr> */}
+        {/* <tr> */}
+        {/*   <td colSpan="2"> */}
+        {/*     <h6>Midline :</h6> */}
+        {/*     <div className="exon-sequence"> */}
+        {/*       <Seq header={id} sequence={midline} maxLength={70} fontSize=".8rem" /> */}
+        {/*     </div> */}
+        {/*   </td> */}
+        {/* </tr> */}
       </table>
+      <PreviewDiamondAlign
+        seqFrom={query_from}
+        seqTo={query_to}
+        hitFrom={hit_from}
+        hitTo={hit_to}
+        queryseq={query_seq}
+        hitmidline={midline}
+      />
     </div>
   );
 }
@@ -297,6 +351,10 @@ function HitsCoverLines({ diamond, scale, height }) {
                     gaps={hit.gaps}
                     query_seq={hit['query-seq']}
                     midline={hit.midline}
+                    query_from={hit['query-from']}
+                    query_to={hit['query-to']}
+                    hit_from={hit['hit-from']}
+                    hit-to={hit['hit-to']}
                   />
                 </PopoverBody>
               </Popover>
