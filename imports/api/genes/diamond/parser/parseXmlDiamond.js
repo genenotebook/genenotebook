@@ -105,9 +105,6 @@ class DiamondXmlProcessor {
                 'hit-seq': hitSeq,
               };
 
-              // logger.log('query-seq :', iterations['query-seq']);
-              // logger.log('midline :', iterations.midline);
-
               // Update or create if no matching documents were found.
               if (createHit) {
                 diamondCollection.update(

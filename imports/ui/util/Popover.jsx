@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { right } from '@popperjs/core';
 import { createPortal } from 'react-dom';
 import { usePopper } from 'react-popper';
 
@@ -34,8 +35,14 @@ export function PopoverBody({
     >
       <nav className="panel is-info">
         <p className="panel-heading">
+          <button
+            type="button"
+            className="delete"
+            onClick={togglePopover}
+            aria-label="delete"
+            style={{ marginRight: '16px' }}
+          />
           {header}
-          <button type="button" className="delete" onClick={togglePopover} />
         </p>
         {children}
       </nav>

@@ -50,8 +50,6 @@ function DiamondDataTracker({ gene }) {
   const diamond = diamondCollection.findOne({ _id: diamondId });
 
   const sequences = getGeneSequences(gene);
-  console.log("seq diamond data tracker :", sequences);
-
   // Put condition for bastn or bastp.
   const genesLength = sequences[0].prot.length;
 
@@ -66,11 +64,6 @@ function DiamondDataTracker({ gene }) {
 function TopBarSequence({ length, scale }) {
   const range = scale.range();
   const [start, end] = scale.domain();
-
-  console.log("start", start);
-  console.log("end", end);
-  console.log("range", range);
-
   const nbrTicks = 11;
   const textTicks = [];
   const stepSize = Math.round((end - start) / nbrTicks);
@@ -180,26 +173,14 @@ function PairwiseAlignmentView({
   hitmidline,
   hitseq,
 }) {
-  const queryStr = 'Query';
-  const sbjctStr = 'Sbjct';
-
-  const queryAlign = queryStr.concat(' ', seqFrom, ' ', queryseq.slice(0, 60), ' ', seqTo);
-  console.log('Seq Align :', queryAlign);
-
   let queryAlignTest = '';
   const maxSplit = 50;
   for (let i = 0; i < Math.floor(queryseq.length / maxSplit) + 1; i += 1) {
-    console.log('i :', i);
-
     // Align query sequence.
     queryAlignTest += 'Query ';
     const maxSpaceCount = queryseq.length.toString().length;
     const minSpaceCount = ((Number(seqFrom) + (i * maxSplit)).toString().length);
     const repeatSpace = (maxSpaceCount - minSpaceCount + 1);
-    console.log((Number(seqFrom) + (i * maxSplit)));
-    console.log('max space count : ', maxSpaceCount);
-    console.log('min space count : ', minSpaceCount);
-    console.log('repeat space :', repeatSpace);
     queryAlignTest += Number(seqFrom) + (i * maxSplit);
     queryAlignTest += ' '.repeat(repeatSpace);
     queryAlignTest += ' ';
@@ -222,9 +203,6 @@ function PairwiseAlignmentView({
     const maxHitSpace = hitseq.length.toString().length;
     const minHitSpace = ((Number(hitFrom) + (i * maxSplit)).toString().length);
     const hitRepeatSpace = (maxHitSpace - minHitSpace + 1);
-    console.log('max hit space :', maxHitSpace);
-    console.log('min hit space :', minHitSpace);
-    console.log('hit repeat space', hitRepeatSpace);
     queryAlignTest += Number(hitFrom) + (i * maxSplit);
     queryAlignTest += ' '.repeat(hitRepeatSpace);
     queryAlignTest += ' ';
@@ -237,9 +215,8 @@ function PairwiseAlignmentView({
     }
     queryAlignTest += '\n\n';
   }
-  console.log(queryAlignTest);
   return (
-    <pre style={{ margin: '0', lineHeight: '1', display: 'block', maxWidth: '600px', height: 'auto'}}>
+    <pre style={{ padding: '.25em .5em', lineHeight: '1', display: 'block', maxWidth: '600px', height: 'auto'}}>
       {queryAlignTest}
     </pre>
   );
@@ -268,7 +245,7 @@ function HitIntervalinfo({
     <div className="panel-body">
       <table className="table is-hoverable is-narrow is-small">
         <tr>
-          <td colSpan="2">
+          <td colSpan="2" style={{width: '600px'}}>
             <DescriptionLimited description={def} />
           </td>
         </tr>
@@ -312,22 +289,6 @@ function HitIntervalinfo({
             <PourcentageView length_hit={gaps} length_sequence={length} />
           </td>
         </tr>
-        {/* <tr> */}
-        {/*   <td colSpan="2"> */}
-        {/*     <h6>Query sequence :</h6> */}
-        {/*     <div className="exon-sequence"> */}
-        {/*       <Seq header={id} sequence={query_seq} maxLength={70} fontSize=".8rem" /> */}
-        {/*     </div> */}
-        {/*   </td> */}
-        {/* </tr> */}
-        {/* <tr> */}
-        {/*   <td colSpan="2"> */}
-        {/*     <h6>Midline :</h6> */}
-        {/*     <div className="exon-sequence"> */}
-        {/*       <Seq header={id} sequence={midline} maxLength={70} fontSize=".8rem" /> */}
-        {/*     </div> */}
-        {/*   </td> */}
-        {/* </tr> */}
       </table>
       <PairwiseAlignmentView
         seqFrom={query_from}
@@ -352,7 +313,7 @@ function HitsCoverLines({ diamond, scale, height }) {
           const posX = scale(hit['query-from']);
           const wRect = scale(hit['query-to'] - hit['query-from']);
           return (
-            <g>
+            <g key={queryHitId}>
               <text x="25" y={(index * (12 + 8) + 12)} fontSize="14">{queryHitId}</text>
               <Popover>
                 <PopoverTrigger>
