@@ -173,51 +173,51 @@ function PairwiseAlignmentView({
   hitmidline,
   hitseq,
 }) {
-  let queryAlignTest = '';
+  let pairwiseAlignmt = '';
   const maxSplit = 50;
   for (let i = 0; i < Math.floor(queryseq.length / maxSplit) + 1; i += 1) {
     // Align query sequence.
-    queryAlignTest += 'Query ';
+    pairwiseAlignmt += 'Query ';
     const maxSpaceCount = queryseq.length.toString().length;
     const minSpaceCount = ((Number(seqFrom) + (i * maxSplit)).toString().length);
     const repeatSpace = (maxSpaceCount - minSpaceCount + 1);
-    queryAlignTest += Number(seqFrom) + (i * maxSplit);
-    queryAlignTest += ' '.repeat(repeatSpace);
-    queryAlignTest += ' ';
-    queryAlignTest += queryseq.slice((i * maxSplit), ((i + 1) * maxSplit));
-    queryAlignTest += ' ';
+    pairwiseAlignmt += Number(seqFrom) + (i * maxSplit);
+    pairwiseAlignmt += ' '.repeat(repeatSpace);
+    pairwiseAlignmt += ' ';
+    pairwiseAlignmt += queryseq.slice((i * maxSplit), ((i + 1) * maxSplit));
+    pairwiseAlignmt += ' ';
     if (((i + 1) * maxSplit) >= queryseq.length) {
-      queryAlignTest += seqTo;
+      pairwiseAlignmt += seqTo;
     } else {
-      queryAlignTest += (Number(seqFrom) + ((i + 1) * maxSplit));
+      pairwiseAlignmt += (Number(seqFrom) + ((i + 1) * maxSplit));
     }
-    queryAlignTest += '\n';
+    pairwiseAlignmt += '\n';
 
     // Align midline sequence.
-    queryAlignTest += ' '.repeat(7 + minSpaceCount + repeatSpace);
-    queryAlignTest += hitmidline.slice((i * maxSplit), ((i + 1) * maxSplit));
-    queryAlignTest += '\n';
+    pairwiseAlignmt += ' '.repeat(7 + minSpaceCount + repeatSpace);
+    pairwiseAlignmt += hitmidline.slice((i * maxSplit), ((i + 1) * maxSplit));
+    pairwiseAlignmt += '\n';
 
     // Align hit sequence also called subject sequence (Sbjct).
-    queryAlignTest += 'Sbjct ';
+    pairwiseAlignmt += 'Sbjct ';
     const maxHitSpace = hitseq.length.toString().length;
     const minHitSpace = ((Number(hitFrom) + (i * maxSplit)).toString().length);
     const hitRepeatSpace = (maxHitSpace - minHitSpace + 1);
-    queryAlignTest += Number(hitFrom) + (i * maxSplit);
-    queryAlignTest += ' '.repeat(hitRepeatSpace);
-    queryAlignTest += ' ';
-    queryAlignTest += hitseq.slice((i * maxSplit), ((i + 1) * maxSplit));
-    queryAlignTest += ' ';
+    pairwiseAlignmt += Number(hitFrom) + (i * maxSplit);
+    pairwiseAlignmt += ' '.repeat(hitRepeatSpace);
+    pairwiseAlignmt += ' ';
+    pairwiseAlignmt += hitseq.slice((i * maxSplit), ((i + 1) * maxSplit));
+    pairwiseAlignmt += ' ';
     if (((i + 1) * maxSplit) >= hitseq.length) {
-      queryAlignTest += hitTo;
+      pairwiseAlignmt += hitTo;
     } else {
-      queryAlignTest += (Number(hitFrom) + ((i + 1) * maxSplit));
+      pairwiseAlignmt += (Number(hitFrom) + ((i + 1) * maxSplit));
     }
-    queryAlignTest += '\n\n';
+    pairwiseAlignmt += '\n\n';
   }
   return (
     <pre style={{ padding: '.25em .5em', lineHeight: '1', display: 'block', maxWidth: '600px', height: 'auto'}}>
-      {queryAlignTest}
+      {pairwiseAlignmt}
     </pre>
   );
 }
@@ -244,51 +244,53 @@ function HitIntervalinfo({
   return (
     <div className="panel-body">
       <table className="table is-hoverable is-narrow is-small">
-        <tr>
-          <td colSpan="2" style={{width: '600px'}}>
-            <DescriptionLimited description={def} />
-          </td>
-        </tr>
-        <tr>
-          <td>Sequence ID :</td>
-          <td>
-            <SequenceID id={id} />
-          </td>
-        </tr>
-        <tr>
-          <td>Accession :</td>
-          <td>{accession}</td>
-        </tr>
-        <tr>
-          <td>Length :</td>
-          <td>{length}</td>
-        </tr>
-        <tr>
-          <td>Score :</td>
-          <td>{bit_score} bits ({score})</td>
-        </tr>
-        <tr>
-          <td>Expect:</td>
-          <td>{evalue}</td>
-        </tr>
-        <tr>
-          <td>Identity :</td>
-          <td>
-            <PourcentageView length_hit={identity} length_sequence={length} />
-          </td>
-        </tr>
-        <tr>
-          <td>Positive :</td>
-          <td>
-            <PourcentageView length_hit={positive} length_sequence={length} />
-          </td>
-        </tr>
-        <tr>
-          <td>Gaps :</td>
-          <td>
-            <PourcentageView length_hit={gaps} length_sequence={length} />
-          </td>
-        </tr>
+        <tbody>
+          <tr>
+            <td colSpan="2" style={{width: '600px'}}>
+              <DescriptionLimited description={def} />
+            </td>
+          </tr>
+          <tr>
+            <td>Sequence ID :</td>
+            <td>
+              <SequenceID id={id} />
+            </td>
+          </tr>
+          <tr>
+            <td>Accession :</td>
+            <td>{accession}</td>
+          </tr>
+          <tr>
+            <td>Length :</td>
+            <td>{length}</td>
+          </tr>
+          <tr>
+            <td>Score :</td>
+            <td>{bit_score} bits ({score})</td>
+          </tr>
+          <tr>
+            <td>Expect:</td>
+            <td>{evalue}</td>
+          </tr>
+          <tr>
+            <td>Identity :</td>
+            <td>
+              <PourcentageView length_hit={identity} length_sequence={length} />
+            </td>
+          </tr>
+          <tr>
+            <td>Positive :</td>
+            <td>
+              <PourcentageView length_hit={positive} length_sequence={length} />
+            </td>
+          </tr>
+          <tr>
+            <td>Gaps :</td>
+            <td>
+              <PourcentageView length_hit={gaps} length_sequence={length} />
+            </td>
+          </tr>
+        </tbody>
       </table>
       <PairwiseAlignmentView
         seqFrom={query_from}
