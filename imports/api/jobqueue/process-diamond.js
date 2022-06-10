@@ -20,7 +20,7 @@ jobQueue.processJobs(
     // Different parser for the xml file.
     if (parser === 'xml') {
       const stream = fs.createReadStream(fileName);
-      const xml = new XmlFlow(stream);
+      const xml = new XmlFlow(stream, { normalize: false });
       const lineProcessor = new DiamondXmlProcessor();
       const tag = 'blastoutput';
 

@@ -171,13 +171,14 @@ function PourcentageView({ length_hit, length_sequence }) {
   );
 }
 
-function PreviewDiamondAlign({
+function PairwiseAlignmentView({
   seqFrom,
   seqTo,
   hitFrom,
   hitTo,
   queryseq,
   hitmidline,
+  hitseq,
 }) {
   const queryStr = 'Query';
   const sbjctStr = 'Sbjct';
@@ -190,11 +191,12 @@ function PreviewDiamondAlign({
   for (let i = 0; i < Math.floor(queryseq.length / maxSplit) + 1; i += 1) {
     console.log('i :', i);
 
+    // Align query sequence.
     queryAlignTest += 'Query ';
     const maxSpaceCount = queryseq.length.toString().length;
     const minSpaceCount = ((Number(seqFrom) + (i * maxSplit)).toString().length);
-    console.log((Number(seqFrom) + (i * maxSplit)) );
     const repeatSpace = (maxSpaceCount - minSpaceCount + 1);
+    console.log((Number(seqFrom) + (i * maxSplit)));
     console.log('max space count : ', maxSpaceCount);
     console.log('min space count : ', minSpaceCount);
     console.log('repeat space :', repeatSpace);
@@ -206,12 +208,34 @@ function PreviewDiamondAlign({
     if (((i + 1) * maxSplit) >= queryseq.length) {
       queryAlignTest += seqTo;
     } else {
-      queryAlignTest += ((i + 1) * maxSplit);
+      queryAlignTest += (Number(seqFrom) + ((i + 1) * maxSplit));
     }
     queryAlignTest += '\n';
+
+    // Align midline sequence.
     queryAlignTest += ' '.repeat(7 + minSpaceCount + repeatSpace);
     queryAlignTest += hitmidline.slice((i * maxSplit), ((i + 1) * maxSplit));
     queryAlignTest += '\n';
+
+    // Align hit sequence also called subject sequence (Sbjct).
+    queryAlignTest += 'Sbjct ';
+    const maxHitSpace = hitseq.length.toString().length;
+    const minHitSpace = ((Number(hitFrom) + (i * maxSplit)).toString().length);
+    const hitRepeatSpace = (maxHitSpace - minHitSpace + 1);
+    console.log('max hit space :', maxHitSpace);
+    console.log('min hit space :', minHitSpace);
+    console.log('hit repeat space', hitRepeatSpace);
+    queryAlignTest += Number(hitFrom) + (i * maxSplit);
+    queryAlignTest += ' '.repeat(hitRepeatSpace);
+    queryAlignTest += ' ';
+    queryAlignTest += hitseq.slice((i * maxSplit), ((i + 1) * maxSplit));
+    queryAlignTest += ' ';
+    if (((i + 1) * maxSplit) >= hitseq.length) {
+      queryAlignTest += hitTo;
+    } else {
+      queryAlignTest += (Number(hitFrom) + ((i + 1) * maxSplit));
+    }
+    queryAlignTest += '\n\n';
   }
   console.log(queryAlignTest);
   return (
@@ -238,6 +262,7 @@ function HitIntervalinfo({
   query_to,
   hit_from,
   hit_to,
+  hit_seq,
 }) {
   return (
     <div className="panel-body">
@@ -304,13 +329,14 @@ function HitIntervalinfo({
         {/*   </td> */}
         {/* </tr> */}
       </table>
-      <PreviewDiamondAlign
+      <PairwiseAlignmentView
         seqFrom={query_from}
         seqTo={query_to}
         hitFrom={hit_from}
         hitTo={hit_to}
         queryseq={query_seq}
         hitmidline={midline}
+        hitseq={hit_seq}
       />
     </div>
   );
@@ -362,7 +388,8 @@ function HitsCoverLines({ diamond, scale, height }) {
                     query_from={hit['query-from']}
                     query_to={hit['query-to']}
                     hit_from={hit['hit-from']}
-                    hit-to={hit['hit-to']}
+                    hit_to={hit['hit-to']}
+                    hit_seq={hit['hit-seq']}
                   />
                 </PopoverBody>
               </Popover>

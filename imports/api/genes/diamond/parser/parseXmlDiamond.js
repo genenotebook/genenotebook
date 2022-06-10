@@ -77,10 +77,11 @@ class DiamondXmlProcessor {
               const hitTo = hit['hit_hsps']['hsp_hit-to'];
               const hitLength = hit['hit_hsps']['hsp_align-len'];
               const hitIdentity = hit['hit_hsps']['hsp_identity'];
-              const hitQuerySeq = hit['hit_hsps']['hsp_qseq'];
-              const hitMidline = hit['hit_hsps']['hsp_midline'];
               const hitPositive = hit['hit_hsps']['hsp_positive'];
               const hitGaps = hit['hit_hsps']['hsp_gaps'];
+              const querySeq = hit['hit_hsps']['hsp_qseq'];
+              const hitMidline = hit['hit_hsps']['hsp_midline'];
+              const hitSeq = hit['hit_hsps']['hsp_hseq'];
 
               // Organize diamont data in a dictionary.
               const iterations = {
@@ -99,9 +100,13 @@ class DiamondXmlProcessor {
                 identity: hitIdentity,
                 positive: hitPositive,
                 gaps: hitGaps,
-                'query-seq': hitQuerySeq,
+                'query-seq': querySeq,
                 midline: hitMidline,
+                'hit-seq': hitSeq,
               };
+
+              // logger.log('query-seq :', iterations['query-seq']);
+              // logger.log('midline :', iterations.midline);
 
               // Update or create if no matching documents were found.
               if (createHit) {

@@ -77,6 +77,10 @@ const diamondSchema = new SimpleSchema({
     type: String,
     label: '',
   },
+  'iteration_hits.$.hit-seq': {
+    type: String,
+    label: '',
+  },
 });
 
 const diamondCollection = new Mongo.Collection('diamond');
