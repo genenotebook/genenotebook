@@ -335,7 +335,7 @@ addDiamond
   .description(
     `Add Diamond output formats, including BLAST pairwise, tabular and XML to a
 running GeneNoteBook server.`,
-  ).usage('[options] <Diamond output formats .tsv, .tabular, .xml, .txt, .sam file>')
+  ).usage('[options] <Diamond output formats .tsv, .tabular, .xml, .txt file>')
   .arguments('<file>')
   .requiredOption(
     '-u, --username <adminUsername>',
@@ -350,9 +350,23 @@ running GeneNoteBook server.`,
     'Port on which GeneNoteBook is running. Default: 3000',
   )
   .option(
-    '--format [parser]',
+    '-fmt --format [parser]',
     `Choose a parser for the diamond output format. Parses .tsv, .tabular, .xml,
-   .txt, .sam extensions.`,
+   .txt extensions.`,
+  )
+  .requiredOption(
+    '-prog, --program [program]',
+    `The program used to compare the sequences to a database (e.g: blastn,
+  blastp, blastn, blastx, tblastn, tblastx, quick-blastp, psi-blast, phi-blast, delta-blast).`,
+  )
+  .option(
+    '-mtx, --matrix [matrix]',
+    `The matrix of substitution matrix used for sequence alignment (e.g:
+    BLOSUM90, BLOSUM80, PAM100).`,
+  )
+  .option(
+    '-db, --database [databast]',
+    'The database used to compare the sequences (e.g: Non-reundant protein sequences (nr)).',
   )
   .action(
     (
@@ -362,6 +376,9 @@ running GeneNoteBook server.`,
         password,
         port = 3000,
         format,
+        algo,
+        mtrix,
+        db,
       },
     ) => {
       if (typeof file !== 'string') addDiamond.help();
@@ -371,7 +388,7 @@ running GeneNoteBook server.`,
         addDiamond.help();
       }
 
-      const parserAccepted = ['tsv', 'tabular', 'xml', 'txt', 'sam'];
+      const parserAccepted = ['tsv', 'tabular', 'xml', 'txt'];
       const extensionFile = path.extname(file).replace(/\./g, '');
       let parserType = format;
 
@@ -379,15 +396,15 @@ running GeneNoteBook server.`,
         if (!parserAccepted.includes(parserType)) {
           logger.error(`
 Error: unknow format : ${parserType}. To specify --format, choose a format
-compatible with diamond e.g : "tsv", "tabular", "xml", "txt", "sam".`);
+compatible with diamond e.g : "tsv", "tabular", "xml", "txt".`);
           addDiamond.help();
         }
       } else if (parserAccepted.includes(extensionFile)) {
         parserType = extensionFile;
       } else {
         logger.error(`
-Error : unknow file extension : ${extensionFile}. Must specify --format when
-file extension is not "tsv", "tabular", "xml", "txt", "sam".`);
+Error : unknow file extension : ${extensionFile}. Must specify --extension when
+file extension is not "tsv", "tabular", "xml", "txt"`);
         addDiamond.help();
       }
 
@@ -396,6 +413,9 @@ file extension is not "tsv", "tabular", "xml", "txt", "sam".`);
         {
           fileName,
           parser: parserType,
+          program: algo,
+          matrix: mtrix,
+          database: db,
         },
       );
     },
@@ -403,9 +423,9 @@ file extension is not "tsv", "tabular", "xml", "txt", "sam".`);
   .on('--help', () => {
     console.log(`
 Example:
-    genenotebook add diamond testdata.xml -u admin -p admin
+    genenotebook add diamond mmucedo.xml -prog blastp -u admin -p admin
 or
-    genenotebook add diamond testdata.tabular --format tsv -u admin -p admin
+    genenotebook add diamond mmucedo.xml --format xml --program blastp --matrix BLOSUM90 -db "Non-reundant protein sequences (nr)" -u admin -p admin
     `);
   })
   .exitOverride(customExitOverride(addDiamond));

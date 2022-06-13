@@ -10,8 +10,32 @@ const addDiamond = new ValidatedMethod({
   validate: new SimpleSchema({
     fileName: { type: String },
     parser: {
+      optional: true,
       type: String,
-      allowedValues: ['tsv', 'tabular', 'xml', 'txt', 'sam'],
+      allowedValues: ['tsv', 'tabular', 'xml', 'txt'],
+    },
+    program: {
+      required: true,
+      type: String,
+      allowedValues: [
+        'blastp',
+        'quick-blastp',
+        'psi-blast',
+        'phi-blast',
+        'delta-blast',
+        'blastn',
+        'blastx',
+        'tblastn',
+        'tblastx',
+      ],
+    },
+    matrix: {
+      optional: true,
+      type: String,
+    },
+    database: {
+      optional: true,
+      type: String,
     },
   }).validator(),
   applyOptions: {
