@@ -350,11 +350,11 @@ running GeneNoteBook server.`,
     'Port on which GeneNoteBook is running. Default: 3000',
   )
   .option(
-    '-fmt --format [parser]',
+    '-fmt, --format [parser]',
     `Choose a parser for the diamond output format. Parses .tsv, .tabular, .xml,
    .txt extensions.`,
   )
-  .requiredOption(
+  .option(
     '-prog, --program [program]',
     `The program used to compare the sequences to a database (e.g: blastn,
   blastp, blastn, blastx, tblastn, tblastx, quick-blastp, psi-blast, phi-blast, delta-blast).`,
@@ -365,7 +365,7 @@ running GeneNoteBook server.`,
     BLOSUM90, BLOSUM80, PAM100).`,
   )
   .option(
-    '-db, --database [databast]',
+    '-db --database [database]',
     'The database used to compare the sequences (e.g: Non-reundant protein sequences (nr)).',
   )
   .action(
@@ -376,12 +376,16 @@ running GeneNoteBook server.`,
         password,
         port = 3000,
         format,
-        algo,
-        mtrix,
-        db,
+        program,
+        matrix,
+        database,
       },
     ) => {
       if (typeof file !== 'string') addDiamond.help();
+
+      console.log('program :', program);
+      console.log('matrix :', matrix);
+      console.log('database :', database);
 
       const fileName = path.resolve(file);
       if (!(fileName && username && password)) {
@@ -408,14 +412,16 @@ file extension is not "tsv", "tabular", "xml", "txt"`);
         addDiamond.help();
       }
 
+      console.log('parsetype :', parserType);
+
       new GeneNoteBookConnection({ username, password, port }).call(
         'addDiamond',
         {
           fileName,
           parser: parserType,
-          program: algo,
-          matrix: mtrix,
-          database: db,
+          program: program,
+          matrix: matrix,
+          database: database,
         },
       );
     },

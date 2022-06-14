@@ -15,19 +15,26 @@ const addDiamond = new ValidatedMethod({
       allowedValues: ['tsv', 'tabular', 'xml', 'txt'],
     },
     program: {
-      required: true,
       type: String,
-      allowedValues: [
-        'blastp',
-        'quick-blastp',
-        'psi-blast',
-        'phi-blast',
-        'delta-blast',
-        'blastn',
-        'blastx',
-        'tblastn',
-        'tblastx',
-      ],
+      optional: true,
+      custom() {
+        if (!this.isSet) {
+          throw new Meteor.Error(
+            'Error required value',
+            '-prog or --program is required.',
+          );
+        }
+        if (![
+          'blastp', 'quick-blastp', 'psi-blast', 'phi-blast', 'delta-blast',
+          'blastn', 'blastx', 'tblastn', 'tblastx',
+        ].includes(this.value)) {
+          throw new Meteor.Error(
+            'Error allowedValue',
+            `The parameter ${this.value} is not an allowed value.`,
+          );
+        }
+        return true;
+      },
     },
     matrix: {
       optional: true,
