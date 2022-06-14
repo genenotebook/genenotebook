@@ -361,7 +361,7 @@ running GeneNoteBook server.`,
   )
   .option(
     '-mtx, --matrix [matrix]',
-    `The matrix of substitution matrix used for sequence alignment (e.g:
+    `The matrix of substitution used for sequence alignment (e.g:
     BLOSUM90, BLOSUM80, PAM100).`,
   )
   .option(

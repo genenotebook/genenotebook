@@ -2,6 +2,18 @@ import SimpleSchema from 'simpl-schema';
 import { Mongo } from 'meteor/mongo';
 
 const diamondSchema = new SimpleSchema({
+  program_ref: {
+    type: String,
+    label: 'The program used to compare the sequences to a database',
+  },
+  database_ref: {
+    type: String,
+    label: 'The database used to compare the sequences',
+  },
+  matrix_ref: {
+    type: String,
+    label: 'The matrix of substitution used for sequence alignment',
+  },
   iteration_query: {
     type: String,
     label: 'Query sequence name.',

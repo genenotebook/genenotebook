@@ -42,7 +42,7 @@ const addDiamond = new ValidatedMethod({
   applyOptions: {
     noRetry: true,
   },
-  run({ fileName, parser }) {
+  run({ fileName, parser, program, matrix, database }) {
     if (!this.userId) {
       throw new Meteor.Error('not-authorized');
     }
@@ -50,7 +50,17 @@ const addDiamond = new ValidatedMethod({
       throw new Meteor.Error('not-authorized');
     }
 
-    const job = new Job(jobQueue, 'addDiamond', { fileName, parser });
+    const job = new Job(
+      jobQueue,
+      'addDiamond',
+      {
+        fileName,
+        parser,
+        program,
+        matrix,
+        database,
+      },
+    );
     const jobId = job.priority('high').save();
 
     let { status } = job.doc;

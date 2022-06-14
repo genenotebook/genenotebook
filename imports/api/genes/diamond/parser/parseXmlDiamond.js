@@ -4,11 +4,41 @@ import { Genes } from '/imports/api/genes/geneCollection.js';
 import logger from '/imports/api/util/logger.js';
 
 class DiamondXmlProcessor {
-  constructor() {
+  constructor(program, matrix, database) {
     this.genesDb = Genes.rawCollection();
+    this.program = program;
+    this.matrix = matrix;
+    this.database = database;
   }
 
   parse = (obj) => {
+    if (this.program === undefined) {
+      if (obj['blastoutput_program'] !== undefined) {
+        this.program = obj['blastoutput_program'];
+        logger.log('program diamond : ', this.program);
+      } else {
+        this.program = undefined;
+      }
+    }
+
+    if (this.matrix === undefined) {
+      if (obj['blastoutput_param']['parameters_matrix'] !== undefined) {
+        this.matrix = obj['blastoutput_param']['parameters_matrix'];
+        logger.log('matrix diamond : ', this.matrix);
+      } else {
+        this.matrix = undefined;
+      }
+    }
+
+    if (this.database === undefined) {
+      if (obj['blastoutput_db'] !== undefined) {
+        this.database = obj['blastoutput_db'];
+        logger.log('database diamond : ', this.database);
+      } else {
+        this.database = undefined;
+      }
+    }
+
     if (obj['blastoutput_iterations'] !== undefined) {
       for (let i = 0; i < obj['blastoutput_iterations'].length; i += 1) {
         // Get iteration query e.g: 'MMUCEDO_000001-T1 MMUCEDO_000001'.
@@ -33,6 +63,9 @@ class DiamondXmlProcessor {
               {
                 $set: // modifier.
                 {
+                  program_ref: this.program,
+                  matrix_ref: this.matrix,
+                  database_ref: this.database,
                   iteration_query: iter,
                 },
               },
