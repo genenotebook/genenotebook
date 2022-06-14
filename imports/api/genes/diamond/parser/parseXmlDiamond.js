@@ -71,13 +71,13 @@ class DiamondXmlProcessor {
               },
             );
 
-            // Search document ID only once and update diamondId in genes database.
+            // Search document ID only once and update diamondId in genes collection..
             let createHit = true;
-            let diamondId;
+            let diamondIdentifiant;
             if (typeof documentDiamond.insertedId === 'undefined') {
               createHit = false;
               // Diamond already exists.
-              const diamondIdentifiant = diamondCollection.findOne({ 'iteration_query': iter })._id;
+              diamondIdentifiant = diamondCollection.findOne({ 'iteration_query': iter })._id;
               this.genesDb.update(
                 { 'subfeatures.ID': iter },
                 { $set: { diamondId: diamondIdentifiant } },
@@ -150,7 +150,7 @@ class DiamondXmlProcessor {
                 );
               } else {
                 diamondCollection.update(
-                  { _id: diamondId },
+                  { _id: diamondIdentifiant },
                   {
                     $addToSet: {
                       iteration_hits: iterations,
