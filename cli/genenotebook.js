@@ -354,7 +354,7 @@ running GeneNoteBook server.`,
     `Choose a parser for the diamond output format. Parses .tsv, .tabular, .xml,
    .txt extensions.`,
   )
-  .option(
+  .requiredOption(
     '-prog, --program [program]',
     `The program used to compare the sequences to a database (e.g: blastn,
   blastp, blastn, blastx, tblastn, tblastx, quick-blastp, psi-blast, phi-blast, delta-blast).`,
@@ -383,9 +383,11 @@ running GeneNoteBook server.`,
     ) => {
       if (typeof file !== 'string') addDiamond.help();
 
-      console.log('program :', program);
-      console.log('matrix :', matrix);
-      console.log('database :', database);
+      const programDiamond = (
+        typeof program === 'undefined' || typeof program === 'boolean'
+          ? addDiamond.help()
+          : program.toLowerCase()
+      );
 
       const fileName = path.resolve(file);
       if (!(fileName && username && password)) {
@@ -412,14 +414,12 @@ file extension is not "tsv", "tabular", "xml", "txt"`);
         addDiamond.help();
       }
 
-      console.log('parsetype :', parserType);
-
       new GeneNoteBookConnection({ username, password, port }).call(
         'addDiamond',
         {
           fileName,
           parser: parserType,
-          program: program,
+          program: programDiamond,
           matrix: matrix,
           database: database,
         },

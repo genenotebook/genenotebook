@@ -10,39 +10,33 @@ const addDiamond = new ValidatedMethod({
   validate: new SimpleSchema({
     fileName: { type: String },
     parser: {
-      optional: true,
       type: String,
+      optional: true,
       allowedValues: ['tsv', 'tabular', 'xml', 'txt'],
     },
     program: {
       type: String,
-      optional: true,
       custom() {
-        if (!this.isSet) {
-          throw new Meteor.Error(
-            'Error required value',
-            '-prog or --program is required.',
-          );
-        }
+        // Check the allowed values (similar to allowedValues option).
         if (![
           'blastp', 'quick-blastp', 'psi-blast', 'phi-blast', 'delta-blast',
           'blastn', 'blastx', 'tblastn', 'tblastx',
         ].includes(this.value)) {
           throw new Meteor.Error(
-            'Error allowedValue',
-            `The parameter ${this.value} is not an allowed value.`,
+            'Exception while invoking method \'addDiamond\'.',
+            `ClientError: '${this.value}' is not an allowed value.`,
           );
         }
         return true;
       },
     },
     matrix: {
-      optional: true,
       type: String,
+      optional: true,
     },
     database: {
-      optional: true,
       type: String,
+      optional: true,
     },
   }).validator(),
   applyOptions: {
