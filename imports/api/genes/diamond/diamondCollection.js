@@ -10,6 +10,10 @@ const diamondSchema = new SimpleSchema({
     type: String,
     label: 'The database used to compare the sequences',
   },
+  query_len: {
+    type: Number,
+    label: 'The total length of the query sequence.',
+  },
   matrix_ref: {
     type: String,
     label: 'The matrix of substitution used for sequence alignment',
@@ -55,27 +59,27 @@ const diamondSchema = new SimpleSchema({
   },
   'iteration_hits.$.query-from': {
     type: Number,
-    label: '',
+    label: 'The starting coordinate of the local alignment in the query.',
   },
   'iteration_hits.$.query-to': {
     type: Number,
-    label: '',
+    label: 'The ending coordinate of the local alignment in the query.',
   },
   'iteration_hits.$.hit-from': {
     type: Number,
-    label: '',
+    label: 'The starting coordinate of the local alignment in the target (hit).',
   },
   'iteration_hits.$.hit-to': {
     type: Number,
-    label: '',
+    label: 'The ending coordinate of the local alignment in the target (hit).',
   },
   'iteration_hits.$.identity': {
     type: Number,
-    label: '',
+    label: 'The number of characters in each sequence that are identical.',
   },
   'iteration_hits.$.positive': {
     type: Number,
-    label: '',
+    label: 'The number and fraction of residues for which the alignment scores have positive values.',
   },
   'iteration_hits.$.gaps': {
     type: Number,
@@ -83,15 +87,14 @@ const diamondSchema = new SimpleSchema({
   },
   'iteration_hits.$.query-seq': {
     type: String,
-    label: '',
+    label: 'Query sequence.',
   },
   'iteration_hits.$.midline': {
     type: String,
-    label: '',
   },
   'iteration_hits.$.hit-seq': {
     type: String,
-    label: '',
+    label: 'Hit sequence.',
   },
 });
 

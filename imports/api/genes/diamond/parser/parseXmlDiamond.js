@@ -2,6 +2,7 @@
 import { diamondCollection } from '/imports/api/genes/diamond/diamondCollection.js';
 import { Genes } from '/imports/api/genes/geneCollection.js';
 import logger from '/imports/api/util/logger.js';
+import { getGeneSequences } from '/imports/api/util/util.js';
 
 class DiamondXmlProcessor {
   constructor(program, matrix, database) {
@@ -57,6 +58,13 @@ class DiamondXmlProcessor {
           if (typeof subfeatureIsFound !== 'undefined' && subfeatureIsFound !== null) {
             logger.log(`Subfeature : ${iter} is found !`);
 
+            // Get the total query protein length.
+            const seqProtein = getGeneSequences(subfeatureIsFound);
+
+            // Remove the * character for the stop codon in the protein sequence
+            // length count.
+            const lenProtein = seqProtein[0].prot.replace('*', '').length;
+
             // Update or insert if no matching documents were found.
             const documentDiamond = diamondCollection.upsert(
               { iteration_query: iter }, // selector.
@@ -67,6 +75,7 @@ class DiamondXmlProcessor {
                   matrix_ref: this.matrix,
                   database_ref: this.database,
                   iteration_query: iter,
+                  query_len: lenProtein,
                 },
               },
             );
@@ -100,7 +109,7 @@ class DiamondXmlProcessor {
               const hitDef = hit['hit_def'];
               const hitAccession = hit['hit_accession'];
 
-              // Specific query details.
+              // Specific query/hits details.
               const hitHspBitScore = hit['hit_hsps']['hsp_bit-score'];
               const hitHspScore = hit['hit_hsps']['hsp_score'];
               const hitEvalue = hit['hit_hsps']['hsp_evalue'];
