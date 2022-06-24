@@ -56,7 +56,7 @@ jobQueue.processJobs(
         case 'tsv':
         case 'tabular':
           logger.log(`Format : .${parser}`);
-          lineProcessor = new DiamondTsvProcessor();
+          lineProcessor = new DiamondTsvProcessor(program, matrix, database);
           break;
         case 'txt':
           logger.log('Format : .txt');

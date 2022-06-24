@@ -16,19 +16,8 @@ const addDiamond = new ValidatedMethod({
     },
     program: {
       type: String,
-      custom() {
-        // Check the allowed values (similar to allowedValues option).
-        if (![
-          'blastp', 'quick-blastp', 'psi-blast', 'phi-blast', 'delta-blast',
-          'blastn', 'blastx', 'tblastn', 'tblastx',
-        ].includes(this.value)) {
-          throw new Meteor.Error(
-            'Exception while invoking method \'addDiamond\'.',
-            `ClientError: '${this.value}' is not an allowed value.`,
-          );
-        }
-        return true;
-      },
+      optional: true,
+      allowedValues: ['blastx', 'blastp'],
     },
     matrix: {
       type: String,

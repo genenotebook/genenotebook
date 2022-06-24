@@ -354,10 +354,10 @@ running GeneNoteBook server.`,
     `Choose a parser for the diamond output format. Parses .tsv, .tabular, .xml,
    .txt extensions.`,
   )
-  .requiredOption(
+  .option(
     '-prog, --program [program]',
-    `The program used to compare the sequences to a database (e.g: blastn,
-  blastp, blastn, blastx, tblastn, tblastx, quick-blastp, psi-blast, phi-blast, delta-blast).`,
+    `The program used to compare the sequences to a database (e.g: blastx,
+  blastp).`,
   )
   .option(
     '-mtx, --matrix [matrix]',
@@ -382,12 +382,6 @@ running GeneNoteBook server.`,
       },
     ) => {
       if (typeof file !== 'string') addDiamond.help();
-
-      const programDiamond = (
-        typeof program === 'undefined' || typeof program === 'boolean'
-          ? addDiamond.help()
-          : program.toLowerCase()
-      );
 
       const fileName = path.resolve(file);
       if (!(fileName && username && password)) {
@@ -419,7 +413,7 @@ file extension is not "tsv", "tabular", "xml", "txt"`);
         {
           fileName,
           parser: parserType,
-          program: programDiamond,
+          program: program,
           matrix: matrix,
           database: database,
         },
@@ -429,9 +423,9 @@ file extension is not "tsv", "tabular", "xml", "txt"`);
   .on('--help', () => {
     console.log(`
 Example:
-    genenotebook add diamond mmucedo.xml -prog blastp -u admin -p admin
+    genenotebook add diamond mmucedo.xml -u admin -p admin
 or
-    genenotebook add diamond mmucedo.xml --format xml --program blastp --matrix BLOSUM90 -db "Non-reundant protein sequences (nr)" -u admin -p admin
+    genenotebook add diamond mmucedo.tsv --format tsv --program blastp --matrix BLOSUM90 -db "Non-reundant protein sequences (nr)" -u admin -p admin
     `);
   })
   .exitOverride(customExitOverride(addDiamond));
