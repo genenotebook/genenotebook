@@ -138,6 +138,6 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "node-fetch": "^3.0.0",
     "prettier": "^2.5.1",
-    "puppeteer": "^13.1.2"
+    "puppeteer": "^15.0.0"
   }
 }
