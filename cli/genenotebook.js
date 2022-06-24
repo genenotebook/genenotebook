@@ -408,6 +408,17 @@ file extension is not "tsv", "tabular", "xml", "txt"`);
         addDiamond.help();
       }
 
+      // If the extension is tsv or tabular you must specify the algorithm used
+      // to determine the length of the protein or nucleotide sequence.
+      if ((parserType === 'tsv' || parserType === 'tabular') && (typeof program === 'undefined' || typeof program === 'boolean')) {
+        logger.error(`
+Error : You must specify the type of algorithm used for the extension : ${extensionFile}.
+Example :
+    genenotebook add diamond mmucedo.tsv -prog blastp -u admin -p admin
+`);
+        addDiamond.help();
+      }
+
       new GeneNoteBookConnection({ username, password, port }).call(
         'addDiamond',
         {

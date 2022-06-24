@@ -7,7 +7,6 @@ import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState } from 'react';
 import './diamond.scss';
 import { scaleLinear } from 'd3';
-import { getGeneSequences } from '/imports/api/util/util.js';
 import { Seq } from '/imports/ui/singleGenePage/Seq.jsx';
 import {
   Popover,
@@ -49,15 +48,10 @@ function DiamondDataTracker({ gene }) {
   const loading = !diamondSub.ready();
   const diamond = diamondCollection.findOne({ _id: diamondId });
 
-  const sequences = getGeneSequences(gene);
-  // Put condition for bastn or bastp.
-  const genesLength = sequences[0].prot.length;
-
   return {
     loading,
     gene,
     diamond,
-    genesLength,
   };
 }
 
@@ -364,7 +358,19 @@ function HitsCoverLines({ diamond, scale, height }) {
   );
 }
 
-function GlobalDiamondInformation({ diamond, length, initialWidth = 200}) {
+function AlgorithmDetails({ algorithm }) {
+  let algoDetails = algorithm;
+  if (algoDetails === 'blastp') {
+    algoDetails = 'blastp (protein-protein BLAST)';
+  } else if (algoDetails === 'blastx') {
+    algoDetails = 'blastx (nucleotide-protein BLAST)';
+  }
+  return (
+    <p>{algoDetails}</p>
+  );
+}
+
+function GlobalDiamondInformation({ diamond, initialWidth = 200}) {
   const [width, setWidth] = useState(initialWidth);
 
   const margin = {
@@ -373,6 +379,8 @@ function GlobalDiamondInformation({ diamond, length, initialWidth = 200}) {
     left: 20,
     right: 20,
   };
+
+  const length = diamond.query_len;
 
   const height = ((diamond.iteration_hits.length + 1) * 20);
 
@@ -397,11 +405,15 @@ function GlobalDiamondInformation({ diamond, length, initialWidth = 200}) {
             </tr>
             <tr>
               <td>Algorithm :</td>
-              <td>blastp (protein-protein BLAST)</td>
+              <td>
+                { diamond.program_ref && <AlgorithmDetails algorithm={diamond.program_ref} /> }
+              </td>
             </tr>
             <tr>
               <td>Database :</td>
-              <td>Non-redundant protein sequences (nr)</td>
+              <td>
+                { diamond.database_ref && <p>diamond.database_ref</p> }
+              </td>
             </tr>
             <tr>
               <td>Total hits selected :</td>
@@ -417,7 +429,7 @@ function GlobalDiamondInformation({ diamond, length, initialWidth = 200}) {
             <TopBarSequence length={length} scale={scale} />
           </div>
           <div>
-            <HitsCoverLines diamond={diamond} scale={scale} height={height} />
+            {/* <HitsCoverLines diamond={diamond} scale={scale} height={height} /> */}
           </div>
         </div>
         <ReactResizeDetector handleWidth onResize={(w) => setWidth(w)} />
@@ -427,12 +439,12 @@ function GlobalDiamondInformation({ diamond, length, initialWidth = 200}) {
   );
 }
 
-function DiamondBlast({ showHeader = false, diamond, genesLength }) {
+function DiamondBlast({ showHeader = false, diamond }) {
   return (
     <>
       { showHeader && <Header />}
       <div>
-        <GlobalDiamondInformation diamond={diamond} length={genesLength} />
+        <GlobalDiamondInformation diamond={diamond} />
       </div>
     </>
   );

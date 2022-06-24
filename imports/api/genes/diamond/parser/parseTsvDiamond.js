@@ -48,12 +48,18 @@ class DiamondTsvProcessor {
     );
 
     if (typeof subfeatureIsFound !== 'undefined' && subfeatureIsFound !== null) {
-      // Get the total query protein length.
-      const seqProtein = getGeneSequences(subfeatureIsFound);
+      // Get the sequence.
+      const sequence = getGeneSequences(subfeatureIsFound);
 
-      // Remove the * character for the stop codon in the protein sequence
-      // length count.
-      const lenProtein = seqProtein[0].prot.replace('*', '').length;
+      // Get the total query sequence length.
+      let queryLen;
+      if (this.program === 'blastx') {
+        queryLen = sequence[0].nucl.length;
+      } else {
+        // Remove the * character for the stop codon in the protein sequence
+        // length count.
+        queryLen = sequence[0].prot.replace('*', '').length;
+      }
 
       // Update or insert if no matching documents were found.
       const documentDiamond = diamondCollection.upsert(
@@ -65,7 +71,7 @@ class DiamondTsvProcessor {
             matrix_ref: this.matrix,
             database_ref: this.database,
             iteration_query: iteration_query,
-            query_len: lenProtein,
+            query_len: queryLen,
           },
         },
       );

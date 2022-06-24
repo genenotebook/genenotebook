@@ -58,12 +58,8 @@ class DiamondXmlProcessor {
           if (typeof subfeatureIsFound !== 'undefined' && subfeatureIsFound !== null) {
             logger.log(`Subfeature : ${iter} is found !`);
 
-            // Get the total query protein length.
-            const seqProtein = getGeneSequences(subfeatureIsFound);
-
-            // Remove the * character for the stop codon in the protein sequence
-            // length count.
-            const lenProtein = seqProtein[0].prot.replace('*', '').length;
+            // Get the total query sequence length.
+            const queryLen = obj['blastoutput_iterations'][i]['iteration_query-len'];
 
             // Update or insert if no matching documents were found.
             const documentDiamond = diamondCollection.upsert(
@@ -75,7 +71,7 @@ class DiamondXmlProcessor {
                   matrix_ref: this.matrix,
                   database_ref: this.database,
                   iteration_query: iter,
-                  query_len: lenProtein,
+                  query_len: queryLen,
                 },
               },
             );
