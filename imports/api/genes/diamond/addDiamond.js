@@ -12,7 +12,7 @@ const addDiamond = new ValidatedMethod({
     parser: {
       type: String,
       optional: true,
-      allowedValues: ['tsv', 'tabular', 'xml', 'txt'],
+      allowedValues: ['xml', 'txt'],
     },
     program: {
       type: String,

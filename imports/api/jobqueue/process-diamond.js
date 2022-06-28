@@ -1,5 +1,4 @@
 import DiamondXmlProcessor from '/imports/api/genes/diamond/parser/parseXmlDiamond.js';
-import DiamondTsvProcessor from '/imports/api/genes/diamond/parser/parseTsvDiamond.js';
 import DiamondPairwiseProcessor from '/imports/api/genes/diamond/parser/parseTxtDiamond.js';
 import logger from '/imports/api/util/logger.js';
 import jobQueue from './jobqueue.js';
@@ -45,48 +44,32 @@ jobQueue.processJobs(
         job.fail({ error });
         callback();
       });
-    } else {
-      const rl = readline.createInterface({
+    } else if (parser === 'txt') {
+      logger.log('Blast pairwise parse on Diamond.');
+
+      const lineReader = readline.createInterface({
         input: fs.createReadStream(fileName, 'utf8'),
-        crlfDelay: Infinity,
       });
 
-      let lineProcessor;
-      switch (parser) {
-        case 'tsv':
-        case 'tabular':
-          logger.log(`Format : .${parser}`);
-          lineProcessor = new DiamondTsvProcessor(program, matrix, database);
-          break;
-        case 'txt':
-          logger.log('Format : .txt');
-          lineProcessor = new DiamondPairwiseProcessor();
-          break;
-      }
+      const lineProcessor = new DiamondPairwiseProcessor();
 
-      const { size: fileSize } = await fs.promises.stat(fileName);
-
-      rl.on('line', async (line) => {
+      lineReader.on('line', async (line) => {
         try {
           lineProcessor.parse(line);
-        } catch (err) {
-          logger.error(err);
-          job.fail({ err });
+        } catch (error) {
+          logger.error(error);
+          job.fail({ error });
           callback();
         }
       });
 
-      // Occurs when all lines are read.
-      rl.on('close', async () => {
+      lineReader.on('close', async () => {
         try {
-          if (parser === 'txt') {
-            lineProcessor.lastOrder();
-          }
-          logger.log('File reading finished');
+          logger.log('File reading finished, start bulk insert');
           job.done();
-        } catch (err) {
-          logger.error(err);
-          job.fail({ err });
+        } catch (error) {
+          logger.error(error);
+          job.fail({ error });
         }
         callback();
       });
