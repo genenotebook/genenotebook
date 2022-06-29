@@ -179,8 +179,8 @@ Meteor.publish({
     const eggnog = eggnogCollection.find({});
     return eggnog;
   },
-  diamond() {
-    const diamond = diamondCollection.find({});
+  diamond(query) {
+    const diamond = diamondCollection.find({ iteration_query: query });
     return diamond;
   },
   orthogroups(ID) {
