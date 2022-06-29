@@ -66,6 +66,7 @@ jobQueue.processJobs(
       lineReader.on('close', async () => {
         try {
           logger.log('File reading finished, start bulk insert');
+          lineProcessor.lastPairwise();
           job.done();
         } catch (error) {
           logger.error(error);
