@@ -44,14 +44,13 @@ class DiamondPairwiseProcessor {
           // Submits changes to a diamond collection.
           logger.log('Complete query 2:', this.pairWise);
 
-          // Check if bulk operation find a subfetaure in gene collection.
           this.diamondBulkOp.find({
             iteration_query: this.pairWise.iteration_query,
           }).upsert().update(
             {
               $set: {
                 iteration_query: this.pairWise.iteration_query,
-                query_len: this.pairWise.queryLen,
+                query_len: this.pairWise.query_length,
                 iteration_hits: this.pairWise.iteration_hits,
               },
             },
@@ -62,7 +61,6 @@ class DiamondPairwiseProcessor {
           );
           this.diamondBulkOp.execute();
         }
-        logger.log('prouttttttt');
 
         logger.log('queryLine3  :', queryLine);
         // Creation of a new subpart of pairwise.
@@ -83,6 +81,10 @@ class DiamondPairwiseProcessor {
 
           // Add information.
           this.pairWise.query_length = lengthClean;
+        } else {
+          const length = line;
+          const lengthClean = length.replace('Length=', '');
+          this.pairWise.iteration_hits.slice(-1)[0].length = lengthClean;
         }
       }
       if (/^>/.test(line)) {
@@ -96,62 +98,123 @@ class DiamondPairwiseProcessor {
         // Clean definition (e.g : KAG2206553.1 hypothetical).
         const defQueryClean = defQuery.replace('>', '');
 
+        // Get the identifiant (e.g : KAG2206553.1).
+        const identifiant = defQueryClean.split(' ')[0];
+
         // Adds or concatenates information.
-        // this.pairWise.def = defQueryClean;
         this.pairWise.iteration_hits.slice(-1)[0].def = defQueryClean;
+        this.pairWise.iteration_hits.slice(-1)[0].id = identifiant;
       }
-  //     if (/Score/.test(line.trim())) {
-  //       // Get the bit-score and score (e.g : Score = 54.7 bits (130), Expect =
-  //       // 1.17e-04).
-  //       const allScores = /Score/.test(line.trim());
+      if (/Score/.test(line.trim())) {
+        // Get the bit-score and score (e.g : Score = 54.7 bits (130), Expect =
+        // 1.17e-04).
+        const allScores = line.trim();
 
-  //       // Split to comma (result -> Score = 54.7 bits (130),).
-  //       const scoresCleaned = allScores.replace('Score = ', '');
-  //       const bitScore = scoresCleaned.split('bits')[0];
-  //       const score = scoresCleaned.split('bits')[1].split(/[()]/);
+        // Split to comma (result -> Score = 54.7 bits (130),).
+        const scoresCleaned = allScores.replace('Score = ', '');
+        const bitScore = scoresCleaned.split('bits')[0];
+        const score = scoresCleaned.split('bits')[1].split(/[()]/)[1];
 
-  //       logger.log('score bit :', bitScore);
-  //       logger.log('score :', score);
+        // Add informations.
+        this.pairWise.iteration_hits.slice(-1)[0]['bit-score'] = Number(bitScore);
+        this.pairWise.iteration_hits.slice(-1)[0].score = Number(score);
+      }
+      if (/Identities/.test(line.trim())) {
+        // Get identities, positives, gaps
+        // e.g: Identities = 120/155 (77%), Positives = 137/155 (88%), Gaps = 0/155 (0%)
+        const allInformations = line.trim();
 
-  //       // Add informations.
-  //       this.pairWise.bitScore = bitScore;
-  //       this.pairWise.score = score;
-  //     }
-  //     if (/Expect/.test(line)) {
-  //       // Get the expect (e.g : Score = 54.7 bits (130), Expect = 1.17e-04).
-  //       const expectQuery = /Expect/.test(line);
+        // Split the information into 3 parts.
+        const splitInformations = allInformations.split(',');
+        const identitiesNoClean = splitInformations[0];
+        const positivesNoClean = splitInformations[1];
+        const gapsNoClean = splitInformations[2];
 
-  //       // Split to comma (result -> Expect = 1.17e-04).
-  //       const expectSplit = expectQuery.split(',')[1];
-  //       const expect = expectSplit.replace('Expect = ', '');
+        // Clean values.
+        const identities = identitiesNoClean.replace('Identities = ', '').split('/')[0];
+        const positives = positivesNoClean.replace('Positives = ', '').split('/')[0];
+        const gaps = gapsNoClean.replace('Gaps = ', '').split('/')[0];
 
-  //       logger.log('Expect : ', expect);
+        // Add 3 informations.
+        this.pairWise.iteration_hits.slice(-1)[0].identity = Number(identities);
+        this.pairWise.iteration_hits.slice(-1)[0].positive = Number(positives);
+        this.pairWise.iteration_hits.slice(-1)[0].gaps = Number(gaps);
+      }
+      if (/Expect/.test(line)) {
+        // Get the expect (e.g : Score = 54.7 bits (130), Expect = 1.17e-04).
+        const expectQuery = line;
 
-  //       // Add information.
-  //       this.pairWise.evalue = expect;
-  //     }
-  //     if (/^Query /.test(line)) {
-  //       // Get the query sequence (e.g: Query 1 MFSGSSSNKN ...).
-  //       const queryAllSeq = /^Query /.test(line);
+        // Split to comma (result -> Expect = 1.17e-04).
+        const expectSplit = expectQuery.split(',')[1];
+        const expect = expectSplit.replace('Expect = ', '');
 
-  //       // Split and get the sequence.
-  //       const querySplit = queryAllSeq.split(' ');
-  //       const querySeq = querySplit[2];
+        // Add information.
+        this.pairWise.iteration_hits.slice(-1)[0].evalue = expect;
+      }
+      if (/^Query /.test(line)) {
+        // Get the query sequence (e.g: Query 1 MFSGSSSNKN ...).
+        const queryAllSeq = line.trim();
 
-  //       // Concatenates informations.
-  //       this.pairWise.querySeq = this.pairWise.querySeq.concat(querySeq);
-  //     }
-  //     if (/^Sbjct/.test(line)) {
-  //       // Get the query sequence (e.g: Query 1 MFSGSSSNKN ...).
-  //       const hitAllSeq = /^Sbjct/.test(line);
+        // Split/remove the spaces and get the sequence.
+        const querySplit = queryAllSeq.split(' ').filter((x) => x);
+        const querySeq = querySplit[2];
+        const queryFrom = querySplit[1];
+        const queryTo = querySplit[3];
 
-  //       // Split and get the sequence.
-  //       const hitSplit = hitAllSeq.split(' ');
-  //       const hitSeq = hitSplit[2];
+        // Add once query from.
+        if (typeof this.pairWise.iteration_hits.slice(-1)[0]['query-from'] === 'undefined') {
+          this.pairWise.iteration_hits.slice(-1)[0]['query-from'] = queryFrom;
+        }
 
-  //       // Concatenates informations.
-  //       this.pairWise.hitSeq = this.pairWise.hitSeq.concat(hitSeq);
-  //     }
+        // Update query to.
+        this.pairWise.iteration_hits.slice(-1)[0]['query-to'] = queryTo;
+
+        // Concatenates informations.
+        if (typeof this.pairWise.iteration_hits.slice(-1)[0]['query-seq'] === 'undefined') {
+          this.pairWise.iteration_hits.slice(-1)[0]['query-seq'] = querySeq;
+        } else {
+          this.pairWise.iteration_hits.slice(-1)[0]['query-seq'] = this.pairWise.iteration_hits.slice(-1)[0]['query-seq'].concat(querySeq);
+        }
+      }
+      if (typeof this.pairWise.iteration_hits !== 'undefined') {
+        if (!/(^Query|^Length=|>|^Score =|^Identities =|^Sbjct)/.test(line.trim())) {
+          // Get the midline sequence (e.g MFSGSSS+KNEG+PK ).
+          const midline = line.trim();
+
+          // Concatenates informations.
+          if (typeof this.pairWise.iteration_hits.slice(-1)[0]['midline'] === 'undefined') {
+            this.pairWise.iteration_hits.slice(-1)[0]['midline'] = midline;
+          } else {
+            this.pairWise.iteration_hits.slice(-1)[0]['midline'] = this.pairWise.iteration_hits.slice(-1)[0]['midline'].concat(midline);
+          }
+        }
+      }
+      if (/^Sbjct/.test(line)) {
+        // Get the query sequence (e.g: Sbjct 1 MFSGSSSDKNEGIPKR--- ...).
+        const hitAllSeq = line;
+
+        // Split/remove the spaces and get the sequence.
+        // (Gaps are separated by dashes).
+        const hitSplit = hitAllSeq.split(' ').filter((x) => x);
+        const hitSeq = hitSplit[2];
+        const hitFrom = hitSplit[1];
+        const hitTo = hitSplit[3];
+
+        // Add once hit-from.
+        if (typeof this.pairWise.iteration_hits.slice(-1)[0]['hit-from'] === 'undefined') {
+          this.pairWise.iteration_hits.slice(-1)[0]['hit-from'] = hitFrom;
+        }
+
+        // Update hit-to.
+        this.pairWise.iteration_hits.slice(-1)[0]['hit-to'] = hitTo;
+
+        // Concatenates informations.
+        if (typeof this.pairWise.iteration_hits.slice(-1)[0]['hit-seq'] === 'undefined') {
+          this.pairWise.iteration_hits.slice(-1)[0]['hit-seq'] = hitSeq;
+        } else {
+          this.pairWise.iteration_hits.slice(-1)[0]['hit-seq'] = this.pairWise.iteration_hits.slice(-1)[0]['hit-seq'].concat(hitSeq);
+        }
+      }
     }
   };
 
@@ -159,18 +222,22 @@ class DiamondPairwiseProcessor {
     // When the file is finished, you must save the last query in a collection.
     logger.log('last pairwise :', this.pairWise);
 
-    // Update or insert if no matching documents were found.
-    const documentDiamond = diamondCollection.upsert(
-      { iteration_query: this.pairWise.iteration_query }, // selector.
+    this.diamondBulkOp.find({
+      iteration_query: this.pairWise.iteration_query,
+    }).upsert().update(
       {
-        $set: // modifier.
-        {
+        $set: {
           iteration_query: this.pairWise.iteration_query,
           query_len: this.pairWise.query_length,
           iteration_hits: this.pairWise.iteration_hits,
         },
       },
+      {
+        upsert: false,
+        multi: true,
+      },
     );
+    this.diamondBulkOp.execute();
   };
 }
 
