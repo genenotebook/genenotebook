@@ -6,9 +6,11 @@ class Pairwise {
   constructor({
     iteration_query,
     query_length,
+    position_query,
   }){
     this.iteration_query = iteration_query;
     this.query_length = query_length;
+    this.position_query = position_query; // Index in the document of the query sequence.
     this.iteration_hits = [];
   }
 }
@@ -161,6 +163,14 @@ class DiamondPairwiseProcessor {
         const queryFrom = querySplit[1];
         const queryTo = querySplit[3];
 
+        // Get the position of sequence.
+        const sampleSeq = querySeq.substring(0, 5);
+        const posSeq = line.indexOf(sampleSeq);
+
+        // Store the index of query sequence.
+        logger.log('coucou');
+        this.pairWise.position_query = Number(posSeq);
+
         // Add once query from.
         if (typeof this.pairWise.iteration_hits.slice(-1)[0]['query-from'] === 'undefined') {
           this.pairWise.iteration_hits.slice(-1)[0]['query-from'] = queryFrom;
@@ -178,14 +188,25 @@ class DiamondPairwiseProcessor {
       }
       if (typeof this.pairWise.iteration_hits !== 'undefined') {
         if (!/(^Query|^Length=|>|^Score =|^Identities =|^Sbjct)/.test(line.trim())) {
-          // Get the midline sequence (e.g MFSGSSS+KNEG+PK ).
-          const midline = line.trim();
+          // Get the midline sequence (e.g MFSGSSS+KNEG+PK ). Midline is between
+          // the query sequence index plus 60 characters. Allows to keep the
+          // spaces in the midline sequence without erasing them with the trim()
+          // function.
+          let midlineClean = line.substring(
+            this.pairWise.position_query,
+            (this.pairWise.position_query + 60),
+          );
+
+          // Fix the bug with spaces at the end of a sequence.
+          if (midlineClean.length < 60) {
+            midlineClean += ' '.repeat((60 - midlineClean.length));
+          }
 
           // Concatenates informations.
           if (typeof this.pairWise.iteration_hits.slice(-1)[0]['midline'] === 'undefined') {
-            this.pairWise.iteration_hits.slice(-1)[0]['midline'] = midline;
+            this.pairWise.iteration_hits.slice(-1)[0]['midline'] = midlineClean;
           } else {
-            this.pairWise.iteration_hits.slice(-1)[0]['midline'] = this.pairWise.iteration_hits.slice(-1)[0]['midline'].concat(midline);
+            this.pairWise.iteration_hits.slice(-1)[0]['midline'] = this.pairWise.iteration_hits.slice(-1)[0]['midline'].concat(midlineClean);
           }
         }
       }
