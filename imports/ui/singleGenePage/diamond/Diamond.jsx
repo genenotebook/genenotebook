@@ -161,6 +161,7 @@ function PourcentageView({ length_hit, length_sequence }) {
 }
 
 function PairwiseAlignmentView({
+  program,
   seqFrom,
   seqTo,
   hitFrom,
@@ -169,8 +170,10 @@ function PairwiseAlignmentView({
   hitmidline,
   hitseq,
 }) {
+  console.log('programmmmmmm:', program);
   let pairwiseAlignmt = '';
-  const maxSplit = 50;
+  const maxSplit = 60;
+
   for (let i = 0; i < Math.floor(queryseq.length / maxSplit) + 1; i += 1) {
     // Align query sequence.
     pairwiseAlignmt += 'Query ';
@@ -185,7 +188,12 @@ function PairwiseAlignmentView({
     if (((i + 1) * maxSplit) >= queryseq.length) {
       pairwiseAlignmt += seqTo;
     } else {
-      pairwiseAlignmt += (Number(seqFrom) + ((i + 1) * maxSplit));
+      if (program === 'blastx') {
+        // 1 codon = 3 nucleotides.
+        pairwiseAlignmt += (Number(seqFrom) + ((i + 1) * maxSplit * 3) - 1);
+      } else if (program === 'blastp') {
+        pairwiseAlignmt += (Number(seqFrom) + ((i + 1) * maxSplit) - 1);
+      }
     }
     pairwiseAlignmt += '\n';
 
@@ -202,12 +210,14 @@ function PairwiseAlignmentView({
     pairwiseAlignmt += Number(hitFrom) + (i * maxSplit);
     pairwiseAlignmt += ' '.repeat(hitRepeatSpace);
     pairwiseAlignmt += ' ';
-    pairwiseAlignmt += hitseq.slice((i * maxSplit), ((i + 1) * maxSplit));
+    const subjctSeq = hitseq.slice((i * maxSplit), ((i + 1) * maxSplit));
+    const subjctVoid = subjctSeq.split('-').length; // count the number of dashes.
+    pairwiseAlignmt += subjctSeq;
     pairwiseAlignmt += ' ';
     if (((i + 1) * maxSplit) >= hitseq.length) {
       pairwiseAlignmt += hitTo;
     } else {
-      pairwiseAlignmt += (Number(hitFrom) + ((i + 1) * maxSplit));
+      pairwiseAlignmt += (Number(hitFrom) + ((i + 1) * maxSplit) - subjctVoid);
     }
     pairwiseAlignmt += '\n\n';
   }
@@ -219,6 +229,7 @@ function PairwiseAlignmentView({
 }
 
 function HitIntervalinfo({
+  program,
   id,
   def,
   accession,
@@ -290,6 +301,7 @@ function HitIntervalinfo({
         </tbody>
       </table>
       <PairwiseAlignmentView
+        program={program}
         seqFrom={query_from}
         seqTo={query_to}
         hitFrom={hit_from}
@@ -304,6 +316,7 @@ function HitIntervalinfo({
 
 function HitsCoverLines({ diamond, scale, height }) {
   const range = scale.range();
+  const program = diamond.program_ref;
   return (
     <svg width={range[1] + 134} height={height}>
       {
@@ -333,6 +346,7 @@ function HitsCoverLines({ diamond, scale, height }) {
                   widthBody={600}
                 >
                   <HitIntervalinfo
+                    program={program}
                     id={hit.id}
                     def={hit.def}
                     accession={hit.accession}
