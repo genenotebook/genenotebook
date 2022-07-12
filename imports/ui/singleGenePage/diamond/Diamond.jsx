@@ -170,7 +170,6 @@ function PairwiseAlignmentView({
   hitmidline,
   hitseq,
 }) {
-  console.log('programmmmmmm:', program);
   let pairwiseAlignmt = '';
   const maxSplit = 60;
 
@@ -198,7 +197,15 @@ function PairwiseAlignmentView({
     pairwiseAlignmt += '\n';
 
     // Align midline sequence.
+    console.log(7 + minSpaceCount + repeatSpace);
     pairwiseAlignmt += ' '.repeat(7 + minSpaceCount + repeatSpace);
+    const b = hitmidline.slice((i * maxSplit), ((i + 1) * maxSplit));
+    console.log(b);
+    console.log(i * maxSplit);
+    console.log((i + 1) * maxSplit);
+    console.log('test 1:', hitmidline.slice(1, 60));
+    console.log('test 2:', hitmidline.slice(i * maxSplit), 60);
+    console.log('entire midline :', hitmidline);
     pairwiseAlignmt += hitmidline.slice((i * maxSplit), ((i + 1) * maxSplit));
     pairwiseAlignmt += '\n';
 
@@ -207,17 +214,38 @@ function PairwiseAlignmentView({
     const maxHitSpace = hitseq.length.toString().length;
     const minHitSpace = ((Number(hitFrom) + (i * maxSplit)).toString().length);
     const hitRepeatSpace = (maxHitSpace - minHitSpace + 1);
-    pairwiseAlignmt += Number(hitFrom) + (i * maxSplit);
+
+    let dashHit;
+    if (i === 0) {
+      dashHit = 0;
+    } else {
+      dashHit = (hitseq.slice(0, ((i) * maxSplit))).split('-').length;
+    }
+
+    if (i === 0) {
+      console.log('hit to :', ((Number(hitFrom) + (i * maxSplit) - dashHit)));
+    } else {
+      console.log('hit to :', ((Number(hitFrom) + (i * maxSplit) - dashHit) + 1));
+    }
+
+    // hit from.
+    if (i === 0) {
+      pairwiseAlignmt += Number(hitFrom);
+    } else {
+      pairwiseAlignmt += ((Number(hitFrom) + (i * maxSplit) - dashHit) + 1);
+    }
     pairwiseAlignmt += ' '.repeat(hitRepeatSpace);
     pairwiseAlignmt += ' ';
     const subjctSeq = hitseq.slice((i * maxSplit), ((i + 1) * maxSplit));
-    const subjctVoid = subjctSeq.split('-').length; // count the number of dashes.
+    const subjctVoid = hitseq.slice(0, ((i + 1) * maxSplit)).split('-').length; // count the number of dashes.
     pairwiseAlignmt += subjctSeq;
     pairwiseAlignmt += ' ';
+
+    // hit from.
     if (((i + 1) * maxSplit) >= hitseq.length) {
       pairwiseAlignmt += hitTo;
     } else {
-      pairwiseAlignmt += (Number(hitFrom) + ((i + 1) * maxSplit) - subjctVoid);
+      pairwiseAlignmt += (Number(hitFrom) + ((i + 1) * maxSplit - subjctVoid));
     }
     pairwiseAlignmt += '\n\n';
   }

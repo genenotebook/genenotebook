@@ -171,6 +171,7 @@ class DiamondPairwiseProcessor {
         this.pairWise.iteration_hits.slice(-1)[0].evalue = expect;
       }
       if (/^Query /.test(line)) {
+        logger.log('Query  ?', line);
         // Get the query sequence (e.g: Query 1 MFSGSSSNKN ...).
         const queryAllSeq = line.trim();
 
@@ -199,6 +200,7 @@ class DiamondPairwiseProcessor {
 
         // Store the index of query sequence.
         logger.log('coucou');
+        logger.log('posSeq :', posSeq);
         this.pairWise.position_query = Number(posSeq);
 
         // Add once query from.
@@ -216,26 +218,35 @@ class DiamondPairwiseProcessor {
           this.pairWise.iteration_hits.slice(-1)[0]['query-seq'] = this.pairWise.iteration_hits.slice(-1)[0]['query-seq'].concat(querySeq);
         }
       }
-      if (typeof this.pairWise.iteration_hits !== 'undefined') {
-        if (!/(^Query|^Length=|>|^Score =|^Identities =|^Sbjct)/.test(line.trim())) {
+      if (typeof this.pairWise.iteration_hits !== 'undefined' && typeof this.pairWise.position_query !== 'undefined') {
+        if (!/(^Query|^Length=|>|^Score =|^Identities =|^Sbjct|^Frame =)/.test(line.trim())) {
           // Get the midline sequence (e.g MFSGSSS+KNEG+PK ). Midline is between
           // the query sequence index plus 60 characters. Allows to keep the
           // spaces in the midline sequence without erasing them with the trim()
           // function.
+          logger.log('------------------- : ', this.pairWise.position_query);
+          logger.log(line);
+          logger.log('1-------------');
           let midlineClean = line.substring(
             this.pairWise.position_query,
             (this.pairWise.position_query + 60),
           );
+          logger.log(midlineClean);
+          logger.log('2-------------');
 
           // Fix the bug with spaces at the end of a sequence.
           if (midlineClean.length < 60) {
             midlineClean += ' '.repeat((60 - midlineClean.length));
           }
+          logger.log('after 60 fix', midlineClean);
+          logger.log('3-------------');
 
           // Concatenates informations.
           if (typeof this.pairWise.iteration_hits.slice(-1)[0]['midline'] === 'undefined') {
+            logger.log('final :', midlineClean);
             this.pairWise.iteration_hits.slice(-1)[0]['midline'] = midlineClean;
           } else {
+            logger.log('intermediate :', midlineClean);
             this.pairWise.iteration_hits.slice(-1)[0]['midline'] = this.pairWise.iteration_hits.slice(-1)[0]['midline'].concat(midlineClean);
           }
         }
