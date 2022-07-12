@@ -184,7 +184,8 @@ class DiamondPairwiseProcessor {
         // blastp or a blastx. The trick is that for a blastx the length is 3
         // times bigger because a codon is a sequence of three nucleotides.
         if (typeof this.program === 'undefined') {
-          const pairwireLength = (Number(queryTo) - Number(queryTo) - 1);
+          const pairwireLength = (Number(queryTo) - (Number(queryFrom) - 1));
+          logger.log('-------------pairwire length :', pairwireLength);
           if (pairwireLength === 60) {
             this.program = 'blastp';
           } else if (pairwireLength === 180) {
