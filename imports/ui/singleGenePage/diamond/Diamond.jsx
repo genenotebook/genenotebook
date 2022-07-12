@@ -222,7 +222,7 @@ function HitIntervalinfo({
   id,
   def,
   accession,
-  length,
+  accession_length,
   score,
   bit_score,
   evalue,
@@ -230,6 +230,7 @@ function HitIntervalinfo({
   positive,
   gaps,
   query_seq,
+  query_len,
   midline,
   query_from,
   query_to,
@@ -258,7 +259,7 @@ function HitIntervalinfo({
           </tr>
           <tr>
             <td>Length :</td>
-            <td>{length}</td>
+            <td>{accession_length}</td>
           </tr>
           <tr>
             <td>Score :</td>
@@ -271,19 +272,19 @@ function HitIntervalinfo({
           <tr>
             <td>Identity :</td>
             <td>
-              <PourcentageView length_hit={identity} length_sequence={length} />
+              <PourcentageView length_hit={identity} length_sequence={query_len} />
             </td>
           </tr>
           <tr>
             <td>Positive :</td>
             <td>
-              <PourcentageView length_hit={positive} length_sequence={length} />
+              <PourcentageView length_hit={positive} length_sequence={query_len} />
             </td>
           </tr>
           <tr>
             <td>Gaps :</td>
             <td>
-              <PourcentageView length_hit={gaps} length_sequence={length} />
+              <PourcentageView length_hit={gaps} length_sequence={query_len} />
             </td>
           </tr>
         </tbody>
@@ -335,7 +336,7 @@ function HitsCoverLines({ diamond, scale, height }) {
                     id={hit.id}
                     def={hit.def}
                     accession={hit.accession}
-                    length={hit.length}
+                    accession_length={hit.accession_len}
                     score={hit.score}
                     bit_score={hit['bit-score']}
                     evalue={hit.evalue}
@@ -343,6 +344,7 @@ function HitsCoverLines({ diamond, scale, height }) {
                     positive={hit.positive}
                     gaps={hit.gaps}
                     query_seq={hit['query-seq']}
+                    query_len={hit.length}
                     midline={hit.midline}
                     query_from={hit['query-from']}
                     query_to={hit['query-to']}
