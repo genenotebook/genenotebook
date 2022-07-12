@@ -8,11 +8,11 @@ const diamondSchema = new SimpleSchema({
   },
   database_ref: {
     type: String,
-    label: 'The database used to compare the sequences',
+    label: 'The database used to compare the sequences.',
   },
   query_len: {
     type: Number,
-    label: 'The total length of the query sequence.',
+    label: 'The total length of the query sequence. (from diamond)',
   },
   matrix_ref: {
     type: String,
@@ -40,6 +40,10 @@ const diamondSchema = new SimpleSchema({
   'iteration_hits.$.accession': {
     type: String,
     label: '(Accession number) The unique identifier for a sequence record.',
+  },
+  'iteration_hits.$.accession_len': {
+    type: Number,
+    label: 'The length of the accession sequence. (from ncbi)',
   },
   'iteration_hits.$.length': {
     type: Number,

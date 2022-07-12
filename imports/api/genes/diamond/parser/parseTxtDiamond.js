@@ -17,13 +17,22 @@ class Pairwise {
 
 // Reads pairwise (.txt) output files from diamond.
 class DiamondPairwiseProcessor {
-  constructor() {
+  constructor(program, matrix, database) {
     this.genesDb = Genes.rawCollection();
     this.pairWise = new Pairwise({});
-    this.diamondBulkOp = diamondCollection.rawCollection().initializeOrderedBulkOp();
+    this.program = program;
+    this.matrix = matrix;
+    this.database = database;
+    this.diamondBulkOp = diamondCollection.rawCollection().initializeUnorderedBulkOp();
   }
 
   parse = (line) => {
+    // if (/^BLAST/.test(line) && typeof this.program === 'undefined') {
+    //   // Get the algorithm blastp of blastn.
+    //   const algorithm = line.split(' ')[0].toLowerCase();
+
+    //   this.program = algorithm;
+    // }
     if (line.length !== 0 && !(/^BLAST/.test(line))) {
       if (/^Query=/.test(line)) {
         // Get the query (e.g : 'Query= MMUCEDO_000001-T1').
@@ -31,7 +40,7 @@ class DiamondPairwiseProcessor {
         logger.log('queryLine 1:', queryLine);
 
         // Remove the beginning (result -> MMUCEDO_000001-T1).
-        const queryClean = queryLine.replace('Query= ', '');
+        const queryClean = queryLine.replace('Query= ', '').split(' ')[0];
 
         // If this is the first query and no collection has been created yet.
         // (e.g : MMUCEDO_000001-T1).
@@ -51,6 +60,9 @@ class DiamondPairwiseProcessor {
           }).upsert().update(
             {
               $set: {
+                program_ref: this.program,
+                matrix_ref: this.matrix,
+                database_ref: this.database,
                 iteration_query: this.pairWise.iteration_query,
                 query_len: this.pairWise.query_length,
                 iteration_hits: this.pairWise.iteration_hits,
@@ -71,23 +83,14 @@ class DiamondPairwiseProcessor {
         this.pairWise.iteration_hits = [];
       }
       if (/^Length/.test(line)) {
-        // If the length already has a value but it is found again, it is the
-        // length of the hit sequence. We want to import only the length of the
-        // target sequence.
-        if (typeof this.pairWise.query_length === 'undefined') {
-          // Get the length (e.g : Length=1022).
-          const length = line;
+        // Get the length (e.g : Length=1022).
+        const length = line;
 
-          // Clean length (result -> 1022).
-          const lengthClean = length.replace('Length=', '');
+        // Clean length (result -> 1022).
+        const lengthClean = length.replace('Length=', '');
 
-          // Add information.
-          this.pairWise.query_length = lengthClean;
-        } else {
-          const length = line;
-          const lengthClean = length.replace('Length=', '');
-          this.pairWise.iteration_hits.slice(-1)[0].length = lengthClean;
-        }
+        // Add information.
+        this.pairWise.query_length = Number(lengthClean);
       }
       if (/^>/.test(line)) {
         // If > create a new dictionary which will be added to the
@@ -122,7 +125,7 @@ class DiamondPairwiseProcessor {
         this.pairWise.iteration_hits.slice(-1)[0].score = Number(score);
       }
       if (/Identities/.test(line.trim())) {
-        // Get identities, positives, gaps
+        // Get identities, positives, gaps and query-length.
         // e.g: Identities = 120/155 (77%), Positives = 137/155 (88%), Gaps = 0/155 (0%)
         const allInformations = line.trim();
 
@@ -134,6 +137,7 @@ class DiamondPairwiseProcessor {
 
         // Clean values.
         const identities = identitiesNoClean.replace('Identities = ', '').split('/')[0];
+        const queryLen = identitiesNoClean.replace('Identities = ', '').split('/')[1].split(' ')[0];
         const positives = positivesNoClean.replace('Positives = ', '').split('/')[0];
         const gaps = gapsNoClean.replace('Gaps = ', '').split('/')[0];
 
@@ -141,6 +145,10 @@ class DiamondPairwiseProcessor {
         this.pairWise.iteration_hits.slice(-1)[0].identity = Number(identities);
         this.pairWise.iteration_hits.slice(-1)[0].positive = Number(positives);
         this.pairWise.iteration_hits.slice(-1)[0].gaps = Number(gaps);
+
+        // Length of query sequence.
+        this.pairWise.iteration_hits.slice(-1)[0].length = Number(queryLen);
+        //this.pairWise.query_length = Number(queryLen);
       }
       if (/Expect/.test(line)) {
         // Get the expect (e.g : Score = 54.7 bits (130), Expect = 1.17e-04).
@@ -162,6 +170,18 @@ class DiamondPairwiseProcessor {
         const querySeq = querySplit[2];
         const queryFrom = querySplit[1];
         const queryTo = querySplit[3];
+
+        // Here you can determine the program used. With diamond it's either a
+        // blastp or a blastx. The trick is that for a blastx the length is 3
+        // times bigger because a codon is a sequence of three nucleotides.
+        if (typeof this.program === 'undefined') {
+          const pairwireLength = (Number(queryTo) - Number(queryTo) - 1);
+          if (pairwireLength === 60) {
+            this.program = 'blastp';
+          } else if (pairwireLength === 180) {
+            this.program = 'blastx';
+          }
+        }
 
         // Get the position of sequence.
         const sampleSeq = querySeq.substring(0, 5);
@@ -248,6 +268,9 @@ class DiamondPairwiseProcessor {
     }).upsert().update(
       {
         $set: {
+          program_ref: this.program,
+          matrix_ref: this.matrix,
+          database_ref: this.database,
           iteration_query: this.pairWise.iteration_query,
           query_len: this.pairWise.query_length,
           iteration_hits: this.pairWise.iteration_hits,

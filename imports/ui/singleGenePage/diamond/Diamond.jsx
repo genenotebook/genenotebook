@@ -327,30 +327,30 @@ function HitsCoverLines({ diamond, scale, height }) {
                     fill="#7f7f7f"
                   />
                 </PopoverTrigger>
-                {/* <PopoverBody */}
-                {/*   header={hit.def.length > 49 ? hit.def.substring(0, 49).concat(' ...') : hit.def} */}
-                {/*   widthBody={600} */}
-                {/* > */}
-                {/*   <HitIntervalinfo */}
-                {/*     id={hit.id} */}
-                {/*     def={hit.def} */}
-                {/*     accession={hit.accession} */}
-                {/*     length={hit.length} */}
-                {/*     score={hit.score} */}
-                {/*     bit_score={hit['bit-score']} */}
-                {/*     evalue={hit.evalue} */}
-                {/*     identity={hit.identity} */}
-                {/*     positive={hit.positive} */}
-                {/*     gaps={hit.gaps} */}
-                {/*     query_seq={hit['query-seq']} */}
-                {/*     midline={hit.midline} */}
-                {/*     query_from={hit['query-from']} */}
-                {/*     query_to={hit['query-to']} */}
-                {/*     hit_from={hit['hit-from']} */}
-                {/*     hit_to={hit['hit-to']} */}
-                {/*     hit_seq={hit['hit-seq']} */}
-                {/*   /> */}
-                {/* </PopoverBody> */}
+                <PopoverBody
+                  header={hit.def.length > 49 ? hit.def.substring(0, 49).concat(' ...') : hit.def}
+                  widthBody={600}
+                >
+                  <HitIntervalinfo
+                    id={hit.id}
+                    def={hit.def}
+                    accession={hit.accession}
+                    length={hit.length}
+                    score={hit.score}
+                    bit_score={hit['bit-score']}
+                    evalue={hit.evalue}
+                    identity={hit.identity}
+                    positive={hit.positive}
+                    gaps={hit.gaps}
+                    query_seq={hit['query-seq']}
+                    midline={hit.midline}
+                    query_from={hit['query-from']}
+                    query_to={hit['query-to']}
+                    hit_from={hit['hit-from']}
+                    hit_to={hit['hit-to']}
+                    hit_seq={hit['hit-seq']}
+                  />
+                </PopoverBody>
               </Popover>
             </g>
           );
@@ -414,7 +414,7 @@ function GlobalDiamondInformation({ diamond, initialWidth = 200}) {
             <tr>
               <td>Database :</td>
               <td>
-                { diamond.database_ref && <p>diamond.database_ref</p> }
+                { diamond.database_ref && <p>{diamond.database_ref}</p> }
               </td>
             </tr>
             <tr>

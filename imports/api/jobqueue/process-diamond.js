@@ -51,7 +51,7 @@ jobQueue.processJobs(
         input: fs.createReadStream(fileName, 'utf8'),
       });
 
-      const lineProcessor = new DiamondPairwiseProcessor();
+      const lineProcessor = new DiamondPairwiseProcessor(program, matrix, database);
 
       lineReader.on('line', async (line) => {
         try {
