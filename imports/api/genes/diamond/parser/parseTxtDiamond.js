@@ -83,14 +83,23 @@ class DiamondPairwiseProcessor {
         this.pairWise.iteration_hits = [];
       }
       if (/^Length/.test(line)) {
-        // Get the length (e.g : Length=1022).
-        const length = line;
+        // If the length already has a value but it is found again, it is the
+        // length of the hit sequence. We want to import only the length of the
+        // target sequence.
+        if (typeof this.pairWise.query_length === 'undefined') {
+          // Get the length (e.g : Length=1022).
+          const length = line;
 
-        // Clean length (result -> 1022).
-        const lengthClean = length.replace('Length=', '');
+          // Clean length (result -> 1022).
+          const lengthClean = length.replace('Length=', '');
 
-        // Add information.
-        this.pairWise.query_length = Number(lengthClean);
+          // Add information.
+          this.pairWise.query_length = Number(lengthClean);
+        } else {
+          const length = line;
+          const lengthClean = length.replace('Length=', '');
+          this.pairWise.iteration_hits.slice(-1)[0].accession_len = Number(lengthClean);
+        }
       }
       if (/^>/.test(line)) {
         // If > create a new dictionary which will be added to the
