@@ -179,11 +179,20 @@ function PairwiseAlignmentView({
     const maxSpaceCount = queryseq.length.toString().length;
     const minSpaceCount = ((Number(seqFrom) + (i * maxSplit)).toString().length);
     const repeatSpace = (maxSpaceCount - minSpaceCount + 1);
-    pairwiseAlignmt += Number(seqFrom) + (i * maxSplit);
+
+    // query from.
+    if (program === 'blastx') {
+      pairwiseAlignmt += Number(seqFrom) + (i * maxSplit * 3);
+    } else if (program === 'blastp') {
+      pairwiseAlignmt += Number(seqFrom) + (i * maxSplit);
+    }
+
     pairwiseAlignmt += ' '.repeat(repeatSpace);
     pairwiseAlignmt += ' ';
     pairwiseAlignmt += queryseq.slice((i * maxSplit), ((i + 1) * maxSplit));
     pairwiseAlignmt += ' ';
+
+    // query to.
     if (((i + 1) * maxSplit) >= queryseq.length) {
       pairwiseAlignmt += seqTo;
     } else {
@@ -222,12 +231,6 @@ function PairwiseAlignmentView({
       dashHit = (hitseq.slice(0, ((i) * maxSplit))).split('-').length;
     }
 
-    if (i === 0) {
-      console.log('hit to :', ((Number(hitFrom) + (i * maxSplit) - dashHit)));
-    } else {
-      console.log('hit to :', ((Number(hitFrom) + (i * maxSplit) - dashHit) + 1));
-    }
-
     // hit from.
     if (i === 0) {
       pairwiseAlignmt += Number(hitFrom);
@@ -241,7 +244,7 @@ function PairwiseAlignmentView({
     pairwiseAlignmt += subjctSeq;
     pairwiseAlignmt += ' ';
 
-    // hit from.
+    // hit to.
     if (((i + 1) * maxSplit) >= hitseq.length) {
       pairwiseAlignmt += hitTo;
     } else {
