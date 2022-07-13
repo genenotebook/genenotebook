@@ -348,13 +348,14 @@ function HitIntervalinfo({
 function HitsCoverLines({ diamond, scale, height }) {
   const range = scale.range();
   const program = diamond.program_ref;
+  const [start, end] = scale.domain();
   return (
-    <svg width={range[1] + 134} height={height}>
+    <svg width={range[1] + 134} height={height + 40}>
       {
         diamond.iteration_hits.map((hit, index) => {
           const queryHitId = hit.id;
           const posX = scale(hit['query-from']);
-          const wRect = scale(hit['query-to'] - hit['query-from']);
+          const wRect = (start + scale(hit['query-to']) - scale(hit['query-from']));
           return (
             <g key={queryHitId}>
               <text x="25" y={(index * (12 + 8) + 12)} fontSize="14">{queryHitId}</text>
