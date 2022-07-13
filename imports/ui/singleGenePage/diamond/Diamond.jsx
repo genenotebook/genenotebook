@@ -177,7 +177,13 @@ function PairwiseAlignmentView({
     // Align query sequence.
     pairwiseAlignmt += 'Query ';
     const maxSpaceCount = queryseq.length.toString().length;
-    const minSpaceCount = ((Number(seqFrom) + (i * maxSplit)).toString().length);
+    let minSpaceCount;
+    if (program === 'blastx') {
+      minSpaceCount = ((Number(seqFrom) + (i * maxSplit * 3)).toString().length);
+    } else if (program === 'blastp') {
+      minSpaceCount = ((Number(seqFrom) + (i * maxSplit)).toString().length);
+    }
+
     const repeatSpace = (maxSpaceCount - minSpaceCount + 1);
 
     // query from.
