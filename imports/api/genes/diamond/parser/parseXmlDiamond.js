@@ -104,6 +104,7 @@ class DiamondXmlProcessor {
               const hitId = hit['hit_id'];
               const hitDef = hit['hit_def'];
               const hitAccession = hit['hit_accession'];
+              const hitLengthAccession = hit['hit_len'];
 
               // Specific query/hits details.
               const hitHspBitScore = hit['hit_hsps']['hsp_bit-score'];
@@ -127,6 +128,7 @@ class DiamondXmlProcessor {
                 id: hitId,
                 def: hitDef,
                 accession: hitAccession,
+                accession_len: hitLengthAccession,
                 length: hitLength,
                 'bit-score': hitHspBitScore,
                 score: hitHspScore,
