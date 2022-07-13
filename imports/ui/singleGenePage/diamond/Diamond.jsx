@@ -466,6 +466,12 @@ function GlobalDiamondInformation({ diamond, initialWidth = 200}) {
               </td>
             </tr>
             <tr>
+              <td>Substitution Matrix :</td>
+              <td>
+                { diamond.matrix_ref && <p>{diamond.matrix_ref}</p> }
+              </td>
+            </tr>
+            <tr>
               <td>Database :</td>
               <td>
                 { diamond.database_ref && <p>{diamond.database_ref}</p> }
