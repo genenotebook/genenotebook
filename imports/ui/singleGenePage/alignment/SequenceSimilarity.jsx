@@ -5,7 +5,7 @@ import { withTracker } from 'meteor/react-meteor-data';
 import { branch, compose } from '/imports/ui/util/uiUtil.jsx';
 import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState } from 'react';
-import './diamond.scss';
+import './seq-similarity.scss';
 import { scaleLinear } from 'd3';
 import { Seq } from '/imports/ui/singleGenePage/Seq.jsx';
 import {
@@ -18,42 +18,42 @@ function Header() {
   return (
     <>
       <hr />
-      <h4 className="subtitle is-4">Diamond</h4>
+      <h4 className="subtitle is-4">Sequence Similarity</h4>
     </>
   );
 }
 
-function hasNoDiamond({ diamond }) {
-  return typeof diamond === 'undefined';
+function hasNoSequenceSimilarity({ similarSequences }) {
+  return typeof similarSequences === 'undefined';
 }
 
-function NoDiamond({ showHeader }) {
+function NoSequenceSimilarity({ showHeader }) {
   return (
     <>
       {showHeader && <Header />}
       <article className="message no-orthogroup" role="alert">
         <div className="message-body">
-          <p className="has-text-grey">No Diamond informations found</p>
+          <p className="has-text-grey">No sequence alignment data has been found.</p>
         </div>
       </article>
     </>
   );
 }
 
-function DiamondDataTracker({ gene }) {
+function SequenceSimilarityDataTracker({ gene }) {
   const queryGenes = Genes.findOne({ ID: gene.ID });
   const subfeatures = queryGenes.subfeatures[0].ID;
   console.log('subfeatures :', subfeatures);
 
   const diamondSub = Meteor.subscribe('diamond');
   const loading = !diamondSub.ready();
-  const diamond = diamondCollection.findOne({ iteration_query: subfeatures });
-  console.log('diamond :', diamond);
+  const similarSequences = diamondCollection.findOne({ iteration_query: subfeatures });
+  console.log('Similar sequences :', similarSequences);
 
   return {
     loading,
     gene,
-    diamond,
+    similarSequences,
   };
 }
 
@@ -291,7 +291,7 @@ function HitIntervalinfo({
       <table className="table is-hoverable is-narrow is-small">
         <tbody>
           <tr>
-            <td colSpan="2" style={{width: '600px'}}>
+            <td colSpan="2" style={{ width: '600px' }}>
               <DescriptionLimited description={def} />
             </td>
           </tr>
@@ -351,14 +351,14 @@ function HitIntervalinfo({
   );
 }
 
-function HitsCoverLines({ diamond, scale, height }) {
+function HitsCoverLines({ query, scale, height }) {
   const range = scale.range();
-  const program = diamond.program_ref;
+  const program = query.program_ref;
   const [start, end] = scale.domain();
   return (
     <svg width={range[1] + 134} height={height + 40}>
       {
-        diamond.iteration_hits.map((hit, index) => {
+        query.iteration_hits.map((hit, index) => {
           const queryHitId = hit.id;
           const posX = scale(hit['query-from']);
           const wRect = (start + scale(hit['query-to']) - scale(hit['query-from']));
@@ -420,13 +420,15 @@ function AlgorithmDetails({ algorithm }) {
     algoDetails = 'blastp (protein-protein BLAST)';
   } else if (algoDetails === 'blastx') {
     algoDetails = 'blastx (nucleotide-protein BLAST)';
+  } else {
+    algoDetails = algorithm;
   }
   return (
     <p>{algoDetails}</p>
   );
 }
 
-function GlobalDiamondInformation({ diamond, initialWidth = 200}) {
+function GlobalInformation({ querySequences, initialWidth = 200}) {
   const [width, setWidth] = useState(initialWidth);
 
   const margin = {
@@ -436,9 +438,9 @@ function GlobalDiamondInformation({ diamond, initialWidth = 200}) {
     right: 20,
   };
 
-  const length = diamond.query_len;
+  const length = querySequences.query_len;
 
-  const height = ((diamond.iteration_hits.length + 1) * 20);
+  const height = ((querySequences.iteration_hits.length + 1) * 20);
 
   const scale = scaleLinear()
     .domain([0, length])
@@ -456,30 +458,30 @@ function GlobalDiamondInformation({ diamond, initialWidth = 200}) {
               </th>
             </tr>
             <tr>
-              <td>Query sequence :</td>
-              <td>{diamond.iteration_query}</td>
-            </tr>
-            <tr>
               <td>Algorithm :</td>
               <td>
-                { diamond.program_ref && <AlgorithmDetails algorithm={diamond.program_ref} /> }
+                { querySequences.program_ref && <AlgorithmDetails algorithm={querySequences.program_ref} /> }
               </td>
             </tr>
             <tr>
               <td>Substitution Matrix :</td>
               <td>
-                { diamond.matrix_ref && <p>{diamond.matrix_ref}</p> }
+                { querySequences.matrix_ref && <p>{querySequences.matrix_ref}</p> }
               </td>
             </tr>
             <tr>
               <td>Database :</td>
               <td>
-                { diamond.database_ref && <p>{diamond.database_ref}</p> }
+                { querySequences.database_ref && <p>{querySequences.database_ref}</p> }
               </td>
             </tr>
             <tr>
               <td>Total hits selected :</td>
-              <td>{diamond.iteration_hits.length}</td>
+              <td>{querySequences.iteration_hits.length}</td>
+            </tr>
+            <tr>
+              <td>Program :</td>
+              <td></td>
             </tr>
           </tbody>
         </table>
@@ -491,7 +493,7 @@ function GlobalDiamondInformation({ diamond, initialWidth = 200}) {
             <TopBarSequence length={length} scale={scale} />
           </div>
           <div>
-            <HitsCoverLines diamond={diamond} scale={scale} height={height} />
+            <HitsCoverLines query={querySequences} scale={scale} height={height} />
           </div>
         </div>
         <ReactResizeDetector handleWidth onResize={(w) => setWidth(w)} />
@@ -501,18 +503,18 @@ function GlobalDiamondInformation({ diamond, initialWidth = 200}) {
   );
 }
 
-function DiamondBlast({ showHeader = false, diamond }) {
+function SequenceSimilarity({ showHeader = false, similarSequences }) {
   return (
     <>
       { showHeader && <Header />}
       <div>
-        <GlobalDiamondInformation diamond={diamond} />
+        <GlobalInformation querySequences={similarSequences} />
       </div>
     </>
   );
 }
 
 export default compose(
-  withTracker(DiamondDataTracker),
-  branch(hasNoDiamond, NoDiamond),
-)(DiamondBlast);
+  withTracker(SequenceSimilarityDataTracker),
+  branch(hasNoSequenceSimilarity, NoSequenceSimilarity),
+)(SequenceSimilarity);
