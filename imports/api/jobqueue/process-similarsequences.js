@@ -1,5 +1,5 @@
-import DiamondXmlProcessor from '/imports/api/genes/diamond/parser/parseXmlDiamond.js';
-import DiamondPairwiseProcessor from '/imports/api/genes/diamond/parser/parseTxtDiamond.js';
+import XmlProcessor from '/imports/api/genes/alignment/parser/xmlParser.js';
+import PairwiseProcessor from '/imports/api/genes/alignment/parser/pairwiseParser.js';
 import logger from '/imports/api/util/logger.js';
 import jobQueue from './jobqueue.js';
 import readline from 'readline';
@@ -13,14 +13,14 @@ jobQueue.processJobs(
     payload: 1,
   },
   async (job, callback) => {
-    const { fileName, parser, program, matrix, database } = job.data;
+    const { fileName, parser, program, algorithm, matrix, database } = job.data;
     logger.log(`Add ${fileName} diamond file.`);
 
     // Different parser for the xml file.
     if (parser === 'xml') {
       const stream = fs.createReadStream(fileName);
       const xml = new XmlFlow(stream, { normalize: false });
-      const lineProcessor = new DiamondXmlProcessor(program, matrix, database);
+      const lineProcessor = new XmlProcessor(program, algorithm, matrix, database);
       const tag = 'blastoutput';
 
       xml.on(`tag:${tag}`, async (obj) => {
@@ -51,7 +51,7 @@ jobQueue.processJobs(
         input: fs.createReadStream(fileName, 'utf8'),
       });
 
-      const lineProcessor = new DiamondPairwiseProcessor(program, matrix, database);
+      const lineProcessor = new PairwiseProcessor(program, algorithm, matrix, database);
 
       lineReader.on('line', async (line) => {
         try {

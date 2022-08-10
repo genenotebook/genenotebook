@@ -1,4 +1,4 @@
-import { diamondCollection } from '/imports/api/genes/diamond/diamondCollection.js';
+import { similarSequencesCollection } from '/imports/api/genes/alignment/similarSequenceCollection.js';
 import ReactResizeDetector from 'react-resize-detector';
 import { Genes } from '/imports/api/genes/geneCollection.js';
 import { withTracker } from 'meteor/react-meteor-data';
@@ -45,9 +45,9 @@ function SequenceSimilarityDataTracker({ gene }) {
   const subfeatures = queryGenes.subfeatures[0].ID;
   console.log('subfeatures :', subfeatures);
 
-  const diamondSub = Meteor.subscribe('diamond');
-  const loading = !diamondSub.ready();
-  const similarSequences = diamondCollection.findOne({ iteration_query: subfeatures });
+  const alignmentSub = Meteor.subscribe('alignment');
+  const loading = !alignmentSub.ready();
+  const similarSequences = similarSequencesCollection.findOne({ iteration_query: subfeatures });
   console.log('Similar sequences :', similarSequences);
 
   return {
@@ -428,6 +428,18 @@ function AlgorithmDetails({ algorithm }) {
   );
 }
 
+function ProgramDetails({ program }) {
+  let programDetails = program;
+  if (program === 'blast') {
+    programDetails = 'BLAST';
+  } else if (program === 'diamond') {
+    programDetails = 'Diamond';
+  }
+  return (
+    <p>{programDetails}</p>
+  );
+}
+
 function GlobalInformation({ querySequences, initialWidth = 200}) {
   const [width, setWidth] = useState(initialWidth);
 
@@ -460,7 +472,7 @@ function GlobalInformation({ querySequences, initialWidth = 200}) {
             <tr>
               <td>Algorithm :</td>
               <td>
-                { querySequences.program_ref && <AlgorithmDetails algorithm={querySequences.program_ref} /> }
+                { querySequences.algorithm_ref && <AlgorithmDetails algorithm={querySequences.algorithm_ref} /> }
               </td>
             </tr>
             <tr>
@@ -481,7 +493,7 @@ function GlobalInformation({ querySequences, initialWidth = 200}) {
             </tr>
             <tr>
               <td>Program :</td>
-              <td></td>
+              <td>{ querySequences.program_ref  && <ProgramDetails program={querySequences.program_ref} /> }</td>
             </tr>
           </tbody>
         </table>

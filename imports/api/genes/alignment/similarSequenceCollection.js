@@ -1,7 +1,7 @@
 import SimpleSchema from 'simpl-schema';
 import { Mongo } from 'meteor/mongo';
 
-const diamondSchema = new SimpleSchema({
+const similarSequencesSchema = new SimpleSchema({
   program_ref: {
     type: String,
     label: 'The program used to compare the sequences to a database',
@@ -102,6 +102,6 @@ const diamondSchema = new SimpleSchema({
   },
 });
 
-const diamondCollection = new Mongo.Collection('diamond');
+const similarSequencesCollection = new Mongo.Collection('alignment');
 
-export { diamondCollection, diamondSchema };
+export { similarSequencesCollection, similarSequencesSchema };

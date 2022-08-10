@@ -8,7 +8,7 @@ import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 import { dbxrefCollection } from '/imports/api/genes/dbxrefCollection.js';
 import { EditHistory } from '/imports/api/genes/edithistory_collection.js';
 import { eggnogCollection } from '/imports/api/genes/eggnog/eggnogCollection.js';
-import { diamondCollection } from '/imports/api/genes/diamond/diamondCollection.js';
+import { similarSequencesCollection } from '/imports/api/genes/alignment/similarSequenceCollection.js';
 // orthogroups
 import {
   orthogroupCollection,
@@ -179,8 +179,8 @@ Meteor.publish({
     const eggnog = eggnogCollection.find({});
     return eggnog;
   },
-  diamond(query) {
-    const diamond = diamondCollection.find({ iteration_query: query });
+  alignment(query) {
+    const diamond = similarSequencesCollection.find({ iteration_query: query });
     return diamond;
   },
   orthogroups(ID) {

@@ -5,8 +5,8 @@ import { Roles } from 'meteor/alanning:roles';
 import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor';
 
-const addDiamond = new ValidatedMethod({
-  name: 'addDiamond',
+const addSimilarSequence = new ValidatedMethod({
+  name: 'addSimilarSequence',
   validate: new SimpleSchema({
     fileName: { type: String },
     parser: {
@@ -17,7 +17,20 @@ const addDiamond = new ValidatedMethod({
     program: {
       type: String,
       optional: true,
-      allowedValues: ['blastx', 'blastp'],
+      allowedValues: ['blast', 'diamond'],
+    },
+    algorithm: {
+      type: String,
+      optional: true,
+      custom() {
+        if (!this.isSet && this.obj.parser !== 'xml') {
+          throw new Meteor.Error(
+            'Error required parameter',
+            '-alg or --algorithm is required. Please indicate the algorithm used (e.g: blastn, blastp, blastx ...). Do not confuse with the program used (e.g: BLAST or Diamond).',
+          );
+        }
+        return true;
+      },
     },
     matrix: {
       type: String,
@@ -31,7 +44,7 @@ const addDiamond = new ValidatedMethod({
   applyOptions: {
     noRetry: true,
   },
-  run({ fileName, parser, program, matrix, database }) {
+  run({ fileName, parser, program, algorithm, matrix, database }) {
     if (!this.userId) {
       throw new Meteor.Error('not-authorized');
     }
@@ -46,6 +59,7 @@ const addDiamond = new ValidatedMethod({
         fileName,
         parser,
         program,
+        algorithm,
         matrix,
         database,
       },
@@ -63,4 +77,4 @@ const addDiamond = new ValidatedMethod({
   },
 });
 
-export default addDiamond;
+export default addSimilarSequence;

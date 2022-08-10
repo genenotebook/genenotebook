@@ -1,4 +1,4 @@
-import { diamondCollection } from '/imports/api/genes/diamond/diamondCollection.js';
+import { similarSequencesCollection } from '/imports/api/genes/alignment/similarSequenceCollection.js';
 import { Genes } from '/imports/api/genes/geneCollection.js';
 import logger from '/imports/api/util/logger.js';
 
@@ -15,15 +15,16 @@ class Pairwise {
   }
 }
 
-// Reads pairwise (.txt) output files from diamond.
-class DiamondPairwiseProcessor {
-  constructor(program, matrix, database) {
+// Reads pairwise (.txt) output files.
+class PairwiseProcessor {
+  constructor(program, algorithm, matrix, database) {
     this.genesDb = Genes.rawCollection();
     this.pairWise = new Pairwise({});
     this.program = program;
+    this.algorithm = algorithm;
     this.matrix = matrix;
     this.database = database;
-    this.diamondBulkOp = diamondCollection.rawCollection().initializeUnorderedBulkOp();
+    this.similarSeqBulkOp = similarSequencesCollection.rawCollection().initializeUnorderedBulkOp();
   }
 
   parse = (line) => {
@@ -33,7 +34,7 @@ class DiamondPairwiseProcessor {
 
     //   this.program = algorithm;
     // }
-    if (line.length !== 0 && !(/^BLAST/.test(line))) {
+    if (line.length !== 0 || !(/^BLAST/.test(line))) {
       if (/^Query=/.test(line)) {
         // Get the query (e.g : 'Query= MMUCEDO_000001-T1').
         const queryLine = line;
@@ -55,7 +56,7 @@ class DiamondPairwiseProcessor {
           // Submits changes to a diamond collection.
           logger.log('Complete query 2:', this.pairWise);
 
-          this.diamondBulkOp.find({
+          this.similarSeqBulkOp.find({
             iteration_query: this.pairWise.iteration_query,
           }).upsert().update(
             {
@@ -73,7 +74,7 @@ class DiamondPairwiseProcessor {
               multi: true,
             },
           );
-          this.diamondBulkOp.execute();
+          this.similarSeqBulkOp.execute();
         }
 
         logger.log('queryLine3  :', queryLine);
@@ -284,7 +285,7 @@ class DiamondPairwiseProcessor {
     // When the file is finished, you must save the last query in a collection.
     logger.log('last pairwise :', this.pairWise);
 
-    this.diamondBulkOp.find({
+    this.similarSeqBulkOp.find({
       iteration_query: this.pairWise.iteration_query,
     }).upsert().update(
       {
@@ -302,8 +303,8 @@ class DiamondPairwiseProcessor {
         multi: true,
       },
     );
-    this.diamondBulkOp.execute();
+    this.similarSeqBulkOp.execute();
   };
 }
 
-export default DiamondPairwiseProcessor;
+export default PairwiseProcessor;

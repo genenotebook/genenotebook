@@ -25,9 +25,9 @@ import './genes/scanGeneAttributes.js';
 import './genes/updateAttributeInfo.js';
 import './genes/updateGene.js';
 
-import './genes/diamond/addDiamond.js';
-import './genes/diamond/parser/parseXmlDiamond.js';
-import './genes/diamond/parser/parseTxtDiamond.js';
+import './genes/alignment/addSimilarSequence.js';
+import './genes/alignment/parser/pairwiseParser.js';
+import './genes/alignment/parser/xmlParser.js';
 
 import './blast/makeblastdb.js';
 import './blast/removeblastdb.js';
@@ -48,4 +48,4 @@ import './jobqueue/process-blast.js';
 import './jobqueue/process-download.js';
 import './jobqueue/process-addGenome.js';
 import './jobqueue/process-eggnog.js';
-import './jobqueue/process-diamond.js';
+import './jobqueue/process-similarsequences.js';

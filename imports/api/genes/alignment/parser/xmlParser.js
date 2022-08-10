@@ -1,24 +1,24 @@
 /*eslint dot-notation: ["error", { "allowPattern": "^[a-z]+(_[a-z]+)+$" }]*/
-import { diamondCollection } from '/imports/api/genes/diamond/diamondCollection.js';
+import { similarSequencesCollection } from '/imports/api/genes/alignment/similarSequenceCollection.js';
 import { Genes } from '/imports/api/genes/geneCollection.js';
 import logger from '/imports/api/util/logger.js';
-import { getGeneSequences } from '/imports/api/util/util.js';
 
-class DiamondXmlProcessor {
-  constructor(program, matrix, database) {
+class XmlProcessor {
+  constructor(program, algorithm, matrix, database) {
     this.genesDb = Genes.rawCollection();
     this.program = program;
+    this.algorithm = algorithm;
     this.matrix = matrix;
     this.database = database;
   }
 
   parse = (obj) => {
-    if (this.program === undefined) {
+    if (this.algorithm === undefined) {
       if (obj['blastoutput_program'] !== undefined) {
-        this.program = obj['blastoutput_program'];
+        this.algorithm = obj['blastoutput_program'];
         logger.log('program diamond : ', this.program);
       } else {
-        this.program = undefined;
+        this.algorithm = undefined;
       }
     }
 
@@ -62,12 +62,13 @@ class DiamondXmlProcessor {
             const queryLen = obj['blastoutput_iterations'][i]['iteration_query-len'];
 
             // Update or insert if no matching documents were found.
-            const documentDiamond = diamondCollection.upsert(
+            const documentDiamond = similarSequencesCollection.upsert(
               { iteration_query: iter }, // selector.
               {
                 $set: // modifier.
                 {
                   program_ref: this.program,
+                  algorithm_ref: this.algorithm,
                   matrix_ref: this.matrix,
                   database_ref: this.database,
                   iteration_query: iter,
@@ -82,7 +83,7 @@ class DiamondXmlProcessor {
             if (typeof documentDiamond.insertedId === 'undefined') {
               createHit = false;
               // Diamond already exists.
-              diamondIdentifiant = diamondCollection.findOne({ 'iteration_query': iter })._id;
+              diamondIdentifiant = similarSequencesCollection.findOne({ 'iteration_query': iter })._id;
               this.genesDb.update(
                 { 'subfeatures.ID': iter },
                 { $set: { diamondId: diamondIdentifiant } },
@@ -147,7 +148,7 @@ class DiamondXmlProcessor {
 
               // Update or create if no matching documents were found.
               if (createHit) {
-                diamondCollection.update(
+                similarSequencesCollection.update(
                   { iteration_query: iter },
                   {
                     $push: {
@@ -156,7 +157,7 @@ class DiamondXmlProcessor {
                   },
                 );
               } else {
-                diamondCollection.update(
+                similarSequencesCollection.update(
                   { _id: diamondIdentifiant },
                   {
                     $addToSet: {
@@ -175,4 +176,4 @@ class DiamondXmlProcessor {
   };
 }
 
-export default DiamondXmlProcessor;
+export default XmlProcessor;

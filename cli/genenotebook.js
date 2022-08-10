@@ -328,7 +328,7 @@ addAnnotation
   )
   .exitOverride(customExitOverride(addAnnotation));
 
-// Add diamond.
+// Add Diamond.
 const addDiamond = add.command('diamond');
 
 addDiamond
@@ -410,7 +410,7 @@ file extension is not "xml", "txt"`);
       }
 
       new GeneNoteBookConnection({ username, password, port }).call(
-        'addDiamond',
+        'addSimilarSequence',
         {
           fileName,
           parser: parserType,
@@ -430,6 +430,106 @@ or
     `);
   })
   .exitOverride(customExitOverride(addDiamond));
+
+// Add Blast.
+const addBlast = add.command('blast');
+
+addBlast
+  .description(
+    `Add BLAST output formats, including pairwise and XML to a
+running GeneNoteBook server.`,
+  ).usage('[options] <Blast output formats .xml, .txt file>')
+  .arguments('<file>')
+  .requiredOption(
+    '-u, --username <adminUsername>',
+    'GeneNoteBook admin username',
+  )
+  .requiredOption(
+    '-p, --password <adminPassword>',
+    'GeneNoteBook admin password',
+  )
+  .option(
+    '--port [port]',
+    'Port on which GeneNoteBook is running. Default: 3000',
+  )
+  .option(
+    '-fmt, --format [parser]',
+    'Choose a parser for the blast output format. Parses .xml, .txt extensions.',
+  )
+  .option(
+    '-alg, --algorithm [algorithm]',
+    'The algorithm used to compare the sequences to a database (e.g: blastx, blastp).',
+  )
+  .option(
+    '-mtx, --matrix [matrix]',
+    'The matrix of substitution used for sequence alignment (e.g: BLOSUM90, BLOSUM80, PAM100).',
+  )
+  .option(
+    '-db --database [database]',
+    'The database used to compare the sequences (e.g: Non-reundant protein sequences (nr)).',
+  )
+  .action(
+    (
+      file,
+      {
+        username,
+        password,
+        port = 3000,
+        format,
+        algorithm,
+        matrix,
+        database,
+      },
+    ) => {
+      if (typeof file !== 'string') addBlast.help();
+
+      const fileName = path.resolve(file);
+      if (!(fileName && username && password)) {
+        addBlast.help();
+      }
+
+      const parserAccepted = ['xml', 'txt'];
+      const extensionFile = path.extname(file).replace(/\./g, '');
+      let parserType = format;
+
+      if (parserType) {
+        if (!parserAccepted.includes(parserType)) {
+          logger.error(`
+Error: unknow format : ${parserType}. To specify --format, choose a format
+compatible with diamond e.g : "xml", "txt".`);
+          addBlast.help();
+        }
+      } else if (parserAccepted.includes(extensionFile)) {
+        parserType = extensionFile;
+      } else {
+        logger.error(`
+Error : unknow file extension : ${extensionFile}. Must specify --extension when
+file extension is not "xml", "txt"`);
+        addBlast.help();
+      }
+
+      new GeneNoteBookConnection({ username, password, port }).call(
+        'addSimilarSequence',
+        {
+          fileName,
+          parser: parserType,
+          program: 'blast',
+          algorithm: algorithm,
+          matrix: matrix,
+          database: database,
+        },
+      );
+    },
+  )
+  .on('--help', () => {
+    console.log(`
+Example:
+    genenotebook add blast mmucedo.xml -u admin -p admin
+or
+    genenotebook add blast mmucedo.txt --format txt --algorithm blastp --matrix BLOSUM90 -db "Non-reundant protein sequences (nr)" -u admin -p admin
+    `);
+  })
+  .exitOverride(customExitOverride(addBlast));
 
 // add transcriptome
 const addTranscriptome = add.command('transcriptome');
