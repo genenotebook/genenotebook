@@ -161,7 +161,7 @@ function PourcentageView({ length_hit, length_sequence }) {
 }
 
 function PairwiseAlignmentView({
-  program,
+  algorithm,
   seqFrom,
   seqTo,
   hitFrom,
@@ -170,6 +170,7 @@ function PairwiseAlignmentView({
   hitmidline,
   hitseq,
 }) {
+  console.log('coucou seqFrom :', seqFrom);
   let pairwiseAlignmt = '';
   const maxSplit = 60;
 
@@ -178,18 +179,18 @@ function PairwiseAlignmentView({
     pairwiseAlignmt += 'Query ';
     const maxSpaceCount = queryseq.length.toString().length;
     let minSpaceCount;
-    if (program === 'blastx') {
+    if (algorithm === 'blastx') {
       minSpaceCount = ((Number(seqFrom) + (i * maxSplit * 3)).toString().length);
-    } else if (program === 'blastp') {
+    } else if (algorithm === 'blastp') {
       minSpaceCount = ((Number(seqFrom) + (i * maxSplit)).toString().length);
     }
 
     const repeatSpace = (maxSpaceCount - minSpaceCount + 1);
 
     // query from.
-    if (program === 'blastx') {
+    if (algorithm === 'blastx') {
       pairwiseAlignmt += Number(seqFrom) + (i * maxSplit * 3);
-    } else if (program === 'blastp') {
+    } else if (algorithm === 'blastp') {
       pairwiseAlignmt += Number(seqFrom) + (i * maxSplit);
     }
 
@@ -202,10 +203,10 @@ function PairwiseAlignmentView({
     if (((i + 1) * maxSplit) >= queryseq.length) {
       pairwiseAlignmt += seqTo;
     } else {
-      if (program === 'blastx') {
+      if (algorithm === 'blastx') {
         // 1 codon = 3 nucleotides.
         pairwiseAlignmt += (Number(seqFrom) + ((i + 1) * maxSplit * 3) - 1);
-      } else if (program === 'blastp') {
+      } else if (algorithm === 'blastp') {
         pairwiseAlignmt += (Number(seqFrom) + ((i + 1) * maxSplit) - 1);
       }
     }
@@ -266,7 +267,7 @@ function PairwiseAlignmentView({
 }
 
 function HitIntervalinfo({
-  program,
+  algorithm,
   id,
   def,
   accession,
@@ -338,7 +339,7 @@ function HitIntervalinfo({
         </tbody>
       </table>
       <PairwiseAlignmentView
-        program={program}
+        algorithm={algorithm}
         seqFrom={query_from}
         seqTo={query_to}
         hitFrom={hit_from}
@@ -353,7 +354,7 @@ function HitIntervalinfo({
 
 function HitsCoverLines({ query, scale, height }) {
   const range = scale.range();
-  const program = query.program_ref;
+  const algorithm = query.algorithm_ref;
   const [start, end] = scale.domain();
   return (
     <svg width={range[1] + 134} height={height + 40}>
@@ -384,7 +385,7 @@ function HitsCoverLines({ query, scale, height }) {
                   widthBody={600}
                 >
                   <HitIntervalinfo
-                    program={program}
+                    algorithm={algorithm}
                     id={hit.id}
                     def={hit.def}
                     accession={hit.accession}
