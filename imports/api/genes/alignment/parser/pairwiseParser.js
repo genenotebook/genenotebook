@@ -35,13 +35,18 @@ class PairwiseProcessor {
     //   this.program = algorithm;
     // }
     if (line.length !== 0 || !(/^BLAST/.test(line))) {
-      if (/^Query=/.test(line)) {
+      if (/^Query=/.test(line) || /^Query #/.test(line)) {
         // Get the query (e.g : 'Query= MMUCEDO_000001-T1').
         const queryLine = line;
         logger.log('queryLine 1:', queryLine);
 
         // Remove the beginning (result -> MMUCEDO_000001-T1).
-        const queryClean = queryLine.replace('Query= ', '').split(' ')[0];
+        let queryClean;
+        if (this.program === 'diamond') {
+          queryClean = queryLine.replace('Query= ', '').split(' ')[0];
+        } else if (this.program === 'blast') {
+          queryClean = queryLine.replace('Query #', '').split(': ')[1].split(' ')[0];
+        }
 
         // If this is the first query and no collection has been created yet.
         // (e.g : MMUCEDO_000001-T1).
@@ -54,7 +59,8 @@ class PairwiseProcessor {
         // (e.g : MMUCEDO_000002-T1).
         if (typeof this.pairWise.iteration_query !== 'undefined' && this.pairWise.iteration_query !== queryClean) {
           // Submits changes to a diamond collection.
-          logger.log('Complete query 2:', this.pairWise);
+
+          // logger.log('Complete query 2:', this.pairWise);
 
           this.similarSeqBulkOp.find({
             iteration_query: this.pairWise.iteration_query,
@@ -62,6 +68,7 @@ class PairwiseProcessor {
             {
               $set: {
                 program_ref: this.program,
+                algorithm_ref: this.algorithm,
                 matrix_ref: this.matrix,
                 database_ref: this.database,
                 iteration_query: this.pairWise.iteration_query,
@@ -83,28 +90,36 @@ class PairwiseProcessor {
         this.pairWise.iteration_query = queryClean;
         this.pairWise.iteration_hits = [];
       }
-      if (/^Length/.test(line)) {
+      if (/Length/.test(line)) {
+        // Get the length (e.g : Length=1022).
+        const length = line;
+
+        // Clean length (result -> 1022).
+        const lengthClean = (
+          this.program === 'blast'
+            ? length.split('Length:')[1]
+            : length.replace('Length=', '')
+        );
+
+        logger.log('Accession length --- :', lengthClean);
+
         // If the length already has a value but it is found again, it is the
         // length of the hit sequence. We want to import only the length of the
         // target sequence.
         if (typeof this.pairWise.query_length === 'undefined') {
-          // Get the length (e.g : Length=1022).
-          const length = line;
-
-          // Clean length (result -> 1022).
-          const lengthClean = length.replace('Length=', '');
-
           // Add information.
           this.pairWise.query_length = Number(lengthClean);
         } else {
-          const length = line;
-          const lengthClean = length.replace('Length=', '');
           this.pairWise.iteration_hits.slice(-1)[0].accession_len = Number(lengthClean);
         }
       }
       if (/^>/.test(line)) {
         // If > create a new dictionary which will be added to the
         // iteration_hits array.
+        //
+
+        // this.pairWise.iteration_hits.slice(-1)[0].identical_protein_def = line.replace('>', '');
+
         this.pairWise.iteration_hits.push({});
 
         // Get the definition of the query. (e.g : >KAG2206553.1 hypothetical);
@@ -113,20 +128,41 @@ class PairwiseProcessor {
         // Clean definition (e.g : KAG2206553.1 hypothetical).
         const defQueryClean = defQuery.replace('>', '');
 
-        // Get the identifiant (e.g : KAG2206553.1).
-        const identifiant = defQueryClean.split(' ')[0];
-
         // Adds or concatenates information.
         this.pairWise.iteration_hits.slice(-1)[0].def = defQueryClean;
-        this.pairWise.iteration_hits.slice(-1)[0].id = identifiant;
+
+        if (this.program === 'diamond') {
+          // Get the identifiant (e.g : KAG2206553.1).
+          const identifiant = defQueryClean.split(' ')[0];
+
+          this.pairWise.iteration_hits.slice(-1)[0].id = identifiant;
+        }
       }
-      if (/Score/.test(line.trim())) {
+      // Get the sequence ID (id in the collection) only for blast pairwise
+      // file.
+      if (/^Sequence ID:/.test(line)) {
+        // Get the identifiant.
+        const identifiantLine = line;
+
+        // Clean blast identifaint;
+        const identifiantClean = identifiantLine.replace('Sequence ID: ', '').split(' ')[0];
+
+        // Add identifiant information.
+        this.pairWise.iteration_hits.slice(-1)[0].id = identifiantClean;
+
+        // this.pairWise.iteration_hits.slice(-1)[0].identical_protein_id = identifiantClean;
+      }
+      if (/^Score/.test(line.trim())) {
         // Get the bit-score and score (e.g : Score = 54.7 bits (130), Expect =
         // 1.17e-04).
         const allScores = line.trim();
 
-        // Split to comma (result -> Score = 54.7 bits (130),).
-        const scoresCleaned = allScores.replace('Score = ', '');
+        /// Split to comma (result -> Score = 54.7 bits (130),).
+        const scoresCleaned = (
+          this.program === 'blast'
+            ? allScores.replace('Score:', '')
+            : allScores.replace('Score = ', '')
+        );
         const bitScore = scoresCleaned.split('bits')[0];
         const score = scoresCleaned.split('bits')[1].split(/[()]/)[1];
 
@@ -134,7 +170,8 @@ class PairwiseProcessor {
         this.pairWise.iteration_hits.slice(-1)[0]['bit-score'] = Number(bitScore);
         this.pairWise.iteration_hits.slice(-1)[0].score = Number(score);
       }
-      if (/Identities/.test(line.trim())) {
+      // Add identities, query length, positives and gaps.
+      if (/^Identities/.test(line.trim())) {
         // Get identities, positives, gaps and query-length.
         // e.g: Identities = 120/155 (77%), Positives = 137/155 (88%), Gaps = 0/155 (0%)
         const allInformations = line.trim();
@@ -146,19 +183,36 @@ class PairwiseProcessor {
         const gapsNoClean = splitInformations[2];
 
         // Clean values.
-        const identities = identitiesNoClean.replace('Identities = ', '').split('/')[0];
-        const queryLen = identitiesNoClean.replace('Identities = ', '').split('/')[1].split(' ')[0];
-        const positives = positivesNoClean.replace('Positives = ', '').split('/')[0];
-        const gaps = gapsNoClean.replace('Gaps = ', '').split('/')[0];
+        const identities = (
+          this.program === 'blast'
+            ? identitiesNoClean.replace('Identities:', '').split('/')[0]
+            : identitiesNoClean.replace('Identities = ', '').split('/')[0]
+        );
+        // const queryLen = (
+        //   this.program === 'blast'
+        //     ? identitiesNoClean.replace('Identities:', '').split('/')[1].split('(')[0]
+        //     : identitiesNoClean.replace('Identities = ', '').split('/')[1].split(' ')[0]
+        // );
+        //logger.log('?-----------------QUERYLEN:', queryLen);
+        const positives = (
+          this.program === 'blast'
+            ? positivesNoClean.replace('Positives:', '').split('/')[0]
+            : positivesNoClean.replace('Positives = ', '').split('/')[0]
+        );
+        const gaps = (
+          this.program === 'blast'
+            ? gapsNoClean.replace('Gaps:', '').split('/')[0]
+            : gapsNoClean.replace('Gaps = ', '').split('/')[0]
+        );
 
-        // Add 3 informations.
+        // Add identities, positives and gaps informations.
         this.pairWise.iteration_hits.slice(-1)[0].identity = Number(identities);
         this.pairWise.iteration_hits.slice(-1)[0].positive = Number(positives);
         this.pairWise.iteration_hits.slice(-1)[0].gaps = Number(gaps);
 
-        // Length of query sequence.
-        this.pairWise.iteration_hits.slice(-1)[0].length = Number(queryLen);
-        //this.pairWise.query_length = Number(queryLen);
+        // Add length of query sequence.
+        // this.pairWise.iteration_hits.slice(-1)[0].length = Number(queryLen);
+        // this.pairWise.query_length = Number(queryLen);
       }
       if (/Expect/.test(line)) {
         // Get the expect (e.g : Score = 54.7 bits (130), Expect = 1.17e-04).
@@ -166,26 +220,31 @@ class PairwiseProcessor {
 
         // Split to comma (result -> Expect = 1.17e-04).
         const expectSplit = expectQuery.split(',')[1];
-        const expect = expectSplit.replace('Expect = ', '');
+        const expect = (
+          this.program === 'blast'
+            ? expectSplit.replace('Expect:', '')
+            : expectSplit.replace('Expect = ', '')
+        );
 
         // Add information.
         this.pairWise.iteration_hits.slice(-1)[0].evalue = expect;
       }
-      if (/^Query /.test(line)) {
+      if (/^Query /.test(line) && !/^Query #/.test(line)) {
         logger.log('Query  ?', line);
         // Get the query sequence (e.g: Query 1 MFSGSSSNKN ...).
         const queryAllSeq = line.trim();
 
         // Split/remove the spaces and get the sequence.
         const querySplit = queryAllSeq.split(' ').filter((x) => x);
-        const querySeq = querySplit[2];
+
         const queryFrom = querySplit[1];
+        const querySeq = querySplit[2];
         const queryTo = querySplit[3];
 
         // Here you can determine the program used. With diamond it's either a
         // blastp or a blastx. The trick is that for a blastx the length is 3
         // times bigger because a codon is a sequence of three nucleotides.
-        if (typeof this.program === 'undefined') {
+        if (typeof this.algorithm === 'undefined') {
           const pairwireLength = (Number(queryTo) - (Number(queryFrom) - 1));
           logger.log('-------------pairwire length :', pairwireLength);
           if (pairwireLength === 60) {
@@ -200,19 +259,18 @@ class PairwiseProcessor {
         const posSeq = line.indexOf(sampleSeq);
 
         // Store the index of query sequence.
-        logger.log('coucou');
         logger.log('posSeq :', posSeq);
         this.pairWise.position_query = Number(posSeq);
 
         // Add once query from.
         if (typeof this.pairWise.iteration_hits.slice(-1)[0]['query-from'] === 'undefined') {
-          this.pairWise.iteration_hits.slice(-1)[0]['query-from'] = queryFrom;
+          this.pairWise.iteration_hits.slice(-1)[0]['query-from'] = Number(queryFrom);
         }
 
         // Update query to.
-        this.pairWise.iteration_hits.slice(-1)[0]['query-to'] = queryTo;
+        this.pairWise.iteration_hits.slice(-1)[0]['query-to'] = Number(queryTo);
 
-        // Concatenates informations.
+        // Concatenates query sequences information.
         if (typeof this.pairWise.iteration_hits.slice(-1)[0]['query-seq'] === 'undefined') {
           this.pairWise.iteration_hits.slice(-1)[0]['query-seq'] = querySeq;
         } else {
@@ -220,7 +278,12 @@ class PairwiseProcessor {
         }
       }
       if (typeof this.pairWise.iteration_hits !== 'undefined' && typeof this.pairWise.position_query !== 'undefined') {
-        if (!/(^Query|^Length=|>|^Score =|^Identities =|^Sbjct|^Frame =)/.test(line.trim())) {
+        const regexMidline = (
+          this.program === 'blast'
+            ? /(^Alignments|>|^Sequence|^Range|^Score:|^Method|^Identities|^Query|^Sbjct)/
+            : /(^Query|^Length=|>|^Score =|^Identities =|^Sbjct|^Frame =)/
+        );
+        if (!regexMidline.test(line.trim()) && !!line) {
           // Get the midline sequence (e.g MFSGSSS+KNEG+PK ). Midline is between
           // the query sequence index plus 60 characters. Allows to keep the
           // spaces in the midline sequence without erasing them with the trim()
@@ -256,20 +319,21 @@ class PairwiseProcessor {
         // Get the query sequence (e.g: Sbjct 1 MFSGSSSDKNEGIPKR--- ...).
         const hitAllSeq = line;
 
-        // Split/remove the spaces and get the sequence.
-        // (Gaps are separated by dashes).
+        // Split/remove the spaces and get the sequence. (Gaps are separated by
+        // dashes).
         const hitSplit = hitAllSeq.split(' ').filter((x) => x);
-        const hitSeq = hitSplit[2];
+
         const hitFrom = hitSplit[1];
+        const hitSeq = hitSplit[2];
         const hitTo = hitSplit[3];
 
         // Add once hit-from.
         if (typeof this.pairWise.iteration_hits.slice(-1)[0]['hit-from'] === 'undefined') {
-          this.pairWise.iteration_hits.slice(-1)[0]['hit-from'] = hitFrom;
+          this.pairWise.iteration_hits.slice(-1)[0]['hit-from'] = Number(hitFrom);
         }
 
         // Update hit-to.
-        this.pairWise.iteration_hits.slice(-1)[0]['hit-to'] = hitTo;
+        this.pairWise.iteration_hits.slice(-1)[0]['hit-to'] = Number(hitTo);
 
         // Concatenates informations.
         if (typeof this.pairWise.iteration_hits.slice(-1)[0]['hit-seq'] === 'undefined') {
@@ -291,6 +355,7 @@ class PairwiseProcessor {
       {
         $set: {
           program_ref: this.program,
+          algorithm_ref: this.algorithm,
           matrix_ref: this.matrix,
           database_ref: this.database,
           iteration_query: this.pairWise.iteration_query,
