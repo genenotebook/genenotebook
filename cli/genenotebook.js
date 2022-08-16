@@ -355,9 +355,8 @@ running GeneNoteBook server.`,
     extensions.`,
   )
   .option(
-    '-prog, --program [program]',
-    `The program used to compare the sequences to a database (e.g: blastx,
-  blastp).`,
+    '-alg, --algorithm [algorithm]',
+    'The algorithm used to compare the sequences to a database (e.g: blastx, blastp).',
   )
   .option(
     '-mtx, --matrix [matrix]',
@@ -377,7 +376,7 @@ running GeneNoteBook server.`,
         password,
         port = 3000,
         format,
-        program,
+        algorithm,
         matrix,
         database,
       },
@@ -414,7 +413,8 @@ file extension is not "xml", "txt"`);
         {
           fileName,
           parser: parserType,
-          program: program,
+          program: 'diamond',
+          algorithm: algorithm,
           matrix: matrix,
           database: database,
         },

@@ -39,14 +39,14 @@ class PairwiseProcessor {
         // Get the query (e.g : 'Query= MMUCEDO_000001-T1').
         const queryLine = line;
         logger.log('queryLine 1:', queryLine);
+        logger.log(queryLine.replace('Query= ', '').split(' ')[0]);
 
         // Remove the beginning (result -> MMUCEDO_000001-T1).
-        let queryClean;
-        if (this.program === 'diamond') {
-          queryClean = queryLine.replace('Query= ', '').split(' ')[0];
-        } else if (this.program === 'blast') {
-          queryClean = queryLine.replace('Query #', '').split(': ')[1].split(' ')[0];
-        }
+        const queryClean = (
+          this.program === 'blast'
+            ? queryLine.replace('Query #', '').split(': ')[1].split(' ')[0]
+            : queryLine.replace('Query= ', '').split(' ')[0]
+        );
 
         // If this is the first query and no collection has been created yet.
         // (e.g : MMUCEDO_000001-T1).
@@ -221,11 +221,11 @@ class PairwiseProcessor {
             ? identitiesNoClean.replace('Identities:', '').split('/')[0]
             : identitiesNoClean.replace('Identities = ', '').split('/')[0]
         );
-        // const queryLen = (
-        //   this.program === 'blast'
-        //     ? identitiesNoClean.replace('Identities:', '').split('/')[1].split('(')[0]
-        //     : identitiesNoClean.replace('Identities = ', '').split('/')[1].split(' ')[0]
-        // );
+        const queryLen = (
+          this.program === 'blast'
+            ? identitiesNoClean.replace('Identities:', '').split('/')[1].split('(')[0]
+            : identitiesNoClean.replace('Identities = ', '').split('/')[1].split(' ')[0]
+        );
         //logger.log('?-----------------QUERYLEN:', queryLen);
         const positives = (
           this.program === 'blast'
@@ -244,7 +244,7 @@ class PairwiseProcessor {
         this.pairWise.iteration_hits.slice(-1)[0].gaps = Number(gaps);
 
         // Add length of query sequence.
-        // this.pairWise.iteration_hits.slice(-1)[0].length = Number(queryLen);
+        this.pairWise.iteration_hits.slice(-1)[0].length = Number(queryLen);
         // this.pairWise.query_length = Number(queryLen);
       }
       if (/Expect/.test(line)) {
