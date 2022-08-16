@@ -110,26 +110,56 @@ class PairwiseProcessor {
           // Add information.
           this.pairWise.query_length = Number(lengthClean);
         } else {
-          this.pairWise.iteration_hits.slice(-1)[0].accession_len = Number(lengthClean);
+          //
+          if (this.pairWise.iteration_hits.slice(-1)[0].accession_len) {
+            this.pairWise.iteration_hits.slice(-1)[0].identical_protein.slice(-1)[0].accession_len = lengthClean;
+          } else {
+            // Add accession length information.
+            this.pairWise.iteration_hits.slice(-1)[0].accession_len = Number(lengthClean);
+          }
         }
       }
       if (/^>/.test(line)) {
         // If > create a new dictionary which will be added to the
         // iteration_hits array.
-        //
-
-        // this.pairWise.iteration_hits.slice(-1)[0].identical_protein_def = line.replace('>', '');
-
-        this.pairWise.iteration_hits.push({});
 
         // Get the definition of the query. (e.g : >KAG2206553.1 hypothetical);
         const defQuery = line;
+        logger.log(line);
 
         // Clean definition (e.g : KAG2206553.1 hypothetical).
         const defQueryClean = defQuery.replace('>', '');
 
-        // Adds or concatenates information.
-        this.pairWise.iteration_hits.slice(-1)[0].def = defQueryClean;
+        logger.log('this.pairWise.iteration_hits.length', this.pairWise.iteration_hits.length);
+
+        if (this.pairWise.iteration_hits.length !== 0) {
+          logger.log('this.pairWise.iteration_hits:', Object.keys(this.pairWise.iteration_hits.slice(-1)[0]).length);
+          logger.log('this.pairWise.iteration_hits.slice(-1)[0].length === 2', this.pairWise.iteration_hits.slice(-1)[0].length);
+          if (Object.keys(this.pairWise.iteration_hits.slice(-1)[0]).length === 3
+              || Object.keys(this.pairWise.iteration_hits.slice(-1)[0]).length === 4) {
+            logger.log('identical protein detected !');
+            // Identical protein.
+            if (!this.pairWise.iteration_hits.slice(-1)[0].identical_protein) {
+              this.pairWise.iteration_hits.slice(-1)[0].identical_protein = [{}];
+            } else {
+              this.pairWise.iteration_hits.slice(-1)[0].identical_protein.push({});
+            }
+            this.pairWise.iteration_hits.slice(-1)[0].identical_protein.slice(-1)[0].def = defQueryClean;
+          } else {
+            logger.log('Simple protein');
+            this.pairWise.iteration_hits.push({});
+
+            // Adds or concatenates information.
+            this.pairWise.iteration_hits.slice(-1)[0].def = defQueryClean;
+          }
+        } else {
+          logger.log('Simple protein');
+          this.pairWise.iteration_hits.push({});
+
+          // Adds or concatenates information.
+          this.pairWise.iteration_hits.slice(-1)[0].def = defQueryClean;
+        }
+        // this.pairWise.iteration_hits.slice(-1)[0].identical_protein_def = line.replace('>', '');
 
         if (this.program === 'diamond') {
           // Get the identifiant (e.g : KAG2206553.1).
@@ -147,10 +177,13 @@ class PairwiseProcessor {
         // Clean blast identifaint;
         const identifiantClean = identifiantLine.replace('Sequence ID: ', '').split(' ')[0];
 
-        // Add identifiant information.
-        this.pairWise.iteration_hits.slice(-1)[0].id = identifiantClean;
-
-        // this.pairWise.iteration_hits.slice(-1)[0].identical_protein_id = identifiantClean;
+        //
+        if (this.pairWise.iteration_hits.slice(-1)[0].id) {
+          this.pairWise.iteration_hits.slice(-1)[0].identical_protein.slice(-1)[0].id = identifiantClean;
+        } else {
+          // Add identifiant information.
+          this.pairWise.iteration_hits.slice(-1)[0].id = identifiantClean;
+        }
       }
       if (/^Score/.test(line.trim())) {
         // Get the bit-score and score (e.g : Score = 54.7 bits (130), Expect =
