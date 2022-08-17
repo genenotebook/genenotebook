@@ -112,7 +112,7 @@ class PairwiseProcessor {
         } else {
           //
           if (this.pairWise.iteration_hits.slice(-1)[0].accession_len) {
-            this.pairWise.iteration_hits.slice(-1)[0].identical_protein.slice(-1)[0].accession_len = lengthClean;
+            this.pairWise.iteration_hits.slice(-1)[0].identical_proteins.slice(-1)[0].accession_len = lengthClean;
           } else {
             // Add accession length information.
             this.pairWise.iteration_hits.slice(-1)[0].accession_len = Number(lengthClean);
@@ -139,12 +139,12 @@ class PairwiseProcessor {
               || Object.keys(this.pairWise.iteration_hits.slice(-1)[0]).length === 4) {
             logger.log('identical protein detected !');
             // Identical protein.
-            if (!this.pairWise.iteration_hits.slice(-1)[0].identical_protein) {
-              this.pairWise.iteration_hits.slice(-1)[0].identical_protein = [{}];
+            if (!this.pairWise.iteration_hits.slice(-1)[0].identical_proteins) {
+              this.pairWise.iteration_hits.slice(-1)[0].identical_proteins = [{}];
             } else {
-              this.pairWise.iteration_hits.slice(-1)[0].identical_protein.push({});
+              this.pairWise.iteration_hits.slice(-1)[0].identical_proteins.push({});
             }
-            this.pairWise.iteration_hits.slice(-1)[0].identical_protein.slice(-1)[0].def = defQueryClean;
+            this.pairWise.iteration_hits.slice(-1)[0].identical_proteins.slice(-1)[0].def = defQueryClean;
           } else {
             logger.log('Simple protein');
             this.pairWise.iteration_hits.push({});
@@ -159,7 +159,7 @@ class PairwiseProcessor {
           // Adds or concatenates information.
           this.pairWise.iteration_hits.slice(-1)[0].def = defQueryClean;
         }
-        // this.pairWise.iteration_hits.slice(-1)[0].identical_protein_def = line.replace('>', '');
+        // this.pairWise.iteration_hits.slice(-1)[0].identical_proteins_def = line.replace('>', '');
 
         if (this.program === 'diamond') {
           // Get the identifiant (e.g : KAG2206553.1).
@@ -179,7 +179,7 @@ class PairwiseProcessor {
 
         //
         if (this.pairWise.iteration_hits.slice(-1)[0].id) {
-          this.pairWise.iteration_hits.slice(-1)[0].identical_protein.slice(-1)[0].id = identifiantClean;
+          this.pairWise.iteration_hits.slice(-1)[0].identical_proteins.slice(-1)[0].id = identifiantClean;
         } else {
           // Add identifiant information.
           this.pairWise.iteration_hits.slice(-1)[0].id = identifiantClean;

@@ -126,7 +126,7 @@ function DescriptionLimited({ description }) {
 
   return (
     <>
-      <b>{ descChar }</b>
+      <b>{descChar}</b>
       {
         isMaxChar
           ? (
@@ -135,7 +135,7 @@ function DescriptionLimited({ description }) {
               className="is-link"
               onClick={() => setDesc(!openDesc)}
             >
-              <small>{ buttonText }</small>
+              <small>{buttonText}</small>
             </button>
           ) : null
       }
@@ -148,13 +148,13 @@ function SequenceID({ id }) {
 
   return (
     <a href={`${ncbiUrl}${id}`} target="_blank" rel="noreferrer">
-      { id }
+      {id}
     </a>
   );
 }
 
 function PourcentageView({ length_hit, length_sequence }) {
-  const pourcentage = ((length_hit / length_sequence ) * 100).toFixed(2);
+  const pourcentage = ((length_hit / length_sequence) * 100).toFixed(2);
   return (
     <p>{length_hit}/{length_sequence} ({pourcentage}%)</p>
   );
@@ -260,7 +260,7 @@ function PairwiseAlignmentView({
     pairwiseAlignmt += '\n\n';
   }
   return (
-    <pre style={{ padding: '.25em .5em', lineHeight: '1', display: 'block', maxWidth: '600px', height: 'auto'}}>
+    <pre style={{ padding: '.25em .5em', lineHeight: '1', display: 'block', maxWidth: '600px', height: 'auto' }}>
       {pairwiseAlignmt}
     </pre>
   );
@@ -269,6 +269,7 @@ function PairwiseAlignmentView({
 function HitIntervalinfo({
   algorithm,
   id,
+  identical_proteins,
   def,
   accession,
   accession_length,
@@ -302,6 +303,19 @@ function HitIntervalinfo({
               <SequenceID id={id} />
             </td>
           </tr>
+          {
+            identical_proteins &&
+              <tr>
+                <td>Identical proteins :</td>
+                {
+                  identical_proteins.map(id_protein => (
+                    <td key={id_protein.id.toString()}>
+                      <SequenceID id={id_protein.id} />
+                    </td>
+                  ))
+                }
+              </tr>
+          }
           <tr>
             <td>Accession :</td>
             <td>{accession}</td>
@@ -387,6 +401,7 @@ function HitsCoverLines({ query, scale, height }) {
                   <HitIntervalinfo
                     algorithm={algorithm}
                     id={hit.id}
+                    identical_proteins={hit.identical_proteins}
                     def={hit.def}
                     accession={hit.accession}
                     accession_length={hit.accession_len}
@@ -441,7 +456,7 @@ function ProgramDetails({ program }) {
   );
 }
 
-function GlobalInformation({ querySequences, initialWidth = 200}) {
+function GlobalInformation({ querySequences, initialWidth = 200 }) {
   const [width, setWidth] = useState(initialWidth);
 
   const margin = {
@@ -473,19 +488,19 @@ function GlobalInformation({ querySequences, initialWidth = 200}) {
             <tr>
               <td>Algorithm :</td>
               <td>
-                { querySequences.algorithm_ref && <AlgorithmDetails algorithm={querySequences.algorithm_ref} /> }
+                {querySequences.algorithm_ref && <AlgorithmDetails algorithm={querySequences.algorithm_ref} />}
               </td>
             </tr>
             <tr>
               <td>Substitution Matrix :</td>
               <td>
-                { querySequences.matrix_ref && <p>{querySequences.matrix_ref}</p> }
+                {querySequences.matrix_ref && <p>{querySequences.matrix_ref}</p>}
               </td>
             </tr>
             <tr>
               <td>Database :</td>
               <td>
-                { querySequences.database_ref && <p>{querySequences.database_ref}</p> }
+                {querySequences.database_ref && <p>{querySequences.database_ref}</p>}
               </td>
             </tr>
             <tr>
@@ -494,7 +509,7 @@ function GlobalInformation({ querySequences, initialWidth = 200}) {
             </tr>
             <tr>
               <td>Program :</td>
-              <td>{ querySequences.program_ref  && <ProgramDetails program={querySequences.program_ref} /> }</td>
+              <td>{querySequences.program_ref && <ProgramDetails program={querySequences.program_ref} />}</td>
             </tr>
           </tbody>
         </table>
@@ -519,7 +534,7 @@ function GlobalInformation({ querySequences, initialWidth = 200}) {
 function SequenceSimilarity({ showHeader = false, similarSequences }) {
   return (
     <>
-      { showHeader && <Header />}
+      {showHeader && <Header />}
       <div>
         <GlobalInformation querySequences={similarSequences} />
       </div>
