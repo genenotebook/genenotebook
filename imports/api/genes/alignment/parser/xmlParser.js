@@ -3,6 +3,16 @@ import { similarSequencesCollection } from '/imports/api/genes/alignment/similar
 import { Genes } from '/imports/api/genes/geneCollection.js';
 import logger from '/imports/api/util/logger.js';
 
+/**
+ * Read the xml stream from a BLAST or Diamond file.
+ * @class
+ * @constructor
+ * @public
+ * @param {string} program - The program used (BLAST or Diamond).
+ * @param {string} algorithm - The algorithm used (blastx, blastp ...).
+ * @param {string} matrix - The substitution matrix used for alignment (BLOSUM).
+ * @param {string} database - The reference database (Non-redundant protein sequences (nr)).
+ */
 class XmlProcessor {
   constructor(program, algorithm, matrix, database) {
     this.genesDb = Genes.rawCollection();
@@ -12,11 +22,30 @@ class XmlProcessor {
     this.database = database;
   }
 
+  /**
+   * Filter the prefix matches the bank (gb, emb ...).
+   * e.g: gb|KAG0740174.1| becomes KAG0740174.1.
+   * @function
+   * @param {string} str - The string.
+   */
+  filterPrefixBank = (str) => {
+    const filter = (
+      /\|/.test(str)
+        ? str.split('|')[1]
+        : str
+    );
+    return filter;
+  };
+
+  /**
+   * Parse the XML file and collect the information.
+   * @function
+   * @param {stream} obj - The stream object of an XML file.
+   */
   parse = (obj) => {
     if (this.algorithm === undefined) {
       if (obj['blastoutput_program'] !== undefined) {
         this.algorithm = obj['blastoutput_program'];
-        logger.log('program diamond : ', this.program);
       } else {
         this.algorithm = undefined;
       }
@@ -25,7 +54,6 @@ class XmlProcessor {
     if (this.matrix === undefined) {
       if (obj['blastoutput_param']['parameters_matrix'] !== undefined) {
         this.matrix = obj['blastoutput_param']['parameters_matrix'];
-        logger.log('matrix diamond : ', this.matrix);
       } else {
         this.matrix = undefined;
       }
@@ -34,7 +62,6 @@ class XmlProcessor {
     if (this.database === undefined) {
       if (obj['blastoutput_db'] !== undefined) {
         this.database = obj['blastoutput_db'];
-        logger.log('database diamond : ', this.database);
       } else {
         this.database = undefined;
       }
@@ -56,8 +83,6 @@ class XmlProcessor {
           );
 
           if (typeof subfeatureIsFound !== 'undefined' && subfeatureIsFound !== null) {
-            logger.log(`Subfeature : ${iter} is found !`);
-
             // Get the total query sequence length.
             const queryLen = obj['blastoutput_iterations'][i]['iteration_query-len'];
 
@@ -102,8 +127,28 @@ class XmlProcessor {
             iterationHits.forEach((hit) => {
               // Global query details.
               const hitNumber = hit['hit_num'];
-              const hitId = hit['hit_id'];
-              const hitDef = hit['hit_def'];
+
+              const hitId = this.filterPrefixBank(hit['hit_id']);
+
+              // Get the first description if there are identical proteins.
+              const hitDef = (
+                hit['hit_def'].split('>').length > 1
+                  ? hit['hit_def'].split('>')[0]
+                  : hit['hit_def']
+              );
+
+              // Check identical proteins.
+              const identicalProteins = (
+                hit['hit_def'].split('>').length > 1
+                  ? hit['hit_def'].split('>').slice(1).map((ips) => (
+                    {
+                      def: ips,
+                      id: this.filterPrefixBank(ips.split(' ')[0]),
+                    }
+                  ))
+                  : undefined
+              );
+
               const hitAccession = hit['hit_accession'];
               const hitLengthAccession = hit['hit_len'];
 
@@ -128,6 +173,7 @@ class XmlProcessor {
                 num: hitNumber,
                 id: hitId,
                 def: hitDef,
+                identical_proteins: identicalProteins,
                 accession: hitAccession,
                 accession_len: hitLengthAccession,
                 length: hitLength,

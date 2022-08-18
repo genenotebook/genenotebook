@@ -307,13 +307,17 @@ function HitIntervalinfo({
             identical_proteins &&
               <tr>
                 <td>Identical proteins :</td>
-                {
-                  identical_proteins.map(id_protein => (
-                    <td key={id_protein.id.toString()}>
-                      <SequenceID id={id_protein.id} />
-                    </td>
-                  ))
-                }
+                <td>
+                  {
+                    identical_proteins.map(id_protein => (
+                      <ul>
+                        <li key={id_protein.id.toString()}>
+                          <SequenceID id={id_protein.id} />
+                        </li>
+                      </ul>
+                    ))
+                  }
+                </td>
               </tr>
           }
           <tr>
