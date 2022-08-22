@@ -20,6 +20,7 @@ class XmlProcessor {
     this.algorithm = algorithm;
     this.matrix = matrix;
     this.database = database;
+    this.similarSeqBulkOp = similarSequencesCollection.rawCollection().initializeUnorderedBulkOp();
   }
 
   /**
@@ -86,44 +87,10 @@ class XmlProcessor {
             // Get the total query sequence length.
             const queryLen = obj['blastoutput_iterations'][i]['iteration_query-len'];
 
-            // Update or insert if no matching documents were found.
-            const documentDiamond = similarSequencesCollection.upsert(
-              { iteration_query: iter }, // selector.
-              {
-                $set: // modifier.
-                {
-                  program_ref: this.program,
-                  algorithm_ref: this.algorithm,
-                  matrix_ref: this.matrix,
-                  database_ref: this.database,
-                  iteration_query: iter,
-                  query_len: queryLen,
-                },
-              },
-            );
-
-            // Search document ID only once and update diamondId in genes collection..
-            let createHit = true;
-            let diamondIdentifiant;
-            if (typeof documentDiamond.insertedId === 'undefined') {
-              createHit = false;
-              // Diamond already exists.
-              diamondIdentifiant = similarSequencesCollection.findOne({ 'iteration_query': iter })._id;
-              this.genesDb.update(
-                { 'subfeatures.ID': iter },
-                { $set: { diamondId: diamondIdentifiant } },
-              );
-            } else {
-              // Diamond _id is created.
-              this.genesDb.update(
-                { 'subfeatures.ID': iter },
-                { $set: { diamondId: documentDiamond.insertedId } },
-              );
-            }
-
             // Here, get all diamond output informations.
             const iterationHits = obj['blastoutput_iterations'][i]['iteration_hits'];
 
+            const iterations = [];
             iterationHits.forEach((hit) => {
               // Global query details.
               const hitNumber = hit['hit_num'];
@@ -168,8 +135,8 @@ class XmlProcessor {
               const hitMidline = hit['hit_hsps']['hsp_midline'];
               const hitSeq = hit['hit_hsps']['hsp_hseq'];
 
-              // Organize diamont data in a dictionary.
-              const iterations = {
+              // Organize data in a dictionary.
+              iterations.push({
                 num: hitNumber,
                 id: hitId,
                 def: hitDef,
@@ -190,29 +157,29 @@ class XmlProcessor {
                 'query-seq': querySeq,
                 midline: hitMidline,
                 'hit-seq': hitSeq,
-              };
-
-              // Update or create if no matching documents were found.
-              if (createHit) {
-                similarSequencesCollection.update(
-                  { iteration_query: iter },
-                  {
-                    $push: {
-                      iteration_hits: iterations,
-                    },
-                  },
-                );
-              } else {
-                similarSequencesCollection.update(
-                  { _id: diamondIdentifiant },
-                  {
-                    $addToSet: {
-                      iteration_hits: iterations,
-                    },
-                  },
-                );
-              }
+              });
             });
+            /** Bulk mongo operation. */
+            this.similarSeqBulkOp.find({
+              iteration_query: iter,
+            }).upsert().update(
+              {
+                $set: {
+                  program_ref: this.program,
+                  algorithm_ref: this.algorithm,
+                  matrix_ref: this.matrix,
+                  database_ref: this.database,
+                  iteration_query: iter,
+                  query_len: queryLen,
+                  iteration_hits: iterations,
+                },
+              },
+              {
+                upsert: false,
+                multi: true,
+              },
+            );
+            this.similarSeqBulkOp.execute();
           } else {
             logger.warn(`Warning ! No sub-feature was found for ${iter}.`);
           }
