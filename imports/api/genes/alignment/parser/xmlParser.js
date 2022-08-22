@@ -4,7 +4,8 @@ import { Genes } from '/imports/api/genes/geneCollection.js';
 import logger from '/imports/api/util/logger.js';
 
 /**
- * Read the xml stream from a BLAST or Diamond file.
+ * Read the xml stream from a BLAST or Diamond file. The alignment collection in
+ * database is completed with mongodb and bulk-operations.
  * @class
  * @constructor
  * @public
@@ -70,41 +71,38 @@ class XmlProcessor {
 
     if (obj['blastoutput_iterations'] !== undefined) {
       for (let i = 0; i < obj['blastoutput_iterations'].length; i += 1) {
-        // Get iteration query e.g: 'MMUCEDO_000001-T1 MMUCEDO_000001'.
+        /** Get and split iteration query
+         * e.g: 'MMUCEDO_000001-T1 becomes MMUCEDO_000001'.
+         */
         const iterationQuery = obj['blastoutput_iterations'][i]['iteration_query-def'];
-
-        // Split 'MMUCEDO_000001-T1 MMUCEDO_000001'.
         const splitIterationQuery = iterationQuery.split(' ');
 
-        // Next, check if any of the queries exist in the genes collection.
         splitIterationQuery.forEach(async (iter) => {
-          //
-          const subfeatureIsFound = await this.genesDb.findOne(
-            { 'subfeatures.ID': iter },
-          );
-
+          /** Chek if the queries exist in the genes collection. */
+          const subfeatureIsFound = await this.genesDb.findOne({ 'subfeatures.ID': iter });
           if (typeof subfeatureIsFound !== 'undefined' && subfeatureIsFound !== null) {
-            // Get the total query sequence length.
+            /** Get the total query sequence length. */
             const queryLen = obj['blastoutput_iterations'][i]['iteration_query-len'];
 
-            // Here, get all diamond output informations.
+            /** Get the root tag of hit sequences. */
             const iterationHits = obj['blastoutput_iterations'][i]['iteration_hits'];
 
+            /** Reset the iterations array. */
             const iterations = [];
+
+            /** Iterates hit sequences. */
             iterationHits.forEach((hit) => {
-              // Global query details.
               const hitNumber = hit['hit_num'];
 
               const hitId = this.filterPrefixBank(hit['hit_id']);
-
-              // Get the first description if there are identical proteins.
+              /** Get the first description if there are identical proteins. */
               const hitDef = (
                 hit['hit_def'].split('>').length > 1
                   ? hit['hit_def'].split('>')[0]
                   : hit['hit_def']
               );
 
-              // Check identical proteins.
+              /** Check if identical proteins. */
               const identicalProteins = (
                 hit['hit_def'].split('>').length > 1
                   ? hit['hit_def'].split('>').slice(1).map((ips) => (
@@ -116,10 +114,9 @@ class XmlProcessor {
                   : undefined
               );
 
+              /** Get hit sequences information. */
               const hitAccession = hit['hit_accession'];
               const hitLengthAccession = hit['hit_len'];
-
-              // Specific query/hits details.
               const hitHspBitScore = hit['hit_hsps']['hsp_bit-score'];
               const hitHspScore = hit['hit_hsps']['hsp_score'];
               const hitEvalue = hit['hit_hsps']['hsp_evalue'];
@@ -135,7 +132,7 @@ class XmlProcessor {
               const hitMidline = hit['hit_hsps']['hsp_midline'];
               const hitSeq = hit['hit_hsps']['hsp_hseq'];
 
-              // Organize data in a dictionary.
+              /** Organize the data and push the dictionary. */
               iterations.push({
                 num: hitNumber,
                 id: hitId,
@@ -159,7 +156,8 @@ class XmlProcessor {
                 'hit-seq': hitSeq,
               });
             });
-            /** Bulk mongo operation. */
+
+            /** Mongo bulk-operation. */
             this.similarSeqBulkOp.find({
               iteration_query: iter,
             }).upsert().update(
