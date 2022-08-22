@@ -33,7 +33,7 @@ function NoSequenceSimilarity({ showHeader }) {
       {showHeader && <Header />}
       <article className="message no-orthogroup" role="alert">
         <div className="message-body">
-          <p className="has-text-grey">No sequence alignment data has been found.</p>
+          <p className="has-text-grey">No sequence alignment data found</p>
         </div>
       </article>
     </>
