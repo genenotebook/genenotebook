@@ -263,7 +263,6 @@ export default function Genemodel({
   showHeader = false,
   initialWidth = 200,
 }) {
-  console.log("initialWidht :", initialWidth);
   const [width, setWidth] = useState(initialWidth);
 
   const geneLength = gene.end - gene.start;
@@ -287,8 +286,6 @@ export default function Genemodel({
   const scale = scaleLinear()
     .domain([start, end])
     .range([margin.left, width - margin.right]);
-
-  console.log("gene model :", scale);
 
   return (
     <>

@@ -46,15 +46,15 @@ const similarSequencesSchema = new SimpleSchema({
     label: 'Identical protein.',
   },
   'iteration_hits.$.identical_proteins.$.def': {
-    type: Object,
+    type: String,
     label: 'Definition of identical protein.',
   },
   'iteration_hits.$.identical_proteins.$.id': {
-    type: Object,
+    type: String,
     label: 'Identifier of identical protein.',
   },
   'iteration_hits.$.identical_proteins.$.accession_len': {
-    type: Object,
+    type: Number,
     label: 'Length of identical protein.',
   },
   'iteration_hits.$.accession': {

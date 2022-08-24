@@ -43,12 +43,10 @@ function NoSequenceSimilarity({ showHeader }) {
 function SequenceSimilarityDataTracker({ gene }) {
   const queryGenes = Genes.findOne({ ID: gene.ID });
   const subfeatures = queryGenes.subfeatures[0].ID;
-  console.log('subfeatures :', subfeatures);
 
   const alignmentSub = Meteor.subscribe('alignment');
   const loading = !alignmentSub.ready();
   const similarSequences = similarSequencesCollection.findOne({ iteration_query: subfeatures });
-  console.log('Similar sequences :', similarSequences);
 
   return {
     loading,
@@ -170,9 +168,21 @@ function PairwiseAlignmentView({
   hitmidline,
   hitseq,
 }) {
-  console.log('coucou seqFrom :', seqFrom);
   let pairwiseAlignmt = '';
   const maxSplit = 60;
+  const algoPairwise = ['blastx', 'blastp'];
+
+  if (typeof algorithm === 'undefined' || !algoPairwise.includes(algorithm)) {
+    return (
+      <p>Unknown or undefined algorithm !</p>
+    );
+  }
+
+  if (!queryseq || !hitseq) {
+    return (
+      <p>Unable to display the pairwise view.</p>
+    );
+  }
 
   for (let i = 0; i < Math.floor(queryseq.length / maxSplit) + 1; i += 1) {
     // Align query sequence.
@@ -213,17 +223,12 @@ function PairwiseAlignmentView({
     pairwiseAlignmt += '\n';
 
     // Align midline sequence.
-    console.log(7 + minSpaceCount + repeatSpace);
-    pairwiseAlignmt += ' '.repeat(7 + minSpaceCount + repeatSpace);
-    const b = hitmidline.slice((i * maxSplit), ((i + 1) * maxSplit));
-    console.log(b);
-    console.log(i * maxSplit);
-    console.log((i + 1) * maxSplit);
-    console.log('test 1:', hitmidline.slice(1, 60));
-    console.log('test 2:', hitmidline.slice(i * maxSplit), 60);
-    console.log('entire midline :', hitmidline);
-    pairwiseAlignmt += hitmidline.slice((i * maxSplit), ((i + 1) * maxSplit));
-    pairwiseAlignmt += '\n';
+    if (hitmidline) {
+      pairwiseAlignmt += ' '.repeat(7 + minSpaceCount + repeatSpace);
+      const b = hitmidline.slice((i * maxSplit), ((i + 1) * maxSplit));
+      pairwiseAlignmt += hitmidline.slice((i * maxSplit), ((i + 1) * maxSplit));
+      pairwiseAlignmt += '\n';
+    }
 
     // Align hit sequence also called subject sequence (Sbjct).
     pairwiseAlignmt += 'Sbjct ';
@@ -260,9 +265,54 @@ function PairwiseAlignmentView({
     pairwiseAlignmt += '\n\n';
   }
   return (
-    <pre style={{ padding: '.25em .5em', lineHeight: '1', display: 'block', maxWidth: '600px', height: 'auto' }}>
-      {pairwiseAlignmt}
-    </pre>
+    <SeeMoreInformation information={pairwiseAlignmt} midlineBoolean={hitmidline} />
+  );
+}
+
+function SeeMoreInformation({ information, midlineBoolean}) {
+  const maxChar = (typeof midlineBoolean !== 'undefined' ? 899 : 610);
+  const isMaxPairwise = information.length > maxChar;
+
+  const [openPairwise, setOpenPairwise] = useState(false);
+  const [descPairwise, setDescPairwise] = useState('');
+
+  useEffect(() => {
+    if (isMaxPairwise) {
+      if (openPairwise === false) {
+        const desc = `${information.slice(0, maxChar)} ...`;
+        setDescPairwise(desc);
+      } else {
+        setDescPairwise(information);
+      }
+    } else {
+      setDescPairwise(information);
+    }
+  }, [openPairwise]);
+
+  const buttonText = (() => {
+    if (openPairwise) {
+      return 'Show less';
+    }
+    return `Show ${information.length - maxChar} more ...`;
+  })();
+
+  return (
+    <>
+      <pre style={{ padding: '.25em .5em', lineHeight: '1', display: 'block', maxWidth: '700px', height: 'auto' }}>
+        {descPairwise}
+      </pre>
+      { isMaxPairwise
+        ? (
+          <button
+            type="button"
+            className="is-link"
+            onClick={() => setOpenPairwise(!openPairwise)}
+            style={{ margin: 'auto' }}
+          >
+            <small>{ buttonText }</small>
+          </button>
+        ) : null}
+    </>
   );
 }
 
@@ -290,17 +340,21 @@ function HitIntervalinfo({
 }) {
   return (
     <div className="panel-body">
-      <table className="table is-hoverable is-narrow is-small">
+      <table className="table is-hoverable is-narrow is-small table-hit">
         <tbody>
-          <tr>
-            <td colSpan="2" style={{ width: '600px' }}>
-              <DescriptionLimited description={def} />
-            </td>
-          </tr>
+          { def &&
+            <tr>
+              <td colSpan="2">
+                <DescriptionLimited description={def} />
+              </td>
+            </tr>
+          }
           <tr>
             <td>Sequence ID :</td>
             <td>
-              <SequenceID id={id} />
+              { id &&
+                <SequenceID id={id} />
+              }
             </td>
           </tr>
           {
@@ -322,36 +376,58 @@ function HitIntervalinfo({
           }
           <tr>
             <td>Accession :</td>
-            <td>{accession}</td>
+            <td>
+              { accession &&
+                <p>{accession}</p>
+              }
+            </td>
           </tr>
           <tr>
             <td>Length :</td>
-            <td>{accession_length}</td>
+            <td>
+              { accession_length &&
+                <p>{accession_length}</p>
+              }
+            </td>
           </tr>
           <tr>
             <td>Score :</td>
-            <td>{bit_score} bits ({score})</td>
+            <td>
+              { (bit_score && score) &&
+                <p>{bit_score} bits ({score})</p>
+              }
+            </td>
           </tr>
           <tr>
             <td>Expect:</td>
-            <td>{evalue}</td>
+            <td>
+              { evalue &&
+                <p>{evalue}</p>
+              }
+            </td>
           </tr>
           <tr>
             <td>Identity :</td>
             <td>
-              <PourcentageView length_hit={identity} length_sequence={query_len} />
+              { (identity && query_len) &&
+                <PourcentageView length_hit={identity} length_sequence={query_len} />
+              }
             </td>
           </tr>
           <tr>
             <td>Positive :</td>
             <td>
-              <PourcentageView length_hit={positive} length_sequence={query_len} />
+              { (positive && query_len) &&
+                <PourcentageView length_hit={positive} length_sequence={query_len} />
+              }
             </td>
           </tr>
           <tr>
             <td>Gaps :</td>
             <td>
-              <PourcentageView length_hit={gaps} length_sequence={query_len} />
+              { (gaps && query_len) &&
+                <PourcentageView length_hit={gaps} length_sequence={query_len} />
+              }
             </td>
           </tr>
         </tbody>
@@ -378,6 +454,7 @@ function HitsCoverLines({ query, scale, height }) {
     <svg width={range[1] + 134} height={height + 40}>
       {
         query.iteration_hits.map((hit, index) => {
+          const hitDefinition = (hit.def ? hit.def : '');
           const queryHitId = hit.id;
           const posX = scale(hit['query-from']);
           const wRect = (start + scale(hit['query-to']) - scale(hit['query-from']));
@@ -399,14 +476,14 @@ function HitsCoverLines({ query, scale, height }) {
                   />
                 </PopoverTrigger>
                 <PopoverBody
-                  header={hit.def.length > 49 ? hit.def.substring(0, 49).concat(' ...') : hit.def}
-                  widthBody={600}
+                  header={hitDefinition > 49 ? hitDefinition.substring(0, 49).concat(' ...') : hitDefinition}
+                  widthBody={700}
                 >
                   <HitIntervalinfo
                     algorithm={algorithm}
                     id={hit.id}
                     identical_proteins={hit.identical_proteins}
-                    def={hit.def}
+                    def={hitDefinition}
                     accession={hit.accession}
                     accession_length={hit.accession_len}
                     score={hit.score}
@@ -492,7 +569,10 @@ function GlobalInformation({ querySequences, initialWidth = 200 }) {
             <tr>
               <td>Algorithm :</td>
               <td>
-                {querySequences.algorithm_ref && <AlgorithmDetails algorithm={querySequences.algorithm_ref} />}
+                {
+                  querySequences.algorithm_ref
+                  && <AlgorithmDetails algorithm={querySequences.algorithm_ref} />
+                }
               </td>
             </tr>
             <tr>
@@ -513,7 +593,12 @@ function GlobalInformation({ querySequences, initialWidth = 200 }) {
             </tr>
             <tr>
               <td>Program :</td>
-              <td>{querySequences.program_ref && <ProgramDetails program={querySequences.program_ref} />}</td>
+              <td>
+                {
+                  querySequences.program_ref
+                    && <ProgramDetails program={querySequences.program_ref} />
+                }
+              </td>
             </tr>
           </tbody>
         </table>
