@@ -8,7 +8,7 @@
     "preinstall": "meteor help || curl https://install.meteor.com/ | sh",
     "preupdate": "meteor update",
     "docs": "documentation build --shallow imports/** -f html -o api-docs",
-    "postdocs": "cp api-docs/index.html docs/pages/api-docs.html && cp -r api-docs/assets docs/",
+    "postdocs": "mkdir -p docs/ && cp api-docs/index.html docs/api-docs.html && cp -r api-docs/assets docs/",
     "bundle": "./bundle.sh",
     "complete_build": "npm install && npm run bundle",
     "dev": "NODE_OPTIONS=--max-old-space-size=8192 GNB_VERSION=$npm_package_version meteor run",
@@ -116,6 +116,7 @@
     "utf-8-validate": "^5.0.7",
     "webfontloader": "^1.6.28",
     "ws": "^8.2.3",
+    "xml-flow": "^1.0.4",
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
