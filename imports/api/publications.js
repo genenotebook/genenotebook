@@ -12,7 +12,7 @@ import { similarSequencesCollection } from '/imports/api/genes/alignment/similar
 // orthogroups
 import {
   orthogroupCollection,
-} from '/imports/api/genes/orthogroup_collection.js';
+} from '/imports/api/genes/orthogroup/orthogroupCollection.js';
 // genomes
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 // transcriptomes

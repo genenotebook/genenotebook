@@ -7,7 +7,7 @@ import React from 'react';
 // import { cluster, hierarchy } from 'd3';
 
 import { parseNewick } from '/imports/api/util/util.js';
-import { orthogroupCollection } from '/imports/api/genes/orthogroup_collection.js';
+import { orthogroupCollection } from '/imports/api/genes/orthogroup/orthogroupCollection.js';
 
 import { Tree } from 'react-bio-viz';
 

@@ -7,10 +7,9 @@ import SimpleSchema from 'simpl-schema';
 import glob from 'glob';
 import fs from 'fs';
 
-import { orthogroupCollection, orthogroupSchema } from
-  '/imports/api/genes/orthogroup_collection.js';
+import { orthogroupCollection, orthogroupSchema } from '/imports/api/genes/orthogroup/orthogroupCollection.js';
 import { Genes } from '/imports/api/genes/geneCollection.js';
-import { parseNewick } from '/imports/api/util/util.js';
+import { parseNewick } from '/imports/api/genes/orthogroup/parser/treeNewickParser.js';
 import logger from '/imports/api/util/logger.js';
 
 function globPromise(pattern, options) {
@@ -25,15 +24,19 @@ function globPromise(pattern, options) {
   });
 }
 
-async function addOrthogroupTree({ fileName, session }) {
+async function addOrthogroupTree({ fileName }) {
   // Turn filename into orthogroup ID
-  const orthogroupId = fileName.split('/').pop().split('_')[0];
+  const orthogroupId = fileName.split('/').pop().split('.')[0];
 
   // Parse newick formatted treefile
   const treeNewick = fs.readFileSync(fileName, 'utf8');
   const { size, geneIds } = parseNewick(treeNewick);
 
   logger.debug({ treeNewick });
+  logger.log('orthogroupId :', orthogroupId);
+  logger.log('size :', size);
+  logger.log('tree :', treeNewick);
+  logger.log('geneIds :', geneIds);
 
   // Set up data to insert
   const orthogroupData = {
@@ -47,11 +50,12 @@ async function addOrthogroupTree({ fileName, session }) {
   // this throws an error for invalid data
   await orthogroupSchema.validate(orthogroupData);
 
-  // Insert orthogroup data
-  await orthogroupCollection.rawCollection()
-    .insert(orthogroupData, { session });
+  logger.log('validate schema');
 
-  // Find genes belonging to orthogroup
+  // Insert orthogroup data.
+  await orthogroupCollection.rawCollection().insert(orthogroupData);
+
+  // Find genes belonging to orthogroup.
   const orthogroupGenes = await Genes.rawCollection()
     .find(
       {
@@ -60,9 +64,10 @@ async function addOrthogroupTree({ fileName, session }) {
           { 'subfeatures.ID': { $in: geneIds } },
         ],
       },
-      { session },
     )
     .toArray();
+
+  logger.log('orthogroupGenes find() :', orthogroupGenes);
 
   const orthogroupGeneIds = orthogroupGenes.map(({ ID }) => ID);
   if (orthogroupGeneIds.size === 0) {
@@ -72,12 +77,15 @@ async function addOrthogroupTree({ fileName, session }) {
     );
   }
 
+  logger.log('orthogroupGenesIds :', orthogroupGeneIds);
+
   // Update genes in orthogroups with orthogroup ID
   await Genes.rawCollection().update(
     { ID: { $in: orthogroupGeneIds } }, // query
     { $set: { orthogroupId } }, // changes
-    { multi: true, session }, // options
+    { multi: true }, // options
   );
+
   return orthogroupGeneIds.length;
 }
 
@@ -110,7 +118,7 @@ const addOrthogroupTrees = new ValidatedMethod({
           // Iterate over all files in the folder
           const results = await Promise.all(
             fileNames.map(
-              async (fileName) => addOrthogroupTree({ fileName, session }),
+              async (fileName) => addOrthogroupTree({ fileName }),
             ),
           );
           // If no error commit all changes
