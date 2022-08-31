@@ -1,0 +1,77 @@
+.table-eggnog {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.seed_eggnog_ortholog_table a,
+.seed_eggnog_ortholog_table p {
+    display: inline-block;
+    margin-right: 15px;
+}
+
+.seed_eggnog_ortholog_table span {
+    margin-left: 3px;
+}
+
+.help-tip {
+    display: inline-block;
+	margin: auto;
+	text-align: center;
+}
+
+.help-tip span{
+    cursor: pointer;
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.help-tip:hover p{
+    display: block;
+    transform-origin: 100% 0%;
+    -webkit-animation: fadeIn 0.3s ease;
+    animation: fadeIn 0.3s ease;
+}
+
+/* The tooltip */
+.help-tip p {
+	display: none;
+	font-family: sans-serif;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	text-align: center;
+	background-color: #FFFFFF;
+	padding: 12px 16px;
+	width: 350px;
+	height: auto;
+	position: absolute;
+	transform: translate(-35%, 5%);
+	border-radius: 3px;
+	box-shadow: 0 0px 20px 0 rgba(0,0,0,0.1);
+	color: #37393D;
+	font-size: 12px;
+	line-height: 18px;
+	z-index: 99;
+}
+
+/* CSS animation */
+@-webkit-keyframes fadeIn {
+    0% { opacity:0; }
+    100% { opacity:100%; }
+}
+
+@keyframes fadeIn {
+    0% { opacity:0; }
+    100% { opacity:100%; }
+}
+
+.gogcategory p {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.scrolling-goterms {
+    display: block;
+    max-height: 200px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
