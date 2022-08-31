@@ -22,8 +22,8 @@ const logger = {
 function customExitOverride(cmd) {
   return (err) => {
     if (
-      err.code === 'commander.missingMandatoryOptionValue'
-        || err.code === 'commander.missingArgument'
+      err.code === 'commander.missingMandatoryOptionValue' ||
+      err.code === 'commander.missingArgument'
     ) {
       cmd.help();
     }
@@ -58,7 +58,7 @@ class GeneNoteBookConnection {
         } else if (result) {
           const { nInserted } = result;
           logger.log(
-            `Server method ${methodName} succesfully inserted ${nInserted} elements`,
+            `Server method ${methodName} succesfully inserted ${nInserted} elements`
           );
         } else if (jobStatus) {
           logger.log(`Job status: ${jobStatus}`);
@@ -91,7 +91,7 @@ function startMongoDaemon(
   dbPath,
   mongoPort,
   dbStartupTimeout = 10000,
-  dbCacheSizeGB = null,
+  dbCacheSizeGB = null
 ) {
   const dataFolderPath = `${dbPath}/data`;
   const logFolderPath = `${dbPath}/log`;
@@ -114,7 +114,7 @@ function startMongoDaemon(
   }
   const mongodOptionArray = Object.entries(mongodOptions).flat();
   logger.log(
-    `Starting mongod with the following options: ${mongodOptionArray}`,
+    `Starting mongod with the following options: ${mongodOptionArray}`
   );
 
   const mongoDaemon = spawn('mongod', mongodOptionArray);
@@ -169,7 +169,7 @@ async function startGeneNoteBook(cmd) {
       path.resolve(dbPath || './db'),
       mongoPort,
       dbStartupTimeout,
-      dbCacheSizeGB,
+      dbCacheSizeGB
     );
     Object.assign(opts, { MONGO_URL });
     process.on('exit', () => {
@@ -196,33 +196,33 @@ program
   .usage('[options]')
   .option(
     '--port [port]',
-    'Web server port on which to serve GeneNoteBook. Default: 3000',
+    'Web server port on which to serve GeneNoteBook. Default: 3000'
   )
   .option(
     '-m, --mongo-url [url]',
-    'URL of running MongoDB daemon and database name, for example mongodb://localhost:27017/genenotebook (Mutually exclusive with --dbpath)',
+    'URL of running MongoDB daemon and database name, for example mongodb://localhost:27017/genenotebook (Mutually exclusive with --dbpath)'
   )
   .option(
     '-d, --db-path [path]',
-    'Folder where DB files will be stored. Default: ./db.'
-      + ' (Mutually exclusive with --mongo-url)',
+    'Folder where DB files will be stored. Default: ./db.' +
+      ' (Mutually exclusive with --mongo-url)'
   )
   .option(
     '--mongo-port [port]',
-    'Port on which the mongo daemon will serve. Default: 27017',
+    'Port on which the mongo daemon will serve. Default: 27017'
   )
   .option(
     '--db-startup-timeout [timeout (ms)]',
-    'Timeout to wait for mongo daemon to start. Default 10,000ms',
+    'Timeout to wait for mongo daemon to start. Default 10,000ms'
   )
   .option(
     '--db-cache-size-gb [cache size (GB)]',
     `Cache size for MongoDB in GB. Default is max(0.6*maxRAM - 1, 1GB). 
-    Specify a lower value if your mongodb daemon is using to much RAM`,
+    Specify a lower value if your mongodb daemon is using to much RAM`
   )
   .option(
     '-r, --root-url [url]',
-    'Root URL on which GeneNoteBook will be accessed. Default: http://localhost',
+    'Root URL on which GeneNoteBook will be accessed. Default: http://localhost'
   )
   .action((_, command) => {
     startGeneNoteBook(command);
@@ -245,21 +245,13 @@ addGenome
   .option('-p, --password <password>', 'GeneNoteBook admin password. REQUIRED')
   .option(
     '-n, --name [name]',
-    'Reference genome name. Default: fasta file name',
+    'Reference genome name. Default: fasta file name'
   )
   .option(
     '--port [port]',
-    'Port on which GeneNoteBook is running. Default: 3000',
+    'Port on which GeneNoteBook is running. Default: 3000'
   )
-  .action((
-    file,
-    {
-      username,
-      password,
-      name,
-      port = 3000,
-    },
-  ) => {
+  .action((file, { username, password, name, port = 3000 }) => {
     if (typeof file !== 'string') addGenome.help();
     const fileName = path.resolve(file);
 
@@ -287,7 +279,7 @@ const addAnnotation = add.command('annotation');
 
 addAnnotation
   .description(
-    'Add fasta formatted reference genome to a running GeneNoteBook server',
+    'Add fasta formatted reference genome to a running GeneNoteBook server'
   )
   .usage('[options] <annotation gff3 file>')
   .arguments('<file>')
@@ -295,23 +287,17 @@ addAnnotation
   .option('-p, --password <password>', 'GeneNoteBook admin password')
   .option(
     '-n, --genome-name <name>',
-    'Reference genome name to which the annotation should be added',
+    'Reference genome name to which the annotation should be added'
   )
   .option(
     '--port [port]',
-    'Port on which GeneNoteBook is running. Default: 3000',
+    'Port on which GeneNoteBook is running. Default: 3000'
   )
   .option('-v, --verbose', 'Verbose warnings during GFF parsing')
   .action(
     (
       file,
-      {
-        username,
-        password,
-        genomeName,
-        port = 3000,
-        verbose = false,
-      },
+      { username, password, genomeName, port = 3000, verbose = false }
     ) => {
       if (typeof file !== 'string') addAnnotation.help();
       const fileName = path.resolve(file);
@@ -322,9 +308,9 @@ addAnnotation
 
       new GeneNoteBookConnection({ username, password, port }).call(
         'addAnnotationTrack',
-        { fileName, genomeName, verbose },
+        { fileName, genomeName, verbose }
       );
-    },
+    }
   )
   .exitOverride(customExitOverride(addAnnotation));
 
@@ -334,52 +320,45 @@ const addDiamond = add.command('diamond');
 addDiamond
   .description(
     `Add Diamond output formats, including BLAST pairwise, tabular and XML to a
-running GeneNoteBook server.`,
-  ).usage('[options] <Diamond output formats .xml, .txt file>')
+running GeneNoteBook server.`
+  )
+  .usage('[options] <Diamond output formats .xml, .txt file>')
   .arguments('<file>')
   .requiredOption(
     '-u, --username <adminUsername>',
-    'GeneNoteBook admin username',
+    'GeneNoteBook admin username'
   )
   .requiredOption(
     '-p, --password <adminPassword>',
-    'GeneNoteBook admin password',
+    'GeneNoteBook admin password'
   )
   .option(
     '--port [port]',
-    'Port on which GeneNoteBook is running. Default: 3000',
+    'Port on which GeneNoteBook is running. Default: 3000'
   )
   .option(
     '-fmt, --format [parser]',
     `Choose a parser for the diamond output format. Parses .xml, .txt
-    extensions.`,
+    extensions.`
   )
   .option(
     '-alg, --algorithm [algorithm]',
-    'The algorithm used to compare the sequences to a database (e.g: blastx, blastp).',
+    'The algorithm used to compare the sequences to a database (e.g: blastx, blastp).'
   )
   .option(
     '-mtx, --matrix [matrix]',
     `The matrix of substitution used for sequence alignment (e.g:
-    BLOSUM90, BLOSUM80, PAM100).`,
+    BLOSUM90, BLOSUM80, PAM100).`
   )
   .option(
     '-db --database [database]',
     `The database used to compare the sequences (e.g: Non-reundant protein
-    sequences (nr)).`,
+    sequences (nr)).`
   )
   .action(
     (
       file,
-      {
-        username,
-        password,
-        port = 3000,
-        format,
-        algorithm,
-        matrix,
-        database,
-      },
+      { username, password, port = 3000, format, algorithm, matrix, database }
     ) => {
       if (typeof file !== 'string') addDiamond.help();
 
@@ -417,9 +396,9 @@ file extension is not "xml", "txt"`);
           algorithm: algorithm,
           matrix: matrix,
           database: database,
-        },
+        }
       );
-    },
+    }
   )
   .on('--help', () => {
     console.log(`
@@ -437,49 +416,42 @@ const addBlast = add.command('blast');
 addBlast
   .description(
     `Add BLAST output formats, including pairwise and XML to a
-running GeneNoteBook server.`,
-  ).usage('[options] <Blast output formats .xml, .txt file>')
+running GeneNoteBook server.`
+  )
+  .usage('[options] <Blast output formats .xml, .txt file>')
   .arguments('<file>')
   .requiredOption(
     '-u, --username <adminUsername>',
-    'GeneNoteBook admin username',
+    'GeneNoteBook admin username'
   )
   .requiredOption(
     '-p, --password <adminPassword>',
-    'GeneNoteBook admin password',
+    'GeneNoteBook admin password'
   )
   .option(
     '--port [port]',
-    'Port on which GeneNoteBook is running. Default: 3000',
+    'Port on which GeneNoteBook is running. Default: 3000'
   )
   .option(
     '-fmt, --format [parser]',
-    'Choose a parser for the blast output format. Parses .xml, .txt extensions.',
+    'Choose a parser for the blast output format. Parses .xml, .txt extensions.'
   )
   .option(
     '-alg, --algorithm [algorithm]',
-    'The algorithm used to compare the sequences to a database (e.g: blastx, blastp).',
+    'The algorithm used to compare the sequences to a database (e.g: blastx, blastp).'
   )
   .option(
     '-mtx, --matrix [matrix]',
-    'The matrix of substitution used for sequence alignment (e.g: BLOSUM90, BLOSUM80, PAM100).',
+    'The matrix of substitution used for sequence alignment (e.g: BLOSUM90, BLOSUM80, PAM100).'
   )
   .option(
     '-db --database [database]',
-    'The database used to compare the sequences (e.g: Non-reundant protein sequences (nr)).',
+    'The database used to compare the sequences (e.g: Non-reundant protein sequences (nr)).'
   )
   .action(
     (
       file,
-      {
-        username,
-        password,
-        port = 3000,
-        format,
-        algorithm,
-        matrix,
-        database,
-      },
+      { username, password, port = 3000, format, algorithm, matrix, database }
     ) => {
       if (typeof file !== 'string') addBlast.help();
 
@@ -517,9 +489,9 @@ file extension is not "xml", "txt"`);
           algorithm: algorithm,
           matrix: matrix,
           database: database,
-        },
+        }
       );
-    },
+    }
   )
   .on('--help', () => {
     console.log(`
@@ -536,7 +508,7 @@ const addTranscriptome = add.command('transcriptome');
 
 addTranscriptome
   .description(
-    'Add Kallisto quantified gene expression to a running GeneNoteBook server',
+    'Add Kallisto quantified gene expression to a running GeneNoteBook server'
   )
   .usage('[options] <Kallisto abundance.tsv file>')
   .arguments('<file>')
@@ -544,47 +516,37 @@ addTranscriptome
   .option('-p, --password <password>', 'GeneNoteBook admin password')
   .option(
     '--port [port]',
-    'Port on which GeneNoteBook is running. Default: 3000',
+    'Port on which GeneNoteBook is running. Default: 3000'
   )
   .option('-s, --sample-name <sample name>', 'Unique sample name')
   .option(
     '-r, --replica-group <replica group>',
-    'Identifier to group samples that belong to the same experiment',
+    'Identifier to group samples that belong to the same experiment'
   )
   .option(
     '-d, --sample-description <description>',
-    'Description of the experiment',
+    'Description of the experiment'
   )
-  .action(
-    (
-      file,
-      {
-        username,
-        password,
-        port = 3000,
-        ...opts
-      },
-    ) => {
-      if (typeof file !== 'string') addTranscriptome.help();
-      const fileName = path.resolve(file);
-      const sampleName = opts.sampleName || fileName;
-      const replicaGroup = opts.replicaGroup || fileName;
-      const description = opts.sampleDescription || 'description';
+  .action((file, { username, password, port = 3000, ...opts }) => {
+    if (typeof file !== 'string') addTranscriptome.help();
+    const fileName = path.resolve(file);
+    const sampleName = opts.sampleName || fileName;
+    const replicaGroup = opts.replicaGroup || fileName;
+    const description = opts.sampleDescription || 'description';
 
-      if (!(fileName && username && password)) {
-        program.help();
+    if (!(fileName && username && password)) {
+      program.help();
+    }
+    new GeneNoteBookConnection({ username, password, port }).call(
+      'addTranscriptome',
+      {
+        fileName,
+        sampleName,
+        replicaGroup,
+        description,
       }
-      new GeneNoteBookConnection({ username, password, port }).call(
-        'addTranscriptome',
-        {
-          fileName,
-          sampleName,
-          replicaGroup,
-          description,
-        },
-      );
-    },
-  )
+    );
+  })
   .exitOverride(customExitOverride(addTranscriptome));
 
 // Add interproscan file
@@ -596,67 +558,57 @@ addInterproscan
   .arguments('<file>')
   .requiredOption(
     '-u, --username <adminUsername>',
-    'GeneNoteBook admin username',
+    'GeneNoteBook admin username'
   )
   .requiredOption(
     '-p, --password <adminPassword>',
-    'GeneNoteBook admin password',
+    'GeneNoteBook admin password'
   )
   .option(
     '--port [port]',
-    'Port on which GeneNoteBook is running. Default: 3000',
+    'Port on which GeneNoteBook is running. Default: 3000'
   )
   .option(
     '--format [parser]',
     `Choose a parser for the interproscan output files. Parses .gff3 and .tsv
-    extensions.`,
+    extensions.`
   )
-  .action(
-    (
-      file,
-      {
-        username,
-        password,
-        port = 3000,
-        format,
-      },
-    ) => {
-      if (typeof file !== 'string') addInterproscan.help();
+  .action((file, { username, password, port = 3000, format }) => {
+    if (typeof file !== 'string') addInterproscan.help();
 
-      const fileName = path.resolve(file);
-      if (!(fileName && username && password)) {
-        addInterproscan.help();
-      }
+    const fileName = path.resolve(file);
+    if (!(fileName && username && password)) {
+      addInterproscan.help();
+    }
 
-      const parserAccepted = ['tsv', 'gff3', 'xml'];
-      const extensionFile = path.extname(file).replace(/\./g, '');
-      let parserType = format;
+    const parserAccepted = ['tsv', 'gff3', 'xml'];
+    const extensionFile = path.extname(file).replace(/\./g, '');
+    let parserType = format;
 
-      if (parserType) {
-        if (!parserAccepted.includes(parserType)) {
-          logger.error(`
+    if (parserType) {
+      if (!parserAccepted.includes(parserType)) {
+        logger.error(`
 Error: unknow format : ${parserType}. To specify --format, choose a format
 compatible with InterProScan e.g : "gff3", "tsv" or "xml".`);
-          addInterproscan.help();
-        }
-      } else if (parserAccepted.includes(extensionFile)) {
-        parserType = extensionFile;
-      } else {
-        logger.error(`
-Error : unknow file extension : ${extensionFile}. Must specify --format when
-file extension is not "tsv", "gff3" or "xml".`);
         addInterproscan.help();
       }
+    } else if (parserAccepted.includes(extensionFile)) {
+      parserType = extensionFile;
+    } else {
+      logger.error(`
+Error : unknow file extension : ${extensionFile}. Must specify --format when
+file extension is not "tsv", "gff3" or "xml".`);
+      addInterproscan.help();
+    }
 
-      new GeneNoteBookConnection({ username, password, port }).call(
-        'addInterproscan',
-        {
-          fileName,
-          parser: parserType,
-        },
-      );
-    },
-  )
+    new GeneNoteBookConnection({ username, password, port }).call(
+      'addInterproscan',
+      {
+        fileName,
+        parser: parserType,
+      }
+    );
+  })
   .on('--help', () => {
     console.log(`
 Example:
@@ -676,15 +628,15 @@ addEggnog
   .arguments('<file>')
   .requiredOption(
     '-u, --username <adminUsername>',
-    'GeneNoteBook admin username',
+    'GeneNoteBook admin username'
   )
   .requiredOption(
     '-p, --password <adminPassword>',
-    'GeneNoteBook admin password',
+    'GeneNoteBook admin password'
   )
   .option(
     '--port [port]',
-    'Port on which GeneNoteBook is running. Default: 3000',
+    'Port on which GeneNoteBook is running. Default: 3000'
   )
   .action((file, { username, password, port = 3000 }) => {
     if (typeof file !== 'string') addEggnog.help();
@@ -694,10 +646,9 @@ addEggnog
       addEggnog.help();
     }
 
-    new GeneNoteBookConnection({ username, password, port })
-      .call('addEggnog', {
-        fileName,
-      });
+    new GeneNoteBookConnection({ username, password, port }).call('addEggnog', {
+      fileName,
+    });
   })
   .on('--help', () => {
     console.log(`
@@ -712,7 +663,7 @@ const addOrthogroups = add.command('orthogroups');
 
 addOrthogroups
   .description(
-    'Add Orthogroup phylogenetic trees to a running GeneNoteBook server',
+    'Add Orthogroup phylogenetic trees to a running GeneNoteBook server'
   )
   .usage('[options] <Folder with (e.g. OrthoFinder) tree files>')
   .arguments('<folder>')
@@ -720,7 +671,7 @@ addOrthogroups
   .requiredOption('-p, --password <password>', 'GeneNoteBook admin password')
   .option(
     '--port [port]',
-    'Port on which GeneNoteBook is running. Default: 3000',
+    'Port on which GeneNoteBook is running. Default: 3000'
   )
   .action((file, { username, password, port = 3000 }) => {
     if (typeof file !== 'string') addOrthogroups.help();
@@ -732,7 +683,7 @@ addOrthogroups
 
     new GeneNoteBookConnection({ username, password, port }).call(
       'addOrthogroupTrees',
-      { folderName },
+      { folderName }
     );
   })
   .exitOverride(customExitOverride(addOrthogroups));
@@ -772,7 +723,7 @@ listGenomes
 const user = program
   .command('user <command>')
   .description(
-    'Add/modify/delete user profiles of a running genenotebook server',
+    'Add/modify/delete user profiles of a running genenotebook server'
   )
   .usage('<command>');
 
@@ -784,15 +735,15 @@ setUserPassword
   .arguments('<userName> <newPassword>')
   .requiredOption(
     '-u, --username <adminUsername>',
-    'GeneNoteBook admin username',
+    'GeneNoteBook admin username'
   )
   .requiredOption(
     '-p, --password <adminPassword>',
-    'GeneNoteBook admin password',
+    'GeneNoteBook admin password'
   )
   .option(
     '--port [port]',
-    'Port on which GeneNoteBook is running. Default: 3000',
+    'Port on which GeneNoteBook is running. Default: 3000'
   )
   .action((userName, newPassword, { username, password, port = 3000 }) => {
     if (!(userName && newPassword && username && password)) {
@@ -801,7 +752,7 @@ setUserPassword
 
     new GeneNoteBookConnection({ username, password, port }).call(
       'setUsernamePassword',
-      { userName, newPassword },
+      { userName, newPassword }
     );
   })
   .on('--help', () => {
@@ -820,15 +771,15 @@ addUser
   .usage('[option]')
   .requiredOption(
     '-u, --username <adminUsername>',
-    'GeneNoteBook admin username',
+    'GeneNoteBook admin username'
   )
   .requiredOption(
     '-p, --password <adminPassword>',
-    'GeneNoteBook admin password',
+    'GeneNoteBook admin password'
   )
   .option(
     '--port [port]',
-    'Port on which GeneNoteBook is running. Default: 3000',
+    'Port on which GeneNoteBook is running. Default: 3000'
   )
   .option('-nu, --new-username [newUsername]', 'New username')
   .option('-np, --new-password [newPassword]', 'New password')
@@ -837,12 +788,12 @@ addUser
   .option('-l, --last-name [userLastName]', 'New user last name')
   .option(
     '-r, --role [userRole]',
-    'New user role e.g: registered, user, curator, admin. Default: registered',
+    'New user role e.g: registered, user, curator, admin. Default: registered'
   )
   .option(
     '-b, --bulk-file [bulkFile]',
     `JSON formatted file with account information to be added in bulk, mutually
-    exclusive with any of -e -f -l -r`,
+    exclusive with any of -e -f -l -r`
   )
   .action(
     ({
@@ -859,12 +810,12 @@ addUser
     }) => {
       if (bulkFile) {
         if (
-          newUsername
-          || newPassword
-          || email
-          || firstName
-          || lastName
-          || role
+          newUsername ||
+          newPassword ||
+          email ||
+          firstName ||
+          lastName ||
+          role
         ) {
           logger.error(`Bulk file operation is mutually exclusive with specifying 
           individual account information`);
@@ -884,7 +835,7 @@ addUser
         },
         role,
       });
-    },
+    }
   )
   .on('--help', () => {
     console.log(`
@@ -907,15 +858,15 @@ removeUser
   .arguments('<username>')
   .requiredOption(
     '-u, --username <adminUsername>',
-    'GeneNoteBook admin username',
+    'GeneNoteBook admin username'
   )
   .requiredOption(
     '-p, --password <adminPassword>',
-    'GeneNoteBook admin password',
+    'GeneNoteBook admin password'
   )
   .option(
     '--port [port]',
-    'Port on which GeneNoteBook is running. Default: 3000',
+    'Port on which GeneNoteBook is running. Default: 3000'
   )
   .action((userName, { username, password, port = 3000 }) => {
     if (!(userName && username, password)) {
@@ -924,7 +875,7 @@ removeUser
 
     new GeneNoteBookConnection({ username, password, port }).call(
       'removeUserAccount',
-      { userName },
+      { userName }
     );
   })
   .on('--help', () => {
@@ -944,32 +895,24 @@ editUser
   .arguments('<username>')
   .requiredOption(
     '-u, --username <adminUsername>',
-    'GeneNoteBook admin username',
+    'GeneNoteBook admin username'
   )
   .requiredOption(
     '-p, --password <adminPassword>',
-    'GeneNoteBook admin password',
+    'GeneNoteBook admin password'
   )
   .option(
     '--port [port]',
-    'Port on which GeneNoteBook is running. Default: 3000',
+    'Port on which GeneNoteBook is running. Default: 3000'
   )
   .option('-e, --email [email]', 'User email')
   .option('-f, --first-name <userFirstName>', 'User first name')
   .option('-l, --last-name <userLastName>', 'User last name')
   .option(
     '-r, --role <userRole>',
-    'User role e.g: registered, user, curator, admin',
+    'User role e.g: registered, user, curator, admin'
   )
-  .action((
-    userName,
-    {
-      username,
-      password,
-      port = 3000,
-      ...opts
-    },
-  ) => {
+  .action((userName, { username, password, port = 3000, ...opts }) => {
     if (!(userName && username, password)) {
       editUser.help();
     }
@@ -984,7 +927,7 @@ editUser
         },
         emails: [{ address: opts.email }],
         role: opts.role,
-      },
+      }
     );
   })
   .on('--help', () => {
