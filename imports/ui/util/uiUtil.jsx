@@ -75,7 +75,9 @@ export function compose(...funcs) {
  * @param  {Boolean} options.loading
  * @return {Boolean}
  */
-export const isLoading = ({ loading }) => loading;
+export function isLoading({ loading }){
+  return loading
+}
 
 /**
  * Simple React Loading component

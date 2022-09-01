@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, useState } from 'react';
-import { right } from '@popperjs/core';
+import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { usePopper } from 'react-popper';
 
