@@ -1,6 +1,7 @@
+import NewickProcessor from '/imports/api/genes/orthogroup/parser/treeNewickParser.js'
 import logger from '/imports/api/util/logger.js';
 import jobQueue from './jobqueue.js';
-import fs from 'fs';
+import glob from 'glob';
 
 jobQueue.processJobs(
   'addOrthogroup',
@@ -9,33 +10,43 @@ jobQueue.processJobs(
     payload: 1,
   },
   async (job, callback) => {
-    const { fileName } = job.data;
-    logger.log(`Add ${fileName} file.`);
+    const { folderName } = job.data;
+    logger.log(`Add ${folderName} folder.`);
 
-    const lineReader = fs.createReadStream(fileName, 'utf8');
+    /**
+     * Asynchronously returns the name of each files present in the folder.
+     * Use the {/*.txt} pattern from the glob package.
+     * @function
+     */
+    const globListFilesFolder = (folder) => {
+      return new Promise((resolve, reject) => {
+        glob(`${folder}/*.txt`, (err, files) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(files);
+          }
+        });
+      });
+    };
 
-    const lineProcessor = new NewickProcessor();
+    const newickProcessor = new NewickProcessor('test');
 
-    lineReader.on('data', async (data) => {
-      try {
-        lineProcessor.parse(data.toString());
-      } catch (error) {
-        logger.error(error);
-        job.fail({ error });
-        callback();
-      }
-    });
+    // Iterate over all files in the folder.
+    globListFilesFolder(folderName)
+      .then(async (fileNames) => {
+        const results = await Promise.all(
+          fileNames.map(
+            async (file) => newickProcessor.parse(file),
+          ),
+        );
+        // If no error commit all changes
+        const nOrthogroups = results.length;
 
-    lineReader.on('close', async () => {
-      try {
-        logger.log('File reading finished');
-        lineProcessor.lastPairwise();
-        job.done();
-      } catch (error) {
-        logger.error(error);
-        job.fail({ error });
-      }
-      callback();
-    });
+        // sum using reduce
+        const nGenes = results.reduce((a, b) => a + b, 0);
+      })
+      .catch((error) => job.fail({ error }))
+      .then(() => job.done());
   },
 );

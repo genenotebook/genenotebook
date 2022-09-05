@@ -707,7 +707,7 @@ Example:
   })
   .exitOverride(customExitOverride(addEggnog));
 
-// add orthogroups
+// add orthogroups.
 const addOrthogroups = add.command('orthogroups');
 
 addOrthogroups
@@ -716,13 +716,21 @@ addOrthogroups
   )
   .usage('[options] <Folder with (e.g. OrthoFinder) tree files>')
   .arguments('<folder>')
+  .option(
+    '-pfx, --prefixe [prefixe]',
+    'List of each proteome filename as the name for that species.',
+  )
+  .option(
+    '-f, --force [force]',
+    'Ignore the use of prefixes.',
+  )
   .requiredOption('-u, --username <username>', 'GeneNoteBook admin username')
   .requiredOption('-p, --password <password>', 'GeneNoteBook admin password')
   .option(
     '--port [port]',
     'Port on which GeneNoteBook is running. Default: 3000',
   )
-  .action((file, { username, password, port = 3000 }) => {
+  .action((file, { prefixe, force, username, password, port = 3000 }) => {
     if (typeof file !== 'string') addOrthogroups.help();
     const folderName = path.resolve(file);
 
@@ -732,8 +740,45 @@ addOrthogroups
 
     new GeneNoteBookConnection({ username, password, port }).call(
       'addOrthogroupTrees',
-      { folderName },
+      {
+        folderName,
+        force,
+        prefixe,
+      },
     );
+  })
+  .on('--help', () => {
+    console.log(`
+Orthofinder will use each proteome filename as the name for that species.
+However, Genotebook does not know the filename of each proteome if it is not
+given in the parameter.
+
+Example:
+
+# In case you want to ignore the use of prefixes.
+    genenotebook add orthogroups newicks/ --force -u admin -p admin
+
+# Folder that contain the list of proteome filename e.g. :
+#.
+#├── genomes
+#│   ├── Citrus_sinensis.fasta
+#│   └── Somus_speciesus.fasta
+#├── newicks
+#│   ├── OG0000001_tree.txt
+#│   └── OG0000002_tree.txt
+    genenotebook add orthogroups newicks/ -pfx genomes/ -u admin -p admin
+
+or
+
+# Prefix with the list of filename (with or without extension)
+    genenotebook add orthogroups newicks/ -pfx "Citrus_sinensis, Somus_speciesus" -u admin -p admin
+
+or
+
+# A file that lists filename.
+# for f in \`ls 2>/dev/null *{.fa,.faa,.fasta,.fas,.pep}\`; do echo -n "$f, " >> list.txt; done;
+    genenotebook add orthogroups newicks/ --prefixe list.txt -u admin -p admin
+`);
   })
   .exitOverride(customExitOverride(addOrthogroups));
 
