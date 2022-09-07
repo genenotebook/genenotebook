@@ -733,6 +733,7 @@ addOrthogroups
   .action((file, { prefixe, force, username, password, port = 3000 }) => {
     if (typeof file !== 'string') addOrthogroups.help();
     const folderName = path.resolve(file);
+    const prefixes = path.resolve(prefixe);
 
     if (!(folderName && username && password)) {
       addOrthogroups.help();
@@ -743,7 +744,7 @@ addOrthogroups
       {
         folderName,
         force,
-        prefixe,
+        prefixes,
       },
     );
   })
@@ -777,7 +778,7 @@ or
 
 # A file that lists filename.
 # for f in \`ls 2>/dev/null *{.fa,.faa,.fasta,.fas,.pep}\`; do echo -n "$f, " >> list.txt; done;
-    genenotebook add orthogroups newicks/ --prefixe list.txt -u admin -p admin
+    genenotebook add orthogroups newicks/ -pfx list.txt -u admin -p admin
 `);
   })
   .exitOverride(customExitOverride(addOrthogroups));

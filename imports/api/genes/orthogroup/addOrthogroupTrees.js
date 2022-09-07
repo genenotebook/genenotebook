@@ -4,6 +4,7 @@ import logger from '/imports/api/util/logger.js';
 import { Roles } from 'meteor/alanning:roles';
 import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor';
+import fs from 'fs';
 
 const addOrthogroupTrees = new ValidatedMethod({
   name: 'addOrthogroupTrees',
@@ -16,15 +17,15 @@ const addOrthogroupTrees = new ValidatedMethod({
       optional: true,
       defaultValue: false,
     },
-    prefixe: {
+    prefixes: {
       type: String,
       optional: true,
       custom() {
         /** Ignore prefixe argument with -f or --force parameter. */
         if (this.obj.force === true) {
-          this.obj.prefixe = undefined;
+          this.obj.prefixes = undefined;
           logger.warn('Prefixes are ignored because the -f or --force parameter is used.');
-        } else if (!this.isSet || this.obj.prefixe.trim().length === 0) {
+        } else if (!this.isSet || this.obj.prefixes.trim().length === 0) {
           throw new Meteor.Error(
             'Error required parameter',
             '-pfx or --prefixe is required. Please complete the prefix parameter (ignore it with the -f or --force parameter).',
@@ -37,7 +38,7 @@ const addOrthogroupTrees = new ValidatedMethod({
   applyOptions: {
     noRetry: true,
   },
-  async run({ folderName, prefixe }) {
+  async run({ folderName, prefixes }) {
     if (!this.userId) {
       throw new Meteor.Error('not-authorized');
     }
@@ -45,12 +46,28 @@ const addOrthogroupTrees = new ValidatedMethod({
       throw new Meteor.Error('not-authorized');
     }
 
+    // logger.log(fs.existsSync(prefixes));
+
+    // const stats = fs.stat(prefixes, (err, stats) => {
+    //   if (!err) {
+    //     if (stats.isFile()) {
+    //       logger.log('is file ? ', stats.isFile());
+    //     } else if (stats.isDirectory()) {
+    //       logger.log('is directory? ', stats.isDirectory());
+    //     }
+    //   } else {
+    //     logger.log(err);
+    //   }
+    // });
+
+    // logger.log('stats :', stats);
+
     const job = new Job(
       jobQueue,
       'addOrthogroup',
       {
         folderName,
-        prefixe,
+        prefixes,
       },
     );
     const jobId = job.priority('high').save();
