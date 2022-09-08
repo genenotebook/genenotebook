@@ -718,7 +718,11 @@ addOrthogroups
   .arguments('<folder>')
   .option(
     '-pfx, --prefixe [prefixe]',
-    'List of each proteome filename as the name for that species.',
+    'List each proteome filenames as a name for that species contained in a file or folder.',
+  )
+  .option(
+    '-l, --list [prefixe]',
+    'List of each proteome filename as the name for that species enumerated by hand.',
   )
   .option(
     '-f, --force [force]',
@@ -730,10 +734,10 @@ addOrthogroups
     '--port [port]',
     'Port on which GeneNoteBook is running. Default: 3000',
   )
-  .action((file, { prefixe, force, username, password, port = 3000 }) => {
+  .action((file, { prefixe, list, force, username, password, port = 3000 }) => {
     if (typeof file !== 'string') addOrthogroups.help();
     const folderName = path.resolve(file);
-    const prefixes = path.resolve(prefixe);
+    const prefixes = (typeof list !== 'undefined' ? list : path.resolve(prefixe));
 
     if (!(folderName && username && password)) {
       addOrthogroups.help();
@@ -771,14 +775,14 @@ Example:
 
 or
 
-# Prefix with the list of filename (with or without extension)
-    genenotebook add orthogroups newicks/ -pfx "Citrus_sinensis, Somus_speciesus" -u admin -p admin
+# A file that lists filename.
+# for f in \`ls 2>/dev/null *{.fa,.faa,.fasta,.fas,.pep}\`; do echo -n "$f, " >> prfx-list.txt; done;
+    genenotebook add orthogroups newicks/ -pfx prfx-list.txt -u admin -p admin
 
 or
 
-# A file that lists filename.
-# for f in \`ls 2>/dev/null *{.fa,.faa,.fasta,.fas,.pep}\`; do echo -n "$f, " >> list.txt; done;
-    genenotebook add orthogroups newicks/ -pfx list.txt -u admin -p admin
+# Prefix with the list of filename (with or without extension)
+    genenotebook add orthogroups newicks/ --list "Citrus_sinensis, Somus_speciesus" -u admin -p admin
 `);
   })
   .exitOverride(customExitOverride(addOrthogroups));

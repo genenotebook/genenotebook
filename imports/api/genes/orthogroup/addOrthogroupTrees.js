@@ -4,7 +4,6 @@ import logger from '/imports/api/util/logger.js';
 import { Roles } from 'meteor/alanning:roles';
 import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor';
-import fs from 'fs';
 
 const addOrthogroupTrees = new ValidatedMethod({
   name: 'addOrthogroupTrees',
@@ -45,22 +44,6 @@ const addOrthogroupTrees = new ValidatedMethod({
     if (!Roles.userIsInRole(this.userId, 'admin')) {
       throw new Meteor.Error('not-authorized');
     }
-
-    // logger.log(fs.existsSync(prefixes));
-
-    // const stats = fs.stat(prefixes, (err, stats) => {
-    //   if (!err) {
-    //     if (stats.isFile()) {
-    //       logger.log('is file ? ', stats.isFile());
-    //     } else if (stats.isDirectory()) {
-    //       logger.log('is directory? ', stats.isDirectory());
-    //     }
-    //   } else {
-    //     logger.log(err);
-    //   }
-    // });
-
-    // logger.log('stats :', stats);
 
     const job = new Job(
       jobQueue,

@@ -3,7 +3,7 @@ import { Genes } from '/imports/api/genes/geneCollection.js';
 import logger from '/imports/api/util/logger.js';
 import fs from 'fs';
 
-class NewickProcessor{
+class NewickProcessor {
   constructor() {
     this.genesDb = Genes.rawCollection();
     this.orthogroupDb = orthogroupCollection.rawCollection().initializeUnorderedBulkOp();

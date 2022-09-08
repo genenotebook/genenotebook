@@ -24,6 +24,7 @@ import './genes/scanGeneAttributes.js';
 import './genes/updateAttributeInfo.js';
 import './genes/updateGene.js';
 
+import './genes/orthogroup/prefix/orthoFinderPrefix.js';
 import './genes/orthogroup/addOrthogroupTrees.js';
 import './genes/orthogroup/parser/treeNewickParser.js';
 
