@@ -55,8 +55,27 @@ class NewickProcessor {
     };
   };
 
+  removePrefixGeneId = async (prefixes, genesids) => {
+    return new Promise((resolve, reject) => {
+      try {
+        const myArray = genesids.map((el) => {
+          for (const i in prefixes) {
+            if (el.includes(prefixes[i])) {
+              const underscorePrefix = prefixes[i].concat('_');
+              const removePrefix = el.replace(underscorePrefix, '');
+              return removePrefix;
+            }
+          }
+          return el;
+        });
+        resolve(myArray);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  };
 
-  parse = async (newick) => {
+  parse = async (newick, prefixes) => {
     logger.log(newick);
 
     /**
@@ -80,15 +99,19 @@ class NewickProcessor {
      */
     const { size, geneIds } = this.parseNewick(treeNewick);
     logger.log('size :', size);
+    logger.log('prefixes to remove:', prefixes);
     logger.log('geneIds :', geneIds);
+
+    const cleanGeneIds = (prefixes ? await this.removePrefixGeneId(prefixes, geneIds) : geneIds);
+    logger.log('Clean geneIds :', cleanGeneIds);
 
     // Find genes belonging to orthogroup.
     const orthogroupGenes = await Genes.rawCollection()
       .find(
         {
           $or: [
-            { ID: { $in: geneIds } },
-            { 'subfeatures.ID': { $in: geneIds } },
+            { ID: { $in: cleanGeneIds } },
+            { 'subfeatures.ID': { $in: cleanGeneIds } },
           ],
         },
       )

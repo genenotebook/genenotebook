@@ -13,9 +13,9 @@ jobQueue.processJobs(
     const { folderName, prefixes } = job.data;
 
     const orthofinder = new OrthoFinderPrefix(prefixes);
-    const newickProcessor = new NewickProcessor('test');
+    const newickProcessor = new NewickProcessor();
 
-    const listprefixes = await orthofinder.getListPrefixes();
+    const listprefixes = (typeof prefixes !== 'undefined' ? await orthofinder.getListPrefixes() : null);
 
     logger.log(`Add ${folderName} folder.`);
     logger.log('List prefixes :', listprefixes);
@@ -25,8 +25,7 @@ jobQueue.processJobs(
       .then(async (fileNames) => {
         const results = await Promise.all(
           fileNames.map(
-            //async (file) => newickProcessor.parse(file, prefixes),
-            async (file) => logger.log({ file }),
+            async (file) => newickProcessor.parse(file, listprefixes),
           ),
         );
         // If no error commit all changes
