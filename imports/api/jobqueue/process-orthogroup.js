@@ -23,6 +23,7 @@ jobQueue.processJobs(
     // Iterate over all files in th e folder.
     orthofinder.globListFilesFolder(folderName)
       .then(async (fileNames) => {
+        logger.log('finename :', fileNames);
         const results = await Promise.all(
           fileNames.map(
             async (file) => newickProcessor.parse(file, listprefixes),
@@ -35,7 +36,9 @@ jobQueue.processJobs(
         const nGenes = results.reduce((a, b) => a + b, 0);
       })
       .catch((error) => job.fail({ error }))
-      .then(() => job.done());
+      .then(() => {
+        job.done();
+      });
     callback();
   },
 );

@@ -1,14 +1,31 @@
-import { orthogroupCollection, orthogroupSchema } from '/imports/api/genes/orthogroup/orthogroupCollection.js';
+import { orthogroupCollection } from '/imports/api/genes/orthogroup/orthogroupCollection.js';
 import { Genes } from '/imports/api/genes/geneCollection.js';
 import logger from '/imports/api/util/logger.js';
 import fs from 'fs';
 
+/**
+ * Read the newick trees, remove the prefixes from OrthoFinder and add the
+ * information to the 'orthologroups' collection (mongodb).
+ * @class
+ * @constructor
+ * @public
+ */
 class NewickProcessor {
   constructor() {
     this.genesDb = Genes.rawCollection();
-    this.orthogroupDb = orthogroupCollection.rawCollection().initializeUnorderedBulkOp();
+    // this.orthogroupDb = orthogroupCollection.rawCollection().initializeUnorderedBulkOp();
   }
 
+  /**
+   * Function that reads trees in newick format and returns the tree in .json,
+   * all the names of each node and the size.
+   * @function
+   * @param {String} newickFile - The tree in newick format (e.g
+   * (((Citrus_sinensis_PAC-18136225:0.464796,(Ano...).
+   * @return {Object} Return the tree in json format.
+   * @return {Array} Return the root name and the name of each leaf node.
+   * @return {Number} Return the tree size.
+   */
   parseNewick = (newickFile) => {
     // Adapted from Jason Davies https://github.com/jasondavies/newick.js
     const ancestors = [];
@@ -51,7 +68,7 @@ class NewickProcessor {
     return {
       tree,
       geneIds,
-      size: 0.5 * (nNodes + 1), // geneIds.length
+      treeSize: 0.5 * (nNodes + 1), // geneIds.length
     };
   };
 
@@ -76,36 +93,14 @@ class NewickProcessor {
   };
 
   parse = async (newick, prefixes) => {
-    logger.log(newick);
-
-    /**
-     * Only return the basename (remove the pathname and extension).
-     * (e.g. /genenotebook/data/OG0000001_tree.txt -> OG0000001_tree)
-     */
-    const basenameFile = newick.split('/').pop().split('.')[0];
-    logger.log('basename :', basenameFile);
-
-    /** Read newick file. */
+    // Read newick file.
     const treeNewick = fs.readFileSync(newick, 'utf8');
-    logger.log('tree :', treeNewick);
 
-    /**
-     * Return the size and file name of each proteome as name for these species.
-     * (https://davidemms.github.io/orthofinder_tutorials/orthofinder-best-practices.html)
-     * e.g. (geneIds : ['Citrus_sinensis_PAC-18136225', 'Anothera_thingus_PAC-518136218'])
-     * Problem ID saved in the Gene collection doesn't include the name of the
-     * file only the ID of the genes.
-     * e.g. In Gene collection : ("subfeatures.ID":"PAC-918136217").
-     */
-    const { size, geneIds } = this.parseNewick(treeNewick);
-    logger.log('size :', size);
-    logger.log('prefixes to remove:', prefixes);
-    logger.log('geneIds :', geneIds);
+    const { tree, treeSize, geneIds } = this.parseNewick(treeNewick);
 
     const cleanGeneIds = (prefixes ? await this.removePrefixGeneId(prefixes, geneIds) : geneIds);
-    logger.log('Clean geneIds :', cleanGeneIds);
 
-    // Find genes belonging to orthogroup.
+    // Search the gene collection for the gene identifier.
     const orthogroupGenes = await Genes.rawCollection()
       .find(
         {
@@ -117,73 +112,61 @@ class NewickProcessor {
       )
       .toArray();
 
-    logger.log('orthogroupGenes find() :', orthogroupGenes);
+    // If the identifier is a sub-feature return to the gene identifier.
+    const orthogroupGeneIds = orthogroupGenes.map(({ ID }) => ID);
+
+    // Remove duplicate value.
+    const rmDuplicateGeneIDs = orthogroupGeneIds.filter((v, i, a) => a.indexOf(v) === i);
+
+    // Warn when the gene is not in the database.
+    if (rmDuplicateGeneIDs.length !== 0) {
+      const documentOrthogroup = await orthogroupCollection.rawCollection().update(
+        { geneIds: { $in: rmDuplicateGeneIDs } }, // query
+        {
+          $set:
+          {
+            geneIds: rmDuplicateGeneIDs,
+            tree: tree,
+            size: treeSize,
+          },
+        }, // changes
+        {
+          multi: true,
+          upsert: true,
+        }, // options
+      );
+
+      // Update or insert orthogroupsId in genes collection.
+      if (typeof documentOrthogroup.insertedId !== 'undefined') {
+        // Orthogroups _id is created.
+        logger.log('create _id', documentOrthogroup.insertedId);
+        this.genesDb.update(
+          { ID: { $in: rmDuplicateGeneIDs } },
+          { $set: { orthogroups: documentOrthogroup.insertedId } },
+          {
+            multi: true,
+            upsert: true,
+          },
+        );
+      } else {
+        // Orthogroups tree already exists.
+        const orthogroupIdentifiant = orthogroupCollection.findOne({ tree: tree })._id;
+        logger.log('already exist :', orthogroupIdentifiant);
+        this.genesDb.update(
+          { ID: { $in: rmDuplicateGeneIDs } },
+          { $set: { orthogroups: orthogroupIdentifiant } },
+          {
+            multi: true,
+            upsert: true,
+          },
+        );
+      }
+    } else {
+      logger.warn(
+        'Orthogroup consists exclusively of genes not in the database',
+      );
+    }
   };
-}
-
-async function addOrthogroupTree({ fileName }) {
-  // Turn filename into orthogroup ID
-  const orthogroupId = fileName.split('/').pop().split('.')[0];
-
-  // Parse newick formatted treefile
-  const treeNewick = fs.readFileSync(fileName, 'utf8');
-  const { size, geneIds } = parseNewick(treeNewick);
-
-  logger.debug({ treeNewick });
-  logger.log('orthogroupId :', orthogroupId);
-  logger.log('size :', size);
-  logger.log('tree :', treeNewick);
-  logger.log('geneIds :', geneIds);
-
-  // Set up data to insert
-  const orthogroupData = {
-    ID: orthogroupId,
-    size,
-    tree: treeNewick,
-    geneIds,
-  };
-
-  // Validate data against orthogroup schema
-  // this throws an error for invalid data
-  await orthogroupSchema.validate(orthogroupData);
-
-  logger.log('validate schema');
-
-  // Insert orthogroup data.
-  await orthogroupCollection.rawCollection().insert(orthogroupData);
-
-  // Find genes belonging to orthogroup.
-  const orthogroupGenes = await Genes.rawCollection()
-    .find(
-      {
-        $or: [
-          { ID: { $in: geneIds } },
-          { 'subfeatures.ID': { $in: geneIds } },
-        ],
-      },
-    )
-    .toArray();
-
-  logger.log('orthogroupGenes find() :', orthogroupGenes);
-
-  const orthogroupGeneIds = orthogroupGenes.map(({ ID }) => ID);
-  if (orthogroupGeneIds.size === 0) {
-    logger.warn(
-      `Orthogroup ${orthogroupId} consists exclusively of genes \
-      not in the database`,
-    );
-  }
-
-  logger.log('orthogroupGenesIds :', orthogroupGeneIds);
-
-  // Update genes in orthogroups with orthogroup ID
-  await Genes.rawCollection().update(
-    { ID: { $in: orthogroupGeneIds } }, // query
-    { $set: { orthogroupId } }, // changes
-    { multi: true }, // options
-  );
-
-  return orthogroupGeneIds.length;
 }
 
 export default NewickProcessor;

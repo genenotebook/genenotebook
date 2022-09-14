@@ -3,11 +3,17 @@ import glob from 'glob';
 import fs from 'fs';
 
 /**
- *
+ * Set of functions that will allow to remove the prefixes used by OrthoFinder
+ * to name the nodes of the tree.
+ * See https://davidemms.github.io/orthofinder_tutorials/orthofinder-best-practices.html
+ * in paragraph 'Pre-processing of input proteomes'.
+ * Removing prefixes (OrthoFinder behavior) allows to find the gene identifier
+ * in the gene collection.
  * @class
  * @constructor
  * @public
- * @param {string} prefixes -
+ * @param {String} prefixes - The list of the prefixes that match each proteome
+ * file name as the name of this species.
  */
 class OrthoFinderPrefix {
   constructor(prefixes) {
@@ -18,7 +24,7 @@ class OrthoFinderPrefix {
    * Asynchronously returns the name of each files present in the folder.
    * Use the {/*.txt} pattern from the glob package.
    * @function
-   * @param {string} folder - The path of the folder.
+   * @param {String} folder - The path of the folder.
    */
   globListFilesFolder = (folder) => {
     return new Promise((resolve, reject) => {
@@ -35,8 +41,8 @@ class OrthoFinderPrefix {
   /**
    * Asynchronous function that returns file or folder statistics.
    * @function
-   * @param {string} path - The path of the file or folder.
-   * @returns {string} file or folder statistics.
+   * @param {String} path - The path of the file or folder.
+   * @returns {String} file or folder statistics.
    */
   getStatsPath = async (path) => {
     return new Promise((resolve, reject) => {
@@ -54,7 +60,7 @@ class OrthoFinderPrefix {
    * Asynchronous function that returns the list of file names in the folder
    * with the extention .fa, .faa, .fasta, .fas, .pep.
    * @function
-   * @param {string} path - The path of the folder.
+   * @param {String} path - The path of the folder.
    * @returns {Array} List of file names with their extensions.
    */
   getPrefixes = async (path) => {
@@ -90,7 +96,7 @@ class OrthoFinderPrefix {
   /**
    * Asynchronous function that reads the text file.
    * @function
-   * @param {string} file - The pathway of file.
+   * @param {String} file - The pathway of file.
    * @returns {Array} List of filenames.
    */
   readPrefixeFile = async (file) => {

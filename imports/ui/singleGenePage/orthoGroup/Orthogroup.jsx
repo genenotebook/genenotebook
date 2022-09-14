@@ -6,7 +6,6 @@ import React from 'react';
 // import ReactResizeDetector from 'react-resize-detector';
 // import { cluster, hierarchy } from 'd3';
 
-import { parseNewick } from '/imports/api/util/util.js';
 import { orthogroupCollection } from '/imports/api/genes/orthogroup/orthogroupCollection.js';
 
 import { Tree } from 'react-bio-viz';
@@ -137,13 +136,12 @@ function Header() {
 }
 
 function Orthogroup({ orthogroup, showHeader = false }) {
-  const { tree, size } = parseNewick(orthogroup.tree);
   return (
     <div id="orthogroup">
       {showHeader && <Header />}
       <Tree
-        tree={tree}
-        height={size * 15}
+        tree={orthogroup.tree}
+        height={orthogroup.size * 15}
         cladogram
         shadeBranchBySupport={false}
       />
