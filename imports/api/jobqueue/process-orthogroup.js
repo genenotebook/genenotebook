@@ -20,24 +20,20 @@ jobQueue.processJobs(
     logger.log(`Add ${folderName} folder.`);
     logger.log('List prefixes :', listprefixes);
 
-    // Iterate over all files in th e folder.
+    // Iterate over all files in the folder.
     orthofinder.globListFilesFolder(folderName)
       .then(async (fileNames) => {
-        logger.log('finename :', fileNames);
         const results = await Promise.all(
           fileNames.map(
             async (file) => newickProcessor.parse(file, listprefixes),
           ),
         );
-        // If no error commit all changes
-        const nOrthogroups = results.length;
-
-        // sum using reduce
-        const nGenes = results.reduce((a, b) => a + b, 0);
       })
       .catch((error) => job.fail({ error }))
       .then(() => {
-        job.done();
+        const nOrthogroups = newickProcessor.getNumberOrthogroups();
+        logger.log(`Inserted ${nOrthogroups} orthogroups`);
+        job.done({ nInserted: nOrthogroups });
       });
     callback();
   },

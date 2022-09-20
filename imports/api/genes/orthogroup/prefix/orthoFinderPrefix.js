@@ -3,8 +3,8 @@ import glob from 'glob';
 import fs from 'fs';
 
 /**
- * Set of functions that will allow to remove the prefixes used by OrthoFinder
- * to name the nodes of the tree.
+ * The functions that will allow to list the prefixes used by OrthoFinder to
+ * name the nodes of the tree.
  * See https://davidemms.github.io/orthofinder_tutorials/orthofinder-best-practices.html
  * in paragraph 'Pre-processing of input proteomes'.
  * Removing prefixes (OrthoFinder behavior) allows to find the gene identifier
@@ -127,6 +127,12 @@ class OrthoFinderPrefix {
     });
   };
 
+  /**
+   * Asynchronous function that returns the list of prefixes according to the
+   * parameter used in the CLI command.
+   * @function
+   * @returns {Array} List of prefixes.
+   */
   getListPrefixes = async () => {
     const stats = await this.getStatsPath(this.prefixes)
       .then((s) => s)

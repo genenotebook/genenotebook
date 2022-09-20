@@ -13,16 +13,27 @@ import fs from 'fs';
 class NewickProcessor {
   constructor() {
     this.genesDb = Genes.rawCollection();
-    // this.orthogroupDb = orthogroupCollection.rawCollection().initializeUnorderedBulkOp();
+    this.nOrthogroups = 0;
   }
 
   /**
-   * Function that reads trees in newick format and returns the tree in .json,
-   * all the names of each node and the size.
+   * Function that returns the total number of insertions or updates in the
+   * orthogroups collection.
+   * @function
+   * @return {Number} Return the total number of insertions or updates of
+   * orthogroups.
+   */
+  getNumberOrthogroups() {
+    return this.nOrthogroups;
+  }
+
+  /**
+   * Function that reads trees in newick format and returns the tree, all the
+   * names of each node and the size.
    * @function
    * @param {String} newickFile - The tree in newick format (e.g
    * (((Citrus_sinensis_PAC-18136225:0.464796,(Ano...).
-   * @return {Object} Return the tree in json format.
+   * @return {Object} Return the tree.
    * @return {Array} Return the root name and the name of each leaf node.
    * @return {Number} Return the tree size.
    */
@@ -72,6 +83,15 @@ class NewickProcessor {
     };
   };
 
+  /**
+   * Function that removes the prefixes of orthofinders on the genes of the tree
+   * and returns the list of genes.
+   * (e.g Citrus_sinensis_orange1.1g040632m.v1.1 -> orange1.1g040632m.v1.1)
+   * @function
+   * @param {Array} prefixes - The list of prefixes.
+   * @param {Array} genesids - The gene list.
+   * @return {Array} The list of genes without their prefixes.
+   */
   removePrefixGeneId = async (prefixes, genesids) => {
     return new Promise((resolve, reject) => {
       try {
@@ -92,16 +112,24 @@ class NewickProcessor {
     });
   };
 
+  /**
+   * Parse the newick file.
+   * @function
+   * @param {String} newick - The path of the newick tree.
+   * @param {Array} prefixes - The list of OrthoFinder prefixes.
+   */
   parse = async (newick, prefixes) => {
-    // Read newick file.
+    // Read raw file.
     const treeNewick = fs.readFileSync(newick, 'utf8');
 
+    // Parse the tree.
     const { tree, treeSize, geneIds } = this.parseNewick(treeNewick);
 
+    // Remove OrthoFinder prefixes.
     const cleanGeneIds = (prefixes ? await this.removePrefixGeneId(prefixes, geneIds) : geneIds);
 
-    // Search the gene collection for the gene identifier.
-    const orthogroupGenes = await Genes.rawCollection()
+    // Seach for the genes and subfeatures.
+    const orthogroupGenes = await this.genesDb
       .find(
         {
           $or: [
@@ -112,50 +140,64 @@ class NewickProcessor {
       )
       .toArray();
 
-    // If the identifier is a sub-feature return to the gene identifier.
+    /**
+     * We assume that 1 gene = 1 transcript = 1 tree. We go back to the gene
+     * identifier when a subfeature is found.
+     * (e.g subfeature.ID="orange1.1g044641m.v1.1" -> ID="orange1.1g044641m.g.v1.1").
+     */
     const orthogroupGeneIds = orthogroupGenes.map(({ ID }) => ID);
 
     // Remove duplicate value.
     const rmDuplicateGeneIDs = orthogroupGeneIds.filter((v, i, a) => a.indexOf(v) === i);
 
-    // Warn when the gene is not in the database.
+    // Add the orthogroups and link them to their genes.
     if (rmDuplicateGeneIDs.length !== 0) {
       const documentOrthogroup = await orthogroupCollection.rawCollection().update(
-        { geneIds: { $in: rmDuplicateGeneIDs } }, // query
+        { geneIds: { $in: rmDuplicateGeneIDs } }, // Selector.
         {
-          $set:
+          $set: // Modifier.
           {
             geneIds: rmDuplicateGeneIDs,
             tree: tree,
             size: treeSize,
           },
-        }, // changes
-        {
+        },
+        { // Options
           multi: true,
           upsert: true,
-        }, // options
+        },
       );
+
+      // Increment orthogroups.
+      const nInsertUpdate = (typeof documentOrthogroup.result !== 'undefined' ? documentOrthogroup.result.ok : 0);
+      this.nOrthogroups += nInsertUpdate;
 
       // Update or insert orthogroupsId in genes collection.
       if (typeof documentOrthogroup.insertedId !== 'undefined') {
-        // Orthogroups _id is created.
-        logger.log('create _id', documentOrthogroup.insertedId);
         this.genesDb.update(
-          { ID: { $in: rmDuplicateGeneIDs } },
-          { $set: { orthogroups: documentOrthogroup.insertedId } },
+          { ID: { $in: rmDuplicateGeneIDs } }, // Selector.
           {
+            $set: // Modifier.
+            {
+              orthogroups: documentOrthogroup.insertedId,
+            },
+          },
+          { // Options.
             multi: true,
             upsert: true,
           },
         );
       } else {
-        // Orthogroups tree already exists.
         const orthogroupIdentifiant = orthogroupCollection.findOne({ tree: tree })._id;
-        logger.log('already exist :', orthogroupIdentifiant);
         this.genesDb.update(
           { ID: { $in: rmDuplicateGeneIDs } },
-          { $set: { orthogroups: orthogroupIdentifiant } },
           {
+            $set: // Modifier.
+            {
+              orthogroups: orthogroupIdentifiant,
+            },
+          },
+          { // Options.
             multi: true,
             upsert: true,
           },
