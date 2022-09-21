@@ -119,7 +119,8 @@ class OrthoFinderPrefix {
   splitPrefixes = async (prfx) => {
     return new Promise((resolve, reject) => {
       try {
-        const listPrfx = prfx.split(',').filter((element) => element.trim());
+        // Split by comma and remove space.
+        const listPrfx = prfx.split(',').filter((element) => element).map((i) => i.trim());
         resolve(listPrfx);
       } catch (err) {
         reject(err);
@@ -147,7 +148,8 @@ class OrthoFinderPrefix {
       return list;
     } else if (stats && stats.isFile()) {
       const listPrefixes = await this.readPrefixeFile(this.prefixes);
-      const list = await this.splitPrefixes(listPrefixes);
+      const listSplit = await this.splitPrefixes(listPrefixes);
+      const list = await this.getBasenameNoExtension(listSplit);
       return list;
     } else if (typeof this.prefixes === 'string' && typeof this.prefixes !== 'undefined') {
       const list = await this.splitPrefixes(this.prefixes);
