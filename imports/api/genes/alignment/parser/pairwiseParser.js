@@ -127,7 +127,7 @@ class PairwiseProcessor {
          * (e.g : '>KAG2206553.1 hypothetical' becomes KAG2206553.1 hypothetical).
          * @type {string}
          */
-        const definition = line.replace('>', '');
+        const definition = line.replace(/^>/g, '');
 
         /** Check if there are identical proteins. */
         if (this.pairWise.iteration_hits.length !== 0) {
