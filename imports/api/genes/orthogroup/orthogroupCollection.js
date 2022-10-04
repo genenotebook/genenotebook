@@ -4,21 +4,7 @@ import SimpleSchema from 'simpl-schema';
 const orthogroupSchema = new SimpleSchema({
   ID: {
     type: String,
-    index: true,
-    label: 'Orthogroup ID',
-  },
-  size: {
-    type: Number,
-    label: 'Orthogroup size',
-  },
-  tree: {
-    type: String,
-    label: 'Newick formatted phylogenetic tree',
-  },
-  alignment: {
-    type: String,
-    label: 'Fasta formatted multiple sequence alignment',
-    optional: true,
+    label: 'OrthoFinder has automatically rooted the gene in tree for us.',
   },
   geneIds: {
     type: Array,
@@ -27,6 +13,14 @@ const orthogroupSchema = new SimpleSchema({
   'geneIds.$': {
     type: String,
     label: 'Gene ID string',
+  },
+  tree: {
+    type: String,
+    label: 'Newick formatted phylogenetic tree',
+  },
+  size: {
+    type: Number,
+    label: 'Orthogroup size',
   },
 });
 

@@ -1,3 +1,4 @@
+import { Mongo } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
 import { Roles } from 'meteor/alanning:roles';
 // jobqueue
@@ -10,9 +11,7 @@ import { EditHistory } from '/imports/api/genes/edithistory_collection.js';
 import { eggnogCollection } from '/imports/api/genes/eggnog/eggnogCollection.js';
 import { similarSequencesCollection } from '/imports/api/genes/alignment/similarSequenceCollection.js';
 // orthogroups
-import {
-  orthogroupCollection,
-} from '/imports/api/genes/orthogroup_collection.js';
+import { orthogroupCollection } from '/imports/api/genes/orthogroup/orthogroupCollection.js';
 // genomes
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 // transcriptomes
@@ -184,7 +183,7 @@ Meteor.publish({
     return diamond;
   },
   orthogroups(ID) {
-    return orthogroupCollection.find({ ID });
+    return orthogroupCollection.find({ _id: new Mongo.ObjectID(ID) });
   },
   editHistory() {
     if (!this.userId) {
