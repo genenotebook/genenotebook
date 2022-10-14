@@ -181,7 +181,7 @@ async function startGeneNoteBook(cmd) {
   }
   Object.assign(process.env, opts);
   // eslint-disable-next-line global-require, import/no-unresolved
-  require('main.js');
+  require('./main.js');
 }
 
 const program = new commander.Command();
