@@ -154,10 +154,12 @@ async function startGeneNoteBook(cmd) {
     mongoPort = 27017,
     dbStartupTimeout,
     dbCacheSizeGB,
+    storagePath
   } = cmd.opts();
   const PORT = parseInt(port, 10) || 3000;
   const ROOT_URL = rootUrl || `http://localhost:${PORT}`;
-  const opts = { PORT, ROOT_URL, GNB_VERSION: pkginfo.version };
+  const STORAGE_PATH = storagePath || 'assets/app/uploads';
+  const opts = { PORT, ROOT_URL, GNB_VERSION: pkginfo.version, STORAGE_PATH };
 
   if (mongoUrl) {
     if (dbPath) {
@@ -217,12 +219,16 @@ program
   )
   .option(
     '--db-cache-size-gb [cache size (GB)]',
-    `Cache size for MongoDB in GB. Default is max(0.6*maxRAM - 1, 1GB). 
+    `Cache size for MongoDB in GB. Default is max(0.6*maxRAM - 1, 1GB).
     Specify a lower value if your mongodb daemon is using to much RAM`
   )
   .option(
     '-r, --root-url [url]',
     'Root URL on which GeneNoteBook will be accessed. Default: http://localhost'
+  )
+  .option(
+    '-s, --storage-path [path]',
+    'Path where the uploaded files will be stored. Default: assets/app/uploads'
   )
   .action((_, command) => {
     startGeneNoteBook(command);
@@ -867,7 +873,7 @@ addUser
           lastName ||
           role
         ) {
-          logger.error(`Bulk file operation is mutually exclusive with specifying 
+          logger.error(`Bulk file operation is mutually exclusive with specifying
           individual account information`);
           addUser.help();
         }
