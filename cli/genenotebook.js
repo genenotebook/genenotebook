@@ -873,7 +873,7 @@ addUser
           lastName ||
           role
         ) {
-          logger.error(`Bulk file operation is mutually exclusive with specifying
+          logger.error(`Bulk file operation is mutually exclusive with specifying 
           individual account information`);
           addUser.help();
         }
