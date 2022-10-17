@@ -219,7 +219,7 @@ program
   )
   .option(
     '--db-cache-size-gb [cache size (GB)]',
-    `Cache size for MongoDB in GB. Default is max(0.6*maxRAM - 1, 1GB).
+    `Cache size for MongoDB in GB. Default is max(0.6*maxRAM - 1, 1GB). 
     Specify a lower value if your mongodb daemon is using to much RAM`
   )
   .option(
