@@ -169,7 +169,7 @@ async function startGeneNoteBook(cmd) {
       path.resolve(dbPath || './db'),
       mongoPort,
       dbStartupTimeout,
-      dbCacheSizeGB
+      dbCacheSizeGB,
     );
     Object.assign(opts, { MONGO_URL });
     process.on('exit', () => {
@@ -179,7 +179,7 @@ async function startGeneNoteBook(cmd) {
   }
   Object.assign(process.env, opts);
   // eslint-disable-next-line global-require, import/no-unresolved
-  require('main.js');
+  require('./main.js');
 }
 
 const program = new commander.Command();
