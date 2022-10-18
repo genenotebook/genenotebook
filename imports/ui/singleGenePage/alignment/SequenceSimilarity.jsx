@@ -42,11 +42,14 @@ function NoSequenceSimilarity({ showHeader }) {
 
 function SequenceSimilarityDataTracker({ gene }) {
   const queryGenes = Genes.findOne({ ID: gene.ID });
-  const subfeatures = queryGenes.subfeatures[0].ID;
 
   const alignmentSub = Meteor.subscribe('alignment');
   const loading = !alignmentSub.ready();
-  const similarSequences = similarSequencesCollection.findOne({ iteration_query: subfeatures });
+  const similarSequences = (
+    typeof queryGenes.ID === 'undefined'
+      ? undefined
+      : similarSequencesCollection.findOne({ iteration_query: queryGenes.ID })
+  );
 
   return {
     loading,
