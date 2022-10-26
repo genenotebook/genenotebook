@@ -1,12 +1,8 @@
-import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
-
-import SimpleSchema from 'simpl-schema';
-import hash from 'object-hash';
-
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 import { Job } from 'meteor/local:job-collection';
-
+import SimpleSchema from 'simpl-schema';
+import hash from 'object-hash';
 import logger from '/imports/api/util/logger.js';
 
 const downloadGenes = new ValidatedMethod({
@@ -43,9 +39,9 @@ const downloadGenes = new ValidatedMethod({
     const queryHash = hash(`${queryString}${dataType}${optionString}`);
 
     /*
-    if (!this.userId) {
+      if (!this.userId) {
       throw new Meteor.Error('not-authorized');
-    }
+      }
     */
     const existingJob = jobQueue.findOne({ 'data.queryHash': queryHash });
 

@@ -27,16 +27,42 @@ const OPTION_COMPONENTS = {
   Expression: ExpressionDownloadOptions,
 };
 
+/**
+ * Function that returns the request mongodb.
+ * Problem? When SelectedAllGenes is true it returns not a query but a boolean.
+ * @function getDownloadQuery
+ * @param {Boolean} selectedAllGenes - Indicates if all genes are selected.
+ * @param {Set} selectedGenes - The list of selected genes. (e.g. Set [ "Ciclev10004102m.g.v1.0"])
+ * @param {Object} query -
+ * @returns {Boolean|Object} - Return the mongodb request.
+ */
 function getDownloadQuery({ selectedAllGenes, selectedGenes, query }) {
   return selectedAllGenes ? query : { ID: { $in: [...selectedGenes] } };
 }
 
+/**
+ * Description
+ * @module
+ * @function DownloadDialodModal
+ * @param {Function} toggleDownloadDialog -
+ * @param {Object} query -
+ * @param {Boolean} selectedAllGenes - Indicates if all genes are selected.
+ * @param {Set} selectedGenes - The list of selected genes. (e.g. Set [ "Ciclev10004102m.g.v1.0"])
+ */
 export default function DownloadDialogModal({
   toggleDownloadDialog,
   query,
   selectedAllGenes,
   selectedGenes,
 }) {
+  console.log('type of toggleDownloadDialog :', typeof toggleDownloadDialog);
+  console.log('toggleDownloadDialog', toggleDownloadDialog);
+  console.log('query :', query);
+  console.log('selectedAllGenes :', selectedAllGenes);
+  console.log('selectedGenes :', selectedGenes);
+  console.log('Object.keys(PREVIEW_COMPONENTS)[0]', Object.keys(PREVIEW_COMPONENTS)[0]);
+
+  /** By default dataType is Annotation. */
   const [dataType, setDataType] = useState(Object.keys(PREVIEW_COMPONENTS)[0]);
   const [downloading, setDownloading] = useState(false);
   const [queryCount, setQueryCount] = useState('...');
@@ -47,19 +73,45 @@ export default function DownloadDialogModal({
     return <Redirect to={`/download/${redirect}`} />;
   }
 
+  /** Get the mongodb request for download. (e.g.
+   * {
+   * "ID": {
+   * "$in": [
+   *    "Ciclev10004102m.g.v1.0"
+   *  ]
+   * }
+   *}
+   *)
+   */
   const downloadQuery = getDownloadQuery({
     selectedAllGenes,
     selectedGenes,
     query,
   });
+  console.log('downloadQuery :', downloadQuery);
 
+  /**
+   * Function that changes the states of the hooks for downloading and
+   * closes the download dialog.
+   * @function closeModal
+   * @inner
+   */
   function closeModal() {
     setDownloading(false);
     toggleDownloadDialog();
   }
 
+  /**
+   * Function that starts downloading data.
+   * @function startDownload
+   * @inner
+   */
   function startDownload() {
     setDownloading(true);
+    /**
+     * Execute a validatedMethod to launch the download job.
+     * Return the hash (md5) of the download.
+     */
     downloadGenes.call(
       {
         query: downloadQuery,
@@ -73,19 +125,33 @@ export default function DownloadDialogModal({
     );
   }
 
+  /**
+   *
+   * @function updateOptions
+   * @inner
+   * @param optionUpdate -
+   */
   function updateOptions(optionUpdate) {
     const newOptions = cloneDeep(options);
     Object.assign(newOptions, optionUpdate);
     setOptions(newOptions);
   }
 
+  /**
+   * Execute a validatedMethod to find the "real" number of genes in the
+   * collection. (And change the state of the hook).
+   * @param {Object} downloadQuery - The mongodb request.
+   * @returns {Number} - Return the number of genes in the collection.
+   */
   getQueryCount.call({ query: downloadQuery }, (err, res) => {
     if (err) console.error(err);
     setQueryCount(res);
   });
 
   const OptionComponent = OPTION_COMPONENTS[dataType];
+  console.log('OptionComponent :', OptionComponent);
   const PreviewComponent = PREVIEW_COMPONENTS[dataType];
+  console.log('PreviewComponent :', PreviewComponent);
 
   return (
     <div className="modal download-dialog">
@@ -93,12 +159,14 @@ export default function DownloadDialogModal({
       <div className="modal-card">
         <header className="modal-card-head is-block">
           <div>
+            {/* The top right button to close the modal. */}
             <button
               type="button"
               className="delete is-pulled-right"
               aria-label="close"
               onClick={closeModal}
             />
+            {/* Indicates the number of genes to download. */}
             <p className="modal-card-title">
               Downloading data for&nbsp;
               {queryCount}
@@ -109,6 +177,7 @@ export default function DownloadDialogModal({
           </div>
           <div className="tabs is-centered is-boxed is-fullwidth">
             <ul>
+              {/* Annotation, Sequence, Expression previews. */}
               {Object.keys(PREVIEW_COMPONENTS).map((dataTypeOption) => (
                 <li
                   key={dataTypeOption}
@@ -129,12 +198,15 @@ export default function DownloadDialogModal({
             </ul>
           </div>
         </header>
+        {/* Download preview for each previews. */}
         <section className="modal-card-body">
           <PreviewComponent query={downloadQuery} options={options} />
         </section>
+        {/* Option preview for each previews. */}
         <section className="modal-card-body">
           <OptionComponent options={options} updateOptions={updateOptions} />
         </section>
+        {/* The last preview with the 'Download' button. */}
         <footer className="modal-card-foot">
           <button
             type="button"

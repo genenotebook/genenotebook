@@ -1,15 +1,13 @@
-import jobQueue from './jobqueue.js';
-
-import fs from 'fs';
-import zlib from 'zlib';
-
 import { getGeneSequences } from '/imports/api/util/util.js';
-import logger from '/imports/api/util/logger.js';
 import { Genes } from '/imports/api/genes/geneCollection.js';
 import {
   Transcriptomes,
   ExperimentInfo,
 } from '/imports/api/transcriptomes/transcriptome_collection.js';
+import logger from '/imports/api/util/logger.js';
+import jobQueue from './jobqueue.js';
+import zlib from 'zlib';
+import fs from 'fs';
 
 const FORMATS = {
   Annotations: 'gff3',
@@ -122,7 +120,7 @@ function formatHeader({ format, options }) {
 }
 
 function processDownload(job, callback) {
-  // logger.debug(job.data);
+  /** Get all parameters from the validMethod. */
   const {
     queryHash, queryString, dataType, options,
   } = job.data;
