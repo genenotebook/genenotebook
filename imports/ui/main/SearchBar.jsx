@@ -136,13 +136,14 @@ function SearchBar({
                 {attributes.map(({ name }) => {
                   const checked = selectedAttributes.has(name);
                   return (
-                    <div className="dropdown-item" id={name} key={name}>
+                    <div className="dropdown-item" key={`${name} ${checked}`}>
                       <label className="checkbox">
                         <input
                           type="checkbox"
                           defaultChecked={checked}
                           onChange={toggleAttributeSelect}
                           className="dropdown-checkbox is-small"
+                          id={name}
                         />
                         { name }
                       </label>
@@ -170,62 +171,6 @@ function SearchBar({
           </button>
         </div>
       </div>
-      {/*
-      <div className="input-group input-group-sm">
-        <div className="input-group-prepend">
-          <Dropdown>
-            <DropdownButton className="btn btn-sm btn-outline-dark dropdown-toggle search-dropdown border" />
-            <DropdownMenu>
-              <h6 className="dropdown-header">Select attributes to search</h6>
-              {attributes.map(({ name }) => {
-                const checked = selectedAttributes.has(name);
-                return (
-                  <div
-                    key={`${name} ${checked}`}
-                    className="form-check px-3 pb-1"
-                    style={{ justifyContent: 'flex-start', whiteSpace: 'pre' }}
-                  >
-                    <input
-                      type="checkbox"
-                      className="input is-small"
-                      id={name}
-                      checked={checked}
-                      onChange={toggleAttributeSelect}
-                    />
-                    <label className="form-check-label">{name}</label>
-                  </div>
-                );
-              })}
-            </DropdownMenu>
-          </Dropdown>
-        </div>
-        <input
-          type="text"
-          className="form-control border-right-0 border search-bar"
-          placeholder="Search genes"
-          value={searchString}
-          onChange={(event) => setSearchString(event.target.value)}
-          onSubmit={submit}
-          ref={inputRef}
-        />
-        {searchString && (
-          <span className="input-group-addon bg-white border-left-0 border pt-1 clear-search">
-            <span
-              role="button"
-              tabIndex="0"
-              className="icon-cancel"
-              onClick={clearSearch}
-            />
-          </span>
-        )}
-
-        <div className="input-group-append btn-group">
-          <button type="submit" className="btn btn-sm btn-outline-dark border">
-            <span className="icon-search" />
-          </button>
-        </div>
-      </div>
-        */}
     </form>
   );
 }
