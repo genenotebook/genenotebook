@@ -29,7 +29,7 @@ const downloadGenes = new ValidatedMethod({
      * Otherwise use the cached file and increment the download count.
      * Return md5 hash of download query as download url
      */
-    logger.log(`downloading ${dataType}`);
+    logger.log(`Downloading ${dataType}`);
     logger.log(query);
     logger.log(options);
 
@@ -44,17 +44,29 @@ const downloadGenes = new ValidatedMethod({
       }
     */
     const existingJob = jobQueue.findOne({ 'data.queryHash': queryHash });
+    // logger.log('existingJob :', existingJob);
 
-    if (typeof existingJob === 'undefined') {
-      logger.debug('initiating new download job');
-      const job = new Job(jobQueue, 'download', {
-        queryString,
-        queryHash,
-        dataType,
-        options,
-      });
-      job.priority('high').save();
-    }
+    logger.debug('Initiating new download job');
+    const job = new Job(jobQueue, 'download', {
+      queryString,
+      queryHash,
+      dataType,
+      options,
+    });
+    job.priority('high').save();
+
+    // if (typeof existingJob === 'undefined') {
+    //   logger.debug('Initiating new download job');
+    //   const job = new Job(jobQueue, 'download', {
+    //     queryString,
+    //     queryHash,
+    //     dataType,
+    //     options,
+    //   });
+    //   job.priority('high').save();
+    // } else {
+    //   logger.warn('Job already exists !');
+    // }
 
     return queryHash;
   },

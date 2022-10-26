@@ -10,16 +10,10 @@ import zlib from 'zlib';
 import fs from 'fs';
 
 const FORMATS = {
-  Annotations: 'gff3',
-  Sequences: 'fasta',
+  Annotation: 'gff3',
+  Sequence: 'fasta',
   Expression: 'tsv',
 };
-
-function formatAttributes(attributes) {
-  return Object.entries(attributes)
-    .map(([k, v]) => `${k}=${v}`)
-    .join(';');
-}
 
 function formatGff3({ gene, options }) {
   // Options contains the attribute keys to include
@@ -58,6 +52,109 @@ function formatGff3({ gene, options }) {
   return gffLines.join('\n');
 }
 
+function formatGene({ gene, format, options }) {
+  switch (format) {
+    case 'gff3':
+      return formatGff3({ gene, options });
+    case 'fasta':
+      return formatFasta({ gene, options });
+    case 'tsv':
+      return formatTsv({ gene, options });
+    default:
+      return gene.ID;
+  }
+}
+
+function formatHeader({ format, options }) {
+  switch (format) {
+    case 'gff3':
+      return '##gff-version 3\n';
+    case 'fasta':
+      return null;
+    case 'tsv':
+      return `gene_id\t${options.selectedSamples.join('\t')}\n`;
+    default:
+      return null;
+  }
+}
+
+jobQueue.processJobs(
+  'download',
+  {
+    concurrency: 1,
+    payload: 1,
+  },
+  async (job, callback) => {
+    /** Get all parameters from the validMethod. */
+    const { queryHash, queryString, dataType, options } = job.data;
+
+    /** For the moment no option for Annotation. */
+    logger.log('queryHash :', queryHash);
+    logger.log('queryString :', queryString);
+    logger.log('dataType :', dataType);
+    logger.log('options :', options);
+
+    /** No format and query for Annotation bug ?? */
+    const query = JSON.parse(queryString);
+    const format = FORMATS[dataType];
+    logger.log('Download => query :', query);
+    logger.log('Download => const format :', format);
+
+    const fileName = `GeneNoteBook_download_${queryHash}.${format}.gz`;
+    logger.log(`Preparing ${fileName} for download`);
+
+    const writeStream = fs.createWriteStream(fileName);
+    const compress = zlib.createGzip();
+    compress.pipe(writeStream);
+
+    logger.log('Prout test');
+
+    // The finish event is emitted when all data has been flushed from the stream.
+    compress.on('finish', async () => {
+      try {
+        const querySize = Genes.find(query).count();
+        logger.log('querySize :', querySize);
+        const stepSize = Math.round(querySize / 10);
+        logger.log('stepSize :', stepSize);
+
+        const header = formatHeader({ format, options });
+        logger.log('header :', header);
+        if (header) compress.write(header);
+
+        /**  */
+        const allGenes = await Genes.rawCollection().find(query).toArray();
+        // await logger.log('Genes.find() ? :', allGenes);
+        await allGenes.forEach((gene, index) => {
+          logger.log('coucou');
+          if (index % stepSize === 0) {
+            job.progress(index, querySize, { echo: true });
+          }
+          const lines = formatGene({ gene, format, options });
+          logger.log('lines :', lines);
+          compress.write(`${lines}\n`);
+        });
+      } catch (err) {
+        job.fail({ err });
+        callback();
+      } finally {
+        logger.log('wrote all data to file');
+        job.done(fileName);
+        callback();
+      }
+    });
+
+    // Close the stream.
+    logger.log('compress end !');
+    compress.end();
+  },
+);
+
+function formatAttributes(attributes) {
+  return Object.entries(attributes)
+    .map(([k, v]) => `${k}=${v}`)
+    .join(';');
+}
+
 function formatTsv({ gene, options }) {
   // Options contains the transcriptome samples to include
   const { ID: geneId } = gene;
@@ -92,77 +189,3 @@ function formatFasta({ gene, options }) {
   });
   return fastaArray.join('\n');
 }
-
-function formatGene({ gene, format, options }) {
-  switch (format) {
-    case 'gff3':
-      return formatGff3({ gene, options });
-    case 'fasta':
-      return formatFasta({ gene, options });
-    case 'tsv':
-      return formatTsv({ gene, options });
-    default:
-      return gene.ID;
-  }
-}
-
-function formatHeader({ format, options }) {
-  switch (format) {
-    case 'gff3':
-      return '##gff-version 3\n';
-    case 'fasta':
-      return null;
-    case 'tsv':
-      return `gene_id\t${options.selectedSamples.join('\t')}\n`;
-    default:
-      return null;
-  }
-}
-
-function processDownload(job, callback) {
-  /** Get all parameters from the validMethod. */
-  const {
-    queryHash, queryString, dataType, options,
-  } = job.data;
-  const query = JSON.parse(queryString);
-  const format = FORMATS[dataType];
-
-  const fileName = `GeneNoteBook_download_${queryHash}.${format}.gz`;
-
-  logger.log(`Preparing ${fileName} for download`);
-
-  const writeStream = fs.createWriteStream(fileName);
-  const compress = zlib.createGzip();
-  compress.pipe(writeStream);
-
-  // the finish event is emitted when all data has been flushed from the stream
-  compress.on('finish', async () => {
-    logger.log('wrote all data to file');
-    job.done(fileName);
-    callback();
-  });
-
-  const querySize = Genes.find(query).count();
-  const stepSize = Math.round(querySize / 10);
-
-  const header = formatHeader({ format, options });
-  if (header) compress.write(header);
-
-  Genes.find(query).forEach((gene, index) => {
-    if (index % stepSize === 0) {
-      job.progress(index, querySize, { echo: true });
-    }
-    const lines = formatGene({ gene, format, options });
-    compress.write(`${lines}\n`);
-  });
-
-  // close the stream
-  compress.end();
-}
-
-const options = {
-  concurrency: 1,
-  payload: 1,
-};
-
-jobQueue.processJobs('download', options, processDownload);
