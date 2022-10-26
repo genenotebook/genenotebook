@@ -43,7 +43,6 @@ const attributeTracker = ({ location }) => {
     selectedAttributes,
     searchString,
     highLightSearch,
-    redirected,
   };
 };
 
@@ -52,7 +51,6 @@ function SearchBar({
   searchString: initialSearchString,
   attributes,
   highLightSearch,
-  redirected,
 }) {
   const [redirect, setRedirect] = useState(false);
   const [searchString, setSearchString] = useState(initialSearchString);
@@ -67,11 +65,12 @@ function SearchBar({
     }
   }, [highLightSearch]);
 
+  // Cleanup redirect after rendering Redirect element
   useEffect(() => {
-    if (redirected) {
+    if (redirect) {
       setRedirect(false);
     }
-  }, [redirected, searchString, initialSearchString]);
+  }, [redirect]);
 
   function toggleAttributeSelect(event) {
     const attributeName = event.target.id;
