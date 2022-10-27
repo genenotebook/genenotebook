@@ -29,7 +29,7 @@ const OPTION_COMPONENTS = {
 
 /**
  * Function that returns the request mongodb.
- * Problem? When SelectedAllGenes is true it returns not a query but a boolean.
+ * Problem ? When SelectedAllGenes is true it returns not a query but a boolean.
  * @function getDownloadQuery
  * @param {Boolean} selectedAllGenes - Indicates if all genes are selected.
  * @param {Set} selectedGenes - The list of selected genes. (e.g. Set [ "Ciclev10004102m.g.v1.0"])
@@ -41,11 +41,11 @@ function getDownloadQuery({ selectedAllGenes, selectedGenes, query }) {
 }
 
 /**
- * Description
+ * The Download DialogModal view.
  * @module
- * @function DownloadDialodModal
+ * @function
  * @param {Function} toggleDownloadDialog -
- * @param {Object} query -
+ * @param {Object} query - The mongodb request.
  * @param {Boolean} selectedAllGenes - Indicates if all genes are selected.
  * @param {Set} selectedGenes - The list of selected genes. (e.g. Set [ "Ciclev10004102m.g.v1.0"])
  */
@@ -55,13 +55,6 @@ export default function DownloadDialogModal({
   selectedAllGenes,
   selectedGenes,
 }) {
-  console.log('type of toggleDownloadDialog :', typeof toggleDownloadDialog);
-  console.log('toggleDownloadDialog', toggleDownloadDialog);
-  console.log('query :', query);
-  console.log('selectedAllGenes :', selectedAllGenes);
-  console.log('selectedGenes :', selectedGenes);
-  console.log('Object.keys(PREVIEW_COMPONENTS)[0]', Object.keys(PREVIEW_COMPONENTS)[0]);
-
   /** By default dataType is Annotation. */
   const [dataType, setDataType] = useState(Object.keys(PREVIEW_COMPONENTS)[0]);
   const [downloading, setDownloading] = useState(false);
@@ -73,22 +66,12 @@ export default function DownloadDialogModal({
     return <Redirect to={`/download/${redirect}`} />;
   }
 
-  /** Get the mongodb request for download. (e.g.
-   * {
-   * "ID": {
-   * "$in": [
-   *    "Ciclev10004102m.g.v1.0"
-   *  ]
-   * }
-   *}
-   *)
-   */
+  /** Get the mongodb request for download. (e.g. {"ID": { "$in": ["Ciclev10004102m.g.v1.0" ]}} ) */
   const downloadQuery = getDownloadQuery({
     selectedAllGenes,
     selectedGenes,
     query,
   });
-  console.log('downloadQuery :', downloadQuery);
 
   /**
    * Function that changes the states of the hooks for downloading and
@@ -126,10 +109,10 @@ export default function DownloadDialogModal({
   }
 
   /**
-   *
+   * Function that changes the states of the hooks for options
    * @function updateOptions
    * @inner
-   * @param optionUpdate -
+   * @param optionUpdate - Some options.
    */
   function updateOptions(optionUpdate) {
     const newOptions = cloneDeep(options);
@@ -149,9 +132,7 @@ export default function DownloadDialogModal({
   });
 
   const OptionComponent = OPTION_COMPONENTS[dataType];
-  console.log('OptionComponent :', OptionComponent);
   const PreviewComponent = PREVIEW_COMPONENTS[dataType];
-  console.log('PreviewComponent :', PreviewComponent);
 
   return (
     <div className="modal download-dialog">
@@ -228,83 +209,4 @@ export default function DownloadDialogModal({
 
     </div>
   );
-
-  /*
-  return (
-    <div>
-      <div className="backdrop" />
-      <div className="modal" role="dialog">
-        <div className="modal-dialog" role="document">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">Download options</h5>
-              <button type="button" className="close" aria-label="Close" onClick={closeModal}>
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div className="modal-body card">
-              <div className="card-header">
-                <ul className="nav nav-tabs card-header-tabs">
-                  {Object.keys(DATATYPE_COMPONENTS).map((dataTypeOption) => {
-                    const active = dataType === dataTypeOption ? 'active' : '';
-                    return (
-                      <li key={dataTypeOption} className="nav-item">
-                        <button
-                          type="button"
-                          className={`nav-link ${active}`}
-                          id={dataTypeOption}
-                          onClick={() => {
-                            setDataType(dataTypeOption);
-                            setOptions({});
-                          }}
-                          href="#"
-                        >
-                          {dataTypeOption}
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-              <p className="card-body">
-                Downloading&nbsp;
-                {dataType}
-                &nbsp;data for&nbsp;
-                {queryCount}
-                &nbsp;genes.
-                <br />
-                Please select further options below.
-              </p>
-              <DataTypeComponent query={downloadQuery} options={options} />
-
-              <div className="card-body">
-                <OptionComponent options={options} updateOptions={updateOptions} />
-              </div>
-              <div className="modal-footer">
-                {downloading ? (
-                  <button type="button" className="btn btn-success" disabled>
-                    <span className="icon-spin" />
-                    &nbsp;Preparing download URL
-                  </button>
-                ) : (
-                  <button type="button" className="btn btn-success" onClick={startDownload}>
-                    Download
-                  </button>
-                )}
-                <button
-                  type="button"
-                  className="btn btn-outline-danger"
-                  data-dismiss="modal"
-                  onClick={closeModal}
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-  */
 }
