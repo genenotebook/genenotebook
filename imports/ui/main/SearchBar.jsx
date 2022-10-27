@@ -96,6 +96,10 @@ function SearchBar({
     setRedirect(true);
   }
 
+  function invalidForm(){
+    return !(selectedAttributes.size && searchString);
+  }
+
   if (redirect) {
     const query = new URLSearchParams();
     query.set('attributes', [...selectedAttributes]);
@@ -168,7 +172,7 @@ function SearchBar({
           />
         </div>
         <div className="control">
-          <button type="submit" className="button is-small">
+          <button type="submit" className="button is-small" disabled={invalidForm()}>
             <span className="icon-search" />
           </button>
         </div>
