@@ -10,7 +10,7 @@ import SequenceDownloadOptions from './SequenceDownloadOptions.jsx';
 import ExpressionPreview from './ExpressionPreview.jsx';
 import ExpressionDownloadOptions from './ExpressionDownloadOptions.jsx';
 
-import downloadGenes from '/imports/api/genes/downloadGenes.js';
+import downloadGenes from '/imports/api/genes/download/downloadGenes.js';
 import getQueryCount from '/imports/api/methods/getQueryCount.js';
 
 import './DownloadDialog.scss';

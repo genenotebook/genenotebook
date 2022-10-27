@@ -19,10 +19,12 @@ import './genomes/removeAnnotationTrack.js';
 import './genes/interproscan.js';
 import './genes/addInterproscan.js';
 import './genes/eggnog/addEggnog.js';
-import './genes/downloadGenes.js';
 import './genes/scanGeneAttributes.js';
 import './genes/updateAttributeInfo.js';
 import './genes/updateGene.js';
+
+import './genes/download/downloadGenes.js';
+import './genes/download/convert/convertDownload.js';
 
 import './genes/orthogroup/prefix/orthoFinderPrefix.js';
 import './genes/orthogroup/addOrthogroupTrees.js';

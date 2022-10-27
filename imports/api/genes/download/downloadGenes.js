@@ -29,44 +29,27 @@ const downloadGenes = new ValidatedMethod({
      * Otherwise use the cached file and increment the download count.
      * Return md5 hash of download query as download url
      */
-    logger.log(`Downloading ${dataType}`);
-    logger.log(query);
-    logger.log(options);
+    logger.log(`Downloading from ${dataType} view`);
 
     const queryString = JSON.stringify(query);
     const optionString = JSON.stringify(options);
 
     const queryHash = hash(`${queryString}${dataType}${optionString}`);
 
-    /*
-      if (!this.userId) {
-      throw new Meteor.Error('not-authorized');
-      }
-    */
     const existingJob = jobQueue.findOne({ 'data.queryHash': queryHash });
-    // logger.log('existingJob :', existingJob);
 
-    logger.debug('Initiating new download job');
-    const job = new Job(jobQueue, 'download', {
-      queryString,
-      queryHash,
-      dataType,
-      options,
-    });
-    job.priority('high').save();
-
-    // if (typeof existingJob === 'undefined') {
-    //   logger.debug('Initiating new download job');
-    //   const job = new Job(jobQueue, 'download', {
-    //     queryString,
-    //     queryHash,
-    //     dataType,
-    //     options,
-    //   });
-    //   job.priority('high').save();
-    // } else {
-    //   logger.warn('Job already exists !');
-    // }
+    if (typeof existingJob === 'undefined') {
+      logger.debug('Initiating new download job');
+      const job = new Job(jobQueue, 'download', {
+        queryString,
+        queryHash,
+        dataType,
+        options,
+      });
+      job.priority('high').save();
+    } else {
+      logger.log('Job already exists !');
+    }
 
     return queryHash;
   },
