@@ -32,10 +32,13 @@ const attributeTracker = ({ location }) => {
   const selAttr = attributeString.split(',')
     .filter((attr) => attr !== '');
 
-  const selectedAttributes = selAttr.length
-    ? selAttr
-    : attributes.filter((attribute) => attribute.defaultSearch)
-      .map((attribute) => attribute.name);
+  const filteredAttribute = attributes.filter((attribute) => attribute.defaultSearch)
+     .map((attribute) => attribute.name)
+
+   const selectedAttributes = selAttr.length
+     ? selAttr
+     : filteredAttribute.length ? filteredAttribute
+     : attributes.map((attribute) => attribute.name)
 
   return {
     loading,
