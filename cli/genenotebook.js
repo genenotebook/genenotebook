@@ -171,7 +171,7 @@ async function startGeneNoteBook(cmd) {
       path.resolve(dbPath || './db'),
       mongoPort,
       dbStartupTimeout,
-      dbCacheSizeGB
+      dbCacheSizeGB,
     );
     Object.assign(opts, { MONGO_URL });
     process.on('exit', () => {
