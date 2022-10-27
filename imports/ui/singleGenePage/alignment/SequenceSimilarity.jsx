@@ -42,11 +42,27 @@ function NoSequenceSimilarity({ showHeader }) {
 
 function SequenceSimilarityDataTracker({ gene }) {
   const queryGenes = Genes.findOne({ ID: gene.ID });
-  const subfeatures = queryGenes.subfeatures[0].ID;
+  const geneChildren = queryGenes.children;
 
   const alignmentSub = Meteor.subscribe('alignment');
   const loading = !alignmentSub.ready();
-  const similarSequences = similarSequencesCollection.findOne({ iteration_query: subfeatures });
+
+  /**
+   * iteration_query in the alignment collection can take the value of a gene
+   * identifier or be a child of the gene.
+   */
+  const similarSequences = (
+    typeof queryGenes.ID === 'undefined'
+      ? undefined
+      : similarSequencesCollection.findOne(
+        {
+          $or: [
+            { iteration_query: queryGenes.ID },
+            { iteration_query: { $in: geneChildren } },
+          ],
+        },
+      )
+  );
 
   return {
     loading,
