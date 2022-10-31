@@ -32,13 +32,10 @@ const attributeTracker = ({ location }) => {
   const selAttr = attributeString.split(',')
     .filter((attr) => attr !== '');
 
-  const filteredAttribute = attributes.filter((attribute) => attribute.defaultSearch)
-     .map((attribute) => attribute.name)
-
-   const selectedAttributes = selAttr.length
-     ? selAttr
-     : filteredAttribute.length ? filteredAttribute
-     : attributes.map((attribute) => attribute.name)
+  const selectedAttributes = selAttr.length
+    ? selAttr
+    : attributes.filter((attribute) => attribute.defaultSearch)
+      .map((attribute) => attribute.name);
 
   return {
     loading,
@@ -58,7 +55,7 @@ function SearchBar({
   const [redirect, setRedirect] = useState(false);
   const [searchString, setSearchString] = useState(initialSearchString);
   const [selectedAttributes, setSelectedAttributes] = useState(
-    new Set(initialSelectedAttributes),
+    new Set(['Gene ID', ...initialSelectedAttributes]),
   );
 
   const inputRef = useRef();
