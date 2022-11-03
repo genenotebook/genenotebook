@@ -1,3 +1,4 @@
+import { Mongo } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
 import { Roles } from 'meteor/alanning:roles';
 // jobqueue
@@ -7,10 +8,10 @@ import { Genes } from '/imports/api/genes/geneCollection.js';
 import { attributeCollection } from '/imports/api/genes/attributeCollection.js';
 import { dbxrefCollection } from '/imports/api/genes/dbxrefCollection.js';
 import { EditHistory } from '/imports/api/genes/edithistory_collection.js';
+import { eggnogCollection } from '/imports/api/genes/eggnog/eggnogCollection.js';
+import { similarSequencesCollection } from '/imports/api/genes/alignment/similarSequenceCollection.js';
 // orthogroups
-import {
-  orthogroupCollection,
-} from '/imports/api/genes/orthogroup_collection.js';
+import { orthogroupCollection } from '/imports/api/genes/orthogroup/orthogroupCollection.js';
 // genomes
 import { genomeCollection } from '/imports/api/genomes/genomeCollection.js';
 // transcriptomes
@@ -173,8 +174,16 @@ Meteor.publish({
       $or: [{ permission: { $in: roles } }, { isPublic: true }],
     });
   },
+  eggnog() {
+    const eggnog = eggnogCollection.find({});
+    return eggnog;
+  },
+  alignment(query) {
+    const diamond = similarSequencesCollection.find({ iteration_query: query });
+    return diamond;
+  },
   orthogroups(ID) {
-    return orthogroupCollection.find({ ID });
+    return orthogroupCollection.find({ _id: new Mongo.ObjectID(ID) });
   },
   editHistory() {
     if (!this.userId) {

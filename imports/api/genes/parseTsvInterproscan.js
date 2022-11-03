@@ -2,7 +2,7 @@ import { InterproscanProcessor } from '/imports/api/genes/addInterproscan.js';
 import logger from '/imports/api/util/logger.js';
 
 class ParseTsvFile extends InterproscanProcessor {
-  parse = (line) => {
+  parse = async (line) => {
     const [
       seqId,
       md5,

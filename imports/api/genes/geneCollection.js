@@ -1,5 +1,5 @@
-import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
+import { Mongo } from 'meteor/mongo';
 
 const VALID_SUBFEATURE_TYPES = [
   'transcript',
@@ -110,7 +110,7 @@ const SubfeatureSchema = new SimpleSchema(
   }
 );
 
-// extend the subfeature schema with base subfeatures
+// Extend the subfeature schema with base subfeatures.
 SubfeatureSchema.extend(IntervalBaseSchema);
 
 const GeneSchema = new SimpleSchema(
@@ -155,6 +155,12 @@ const GeneSchema = new SimpleSchema(
       optional: true,
       label: 'Orthogroup DB identifier (_id in orthogroup collection)',
     },
+    eggnogId: {
+      type: String,
+      index: true,
+      optional: true,
+      label: 'eggnog DB identifier (_id in eggnog collection)',
+    },
     seqid: {
       type: String,
       label: 'ID of the sequence on which the gene is, e.g. chr1',
@@ -166,7 +172,7 @@ const GeneSchema = new SimpleSchema(
     type: {
       type: String,
       allowedValues: ['gene'],
-      label:
+      label: 
         'Type of the top level annotation (currently only "gene" is allowed)',
     },
     strand: {
@@ -180,7 +186,7 @@ const GeneSchema = new SimpleSchema(
   }
 );
 
-// extend the gene schema with base features
+// Extend the gene schema with base features.
 GeneSchema.extend(IntervalBaseSchema);
 
 Genes.attachSchema(GeneSchema);

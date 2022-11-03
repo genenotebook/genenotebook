@@ -2,7 +2,6 @@
 /* eslint-disable no-underscore-dangle, no-console */
 
 const commander = require('commander');
-const fs = require('fs');
 const { Tail } = require('tail');
 const { spawn, execFileSync } = require('child_process');
 const path = require('path');
@@ -21,7 +20,7 @@ const logger = {
 };
 
 function customExitOverride(cmd) {
-  return function (err) {
+  return (err) => {
     if (
       err.code === 'commander.missingMandatoryOptionValue' ||
       err.code === 'commander.missingArgument'
@@ -78,7 +77,7 @@ class GeneNoteBookConnection {
 
 function checkMongoLog(logPath) {
   const tail = new Tail(logPath);
-  tail.on('line', function (line) {
+  tail.on('line', (line) => {
     const parts = line.split(' ');
     const status = parts[1];
     if (status === 'E') {
@@ -120,15 +119,15 @@ function startMongoDaemon(
 
   const mongoDaemon = spawn('mongod', mongodOptionArray);
 
-  mongoDaemon.on('error', function (err) {
+  mongoDaemon.on('error', (err) => {
     logger.error(err);
   });
 
-  mongoDaemon.stderr.on('data', function (chunk) {
+  mongoDaemon.stderr.on('data', (chunk) => {
     logger.error(chunk.toString('utf8'));
   });
 
-  mongoDaemon.stdout.on('data', function (chunk) {
+  mongoDaemon.stdout.on('data', (chunk) => {
     const msg = chunk.toString('utf8').split(' ').slice(5).join(' ');
     logger.log(`MongoDB message: ${msg}`);
     checkMongoLog(logPath);
@@ -155,10 +154,12 @@ async function startGeneNoteBook(cmd) {
     mongoPort = 27017,
     dbStartupTimeout,
     dbCacheSizeGB,
+    storagePath
   } = cmd.opts();
   const PORT = parseInt(port, 10) || 3000;
   const ROOT_URL = rootUrl || `http://localhost:${PORT}`;
-  const opts = { PORT, ROOT_URL, GNB_VERSION: pkginfo.version };
+  const STORAGE_PATH = storagePath || 'assets/app/uploads';
+  const opts = { PORT, ROOT_URL, GNB_VERSION: pkginfo.version, STORAGE_PATH };
 
   if (mongoUrl) {
     if (dbPath) {
@@ -170,10 +171,10 @@ async function startGeneNoteBook(cmd) {
       path.resolve(dbPath || './db'),
       mongoPort,
       dbStartupTimeout,
-      dbCacheSizeGB
+      dbCacheSizeGB,
     );
     Object.assign(opts, { MONGO_URL });
-    process.on('exit', function () {
+    process.on('exit', () => {
       logger.log('Shutting down mongo daemon');
       mongoDaemon.kill();
     });
@@ -225,6 +226,10 @@ program
     '-r, --root-url [url]',
     'Root URL on which GeneNoteBook will be accessed. Default: http://localhost'
   )
+  .option(
+    '-s, --storage-path [path]',
+    'Path where the uploaded files will be stored. Default: assets/app/uploads'
+  )
   .action((_, command) => {
     startGeneNoteBook(command);
   });
@@ -267,7 +272,7 @@ addGenome
       async: false,
     });
   })
-  .on('--help', function () {
+  .on('--help', () => {
     console.log(`
 Example:
     genenotebook add genome -u admin -p admin -n test testdata.fasta
@@ -314,6 +319,195 @@ addAnnotation
     }
   )
   .exitOverride(customExitOverride(addAnnotation));
+
+// Add Diamond.
+const addDiamond = add.command('diamond');
+
+addDiamond
+  .description(
+    `Add Diamond output formats, including BLAST pairwise, tabular and XML to a
+running GeneNoteBook server.`
+  )
+  .usage('[options] <Diamond output formats .xml, .txt file>')
+  .arguments('<file>')
+  .requiredOption(
+    '-u, --username <adminUsername>',
+    'GeneNoteBook admin username'
+  )
+  .requiredOption(
+    '-p, --password <adminPassword>',
+    'GeneNoteBook admin password'
+  )
+  .option(
+    '--port [port]',
+    'Port on which GeneNoteBook is running. Default: 3000'
+  )
+  .option(
+    '-fmt, --format [parser]',
+    `Choose a parser for the diamond output format. Parses .xml, .txt
+    extensions.`
+  )
+  .option(
+    '-alg, --algorithm [algorithm]',
+    'The algorithm used to compare the sequences to a database (e.g: blastx, blastp).'
+  )
+  .option(
+    '-mtx, --matrix [matrix]',
+    `The matrix of substitution used for sequence alignment (e.g:
+    BLOSUM90, BLOSUM80, PAM100).`
+  )
+  .option(
+    '-db --database [database]',
+    `The database used to compare the sequences (e.g: Non-reundant protein
+    sequences (nr)).`
+  )
+  .action(
+    (
+      file,
+      { username, password, port = 3000, format, algorithm, matrix, database }
+    ) => {
+      if (typeof file !== 'string') addDiamond.help();
+
+      const fileName = path.resolve(file);
+      if (!(fileName && username && password)) {
+        addDiamond.help();
+      }
+
+      const parserAccepted = ['xml', 'txt'];
+      const extensionFile = path.extname(file).replace(/\./g, '');
+      let parserType = format;
+
+      if (parserType) {
+        if (!parserAccepted.includes(parserType)) {
+          logger.error(`
+Error: unknow format : ${parserType}. To specify --format, choose a format
+compatible with diamond e.g : "xml", "txt".`);
+          addDiamond.help();
+        }
+      } else if (parserAccepted.includes(extensionFile)) {
+        parserType = extensionFile;
+      } else {
+        logger.error(`
+Error : unknow file extension : ${extensionFile}. Must specify --extension when
+file extension is not "xml", "txt"`);
+        addDiamond.help();
+      }
+
+      new GeneNoteBookConnection({ username, password, port }).call(
+        'addSimilarSequence',
+        {
+          fileName,
+          parser: parserType,
+          program: 'diamond',
+          algorithm: algorithm,
+          matrix: matrix,
+          database: database,
+        }
+      );
+    }
+  )
+  .on('--help', () => {
+    console.log(`
+Example:
+    genenotebook add diamond mmucedo.xml -u admin -p admin
+or
+    genenotebook add diamond mmucedo.txt --format txt --program blastp --matrix BLOSUM90 -db "Non-reundant protein sequences (nr)" -u admin -p admin
+    `);
+  })
+  .exitOverride(customExitOverride(addDiamond));
+
+// Add Blast.
+const addBlast = add.command('blast');
+
+addBlast
+  .description(
+    `Add BLAST output formats, including pairwise and XML to a
+running GeneNoteBook server.`
+  )
+  .usage('[options] <Blast output formats .xml, .txt file>')
+  .arguments('<file>')
+  .requiredOption(
+    '-u, --username <adminUsername>',
+    'GeneNoteBook admin username'
+  )
+  .requiredOption(
+    '-p, --password <adminPassword>',
+    'GeneNoteBook admin password'
+  )
+  .option(
+    '--port [port]',
+    'Port on which GeneNoteBook is running. Default: 3000'
+  )
+  .option(
+    '-fmt, --format [parser]',
+    'Choose a parser for the blast output format. Parses .xml, .txt extensions.'
+  )
+  .option(
+    '-alg, --algorithm [algorithm]',
+    'The algorithm used to compare the sequences to a database (e.g: blastx, blastp).'
+  )
+  .option(
+    '-mtx, --matrix [matrix]',
+    'The matrix of substitution used for sequence alignment (e.g: BLOSUM90, BLOSUM80, PAM100).'
+  )
+  .option(
+    '-db --database [database]',
+    'The database used to compare the sequences (e.g: Non-reundant protein sequences (nr)).'
+  )
+  .action(
+    (
+      file,
+      { username, password, port = 3000, format, algorithm, matrix, database }
+    ) => {
+      if (typeof file !== 'string') addBlast.help();
+
+      const fileName = path.resolve(file);
+      if (!(fileName && username && password)) {
+        addBlast.help();
+      }
+
+      const parserAccepted = ['xml', 'txt'];
+      const extensionFile = path.extname(file).replace(/\./g, '');
+      let parserType = format;
+
+      if (parserType) {
+        if (!parserAccepted.includes(parserType)) {
+          logger.error(`
+Error: unknow format : ${parserType}. To specify --format, choose a format
+compatible with diamond e.g : "xml", "txt".`);
+          addBlast.help();
+        }
+      } else if (parserAccepted.includes(extensionFile)) {
+        parserType = extensionFile;
+      } else {
+        logger.error(`
+Error : unknow file extension : ${extensionFile}. Must specify --extension when
+file extension is not "xml", "txt"`);
+        addBlast.help();
+      }
+
+      new GeneNoteBookConnection({ username, password, port }).call(
+        'addSimilarSequence',
+        {
+          fileName,
+          parser: parserType,
+          program: 'blast',
+          algorithm: algorithm,
+          matrix: matrix,
+          database: database,
+        }
+      );
+    }
+  )
+  .on('--help', () => {
+    console.log(`
+Example:
+    genenotebook add blast mmucedo.xml -u admin -p admin
+or
+    genenotebook add blast mmucedo.txt --format txt --algorithm blastp --matrix BLOSUM90 -db "Non-reundant protein sequences (nr)" -u admin -p admin
+    `);
+  })
+  .exitOverride(customExitOverride(addBlast));
 
 // add transcriptome
 const addTranscriptome = add.command('transcriptome');
@@ -431,7 +625,46 @@ or
   })
   .exitOverride(customExitOverride(addInterproscan));
 
-// add orthogroups
+// Add eggnog annotations file.
+const addEggnog = add.command('eggnog');
+
+addEggnog
+  .description('Add EggNog-mapper results to a running GeneNoteBook server')
+  .usage('[options] <EggNog-mapper tsv output file>')
+  .arguments('<file>')
+  .requiredOption(
+    '-u, --username <adminUsername>',
+    'GeneNoteBook admin username'
+  )
+  .requiredOption(
+    '-p, --password <adminPassword>',
+    'GeneNoteBook admin password'
+  )
+  .option(
+    '--port [port]',
+    'Port on which GeneNoteBook is running. Default: 3000'
+  )
+  .action((file, { username, password, port = 3000 }) => {
+    if (typeof file !== 'string') addEggnog.help();
+
+    const fileName = path.resolve(file);
+    if (!(fileName && username && password)) {
+      addEggnog.help();
+    }
+
+    new GeneNoteBookConnection({ username, password, port }).call('addEggnog', {
+      fileName,
+    });
+  })
+  .on('--help', () => {
+    console.log(`
+Example:
+    genenotebook add eggnog eggnog_annotations.tsv -u admin -p admin
+    `);
+  })
+  .exitOverride(customExitOverride(addEggnog));
+
+// add orthogroups.
 const addOrthogroups = add.command('orthogroups');
 
 addOrthogroups
@@ -440,15 +673,28 @@ addOrthogroups
   )
   .usage('[options] <Folder with (e.g. OrthoFinder) tree files>')
   .arguments('<folder>')
+  .option(
+    '-pfx, --prefixe [prefixe]',
+    'List each proteome filenames as a name for that species contained in a file or folder.',
+  )
+  .option(
+    '-l, --list [prefixe]',
+    'List of each proteome filename as the name for that species enumerated by hand.',
+  )
+  .option(
+    '-f, --force [force]',
+    'Ignore the use of prefixes.',
+  )
   .requiredOption('-u, --username <username>', 'GeneNoteBook admin username')
   .requiredOption('-p, --password <password>', 'GeneNoteBook admin password')
   .option(
     '--port [port]',
     'Port on which GeneNoteBook is running. Default: 3000'
   )
-  .action((file, { username, password, port = 3000 }) => {
+  .action((file, { prefixe, list, force, username, password, port = 3000 }) => {
     if (typeof file !== 'string') addOrthogroups.help();
     const folderName = path.resolve(file);
+    const prefixes = (typeof list !== 'undefined' ? list : path.resolve(prefixe));
 
     if (!(folderName && username && password)) {
       addOrthogroups.help();
@@ -456,8 +702,45 @@ addOrthogroups
 
     new GeneNoteBookConnection({ username, password, port }).call(
       'addOrthogroupTrees',
-      { folderName }
+      {
+        folderName,
+        force,
+        prefixes,
+      },
     );
+  })
+  .on('--help', () => {
+    console.log(`
+Orthofinder will use each proteome filename as the name for that species.
+However, Genotebook does not know the filename of each proteome if it is not
+given in the parameter.
+
+Example:
+
+# In case you want to ignore the use of prefixes.
+    genenotebook add orthogroups newicks/ --force -u admin -p admin
+
+# Folder that contain the list of proteome filename e.g. :
+#.
+#├── genomes
+#│   ├── Citrus_sinensis.fasta
+#│   └── Somus_speciesus.fasta
+#├── newicks
+#│   ├── OG0000001_tree.txt
+#│   └── OG0000002_tree.txt
+    genenotebook add orthogroups newicks/ -pfx genomes/ -u admin -p admin
+
+or
+
+# A file that lists filename.
+# for f in \`ls 2>/dev/null *{.fa,.faa,.fasta,.fas,.pep}\`; do echo -n "$f, " >> prfx-list.txt; done;
+    genenotebook add orthogroups newicks/ -pfx prfx-list.txt -u admin -p admin
+
+or
+
+# Prefix with the list of filename (with or without extension)
+    genenotebook add orthogroups newicks/ --list "Citrus_sinensis, Somus_speciesus" -u admin -p admin
+`);
   })
   .exitOverride(customExitOverride(addOrthogroups));
 
@@ -528,7 +811,7 @@ setUserPassword
       { userName, newPassword }
     );
   })
-  .on('--help', function () {
+  .on('--help', () => {
     console.log(`
 Example:
     genenotebook user setpassword -u admin -p admin username newpassword
@@ -610,7 +893,7 @@ addUser
       });
     }
   )
-  .on('--help', function () {
+  .on('--help', () => {
     console.log(`
 Example:
     genenotebook user add newUserName newPassword -u admin -p admin
@@ -651,7 +934,7 @@ removeUser
       { userName }
     );
   })
-  .on('--help', function () {
+  .on('--help', () => {
     console.log(`
 Example:
     genenotebook user rm userName -u admin -p admin
@@ -703,7 +986,7 @@ editUser
       }
     );
   })
-  .on('--help', function () {
+  .on('--help', () => {
     console.log(`
 Example:
     genenotebook user edit userName -u admin -p admin

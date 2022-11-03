@@ -1,0 +1,42 @@
+.diamond-body {
+    display: flex;
+    position: relative;
+    top: 20px;
+}
+
+#general-diamond-informations {
+    position: relative;
+    top: 15px;
+    left: 15px;
+}
+
+.table-diamond {
+    width: 50%;
+    height: auto;
+    // border: 1px solid red;
+}
+
+.table-hit {
+    width: 100%;
+}
+
+.title-query-sequences {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.list-query-sequences {
+    width: 135px;
+    margin-left: 10px;
+}
+
+#top-bar-sequence {
+    // border: 1px solid black;
+}
+
+.hit-cover:hover {
+    stroke: #209cee;
+    stroke-width: 2px;
+    stroke-linejoin: round;
+    cursor: pointer;
+}

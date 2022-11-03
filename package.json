@@ -1,6 +1,6 @@
 {
   "name": "genenotebook",
-  "version": "0.3.1",
+  "version": "0.3.2_0",
   "repository": "https://github.com/genenotebook/genenotebook",
   "description": "A portable website for browsing and querying genome sequences and annotations",
   "license": "AGPL-3.0",
@@ -8,7 +8,7 @@
     "preinstall": "meteor help || curl https://install.meteor.com/ | sh",
     "preupdate": "meteor update",
     "docs": "documentation build --shallow imports/** -f html -o api-docs",
-    "postdocs": "cp api-docs/index.html docs/pages/api-docs.html && cp -r api-docs/assets docs/",
+    "postdocs": "mkdir -p docs/ && cp api-docs/index.html docs/api-docs.html && cp -r api-docs/assets docs/",
     "bundle": "./bundle.sh",
     "complete_build": "npm install && npm run bundle",
     "dev": "NODE_OPTIONS=--max-old-space-size=8192 GNB_VERSION=$npm_package_version meteor run",
@@ -26,6 +26,7 @@
     "testModule": "tests/main.js"
   },
   "babel": {
+    "configFile": false,
     "presets": [
       "meteor"
     ],
@@ -38,6 +39,7 @@
     }
   },
   "eslintConfig": {
+    "requireConfigFile": false,
     "extends": [
       "@meteorjs/eslint-config-meteor",
       "plugin:prettier/recommended"
@@ -105,7 +107,7 @@
     "react-dom": "^17.0.0",
     "react-popper": "^2.2.4",
     "react-resize-detector": "^7.0.0",
-    "react-router-dom": "^6.0.0",
+    "react-router-dom": "5.1",
     "react-select": "^5.0.0",
     "rus-diff": "^1.1.0",
     "simpl-schema": "^1.10.2",
@@ -116,25 +118,27 @@
     "utf-8-validate": "^5.0.7",
     "webfontloader": "^1.6.28",
     "ws": "^8.2.3",
+    "xml-flow": "^1.0.4",
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.16.5",
     "@meteorjs/eslint-config-meteor": "^1.0.5",
     "@types/react": "^17.0.34",
+    "babel-eslint": "^10.1.0",
     "babel-plugin-istanbul": "^6.1.1",
     "babel-preset-meteor": "^7.9.0",
     "babel-runtime": "^6.26.0",
     "chai": "^4.3.3",
-    "eslint": "^8.0.0",
-    "eslint-config-airbnb": "^19.0.0",
+    "eslint": "^8.23.0",
+    "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^8.3.0",
     "eslint-import-resolver-meteor": "^0.4.0",
-    "eslint-plugin-import": "^2.25.3",
-    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsx-a11y": "^6.6.1",
     "eslint-plugin-meteor": "^7.3.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-react": "^7.27.0",
+    "eslint-plugin-react": "^7.31.1",
     "eslint-plugin-react-hooks": "^4.3.0",
     "node-fetch": "^3.0.0",
     "prettier": "^2.5.1",

@@ -15,6 +15,8 @@ import GeneralInfo from './GeneralInfo.jsx';
 import Genemodel from './Genemodel.jsx';
 import Seq from './Seq.jsx';
 import ProteinDomains from './ProteinDomains.jsx';
+import Eggnog from './eggnog/Eggnog.jsx';
+import SequenceSimilarity from './alignment/SequenceSimilarity.jsx';
 import Orthogroup from './orthoGroup/Orthogroup.jsx';
 
 import GeneExpression from './geneExpression/GeneExpression.jsx';
@@ -109,6 +111,16 @@ function SingleGenePage({ gene, genome = {} }) {
                 </a>
               </li>
               <li>
+                <a href="#eggnog">
+                  EggNOG
+                </a>
+              </li>
+              <li>
+                <a href="#sequence-similarity">
+                  Sequence Similarity
+                </a>
+              </li>
+              <li>
                 <a href="#expression">
                   Expression
                 </a>
@@ -131,6 +143,12 @@ function SingleGenePage({ gene, genome = {} }) {
           </section>
           <section id="orthogroup">
             <Orthogroup gene={gene} showHeader resizable />
+          </section>
+          <section id="eggnog">
+            <Eggnog gene={gene} showHeader resizable />
+          </section>
+          <section id="sequence-similarity">
+            <SequenceSimilarity gene={gene} showHeader={true} resizable />
           </section>
           <section id="expression">
             <GeneExpression gene={gene} showHeader resizable />
