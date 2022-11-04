@@ -21,7 +21,9 @@ class XmlProcessor {
     this.algorithm = algorithm;
     this.matrix = matrix;
     this.database = database;
-    this.similarSeqBulkOp = similarSequencesCollection.rawCollection().initializeUnorderedBulkOp();
+    this.similarSeqBulkOp = similarSequencesCollection
+      .rawCollection()
+      .initializeUnorderedBulkOp();
   }
 
   /**
@@ -31,11 +33,7 @@ class XmlProcessor {
    * @param {string} str - The string.
    */
   filterPrefixBank = (str) => {
-    const filter = (
-      /\|/.test(str)
-        ? str.split('|')[1]
-        : str
-    );
+    const filter = /\|/.test(str) ? str.split('|')[1] : str;
     return filter;
   };
 
@@ -71,40 +69,41 @@ class XmlProcessor {
 
     if (obj['blastoutput_iterations'] !== undefined) {
       // Fix the very rare case of a single iteration.
-      const iterLength = (
+      const iterLength =
         typeof obj['blastoutput_iterations'].length === 'undefined'
           ? 1
-          : obj['blastoutput_iterations'].length
-      );
+          : obj['blastoutput_iterations'].length;
 
       for (let i = 0; i < iterLength; i += 1) {
-      /** Get and split iteration query
+        /** Get and split iteration query
          * e.g: 'MMUCEDO_000001-T1 becomes MMUCEDO_000001'.
          */
-        const iterationQuery = (
+        const iterationQuery =
           iterLength === 1
             ? obj['blastoutput_iterations']['iteration_query-def']
-            : obj['blastoutput_iterations'][i]['iteration_query-def']
-        );
+            : obj['blastoutput_iterations'][i]['iteration_query-def'];
         const splitIterationQuery = iterationQuery.split(' ');
 
         splitIterationQuery.forEach(async (iter) => {
           /** Chek if the queries exist in the genes collection. */
-          const subfeatureIsFound = await this.genesDb.findOne({ 'subfeatures.ID': iter });
-          if (typeof subfeatureIsFound !== 'undefined' && subfeatureIsFound !== null) {
+          const subfeatureIsFound = await this.genesDb.findOne({
+            'subfeatures.ID': iter,
+          });
+          if (
+            typeof subfeatureIsFound !== 'undefined' &&
+            subfeatureIsFound !== null
+          ) {
             /** Get the total query sequence length. */
-            const queryLen = (
+            const queryLen =
               iterLength === 1
                 ? obj['blastoutput_iterations']['iteration_query-len']
-                : obj['blastoutput_iterations'][i]['iteration_query-len']
-            );
+                : obj['blastoutput_iterations'][i]['iteration_query-len'];
 
             /** Get the root tag of hit sequences. */
-            const iterationHits = (
+            const iterationHits =
               iterLength === 1
                 ? obj['blastoutput_iterations']['iteration_hits']
-                : obj['blastoutput_iterations'][i]['iteration_hits']
-            );
+                : obj['blastoutput_iterations'][i]['iteration_hits'];
 
             /** Reset the iterations array. */
             const iterations = [];
@@ -115,23 +114,22 @@ class XmlProcessor {
 
               const hitId = this.filterPrefixBank(hit['hit_id']);
               /** Get the first description if there are identical proteins. */
-              const hitDef = (
+              const hitDef =
                 hit['hit_def'].split('>').length > 1
                   ? hit['hit_def'].split('>')[0]
-                  : hit['hit_def']
-              );
+                  : hit['hit_def'];
 
               /** Check if identical proteins. */
-              const identicalProteins = (
+              const identicalProteins =
                 hit['hit_def'].split('>').length > 1
-                  ? hit['hit_def'].split('>').slice(1).map((ips) => (
-                    {
-                      def: ips,
-                      id: this.filterPrefixBank(ips.split(' ')[0]),
-                    }
-                  ))
-                  : undefined
-              );
+                  ? hit['hit_def']
+                      .split('>')
+                      .slice(1)
+                      .map((ips) => ({
+                        def: ips,
+                        id: this.filterPrefixBank(ips.split(' ')[0]),
+                      }))
+                  : undefined;
 
               /** Get hit sequences information. */
               const hitAccession = hit['hit_accession'];
@@ -180,25 +178,28 @@ class XmlProcessor {
             const geneIdentifier = subfeatureIsFound.ID;
 
             /** Mongo bulk-operation. */
-            this.similarSeqBulkOp.find({
-              iteration_query: geneIdentifier,
-            }).upsert().update(
-              {
-                $set: {
-                  program_ref: this.program,
-                  algorithm_ref: this.algorithm,
-                  matrix_ref: this.matrix,
-                  database_ref: this.database,
-                  iteration_query: geneIdentifier,
-                  query_len: queryLen,
-                  iteration_hits: iterations,
+            this.similarSeqBulkOp
+              .find({
+                iteration_query: geneIdentifier,
+              })
+              .upsert()
+              .update(
+                {
+                  $set: {
+                    program_ref: this.program,
+                    algorithm_ref: this.algorithm,
+                    matrix_ref: this.matrix,
+                    database_ref: this.database,
+                    iteration_query: geneIdentifier,
+                    query_len: queryLen,
+                    iteration_hits: iterations,
+                  },
                 },
-              },
-              {
-                upsert: false,
-                multi: true,
-              },
-            );
+                {
+                  upsert: false,
+                  multi: true,
+                }
+              );
             this.similarSeqBulkOp.execute();
           } else {
             logger.warn(`Warning ! No sub-feature was found for ${iter}.`);

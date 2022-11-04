@@ -154,7 +154,7 @@ async function startGeneNoteBook(cmd) {
     mongoPort = 27017,
     dbStartupTimeout,
     dbCacheSizeGB,
-    storagePath
+    storagePath,
   } = cmd.opts();
   const PORT = parseInt(port, 10) || 3000;
   const ROOT_URL = rootUrl || `http://localhost:${PORT}`;
@@ -171,7 +171,7 @@ async function startGeneNoteBook(cmd) {
       path.resolve(dbPath || './db'),
       mongoPort,
       dbStartupTimeout,
-      dbCacheSizeGB,
+      dbCacheSizeGB
     );
     Object.assign(opts, { MONGO_URL });
     process.on('exit', () => {
@@ -675,16 +675,13 @@ addOrthogroups
   .arguments('<folder>')
   .option(
     '-pfx, --prefixe [prefixe]',
-    'List each proteome filenames as a name for that species contained in a file or folder.',
+    'List each proteome filenames as a name for that species contained in a file or folder.'
   )
   .option(
     '-l, --list [prefixe]',
-    'List of each proteome filename as the name for that species enumerated by hand.',
+    'List of each proteome filename as the name for that species enumerated by hand.'
   )
-  .option(
-    '-f, --force [force]',
-    'Ignore the use of prefixes.',
-  )
+  .option('-f, --force [force]', 'Ignore the use of prefixes.')
   .requiredOption('-u, --username <username>', 'GeneNoteBook admin username')
   .requiredOption('-p, --password <password>', 'GeneNoteBook admin password')
   .option(
@@ -694,7 +691,7 @@ addOrthogroups
   .action((file, { prefixe, list, force, username, password, port = 3000 }) => {
     if (typeof file !== 'string') addOrthogroups.help();
     const folderName = path.resolve(file);
-    const prefixes = (typeof list !== 'undefined' ? list : path.resolve(prefixe));
+    const prefixes = typeof list !== 'undefined' ? list : path.resolve(prefixe);
 
     if (!(folderName && username && password)) {
       addOrthogroups.help();
@@ -706,7 +703,7 @@ addOrthogroups
         folderName,
         force,
         prefixes,
-      },
+      }
     );
   })
   .on('--help', () => {

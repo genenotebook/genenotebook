@@ -2,11 +2,7 @@ import { similarSequencesCollection } from '/imports/api/genes/alignment/similar
 import { Genes } from '/imports/api/genes/geneCollection.js';
 
 class Pairwise {
-  constructor({
-    iteration_query,
-    query_length,
-    position_query,
-  }){
+  constructor({ iteration_query, query_length, position_query }) {
     this.iteration_query = iteration_query;
     this.query_length = query_length;
     this.position_query = position_query; // Index in the document of the query sequence.
@@ -33,7 +29,9 @@ class PairwiseProcessor {
     this.algorithm = algorithm;
     this.matrix = matrix;
     this.database = database;
-    this.similarSeqBulkOp = similarSequencesCollection.rawCollection().initializeUnorderedBulkOp();
+    this.similarSeqBulkOp = similarSequencesCollection
+      .rawCollection()
+      .initializeUnorderedBulkOp();
   }
 
   /**
@@ -42,18 +40,17 @@ class PairwiseProcessor {
    * @param {string} line - The line to parse.
    */
   parse = (line) => {
-    if (line.length !== 0 || !(/^BLAST/.test(line))) {
+    if (line.length !== 0 || !/^BLAST/.test(line)) {
       if (/^Query=/.test(line) || /^Query #/.test(line)) {
         /**
          * Get and clean the name of the query sequence according to the program used.
          * (e.g : 'Query= MMUCEDO_000001-T1' becomes MMUCEDO_000001-T1 ).
          * @type {string}
          */
-        const queryClean = (
+        const queryClean =
           this.program === 'blast'
             ? line.replace('Query #', '').split(': ')[1].split(' ')[0]
-            : line.replace('Query= ', '').split(' ')[0]
-        );
+            : line.replace('Query= ', '').split(' ')[0];
 
         /** In the event that it is the first element of the collection to be created. */
         if (typeof this.pairWise.iteration_query === 'undefined') {
@@ -61,28 +58,33 @@ class PairwiseProcessor {
         }
 
         /** In the case where a new pairwise must be created. */
-        if (typeof this.pairWise.iteration_query !== 'undefined'
-            && this.pairWise.iteration_query !== queryClean) {
+        if (
+          typeof this.pairWise.iteration_query !== 'undefined' &&
+          this.pairWise.iteration_query !== queryClean
+        ) {
           /** Update or insert pairwise. */
-          this.similarSeqBulkOp.find({
-            iteration_query: this.pairWise.iteration_query,
-          }).upsert().update(
-            {
-              $set: {
-                program_ref: this.program,
-                algorithm_ref: this.algorithm,
-                matrix_ref: this.matrix,
-                database_ref: this.database,
-                iteration_query: this.pairWise.iteration_query,
-                query_len: this.pairWise.query_length,
-                iteration_hits: this.pairWise.iteration_hits,
+          this.similarSeqBulkOp
+            .find({
+              iteration_query: this.pairWise.iteration_query,
+            })
+            .upsert()
+            .update(
+              {
+                $set: {
+                  program_ref: this.program,
+                  algorithm_ref: this.algorithm,
+                  matrix_ref: this.matrix,
+                  database_ref: this.database,
+                  iteration_query: this.pairWise.iteration_query,
+                  query_len: this.pairWise.query_length,
+                  iteration_hits: this.pairWise.iteration_hits,
+                },
               },
-            },
-            {
-              upsert: false,
-              multi: true,
-            },
-          );
+              {
+                upsert: false,
+                multi: true,
+              }
+            );
           this.similarSeqBulkOp.execute();
         }
 
@@ -97,11 +99,10 @@ class PairwiseProcessor {
          * (e.g : 'Length=1022' becomes 1022 ).
          * @type {string}
          */
-        const lengthClean = (
+        const lengthClean =
           this.program === 'blast'
             ? line.split('Length:')[1]
-            : line.replace('Length=', '')
-        );
+            : line.replace('Length=', '');
 
         /**
          * The first length found is the length of the query sequence. Then
@@ -112,9 +113,12 @@ class PairwiseProcessor {
         } else {
           /** In the case of identical proteins. */
           if (this.pairWise.iteration_hits.slice(-1)[0].accession_len) {
-            this.pairWise.iteration_hits.slice(-1)[0].identical_proteins.slice(-1)[0].accession_len = lengthClean;
+            this.pairWise.iteration_hits
+              .slice(-1)[0]
+              .identical_proteins.slice(-1)[0].accession_len = lengthClean;
           } else {
-            this.pairWise.iteration_hits.slice(-1)[0].accession_len = Number(lengthClean);
+            this.pairWise.iteration_hits.slice(-1)[0].accession_len =
+              Number(lengthClean);
           }
         }
       }
@@ -131,14 +135,23 @@ class PairwiseProcessor {
 
         /** Check if there are identical proteins. */
         if (this.pairWise.iteration_hits.length !== 0) {
-          if (Object.keys(this.pairWise.iteration_hits.slice(-1)[0]).length === 3
-              || Object.keys(this.pairWise.iteration_hits.slice(-1)[0]).length === 4) {
+          if (
+            Object.keys(this.pairWise.iteration_hits.slice(-1)[0]).length ===
+              3 ||
+            Object.keys(this.pairWise.iteration_hits.slice(-1)[0]).length === 4
+          ) {
             if (!this.pairWise.iteration_hits.slice(-1)[0].identical_proteins) {
-              this.pairWise.iteration_hits.slice(-1)[0].identical_proteins = [{}];
+              this.pairWise.iteration_hits.slice(-1)[0].identical_proteins = [
+                {},
+              ];
             } else {
-              this.pairWise.iteration_hits.slice(-1)[0].identical_proteins.push({});
+              this.pairWise.iteration_hits
+                .slice(-1)[0]
+                .identical_proteins.push({});
             }
-            this.pairWise.iteration_hits.slice(-1)[0].identical_proteins.slice(-1)[0].def = definition;
+            this.pairWise.iteration_hits
+              .slice(-1)[0]
+              .identical_proteins.slice(-1)[0].def = definition;
           } else {
             this.pairWise.iteration_hits.push({});
             this.pairWise.iteration_hits.slice(-1)[0].def = definition;
@@ -154,7 +167,8 @@ class PairwiseProcessor {
          * (e.g : '>KAG2206553.1 hypothetical' becomes KAG2206553.1).
          */
         if (this.program === 'diamond') {
-          this.pairWise.iteration_hits.slice(-1)[0].id = definition.split(' ')[0];
+          this.pairWise.iteration_hits.slice(-1)[0].id =
+            definition.split(' ')[0];
         }
       }
       if (/^Sequence ID:/.test(line)) {
@@ -163,11 +177,15 @@ class PairwiseProcessor {
          * hit sequence.
          * (e.g : 'Sequence ID: KAG2206553.1' becomes KAG2206553.1).
          */
-        const identifiantClean = line.replace('Sequence ID: ', '').split(' ')[0];
+        const identifiantClean = line
+          .replace('Sequence ID: ', '')
+          .split(' ')[0];
 
         /** Check if there are identical proteins. */
         if (this.pairWise.iteration_hits.slice(-1)[0].id) {
-          this.pairWise.iteration_hits.slice(-1)[0].identical_proteins.slice(-1)[0].id = identifiantClean;
+          this.pairWise.iteration_hits
+            .slice(-1)[0]
+            .identical_proteins.slice(-1)[0].id = identifiantClean;
         } else {
           this.pairWise.iteration_hits.slice(-1)[0].id = identifiantClean;
         }
@@ -178,15 +196,15 @@ class PairwiseProcessor {
         const allScores = line.trim();
 
         /// Split to comma (result -> Score = 54.7 bits (130),).
-        const scoresCleaned = (
+        const scoresCleaned =
           this.program === 'blast'
             ? allScores.replace('Score:', '')
-            : allScores.replace('Score = ', '')
-        );
+            : allScores.replace('Score = ', '');
         const bitScore = scoresCleaned.split('bits')[0];
         const score = scoresCleaned.split('bits')[1].split(/[()]/)[1];
 
-        this.pairWise.iteration_hits.slice(-1)[0]['bit-score'] = Number(bitScore);
+        this.pairWise.iteration_hits.slice(-1)[0]['bit-score'] =
+          Number(bitScore);
         this.pairWise.iteration_hits.slice(-1)[0].score = Number(score);
       }
       // Add identities, query length, positives and gaps.
@@ -202,26 +220,28 @@ class PairwiseProcessor {
         const gapsNoClean = splitInformations[2];
 
         // Clean values.
-        const identities = (
+        const identities =
           this.program === 'blast'
             ? identitiesNoClean.replace('Identities:', '').split('/')[0]
-            : identitiesNoClean.replace('Identities = ', '').split('/')[0]
-        );
-        const queryLen = (
+            : identitiesNoClean.replace('Identities = ', '').split('/')[0];
+        const queryLen =
           this.program === 'blast'
-            ? identitiesNoClean.replace('Identities:', '').split('/')[1].split('(')[0]
-            : identitiesNoClean.replace('Identities = ', '').split('/')[1].split(' ')[0]
-        );
-        const positives = (
+            ? identitiesNoClean
+                .replace('Identities:', '')
+                .split('/')[1]
+                .split('(')[0]
+            : identitiesNoClean
+                .replace('Identities = ', '')
+                .split('/')[1]
+                .split(' ')[0];
+        const positives =
           this.program === 'blast'
             ? positivesNoClean.replace('Positives:', '').split('/')[0]
-            : positivesNoClean.replace('Positives = ', '').split('/')[0]
-        );
-        const gaps = (
+            : positivesNoClean.replace('Positives = ', '').split('/')[0];
+        const gaps =
           this.program === 'blast'
             ? gapsNoClean.replace('Gaps:', '').split('/')[0]
-            : gapsNoClean.replace('Gaps = ', '').split('/')[0]
-        );
+            : gapsNoClean.replace('Gaps = ', '').split('/')[0];
 
         // Add identities, positives and gaps informations.
         this.pairWise.iteration_hits.slice(-1)[0].identity = Number(identities);
@@ -237,11 +257,10 @@ class PairwiseProcessor {
 
         // Split to comma (result -> Expect = 1.17e-04).
         const expectSplit = expectQuery.split(',')[1];
-        const expect = (
+        const expect =
           this.program === 'blast'
             ? expectSplit.replace('Expect:', '')
-            : expectSplit.replace('Expect = ', '')
-        );
+            : expectSplit.replace('Expect = ', '');
 
         // Add information.
         this.pairWise.iteration_hits.slice(-1)[0].evalue = expect;
@@ -261,7 +280,7 @@ class PairwiseProcessor {
         // blastp or a blastx. The trick is that for a blastx the length is 3
         // times bigger because a codon is a sequence of three nucleotides.
         if (typeof this.algorithm === 'undefined') {
-          const pairwireLength = (Number(queryTo) - (Number(queryFrom) - 1));
+          const pairwireLength = Number(queryTo) - (Number(queryFrom) - 1);
           if (pairwireLength === 60) {
             this.program = 'blastp';
           } else if (pairwireLength === 180) {
@@ -277,26 +296,38 @@ class PairwiseProcessor {
         this.pairWise.position_query = Number(posSeq);
 
         // Add once query from.
-        if (typeof this.pairWise.iteration_hits.slice(-1)[0]['query-from'] === 'undefined') {
-          this.pairWise.iteration_hits.slice(-1)[0]['query-from'] = Number(queryFrom);
+        if (
+          typeof this.pairWise.iteration_hits.slice(-1)[0]['query-from'] ===
+          'undefined'
+        ) {
+          this.pairWise.iteration_hits.slice(-1)[0]['query-from'] =
+            Number(queryFrom);
         }
 
         // Update query to.
         this.pairWise.iteration_hits.slice(-1)[0]['query-to'] = Number(queryTo);
 
         // Concatenates query sequences information.
-        if (typeof this.pairWise.iteration_hits.slice(-1)[0]['query-seq'] === 'undefined') {
+        if (
+          typeof this.pairWise.iteration_hits.slice(-1)[0]['query-seq'] ===
+          'undefined'
+        ) {
           this.pairWise.iteration_hits.slice(-1)[0]['query-seq'] = querySeq;
         } else {
-          this.pairWise.iteration_hits.slice(-1)[0]['query-seq'] = this.pairWise.iteration_hits.slice(-1)[0]['query-seq'].concat(querySeq);
+          this.pairWise.iteration_hits.slice(-1)[0]['query-seq'] =
+            this.pairWise.iteration_hits
+              .slice(-1)[0]
+              ['query-seq'].concat(querySeq);
         }
       }
-      if (typeof this.pairWise.iteration_hits !== 'undefined' && typeof this.pairWise.position_query !== 'undefined') {
-        const regexMidline = (
+      if (
+        typeof this.pairWise.iteration_hits !== 'undefined' &&
+        typeof this.pairWise.position_query !== 'undefined'
+      ) {
+        const regexMidline =
           this.program === 'blast'
             ? /(^Alignments|>|^Sequence|^Range|^Score:|^Method|^Identities|^Query|^Sbjct)/
-            : /(^Query|^Length=|>|^Score =|^Identities =|^Sbjct|^Frame =)/
-        );
+            : /(^Query|^Length=|>|^Score =|^Identities =|^Sbjct|^Frame =)/;
         if (!regexMidline.test(line.trim()) && !!line) {
           // Get the midline sequence (e.g MFSGSSS+KNEG+PK ). Midline is between
           // the query sequence index plus 60 characters. Allows to keep the
@@ -304,19 +335,25 @@ class PairwiseProcessor {
           // function.
           let midlineClean = line.substring(
             this.pairWise.position_query,
-            (this.pairWise.position_query + 60),
+            this.pairWise.position_query + 60
           );
 
           // Fix the bug with spaces at the end of a sequence.
           if (midlineClean.length < 60) {
-            midlineClean += ' '.repeat((60 - midlineClean.length));
+            midlineClean += ' '.repeat(60 - midlineClean.length);
           }
 
           // Concatenates informations.
-          if (typeof this.pairWise.iteration_hits.slice(-1)[0]['midline'] === 'undefined') {
+          if (
+            typeof this.pairWise.iteration_hits.slice(-1)[0]['midline'] ===
+            'undefined'
+          ) {
             this.pairWise.iteration_hits.slice(-1)[0]['midline'] = midlineClean;
           } else {
-            this.pairWise.iteration_hits.slice(-1)[0]['midline'] = this.pairWise.iteration_hits.slice(-1)[0]['midline'].concat(midlineClean);
+            this.pairWise.iteration_hits.slice(-1)[0]['midline'] =
+              this.pairWise.iteration_hits
+                .slice(-1)[0]
+                ['midline'].concat(midlineClean);
           }
         }
       }
@@ -333,18 +370,26 @@ class PairwiseProcessor {
         const hitTo = hitSplit[3];
 
         // Add once hit-from.
-        if (typeof this.pairWise.iteration_hits.slice(-1)[0]['hit-from'] === 'undefined') {
-          this.pairWise.iteration_hits.slice(-1)[0]['hit-from'] = Number(hitFrom);
+        if (
+          typeof this.pairWise.iteration_hits.slice(-1)[0]['hit-from'] ===
+          'undefined'
+        ) {
+          this.pairWise.iteration_hits.slice(-1)[0]['hit-from'] =
+            Number(hitFrom);
         }
 
         // Update hit-to.
         this.pairWise.iteration_hits.slice(-1)[0]['hit-to'] = Number(hitTo);
 
         // Concatenates informations.
-        if (typeof this.pairWise.iteration_hits.slice(-1)[0]['hit-seq'] === 'undefined') {
+        if (
+          typeof this.pairWise.iteration_hits.slice(-1)[0]['hit-seq'] ===
+          'undefined'
+        ) {
           this.pairWise.iteration_hits.slice(-1)[0]['hit-seq'] = hitSeq;
         } else {
-          this.pairWise.iteration_hits.slice(-1)[0]['hit-seq'] = this.pairWise.iteration_hits.slice(-1)[0]['hit-seq'].concat(hitSeq);
+          this.pairWise.iteration_hits.slice(-1)[0]['hit-seq'] =
+            this.pairWise.iteration_hits.slice(-1)[0]['hit-seq'].concat(hitSeq);
         }
       }
     }
@@ -355,25 +400,28 @@ class PairwiseProcessor {
    * @function
    */
   lastPairwise = () => {
-    this.similarSeqBulkOp.find({
-      iteration_query: this.pairWise.iteration_query,
-    }).upsert().update(
-      {
-        $set: {
-          program_ref: this.program,
-          algorithm_ref: this.algorithm,
-          matrix_ref: this.matrix,
-          database_ref: this.database,
-          iteration_query: this.pairWise.iteration_query,
-          query_len: this.pairWise.query_length,
-          iteration_hits: this.pairWise.iteration_hits,
+    this.similarSeqBulkOp
+      .find({
+        iteration_query: this.pairWise.iteration_query,
+      })
+      .upsert()
+      .update(
+        {
+          $set: {
+            program_ref: this.program,
+            algorithm_ref: this.algorithm,
+            matrix_ref: this.matrix,
+            database_ref: this.database,
+            iteration_query: this.pairWise.iteration_query,
+            query_len: this.pairWise.query_length,
+            iteration_hits: this.pairWise.iteration_hits,
+          },
         },
-      },
-      {
-        upsert: false,
-        multi: true,
-      },
-    );
+        {
+          upsert: false,
+          multi: true,
+        }
+      );
     this.similarSeqBulkOp.execute();
   };
 }

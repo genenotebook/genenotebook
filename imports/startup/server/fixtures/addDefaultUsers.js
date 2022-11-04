@@ -7,7 +7,7 @@ import { ROLES } from '/imports/api/users/users.js';
 
 export default function addDefaultUsers() {
   // Moving to a new Roles schema
-
+  /*
   try {
     logger.log('Migrating user roles schema v1 --> v2');
     Roles._forwardMigrate(); // eslint-disable-line no-underscore-dangle
@@ -16,7 +16,7 @@ export default function addDefaultUsers() {
   } catch (error) {
     logger.warn(error);
   }
-
+  */
   // Register user roles
   ROLES.forEach((roleName, i) => {
     const role = Meteor.roles.findOne({ _id: roleName });
@@ -31,7 +31,9 @@ export default function addDefaultUsers() {
   });
 
   // Add default users
-  if (Meteor.users.find().count() === 0 /* && 'accounts' in Meteor.settings */) {
+  if (
+    Meteor.users.find().count() === 0 /* && 'accounts' in Meteor.settings */
+  ) {
     logger.log('Adding default admin user');
     const userId = Accounts.createUser({
       username: 'admin',

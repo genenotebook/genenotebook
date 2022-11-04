@@ -11,7 +11,9 @@ import startJobQueue from './startJobQueue.js';
 Meteor.startup(() => {
   getVersion.call((err, res) => {
     if (err) logger.error(err);
-    logger.log(`GeneNoteBook server started, serving at ${Meteor.absoluteUrl()}`);
+    logger.log(
+      `GeneNoteBook server started, serving at ${Meteor.absoluteUrl()}`
+    );
     logger.log(`Running GeneNoteBook version ${res}`);
     addDefaultUsers();
     addDefaultAttributes();

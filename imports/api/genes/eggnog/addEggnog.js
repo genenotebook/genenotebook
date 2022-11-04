@@ -78,15 +78,15 @@ class EggnogProcessor {
 
       // If subfeatures is found in genes database (e.g: ID =
       // MMUCEDO_000002-T1).
-      const subfeatureIsFound = this.genesDb.findOne(
-        { 'subfeatures.ID': queryName },
-      );
+      const subfeatureIsFound = this.genesDb.findOne({
+        'subfeatures.ID': queryName,
+      });
 
       if (typeof subfeatureIsFound !== 'undefined') {
         // Update or insert if no matching documents were found.
         const documentEggnog = eggnogCollection.upsert(
           { query_name: queryName }, // selector.
-          annotations, // modifier.
+          annotations // modifier.
         );
 
         // Update eggnogId in genes database.
@@ -94,14 +94,16 @@ class EggnogProcessor {
           // Eggnog _id is created.
           this.genesDb.update(
             { 'subfeatures.ID': queryName },
-            { $set: { eggnogId: documentEggnog.insertedId } },
+            { $set: { eggnogId: documentEggnog.insertedId } }
           );
         } else {
           // Eggnog already exists.
-          const eggnogIdentifiant = eggnogCollection.findOne({ query_name: queryName })._id;
+          const eggnogIdentifiant = eggnogCollection.findOne({
+            query_name: queryName,
+          })._id;
           this.genesDb.update(
             { 'subfeatures.ID': queryName },
-            { $set: { eggnogId: eggnogIdentifiant } },
+            { $set: { eggnogId: eggnogIdentifiant } }
           );
         }
       } else {
