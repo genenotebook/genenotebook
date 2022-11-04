@@ -16,7 +16,6 @@ caching-html-compiler@1.2.1
 callback-hook@1.4.0
 check@1.3.1
 danimal:userpresence@1.0.1
-dburles:factory@1.1.0
 ddp@1.4.0
 ddp-client@2.6.0
 ddp-common@1.4.0

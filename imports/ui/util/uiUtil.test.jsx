@@ -1,6 +1,4 @@
 /* eslint-env mocha */
-// import { Factory } from 'meteor/dburles:factory';
-// import { Meteor } from 'meteor/meteor';
 import React from 'react';
 
 import Enzyme, { shallow } from 'enzyme';
