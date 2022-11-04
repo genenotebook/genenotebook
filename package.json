@@ -102,7 +102,7 @@
     "pkginfo": "^0.4.1",
     "prop-types": "^15.7.2",
     "randomcolor": "^0.6.0",
-    "react": "^17.0.0",
+    "react": "^18.0.0",
     "react-bio-viz": "0.0.7",
     "react-dom": "^17.0.0",
     "react-popper": "^2.2.4",
@@ -124,7 +124,7 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.16.5",
     "@meteorjs/eslint-config-meteor": "^1.0.5",
-    "@types/react": "^17.0.34",
+    "@types/react": "^18.0.0",
     "babel-eslint": "^10.1.0",
     "babel-plugin-istanbul": "^6.1.1",
     "babel-preset-meteor": "^7.9.0",
