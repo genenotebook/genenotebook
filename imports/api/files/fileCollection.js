@@ -4,6 +4,7 @@ import SimpleSchema from 'simpl-schema';
 const MAX_FILE_SIZE = 1073741824; // 1GB
 
 const fileCollection = new FilesCollection({
+  storagePath: process.env.STORAGE_PATH,
   collectionName: 'genomeFiles',
   // allowClientCode: false,
   disableDownload: true,

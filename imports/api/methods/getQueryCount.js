@@ -1,9 +1,8 @@
 /* eslint-disable import/prefer-default-export */
+import { Genes } from '/imports/api/genes/geneCollection.js';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
-
 import SimpleSchema from 'simpl-schema';
 
-import { Genes } from '/imports/api/genes/geneCollection.js';
 
 const getQueryCount = new ValidatedMethod({
   name: 'getQueryCount',

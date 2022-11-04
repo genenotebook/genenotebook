@@ -19,11 +19,17 @@ import './genomes/removeAnnotationTrack.js';
 import './genes/interproscan.js';
 import './genes/addInterproscan.js';
 import './genes/eggnog/addEggnog.js';
-import './genes/addOrthogroupTrees.js';
-import './genes/downloadGenes.js';
+import './genes/eggnog/addEggnog.js';
 import './genes/scanGeneAttributes.js';
 import './genes/updateAttributeInfo.js';
 import './genes/updateGene.js';
+
+import './genes/download/downloadGenes.js';
+import './genes/download/convert/convertDownload.js';
+
+import './genes/orthogroup/prefix/orthoFinderPrefix.js';
+import './genes/orthogroup/addOrthogroupTrees.js';
+import './genes/orthogroup/parser/treeNewickParser.js';
 
 import './genes/alignment/addSimilarSequence.js';
 import './genes/alignment/parser/pairwiseParser.js';
@@ -49,3 +55,4 @@ import './jobqueue/process-download.js';
 import './jobqueue/process-addGenome.js';
 import './jobqueue/process-eggnog.js';
 import './jobqueue/process-similarsequences.js';
+import './jobqueue/process-orthogroup.js';

@@ -1,12 +1,8 @@
-import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
-
-import SimpleSchema from 'simpl-schema';
-import hash from 'object-hash';
-
 import jobQueue from '/imports/api/jobqueue/jobqueue.js';
 import { Job } from 'meteor/local:job-collection';
-
+import SimpleSchema from 'simpl-schema';
+import hash from 'object-hash';
 import logger from '/imports/api/util/logger.js';
 
 const downloadGenes = new ValidatedMethod({
@@ -33,24 +29,17 @@ const downloadGenes = new ValidatedMethod({
      * Otherwise use the cached file and increment the download count.
      * Return md5 hash of download query as download url
      */
-    logger.log(`downloading ${dataType}`);
-    logger.log(query);
-    logger.log(options);
+    logger.log(`Downloading from ${dataType} view`);
 
     const queryString = JSON.stringify(query);
     const optionString = JSON.stringify(options);
 
     const queryHash = hash(`${queryString}${dataType}${optionString}`);
 
-    /*
-    if (!this.userId) {
-      throw new Meteor.Error('not-authorized');
-    }
-    */
     const existingJob = jobQueue.findOne({ 'data.queryHash': queryHash });
 
     if (typeof existingJob === 'undefined') {
-      logger.debug('initiating new download job');
+      logger.debug('Initiating new download job');
       const job = new Job(jobQueue, 'download', {
         queryString,
         queryHash,
@@ -58,6 +47,8 @@ const downloadGenes = new ValidatedMethod({
         options,
       });
       job.priority('high').save();
+    } else {
+      logger.log('Job already exists !');
     }
 
     return queryHash;
