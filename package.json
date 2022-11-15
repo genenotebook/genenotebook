@@ -103,7 +103,7 @@
     "prop-types": "^15.7.2",
     "randomcolor": "^0.6.0",
     "react": "^18.0.0",
-    "react-bio-viz": "0.0.7",
+    "react-bio-viz": "0.0.8",
     "react-dom": "^18.0.0",
     "react-popper": "^2.2.4",
     "react-resize-detector": "^7.0.0",
