@@ -97,7 +97,7 @@
     "meteor-later": "^1.2.0",
     "meteor-node-stubs": "^1.1.0",
     "node-gyp": "^9.0.0",
-    "object-hash": "^2.2.0",
+    "object-hash": "^3.0.0",
     "papaparse": "^5.3.1",
     "pkginfo": "^0.4.1",
     "prop-types": "^15.7.2",
