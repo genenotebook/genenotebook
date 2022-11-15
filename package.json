@@ -104,7 +104,7 @@
     "randomcolor": "^0.6.0",
     "react": "^18.0.0",
     "react-bio-viz": "0.0.7",
-    "react-dom": "^17.0.0",
+    "react-dom": "^18.0.0",
     "react-popper": "^2.2.4",
     "react-resize-detector": "^7.0.0",
     "react-router-dom": "5.1",
