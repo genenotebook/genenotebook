@@ -73,8 +73,16 @@ export const editUserInfo = new ValidatedMethod({
     'emails.$': { type: Object },
     'emails.$.address': {
       type: String,
-      regEx: SimpleSchema.RegEx.Email,
-      optional: true,
+      custom() {
+        let regexEmail = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+        if (!regexEmail.test(this.obj.emails[0].address)) {
+          throw new Meteor.Error(
+            'Error, invalid email',
+            'Please enter a valid email address.',
+          );
+        }
+        return true;
+      },
     },
     role: {
       type: String,
@@ -182,8 +190,17 @@ export const addUser = new ValidatedMethod({
     newPassword: { type: String },
     emails: {
       type: String,
-      regEx: SimpleSchema.RegEx.Email,
       optional: true,
+      custom() {
+        let regexEmail = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+        if (!regexEmail.test(this.obj.emails)) {
+          throw new Meteor.Error(
+            'Error, invalid email',
+            'Please enter a valid email address.',
+          );
+        }
+        return true;
+      },
     },
     profile: {
       type: Object,

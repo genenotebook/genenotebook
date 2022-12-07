@@ -292,7 +292,7 @@ addAnnotation
   .option('-u, --username <username>', 'GeneNoteBook admin username')
   .option('-p, --password <password>', 'GeneNoteBook admin password')
   .option(
-    '-n, --genome-name <name>',
+    '-n, --name <name>',
     'Reference genome name to which the annotation should be added'
   )
   .option(
@@ -303,8 +303,9 @@ addAnnotation
   .action(
     (
       file,
-      { username, password, genomeName, port = 3000, verbose = false }
+      { username, password, name, port = 3000, verbose = false }
     ) => {
+      logger.log('genomeName', name);
       if (typeof file !== 'string') addAnnotation.help();
       const fileName = path.resolve(file);
 
@@ -314,7 +315,7 @@ addAnnotation
 
       new GeneNoteBookConnection({ username, password, port }).call(
         'addAnnotationTrack',
-        { fileName, genomeName, verbose }
+        { fileName, genomeName: name, verbose }
       );
     }
   )
