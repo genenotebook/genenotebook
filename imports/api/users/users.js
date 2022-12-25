@@ -73,8 +73,8 @@ export const editUserInfo = new ValidatedMethod({
     'emails.$': { type: Object },
     'emails.$.address': {
       type: String,
-      regEx: SimpleSchema.RegEx.Email,
       optional: true,
+      regEx: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
     },
     role: {
       type: String,
@@ -182,8 +182,8 @@ export const addUser = new ValidatedMethod({
     newPassword: { type: String },
     emails: {
       type: String,
-      regEx: SimpleSchema.RegEx.Email,
       optional: true,
+      regEx: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
     },
     profile: {
       type: Object,
