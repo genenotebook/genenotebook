@@ -214,10 +214,11 @@ export const addUser = new ValidatedMethod({
     }
 
     const userRole = (role === undefined ? 'registered' : role);
+    let userId
 
     if (!Accounts.findUserByUsername(userName)) {
       if (emails) {
-        const userId = Accounts.createUser({
+        userId = Accounts.createUser({
           username: userName,
           email: emails,
           password: newPassword,
@@ -226,7 +227,7 @@ export const addUser = new ValidatedMethod({
 
         Roles.setUserRoles(userId, userRole);
       } else {
-        const userId = Accounts.createUser({
+        userId = Accounts.createUser({
           username: userName,
           password: newPassword,
           profile,
@@ -241,7 +242,7 @@ export const addUser = new ValidatedMethod({
     }
 
     const jobStatus = `Success to create the ${userName} user account.`;
-    return { jobStatus };
+    return { jobStatus, userId };
   },
 });
 
