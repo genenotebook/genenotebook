@@ -130,7 +130,7 @@ export const setUserPassword = new ValidatedMethod({
   },
   run({ userId, newPassword }) {
     if (!this.userId) {
-      throw new Meteor.Error('not-autorized');
+      throw new Meteor.Error('not-authorized');
     }
 
     if (!Roles.userIsInRole(this.userId, 'admin')) {
@@ -154,7 +154,7 @@ export const setUsernamePassword = new ValidatedMethod({
   },
   run({ userName, newPassword }) {
     if (!this.userId) {
-      throw new Meteor.Error('not-autorized');
+      throw new Meteor.Error('not-authorized');
     }
 
     if (!Roles.userIsInRole(this.userId, 'admin')) {

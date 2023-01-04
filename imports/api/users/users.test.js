@@ -37,7 +37,7 @@ describe('users', function testUsers() {
     // Check permission for non-authorized
     chai.expect(() => {
       addUser._execute({}, newUser);
-    }).to.throw('Oh no');
+    }).to.throw('[not-authorized]');
 
     const ret = addUser._execute(adminContext, newUser);
     newUser._id = ret.userId
@@ -49,44 +49,90 @@ describe('users', function testUsers() {
 
   it('Should delete user', function deleteUser() {
     const userId = createUser()
-
     chai.expect(() => {
-      removeUserAccount._execute({}, newUser);
-    }).to.throw('Oh no');
+      removeUserAccount._execute({}, {userName: 'baseUser'});
+    }).to.throw('[not-authorized to remove a user]');
 
-    removeUserAccount._execute(adminContext, {userName: 'test'});
+    removeUserAccount._execute(adminContext, {userName: 'baseUser'});
     const users = Meteor.users.find({_id: userId}).fetch();
     chai.assert.lengthOf(users, 0, "User was deleted")
   });
+
 
   it('Should edit user', function editUser() {
     const userId = createUser()
     newUser._id = userId
     const userContext = {userId: userId}
-    updateUserInfo._execute(adminContext, {username: 'test', emails: {adress: "new@test.test"}});
+    editUserInfo._execute(adminContext, {username: 'baseUser', profile: {first_name: "t", last_name: "est"}, emails: [{address: "new@test.test"}]});
     const users = Meteor.users.find({_id: userId}).fetch();
     const user = users[0];
     chai.assert.lengthOf(users, 1, "User exists")
-    chai.assert.equal(user.emails[0].adress, "new@test.test", "New email matches")
+    chai.assert.equal(user.emails[0].address, "new@test.test", "New email matches")
     // Check permission for user
     chai.expect(() => {
-      updateUserInfo._execute(userContext, {username: 'test', emails: {adress: "new@test.test"}});
-    }).to.throw('Oh no');
-    // Check permission for non-authorized
+      editUserInfo._execute(userContext, {username: 'baseUser', profile: {first_name: "t", last_name: "est"}, emails: [{address: "new@test.test"}]});
+    }).to.throw('[not-authorized]');
+    // Check permission for non-logged
     chai.expect(() => {
-      updateUserInfo._execute({}, {username: 'test', emails: {adress: "new@test.test"}});
-    }).to.throw('Oh no');
+      editUserInfo._execute({}, {username: 'baseUser', profile: {first_name: "t", last_name: "est"}, emails: [{address: "new@test.test"}]});
+    }).to.throw('[not-authorized]');
   });
+
 
   it('Should update user', function updateUser() {
     const userId = createUser()
     newUser._id = userId
     const userContext = {userId: userId}
-    updateUserInfo._execute(userContext, {username: 'test', emails: {adress: "new@test.test"}});
+    const newUserData = {
+      userId: userId,
+      username: 'baseUser',
+      profile: {first_name: "t", last_name: "est"},
+      emails: [{address: "new@test.test", verified: false}],
+      role: 'registered'
+    }
+
+    updateUserInfo._execute(userContext, newUserData);
     const users = Meteor.users.find({_id: userId}).fetch();
     const user = users[0];
     chai.assert.lengthOf(users, 1, "User exists")
-    chai.assert.equal(user.emails[0].adress, "new@test.test", "New email matches")
+    chai.assert.equal(user.emails[0].address, "new@test.test", "New email matches")
   });
 
+  it('Should set user password', function updateUsernamePassword() {
+    const userId = createUser()
+    newUser._id = userId
+
+    const userContext = {userId: userId}
+    const newUserData = {
+      userId: userId,
+      newPassword: 'newpassword'
+    }
+    setUserPassword._execute(adminContext, newUserData);
+    chai.expect(() => {
+      setUserPassword._execute(userContext, newUserData);
+    }).to.throw('[not-authorized]');
+    // Check permission for non-logged
+    chai.expect(() => {
+      setUserPassword._execute({}, newUserData);
+    }).to.throw('[not-authorized]');
+  });
+
+  it('Should set username password', function updateUsernamePassword() {
+    const userId = createUser()
+    newUser._id = userId
+
+    const userContext = {userId: userId}
+    const newUserData = {
+      userName: 'baseUser',
+      newPassword: 'newpassword'
+    }
+    setUsernamePassword._execute(adminContext, newUserData);
+    chai.expect(() => {
+      setUsernamePassword._execute(userContext, newUserData);
+    }).to.throw('[not-authorized]');
+    // Check permission for non-logged
+    chai.expect(() => {
+      setUsernamePassword._execute({}, newUserData);
+    }).to.throw('[not-authorized]');
+  });
 });

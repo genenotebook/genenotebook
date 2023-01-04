@@ -5,6 +5,7 @@ import chai from 'chai';
 
 if (Meteor.isServer) {
   import '../imports/api/util/util.test.js';
+  import '../imports/api/users/users.test.js';
 }
 
 if (Meteor.isClient) {
