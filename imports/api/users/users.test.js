@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from "meteor/accounts-base";
 import { Roles } from 'meteor/alanning:roles';
 import logger from '/imports/api/util/logger.js';
-import addTestUsers from '/imports/startup/server/fixtures/addTestUsers.js';
+import { addTestUsers } from '/imports/startup/server/fixtures/addTestData.js';
 import { resetDatabase } from 'meteor/xolvio:cleaner';
 import { addUser, editUserInfo, updateUserInfo, setUserPassword, setUsernamePassword, removeUserAccount } from './users.js'
 

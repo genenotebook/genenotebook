@@ -5,7 +5,10 @@ import { Accounts } from 'meteor/accounts-base';
 import logger from '/imports/api/util/logger.js';
 import { ROLES } from '/imports/api/users/users.js';
 
-export default function addTestUsers() {
+import { genomeCollection, genomeSequenceCollection } from '/imports/api/genomes/genomeCollection.js';
+
+
+export function addTestUsers() {
 
   // Register user roles
   ROLES.forEach((roleName, i) => {
@@ -34,4 +37,27 @@ export default function addTestUsers() {
   Roles.addUsersToRoles(newUserId, 'registered');
 
   return { adminId, newUserId }
+}
+
+export function addTestGenome() {
+
+  const genomeId = genomeCollection.insert({
+    name: "Test Genome",
+    permission: 'admin',
+    description: 'description',
+    organism: 'organism',
+    isPublic: false,
+  });
+
+  const genomeSeqId = genomeSequenceCollection.insert({
+    header: 'B1',
+    seq: 'AACCBBB',
+    start: 0,
+    end: 7,
+    genomeId: genomeId,
+    permission: 'admin',
+    isPublic: false
+  })
+
+  return { genomeId, genomeSeqId }
 }
