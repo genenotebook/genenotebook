@@ -35,7 +35,7 @@ describe('genomes', function testGenomes() {
     this.timeout(20000);
 
     // Might be a better way to get the path..
-    const newGenome = {fileName: '/root/genenotebook/tests/data/Bnigra.fasta', genomeName: 'Brassica nigra', async:false};
+    const newGenome = {fileName: 'assets/app/data/Bnigra.fasta', genomeName: 'Brassica nigra', async:false};
     // Should fail for non-logged in
     chai.expect(() => {
       addGenome._execute({}, newGenome);
@@ -129,7 +129,7 @@ describe('genomes', function testGenomes() {
     this.timeout(20000);
 
     const {genomeId, genomeSeqId} = addTestGenome()
-    const toAnnot = {fileName: "/root/genenotebook/tests/data/Bnigra.gff3", genomeName:"Test Genome", verbose:true}
+    const toAnnot = {fileName: "assets/app/data/data/Bnigra.gff3", genomeName:"Test Genome", verbose:true}
 
     // Should fail for non-logged in
     chai.expect(() => {
