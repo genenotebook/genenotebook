@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import logger from '/imports/api/util/logger.js';
 import { addTestUsers, addTestGenome } from '/imports/startup/server/fixtures/addTestData.js';
 import { genomeCollection, genomeSequenceCollection } from '/imports/api/genomes/genomeCollection.js';
+import { Genes } from '/imports/api/genes/geneCollection.js';
 import { resetDatabase } from 'meteor/xolvio:cleaner';
 import addGenome from './addGenome.js'
 import updateGenome from './updateGenome.js'
@@ -122,14 +123,13 @@ describe('genomes', function testGenomes() {
 
   })
 
-  /*
 
   it('Should add an annotation track', function addAnnotation() {
     // Increase timeout
     this.timeout(20000);
 
     const {genomeId, genomeSeqId} = addTestGenome()
-    const toAnnot = {fileName: "assets/app/data/data/Bnigra.gff3", genomeName:"Test Genome", verbose:true}
+    const toAnnot = {fileName: "assets/app/data/Bnigra.gff3", genomeName:"Test Genome", verbose:false}
 
     // Should fail for non-logged in
     chai.expect(() => {
@@ -142,9 +142,25 @@ describe('genomes', function testGenomes() {
     }).to.throw('[not-authorized]');
 
    addAnnotationTrack._execute(adminContext, toAnnot);
+
+   const genes = Genes.find({genomeId: genomeId}).fetch();
+
+   chai.assert.lengthOf(genes, 5, "Number of created genes is not 5")
+
+   const gene = genes[0]
+
+   chai.assert.equal(gene.ID, "BniB01g000010.2N")
+   chai.assert.equal(gene.seqid, "B1")
+   chai.assert.equal(gene.source, "AAFC_GIFS")
+   chai.assert.equal(gene.strand, "-")
+   chai.assert.equal(gene.type, "gene")
+   chai.assert.equal(gene.start, 13640)
+   chai.assert.equal(gene.end, 15401)
+
+   chai.assert.lengthOf(gene.subfeatures, 13, 'Number of subfeatures is not 13')
+
   })
 
-  */
 })
 
 
