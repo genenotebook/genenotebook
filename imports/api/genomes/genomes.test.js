@@ -10,7 +10,7 @@ import addGenome from './addGenome.js'
 import updateGenome from './updateGenome.js'
 import removeGenome from './removeGenome.js'
 import addAnnotationTrack from './addAnnotationTrack.js'
-import removeAnnotationTrack from './removeAnnotationTrack.js'
+import { removeAnnotationTrack } from './removeAnnotationTrack.js'
 
 // Required for sending jobs
 import '/imports/api/jobqueue/process-addGenome.js';
@@ -70,7 +70,7 @@ describe('genomes', function testGenomes() {
   });
 
   it('Should delete a genome', function deleteGenome() {
-    const {genomeId, genomeSeqId} = addTestGenome()
+    const {genomeId, genomeSeqId} = addTestGenome(annot=true)
     const toDelete = {genomeId: genomeId}
 
     // Should fail for non-logged in
@@ -91,6 +91,10 @@ describe('genomes', function testGenomes() {
    const genomeSequences = genomeSequenceCollection.find({genomeId: genomeId}).fetch();
 
    chai.assert.lengthOf(genomeSequences, 0, "Sequences still exists")
+
+   const genes = Genes.find({genomeId: genomeId}).fetch();
+
+   chai.assert.lengthOf(genes, 0, "Genes still exists")
 
   })
 
@@ -173,7 +177,7 @@ describe('genomes', function testGenomes() {
       removeAnnotationTrack._execute({}, toRemove);
     }).to.throw('[not-authorized]');
 
-    // Should fail for non admin user
+    //Should fail for non admin user
     chai.expect(() => {
       removeAnnotationTrack._execute(userContext, toRemove);
     }).to.throw('[not-authorized]');

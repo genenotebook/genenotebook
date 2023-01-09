@@ -6,7 +6,7 @@ import logger from '/imports/api/util/logger.js';
 import { ROLES } from '/imports/api/users/users.js';
 
 import { genomeCollection, genomeSequenceCollection } from '/imports/api/genomes/genomeCollection.js';
-
+import { Genes } from '/imports/api/genes/geneCollection.js';
 
 export function addTestUsers() {
 
@@ -60,7 +60,7 @@ export function addTestGenome(annot=false) {
   })
 
   if (annot) {
-    Gene.insert({
+    Genes.insert({
       ID: 'BniB01g000010.2N',
       seqid: 'B1',
       source: 'AAFC_GIFS',
@@ -69,8 +69,12 @@ export function addTestGenome(annot=false) {
       start: 13640,
       end: 15401,
       genomeId: genomeId,
-      score: '.'
+      score: '.',
+      subfeatures: [],
+      seq: 'AAAA',
+      attributes: {}
     })
+  }
 
   return { genomeId, genomeSeqId }
 }
