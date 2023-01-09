@@ -161,6 +161,27 @@ describe('genomes', function testGenomes() {
 
   })
 
+  it('Should remove an annotation track', function deleteAnnotation() {
+    // Increase timeout
+    this.timeout(20000);
+
+    const {genomeId, genomeSeqId} = addTestGenome(annot=true)
+    const toRemove =  {genomeId: genomeId}
+
+    // Should fail for non-logged in
+    chai.expect(() => {
+      removeAnnotationTrack._execute({}, toRemove);
+    }).to.throw('[not-authorized]');
+
+    // Should fail for non admin user
+    chai.expect(() => {
+      removeAnnotationTrack._execute(userContext, toRemove);
+    }).to.throw('[not-authorized]');
+
+   removeAnnotationTrack._execute(adminContext, toRemove);
+
+   const genes = Genes.find({genomeId: genomeId}).fetch();
+   chai.assert.lengthOf(genes, 0, "There are still genes remaining")
+  })
+
 })
-
-

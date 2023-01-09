@@ -39,7 +39,7 @@ export function addTestUsers() {
   return { adminId, newUserId }
 }
 
-export function addTestGenome() {
+export function addTestGenome(annot=false) {
 
   const genomeId = genomeCollection.insert({
     name: "Test Genome",
@@ -58,6 +58,19 @@ export function addTestGenome() {
     permission: 'admin',
     isPublic: false
   })
+
+  if (annot) {
+    Gene.insert({
+      ID: 'BniB01g000010.2N',
+      seqid: 'B1',
+      source: 'AAFC_GIFS',
+      strand: '-',
+      type: 'gene',
+      start: 13640,
+      end: 15401,
+      genomeId: genomeId,
+      score: '.'
+    })
 
   return { genomeId, genomeSeqId }
 }
