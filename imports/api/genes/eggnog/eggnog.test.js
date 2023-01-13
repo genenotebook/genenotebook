@@ -32,7 +32,7 @@ describe('eggnog', function testEggnog() {
   });
 
 
-  it('Should add Eggnog xml file', function addEggnog() {
+  it('Should add Eggnog xml file', function importggnog() {
     // Increase timeout
     this.timeout(20000);
 
