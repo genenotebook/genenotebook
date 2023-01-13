@@ -21,6 +21,8 @@ describe('genomes', function testGenomes() {
   let adminContext
   let userContext
 
+  logger.log("Testing genomes and alignement related methods")
+
   beforeEach(() => {
     ({ adminId, newUserId } = addTestUsers());
     adminContext = {userId: adminId}

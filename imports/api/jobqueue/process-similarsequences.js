@@ -25,18 +25,15 @@ jobQueue.processJobs(
 
       xml.on(`tag:${tag}`, async (obj) => {
         try {
-          lineProcessor.parse(obj);
+          await lineProcessor.parse(obj);
+          job.done();
+          logger.log('Xml file reading finished !');
+          callback();
         } catch (err) {
           logger.error(err);
           job.fail({ err });
           callback();
         }
-      });
-
-      xml.on('end', async () => {
-        logger.log('Xml file reading finished !');
-        job.done();
-        callback();
       });
 
       xml.on('error', async (error) => {
@@ -66,7 +63,7 @@ jobQueue.processJobs(
       lineReader.on('close', async () => {
         try {
           logger.log('File reading finished, start bulk insert');
-          lineProcessor.lastPairwise();
+          await lineProcessor.lastPairwise();
           job.done();
         } catch (error) {
           logger.error(error);

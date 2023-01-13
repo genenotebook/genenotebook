@@ -37,7 +37,7 @@ const addOrthogroupTrees = new ValidatedMethod({
   applyOptions: {
     noRetry: true,
   },
-  async run({ folderName, prefixes }) {
+  run({ folderName, prefixes }) {
     if (!this.userId) {
       throw new Meteor.Error('not-authorized');
     }

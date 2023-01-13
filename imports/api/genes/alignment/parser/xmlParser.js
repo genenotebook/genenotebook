@@ -14,6 +14,7 @@ import logger from '/imports/api/util/logger.js';
  * @param {string} matrix - The substitution matrix used for alignment (BLOSUM).
  * @param {string} database - The reference database (Non-redundant protein sequences (nr)).
  */
+
 class XmlProcessor {
   constructor(program, algorithm, matrix, database) {
     this.genesDb = Genes.rawCollection();
@@ -23,6 +24,17 @@ class XmlProcessor {
     this.database = database;
     this.similarSeqBulkOp = similarSequencesCollection.rawCollection().initializeUnorderedBulkOp();
   }
+
+  /**
+   * Return an array from an item
+  */
+  expectArray = (obj) => {
+    if (Array.isArray(obj)){
+      return obj
+    }
+    return [obj]
+  }
+
 
   /**
    * Filter the prefix matches the bank (gb, emb ...).
@@ -44,7 +56,7 @@ class XmlProcessor {
    * @function
    * @param {stream} obj - The stream object of an XML file.
    */
-  parse = (obj) => {
+  parse = async (obj) => {
     if (this.algorithm === undefined) {
       if (obj['blastoutput_program'] !== undefined) {
         this.algorithm = obj['blastoutput_program'];
@@ -70,41 +82,29 @@ class XmlProcessor {
     }
 
     if (obj['blastoutput_iterations'] !== undefined) {
-      // Fix the very rare case of a single iteration.
-      const iterLength = (
-        typeof obj['blastoutput_iterations'].length === 'undefined'
-          ? 1
-          : obj['blastoutput_iterations'].length
-      );
+      // Force an array, even when there is only one element
+      const blastIteration = this.expectArray(obj['blastoutput_iterations'])
+
+      const iterLength = blastIteration.length
 
       for (let i = 0; i < iterLength; i += 1) {
       /** Get and split iteration query
          * e.g: 'MMUCEDO_000001-T1 becomes MMUCEDO_000001'.
          */
-        const iterationQuery = (
-          iterLength === 1
-            ? obj['blastoutput_iterations']['iteration_query-def']
-            : obj['blastoutput_iterations'][i]['iteration_query-def']
-        );
+
+        const iterationQuery = blastIteration[i]['iteration_query-def']
+
         const splitIterationQuery = iterationQuery.split(' ');
 
-        splitIterationQuery.forEach(async (iter) => {
+        await Promise.all(splitIterationQuery.map(async (iter) => {
           /** Chek if the queries exist in the genes collection. */
           const subfeatureIsFound = await this.genesDb.findOne({ 'subfeatures.ID': iter });
           if (typeof subfeatureIsFound !== 'undefined' && subfeatureIsFound !== null) {
             /** Get the total query sequence length. */
-            const queryLen = (
-              iterLength === 1
-                ? obj['blastoutput_iterations']['iteration_query-len']
-                : obj['blastoutput_iterations'][i]['iteration_query-len']
-            );
+            const queryLen = blastIteration[i]['iteration_query-len']
 
             /** Get the root tag of hit sequences. */
-            const iterationHits = (
-              iterLength === 1
-                ? obj['blastoutput_iterations']['iteration_hits']
-                : obj['blastoutput_iterations'][i]['iteration_hits']
-            );
+            const iterationHits = this.expectArray(blastIteration[i]['iteration_hits'])
 
             /** Reset the iterations array. */
             const iterations = [];
@@ -199,14 +199,17 @@ class XmlProcessor {
                 multi: true,
               },
             );
-            this.similarSeqBulkOp.execute();
           } else {
             logger.warn(`Warning ! No sub-feature was found for ${iter}.`);
           }
-        });
+        }));
+      }
+      if (this.similarSeqBulkOp.length > 0) {
+        return this.similarSeqBulkOp.execute();
       }
     }
   };
 }
 
 export default XmlProcessor;
+

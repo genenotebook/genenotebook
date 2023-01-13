@@ -1,0 +1,6 @@
+##gff-version 3
+##interproscan-version 5.26-65.0
+##sequence-region AACH01000027 1 1347
+##seqid|source|type|start|end|score|strand|phase|attributes
+BniB01g000010.2N.1	Gene3D	protein_match	212	401	1.2E-59	+	.	Name=G3DSA:1.10.510.10;
+BniB01g000010.2N.1	getorf	protein_match	1	1347	.	+	.	Name=AACH01000027.2_21;Target=pep_AACH01000027_1_1347 1 449;md5=b2a7416cb92565c004becb7510f46840;ID=orf_AACH01000027_1_1347

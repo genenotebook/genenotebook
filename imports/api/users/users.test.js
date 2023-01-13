@@ -14,6 +14,8 @@ describe('users', function testUsers() {
   let adminContext
   let userContext
 
+  logger.log("Testing user-related methods")
+
   beforeEach(() => {
     ({ adminId, newUserId } = addTestUsers());
     adminContext = {userId: adminId}

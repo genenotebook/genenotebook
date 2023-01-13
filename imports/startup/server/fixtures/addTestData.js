@@ -60,6 +60,8 @@ export function addTestGenome(annot=false) {
   })
 
   if (annot) {
+    const subfeature = {ID: "BniB01g000010.2N.1", phase: '.', type: 'mRNA', parents: ['BniB01g000010.2N'], seq: 'CCC', start:13641, end:15400, score: '.', attributes: {}}
+
     Genes.insert({
       ID: 'BniB01g000010.2N',
       seqid: 'B1',
@@ -70,7 +72,7 @@ export function addTestGenome(annot=false) {
       end: 15401,
       genomeId: genomeId,
       score: '.',
-      subfeatures: [],
+      subfeatures: [subfeature],
       seq: 'AAAA',
       attributes: {}
     })

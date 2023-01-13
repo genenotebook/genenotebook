@@ -1,6 +1,8 @@
 import { similarSequencesCollection } from '/imports/api/genes/alignment/similarSequenceCollection.js';
 import { Genes } from '/imports/api/genes/geneCollection.js';
 
+import logger from '/imports/api/util/logger.js';
+
 class Pairwise {
   constructor({
     iteration_query,
@@ -83,7 +85,6 @@ class PairwiseProcessor {
               multi: true,
             },
           );
-          this.similarSeqBulkOp.execute();
         }
 
         /** Initializes a new pairwise. */
@@ -355,6 +356,7 @@ class PairwiseProcessor {
    * @function
    */
   lastPairwise = () => {
+
     this.similarSeqBulkOp.find({
       iteration_query: this.pairWise.iteration_query,
     }).upsert().update(
@@ -374,7 +376,8 @@ class PairwiseProcessor {
         multi: true,
       },
     );
-    this.similarSeqBulkOp.execute();
+
+    return this.similarSeqBulkOp.execute();
   };
 }
 
