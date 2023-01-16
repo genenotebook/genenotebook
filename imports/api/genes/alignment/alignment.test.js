@@ -8,7 +8,7 @@ import { Genes } from '/imports/api/genes/geneCollection.js';
 import { similarSequencesCollection } from '/imports/api/genes/alignment/similarSequenceCollection.js'
 import { resetDatabase } from 'meteor/xolvio:cleaner';
 
-import addSimilarSequence from './alignment/addSimilarSequence.js';
+import addSimilarSequence from './addSimilarSequence.js';
 
 // Required for sending jobs
 import '/imports/api/jobqueue/process-similarsequences.js';

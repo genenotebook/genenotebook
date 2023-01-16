@@ -76,7 +76,7 @@ describe('orthogroups', function testOrthogroups() {
 
   });
 
-  it('Should add an interproscan tsv file', function addTsvInterpro() {
+  it('Should add an interproscan gff3 file', function addTsvInterpro() {
     // Increase timeout
     this.timeout(20000);
 

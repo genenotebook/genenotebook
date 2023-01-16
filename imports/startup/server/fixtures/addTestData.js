@@ -8,6 +8,8 @@ import { ROLES } from '/imports/api/users/users.js';
 import { genomeCollection, genomeSequenceCollection } from '/imports/api/genomes/genomeCollection.js';
 import { Genes } from '/imports/api/genes/geneCollection.js';
 
+import { ExperimentInfo, Transcriptomes } from '/imports/api/transcriptomes/transcriptome_collection.js';
+
 export function addTestUsers() {
 
   // Register user roles
@@ -59,10 +61,12 @@ export function addTestGenome(annot=false) {
     isPublic: false
   })
 
+  let geneId
+
   if (annot) {
     const subfeature = {ID: "BniB01g000010.2N.1", phase: '.', type: 'mRNA', parents: ['BniB01g000010.2N'], seq: 'CCC', start:13641, end:15400, score: '.', attributes: {}}
 
-    Genes.insert({
+    geneId = Genes.insert({
       ID: 'BniB01g000010.2N',
       seqid: 'B1',
       source: 'AAFC_GIFS',
@@ -78,5 +82,27 @@ export function addTestGenome(annot=false) {
     })
   }
 
-  return { genomeId, genomeSeqId }
+  return { genomeId, genomeSeqId, geneId }
 }
+
+export function addTestTranscriptome(genomeId, geneId) {
+
+  const expId = ExperimentInfo.insert({
+    genomeId: genomeId,
+    sampleName: "sampleName",
+    replicaGroup: "replicaGroup",
+    description: 'description',
+    permission: 'admin',
+    isPublic: false,
+  });
+
+  const transcriptomeId = Transcriptomes.insert({
+    geneId: geneId,
+    tpm: "60",
+    est_counts: "1000",
+    experimentId: expId
+  })
+
+  return { expId, transcriptomeId }
+
+};
