@@ -7,7 +7,7 @@ import logger from '/imports/api/util/logger.js';
 import { addTestUsers } from '/imports/startup/server/fixtures/addTestData.js';
 import { resetDatabase } from 'meteor/xolvio:cleaner';
 import { addUser, editUserInfo, updateUserInfo, setUserPassword, setUsernamePassword, removeUserAccount } from './users.js'
-
+import getUserName from './getUserName.js'
 
 describe('users', function testUsers() {
   let adminId, newUserId
@@ -33,6 +33,10 @@ describe('users', function testUsers() {
       addUser._execute({}, newUser);
     }).to.throw('[not-authorized]');
 
+    chai.expect(() => {
+      addUser._execute({}, userContext);
+    }).to.throw('[not-authorized]');
+
     const ret = addUser._execute(adminContext, newUser);
     const users = Meteor.users.find({_id: ret.userId}).fetch();
     const user = users[0];
@@ -43,6 +47,10 @@ describe('users', function testUsers() {
   it('Should delete user', function deleteUser() {
     chai.expect(() => {
       removeUserAccount._execute({}, {userName: 'baseUser'});
+    }).to.throw('[not-authorized to remove a user]');
+
+    chai.expect(() => {
+      removeUserAccount._execute(userContext, {userName: 'baseUser'});
     }).to.throw('[not-authorized to remove a user]');
 
     removeUserAccount._execute(adminContext, {userName: 'baseUser'});
@@ -76,6 +84,10 @@ describe('users', function testUsers() {
       emails: [{address: "new@test.test", verified: false}],
       role: 'registered'
     }
+
+    chai.expect(() => {
+      updateUserInfo._execute({}, newUserData);
+    }).to.throw('[not-authorized]');
 
     updateUserInfo._execute(userContext, newUserData);
     const users = Meteor.users.find({_id: newUserId}).fetch();
@@ -115,4 +127,10 @@ describe('users', function testUsers() {
       setUsernamePassword._execute({}, newUserData);
     }).to.throw('[not-authorized]');
   });
+
+  it('Should get an username', function testGetUsername() {
+    const username = getUserName._execute({}, userContext);
+    chai.assert.equal(username, "baseUser")
+  });
 });
+

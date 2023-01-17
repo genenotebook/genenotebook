@@ -19,11 +19,15 @@ const downloadGenes = new ValidatedMethod({
       type: Object,
       blackbox: true,
     },
+    async: {
+      type: Boolean,
+      optional: true
+    }
   }).validator(),
   applyOptions: {
     noRetry: true,
   },
-  run({ query, dataType, options }) {
+  run({ query, dataType, options, async=false }) {
     /**
      * If the query has not been used before, create a new file from it.
      * Otherwise use the cached file and increment the download count.
@@ -47,6 +51,17 @@ const downloadGenes = new ValidatedMethod({
         options,
       });
       job.priority('high').save();
+
+      if (async){
+        let { status } = job.doc;
+        logger.debug(`Job status: ${status}`);
+        while (status !== 'completed') {
+          const { doc } = job.refresh();
+          status = doc.status;
+        }
+        return { result: job.doc.result };
+      }
+
     } else {
       logger.log('Job already exists !');
     }

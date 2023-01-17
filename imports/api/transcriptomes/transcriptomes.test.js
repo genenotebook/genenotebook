@@ -79,7 +79,6 @@ describe('transcriptomes', function testTranscriptomes() {
 
   })
 
-/*
     it('Should update a sample', function testUpdateSample() {
     // Increase timeout
     this.timeout(20000);
@@ -149,7 +148,5 @@ describe('transcriptomes', function testTranscriptomes() {
     chai.assert.equal(exp.isPublic, true)
 
   });
-
-*/
 
 })
