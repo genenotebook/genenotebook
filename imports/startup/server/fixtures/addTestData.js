@@ -38,7 +38,15 @@ export function addTestUsers() {
 
   Roles.addUsersToRoles(newUserId, 'registered');
 
-  return { adminId, newUserId }
+  const curatorId = Accounts.createUser({
+    username: 'curator',
+    email: 'curator@user.user',
+    password: 'user'
+  });
+
+  Roles.addUsersToRoles(curatorId, 'curator');
+
+  return { adminId, newUserId, curatorId }
 }
 
 export function addTestGenome(annot=false) {
@@ -64,7 +72,8 @@ export function addTestGenome(annot=false) {
   let geneId
 
   if (annot) {
-    const subfeature = {ID: "BniB01g000010.2N.1", phase: '.', type: 'mRNA', parents: ['BniB01g000010.2N'], seq: 'CCC', start:13641, end:15400, score: '.', attributes: {}}
+    const subfeature = {ID: "BniB01g000010.2N.1", phase: '.', type: 'mRNA', parents: ['BniB01g000010.2N'], seq: 'GTATTCTAAACT', start:13641, end:15400, score: '.', attributes: {}}
+    const cds = {ID: "BniB01g000010.2N.1.cds1", phase: '.', type: 'CDS', parents: ['BniB01g000010.2N.1'], seq: 'GTATTCTAAACT', start:13641, end:13653, score: '.', attributes: {}}
 
     geneId = Genes.insert({
       ID: 'BniB01g000010.2N',
@@ -76,7 +85,7 @@ export function addTestGenome(annot=false) {
       end: 15401,
       genomeId: genomeId,
       score: '.',
-      subfeatures: [subfeature],
+      subfeatures: [subfeature, cds],
       seq: 'AAAA',
       attributes: {}
     })
