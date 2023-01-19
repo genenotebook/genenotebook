@@ -12,6 +12,7 @@ if (Meteor.isServer) {
   import '../imports/api/genes/orthogroup/orthogroups.test.js'
   import '../imports/api/genes/interproscan/interproscan.test.js'
   import '../imports/api/transcriptomes/transcriptomes.test.js'
+  import '../imports/api/genes/download/download.test.js'
 }
 
 if (Meteor.isClient) {

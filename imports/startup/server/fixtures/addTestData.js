@@ -75,7 +75,7 @@ export function addTestGenome(annot=false) {
     const subfeature = {ID: "BniB01g000010.2N.1", phase: '.', type: 'mRNA', parents: ['BniB01g000010.2N'], seq: 'GTATTCTAAACT', start:13641, end:15400, score: '.', attributes: {}}
     const cds = {ID: "BniB01g000010.2N.1.cds1", phase: '.', type: 'CDS', parents: ['BniB01g000010.2N.1'], seq: 'GTATTCTAAACT', start:13641, end:13653, score: '.', attributes: {}}
 
-    geneId = Genes.insert({
+    Genes.insert({
       ID: 'BniB01g000010.2N',
       seqid: 'B1',
       source: 'AAFC_GIFS',
@@ -91,7 +91,7 @@ export function addTestGenome(annot=false) {
     })
   }
 
-  return { genomeId, genomeSeqId, geneId }
+  return { genomeId, genomeSeqId, geneId: "BniB01g000010.2N" }
 }
 
 export function addTestTranscriptome(genomeId, geneId) {

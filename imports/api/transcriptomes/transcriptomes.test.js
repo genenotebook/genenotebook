@@ -74,12 +74,13 @@ describe('transcriptomes', function testTranscriptomes() {
 
     const transcriptome = transcriptomes[0]
 
+    chai.assert.equal(transcriptome.geneId, 'BniB01g000010.2N')
     chai.assert.equal(transcriptome.tpm, '1.80368')
     chai.assert.equal(transcriptome.est_counts, '21')
 
   })
 
-    it('Should update a sample', function testUpdateSample() {
+  it('Should update a sample', function testUpdateSample() {
     // Increase timeout
     this.timeout(20000);
 

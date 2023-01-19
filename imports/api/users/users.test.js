@@ -34,7 +34,7 @@ describe('users', function testUsers() {
     }).to.throw('[not-authorized]');
 
     chai.expect(() => {
-      addUser._execute({}, userContext);
+      addUser._execute(userContext, newUser);
     }).to.throw('[not-authorized]');
 
     const ret = addUser._execute(adminContext, newUser);

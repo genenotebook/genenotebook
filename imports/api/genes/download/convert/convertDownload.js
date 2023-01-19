@@ -115,6 +115,7 @@ class DownloadDataConversion {
   AbundanceTsvFormat = ({ gene, options }) => {
     const { ID: geneId } = gene;
     const { selectedSamples } = options;
+
     const line = selectedSamples.map((replicaGroup) => ExperimentInfo.find({ replicaGroup })
       .fetch()
       .map(({ _id }) => _id)
@@ -129,7 +130,6 @@ class DownloadDataConversion {
       .join('\t'));
 
     line.unshift(geneId);
-    line.push('\n');
 
     return line.join('\t');
   };
