@@ -87,7 +87,7 @@ export function addTestGenome(annot=false) {
       score: '.',
       subfeatures: [subfeature, cds],
       seq: 'AAAA',
-      attributes: {}
+      attributes: {"myNewAttribute": 1}
     })
   }
 

@@ -14,12 +14,12 @@ import addInterproscan from '../addInterproscan.js';
 import '/imports/api/jobqueue/process-interproscan.js';
 
 
-describe('orthogroups', function testOrthogroups() {
+describe('interproscan', function testInterproscan() {
   let adminId, newUserId
   let adminContext
   let userContext
 
-  logger.log("Testing Orthogroups methods")
+  logger.log("Testing Interproscan methods")
 
   beforeEach(() => {
     ({ adminId, newUserId } = addTestUsers());
