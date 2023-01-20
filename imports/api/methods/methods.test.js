@@ -3,9 +3,10 @@ import chai from 'chai';
 import { Meteor } from 'meteor/meteor';
 import logger from '/imports/api/util/logger.js';
 import { dbxrefCollection } from '/imports/api/genes/dbxrefCollection.js';
+import { addTestUsers, addTestGenome } from '/imports/startup/server/fixtures/addTestData.js';
 import { resetDatabase } from 'meteor/xolvio:cleaner';
-import { getQueryCount } from './getQueryCount.js'
-import { fetchDbxref } from './fetchDbxref.js'
+import getQueryCount from './getQueryCount.js'
+import fetchDbxref from './fetchDbxref.js'
 
 describe('methods', function testMethods() {
   let adminId, newUserId
@@ -26,6 +27,7 @@ describe('methods', function testMethods() {
 
 
   it('Should get the genes query count', function testGetQueryCount() {
+    addTestGenome(annot=true)
 
     const queryParams = {query: {ID: "BniB01g000010.2N"}}
     const count = getQueryCount._execute({}, queryParams)

@@ -1,4 +1,3 @@
-const { once } = require('node:events');
 import { EggnogProcessor } from '/imports/api/genes/eggnog/addEggnog.js';
 import logger from '/imports/api/util/logger.js';
 import jobQueue from './jobqueue.js';

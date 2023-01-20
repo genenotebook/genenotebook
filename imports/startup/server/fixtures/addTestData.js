@@ -51,12 +51,15 @@ export function addTestUsers() {
 
 export function addTestGenome(annot=false) {
 
+  const annotObj = annot ? { name: 'myfilename.gff'} : {}
+
   const genomeId = genomeCollection.insert({
     name: "Test Genome",
     permission: 'admin',
     description: 'description',
     organism: 'organism',
     isPublic: false,
+    annotationTrack: annotObj
   });
 
   const genomeSeqId = genomeSequenceCollection.insert({

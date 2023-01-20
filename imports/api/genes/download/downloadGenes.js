@@ -27,7 +27,7 @@ const downloadGenes = new ValidatedMethod({
   applyOptions: {
     noRetry: true,
   },
-  run({ query, dataType, options, async=false }) {
+  run({ query, dataType, options, async=true }) {
     /**
      * If the query has not been used before, create a new file from it.
      * Otherwise use the cached file and increment the download count.
@@ -52,7 +52,7 @@ const downloadGenes = new ValidatedMethod({
       });
       job.priority('high').save();
 
-      if (async){
+      if (!async){
         let { status } = job.doc;
         logger.debug(`Job status: ${status}`);
         while (status !== 'completed') {

@@ -73,12 +73,11 @@ export const updateGene = new ValidatedMethod({
               query,
               defaultShow: false,
               defaultSearch: false,
-              genomes: [gene.genomeId],
             },
             $addToSet: {
               genomes: gene.genomeId,
             },
-          });
+          }, { upsert: true });
         });
       }
     });

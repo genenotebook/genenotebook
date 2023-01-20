@@ -10,16 +10,20 @@ import logger from '/imports/api/util/logger.js';
 import { Genes } from './geneCollection.js';
 import { attributeCollection } from './attributeCollection.js';
 
+
+// Changed Map functions to string to fix an issue with tests and istanbul lib
+// https://github.com/Automattic/mongoose/issues/2293#issuecomment-161415139
+
 /**
  * Map function for mongodb mapreduce
  */
-const mapFunction = function() {
+const mapFunction = `function() {
   const gene = this;
   if (typeof gene.attributes !== 'undefined') {
     // eslint-disable-next-line no-undef
     emit(null, { attributeKeys: Object.keys(gene.attributes) });
   }
-};
+}`;
 
 /**
  * Reduce function for mongodb mapreduce
@@ -27,7 +31,7 @@ const mapFunction = function() {
  * @param  {Array} values [description]
  * @return {Object}        [description]
  */
-const reduceFunction = function(_key, values) {
+const reduceFunction = `function(_key, values) {
   const attributeKeySet = new Set();
   values.forEach((value) => {
     value.attributeKeys.forEach((attributeKey) => {
@@ -36,7 +40,7 @@ const reduceFunction = function(_key, values) {
   });
   const attributeKeys = Array.from(attributeKeySet);
   return { attributeKeys };
-};
+}`;
 
 const findNewAttributes = ({ genomeId }) => {
   const mapReduceOptions = {
@@ -94,12 +98,12 @@ const removeOldAttributes = ({ genomeId }) => {
     return count === 0;
   }).map((attribute) => attribute._id);
 
-  logger.log(oldAttributeIds);
+  logger.debug(oldAttributeIds);
 
   const update = attributeCollection.remove({
     _id: { $in: oldAttributeIds },
   });
-  logger.log(update);
+  logger.debug(update);
   return update;
 };
 
@@ -107,11 +111,15 @@ const scanGeneAttributes = new ValidatedMethod({
   name: 'scanGeneAttributes',
   validate: new SimpleSchema({
     genomeId: String,
+    async: {
+      type: Boolean,
+      optional: true
+    }
   }).validator(),
   applyOptions: {
     noRetry: true,
   },
-  run({ genomeId }) {
+  run({ genomeId, async=true }) {
     logger.log(`scanGeneAttributes for genome: ${genomeId}`);
     if (!this.userId) {
       throw new Meteor.Error('not-authorized');
@@ -133,7 +141,11 @@ const scanGeneAttributes = new ValidatedMethod({
     if (!this.isSimulation) {
       // this.unblock();
       removeOldAttributes({ genomeId });
-      findNewAttributes({ genomeId });
+      // For testing purpose, return promise
+      if (!async){
+        return findNewAttributes({ genomeId })
+      }
+      findNewAttributes({ genomeId })
       return true;
     }
   },

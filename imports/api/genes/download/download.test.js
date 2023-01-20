@@ -30,9 +30,6 @@ const readFile = async (gzipFile) => {
   }
 
   return data
-
-  //lineReader.on('line', (line) => {
-  //});
 }
 
 
@@ -70,18 +67,18 @@ describe('download', function testDownload() {
       query: {ID: "BniB01g000010.2N"},
       dataType: 'Annotation',
       options: {},
-      async: true
+      async: false
     };
 
     const { result } = downloadGenes._execute(adminContext, dlParams);
     dataFile = result.value
     const stat = fs.statSync(dataFile)
 
-    chai.assert.equal(stat.size, 124)
+    chai.assert.equal(stat.size, 140)
 
     const expected = [
       '##gff-version 3',
-      'B1\tAAFC_GIFS\tgene\t13640\t15401\t.\t-\t-\t',
+      'B1\tAAFC_GIFS\tgene\t13640\t15401\t.\t-\t-\tmyNewAttribute=1',
       'B1\tAAFC_GIFS\tmRNA\t13641\t15400\t.\t-\t.\tParent=BniB01g000010.2N',
       'B1\tAAFC_GIFS\tCDS\t13641\t13653\t.\t-\t.\tParent=BniB01g000010.2N.1'
     ]
@@ -101,7 +98,7 @@ describe('download', function testDownload() {
       query: {ID: "BniB01g000010.2N"},
       dataType: 'Sequence',
       options: {seqType: "nucl", primaryTranscriptOnly: false},
-      async: true
+      async: false
     };
 
     const { result } = downloadGenes._execute(adminContext, dlParams);
@@ -130,7 +127,7 @@ describe('download', function testDownload() {
       query: {ID: "BniB01g000010.2N"},
       dataType: 'Expression',
       options: {selectedSamples: ["replicaGroup"]},
-      async: true
+      async: false
     };
 
     const { result } = downloadGenes._execute(adminContext, dlParams);
