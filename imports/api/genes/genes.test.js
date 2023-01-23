@@ -33,8 +33,6 @@ describe('genesMethods', function testGenesMethods() {
     resetDatabase()
   });
 
-  /*
-
   it('Should scan genes attributes', async function testScanGeneAttributes() {
     this.timeout(20000);
     addDefaultAttributes()
@@ -103,8 +101,6 @@ describe('genesMethods', function testGenesMethods() {
 
   });
 
-  */
-
   it('Should update a gene', function testUpdateGene() {
 
     this.timeout(20000);
@@ -141,9 +137,10 @@ describe('genesMethods', function testGenesMethods() {
       updateGene._execute(adminContext, wrongParams);
     }).to.throw('Gene fakeId not found!');
 
-    updateGene._execute(adminContext, updateParams);
-    Meteor._sleepForMs(10000);
+    Meteor.wrapAsync(updateGene._execute(adminContext, updateParams));
 
+    // updateGene is async (with callback), so wait for it to finish
+    Meteor._sleepForMs(5000);
 
     // Check Gene update
     const gene = Genes.findOne({ID: geneId})
@@ -158,16 +155,12 @@ describe('genesMethods', function testGenesMethods() {
 
     // Check attribute update
     const attrs = attributeCollection.find({name: "newAttr"}).fetch();
-
     chai.assert.lengthOf(attrs, 1)
     const attr = attrs[0]
-
-    logger.log(attr)
 
     chai.assert.equal(attr.defaultShow , false)
     chai.assert.equal(attr.defaultSearch , false)
     chai.assert.deepEqual(attr.genomes , [genomeId])
-
 
   });
 
