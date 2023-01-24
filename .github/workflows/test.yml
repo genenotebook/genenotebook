@@ -3,8 +3,12 @@ on: ["push", "pull_request"]
 jobs:
   tests:
     name: npm test
-    runs-on: node:17.2.0-stretch
+    runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 17
     - name: Install Meteor
       run: curl https://install.meteor.com | /bin/sh
     - name: npm install
@@ -14,8 +18,12 @@ jobs:
 
   bundle:
     name: npm run bundle
-    runs-on: node:17.2.0-stretch
+    runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 17
     - name: Install Meteor
       run: curl https://install.meteor.com | /bin/sh
     - name: npm install
