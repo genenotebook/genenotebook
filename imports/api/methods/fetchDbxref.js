@@ -39,9 +39,9 @@ const fetchDbxref = new ValidatedMethod({
     if (
       typeof dbType !== 'undefined'
     ) {
-      fetch(apiUrl)
+      return fetch(apiUrl)
         .then((res) => {
-          // console.log({ res, status: res.status });
+          //console.log({ res, status: res.status });
           if (res.status === 200) return res.json();
           return Promise.reject(
             new Error(`DBXREF ${dbType} returned code ${res.status} when accessing ${apiUrl}`),

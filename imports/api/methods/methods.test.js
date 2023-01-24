@@ -35,26 +35,30 @@ describe('methods', function testMethods() {
 
   })
 
-  it('Should get fetch a GO Dbxref', function testFetchGoDbxref() {
+  it('Should get fetch a GO Dbxref', async function testFetchGoDbxref() {
+
+    this.timeout(20000);
 
     const queryParams = {dbxrefId: "GO:0000001"}
-    fetchDbxref._execute({}, queryParams)
+    await fetchDbxref._execute({}, queryParams)
 
     const dbs = dbxrefCollection.find({dbxrefId: "GO:0000001"}).fetch();
     chai.assert.lengthOf(dbs, 1)
 
     const db = dbs[0]
 
-    chai.assert.equal(db.description , "The distribution of mitochondria, including the mitochondrial genome, into daughter cells after mitosis or meiosis, mediated by interactions between mitochondria and the cytoskeleton.")
+    chai.assert.equal(db.description , "mitochondrion inheritance")
     chai.assert.equal(db.dbType , "go")
   })
 
-  it('Should get fetch an Interpro Dbxref', function testFetchInterproDbxref() {
+  it('Should get fetch an Interpro Dbxref', async function testFetchInterproDbxref() {
 
-    const queryParams = {dbxrefId: "IPR000001"}
-    fetchDbxref._execute({}, queryParams)
+    this.timeout(20000);
 
-    const dbs = dbxrefCollection.find({dbxrefId: "IPR000001"}).fetch();
+    const queryParams = {dbxrefId: "InterPro:IPR000001"}
+    await fetchDbxref._execute({}, queryParams)
+
+    const dbs = dbxrefCollection.find({dbxrefId: "InterPro:IPR000001"}).fetch();
     chai.assert.lengthOf(dbs, 1)
 
     const db = dbs[0]
@@ -64,7 +68,6 @@ describe('methods', function testMethods() {
   })
 
   it('Should fail to create a Dbxref', function testFetchWrongDbxref() {
-
     const queryParams = {dbxrefId: "WrongIdFormat"}
     fetchDbxref._execute({}, queryParams)
 

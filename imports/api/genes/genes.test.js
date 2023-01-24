@@ -101,7 +101,7 @@ describe('genesMethods', function testGenesMethods() {
 
   });
 
-  it('Should update a gene', function testUpdateGene() {
+  it('Should update a gene', async function testUpdateGene() {
 
     this.timeout(20000);
 
@@ -137,9 +137,9 @@ describe('genesMethods', function testGenesMethods() {
       updateGene._execute(adminContext, wrongParams);
     }).to.throw('Gene fakeId not found!');
 
-    Meteor.wrapAsync(updateGene._execute(adminContext, updateParams));
+    updateGene._execute(adminContext, updateParams);
 
-    // updateGene is async (with callback), so wait for it to finish
+    // updateGene is async (with callback, not promise, so no await), so wait for it to finish
     Meteor._sleepForMs(5000);
 
     // Check Gene update
