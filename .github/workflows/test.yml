@@ -1,0 +1,24 @@
+name: "tests"
+
+jobs:
+  tests:
+    name: npm test
+    runs-on: node:17.2.0-stretch
+    steps:
+    - name: Install Meteor
+      run: curl https://install.meteor.com | /bin/sh
+    - name: npm install
+      run: npm install
+    - name: npm test
+      run: npm test
+
+  test bundle:
+    name: npm test
+    runs-on: node:17.2.0-stretch
+    steps:
+    - name: Install Meteor
+      run: curl https://install.meteor.com | /bin/sh
+    - name: npm install
+      run: npm install
+    - name: npm test
+      run: npm run bundle
