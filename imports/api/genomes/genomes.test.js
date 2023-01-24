@@ -149,6 +149,11 @@ describe('genomes', function testGenomes() {
 
    addAnnotationTrack._execute(adminContext, toAnnot);
 
+   // addAnnotationTrack can return without being finished (bulk.exec is a promise)
+   // So add a sleep here until it's fixed to avoid issues
+
+   Meteor._sleepForMs(2000)
+
    const genes = Genes.find({genomeId: genomeId}).fetch();
 
    chai.assert.lengthOf(genes, 5, "Number of created genes is not 5")
