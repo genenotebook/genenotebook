@@ -1,5 +1,5 @@
 name: "tests"
-
+on: ["push", "pull_request"]
 jobs:
   tests:
     name: npm test
@@ -12,8 +12,8 @@ jobs:
     - name: npm test
       run: npm test
 
-  test bundle:
-    name: npm test
+  bundle:
+    name: npm run bundle
     runs-on: node:17.2.0-stretch
     steps:
     - name: Install Meteor
