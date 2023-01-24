@@ -45,7 +45,9 @@ describe('eggnog', function testEggnog() {
       addEggnog._execute(userContext, eggNogParams);
     }).to.throw('[not-authorized]');
 
-    const result = addEggnog._execute(adminContext, eggNogParams);
+    const { result } = addEggnog._execute(adminContext, eggNogParams);
+
+    chai.assert.equal(result.nInserted, 1)
 
     const eggs = eggnogCollection.find({ query_name: 'BniB01g000010.2N.1' }).fetch();
 
