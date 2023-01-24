@@ -4,15 +4,16 @@ import logger from '/imports/api/util/logger.js';
 import { addTestGenome } from '/imports/startup/server/fixtures/addTestData.js';
 import { Genes } from '/imports/api/genes/geneCollection.js';
 import { reverseComplement, parseAttributeString, translate, getGeneSequences } from './util.js';
+import { resetDatabase } from 'meteor/xolvio:cleaner';
 
 describe('util', function testUtils() {
-    it('parses attribute strings', function testParseAttributeString() {
+    it('Should parse an attribute string', function testParseAttributeString() {
       const testVal = "Name=AACH01000027.2_21;Target=pep_AACH01000027_1_1347 1 449;md5=b2a7416cb92565c004becb7510f46840;"
       const parsedVal = parseAttributeString(testVal)
       const expected =  {
-          Name: "AACH01000027.2_21",
-          Target: "pep_AACH01000027_1_1347 1 449",
-          ms5: "b2a7416cb92565c004becb7510f46840"
+          Name: ["AACH01000027.2_21"],
+          Target: ["pep_AACH01000027_1_1347 1 449"],
+          md5: ["b2a7416cb92565c004becb7510f46840"]
       }
       chai.assert.deepEqual(parsedVal, expected)
   });
@@ -42,10 +43,10 @@ describe('util', function testUtils() {
           const seq = getGeneSequences(gene)
           const expected =  [{
               ID: "BniB01g000010.2N.1",
-              seq: "TTTT",
-              prot: "F"
+              nucl: "AGTTTAGAATAC",
+              prot: "SLEY"
           }]
-          chai.assert.deepEqual(parsedVal, expected)
+          chai.assert.deepEqual(seq, expected)
         });
     });
 });
