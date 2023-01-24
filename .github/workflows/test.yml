@@ -9,10 +9,6 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: 17
-    - name: Install Meteor
-      run: curl https://install.meteor.com | /bin/sh
-    - name: npm install
-      run: npm install
     - name: npm test
       run: npm test
 
@@ -24,9 +20,5 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: 17
-    - name: Install Meteor
-      run: curl https://install.meteor.com | /bin/sh
-    - name: npm install
-      run: npm install
-    - name: npm test
+    - name: npm create bundle
       run: npm run bundle
