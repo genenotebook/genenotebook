@@ -82,18 +82,40 @@ describe('users', function testUsers() {
       username: 'baseUser',
       profile: {first_name: "t", last_name: "est"},
       emails: [{address: "new@test.test", verified: false}],
+      role: 'admin'
+    }
+
+    const errorData = {
+      userId: newUserId,
+      username: 'admin',
+      profile: {first_name: "t", last_name: "est"},
+      emails: [{address: "new@test.test", verified: false}],
       role: 'registered'
     }
 
+    // Check permission for non-logged
     chai.expect(() => {
       updateUserInfo._execute({}, newUserData);
     }).to.throw('[not-authorized]');
+
+    // Check error for duplicate ID
+    chai.expect(() => {
+      updateUserInfo._execute(userContext, errorData);
+    }).to.throw('Username is already in use');
 
     updateUserInfo._execute(userContext, newUserData);
     const users = Meteor.users.find({_id: newUserId}).fetch();
     const user = users[0];
     chai.assert.lengthOf(users, 1, "User exists")
     chai.assert.equal(user.emails[0].address, "new@test.test", "New email matches")
+
+    // Assert role was not changed by user
+    chai.assert.isFalse(Roles.userIsInRole(newUserId, 'admin'))
+
+    // Assert role was changed by admin
+    updateUserInfo._execute(adminContext, newUserData);
+    chai.assert.isTrue(Roles.userIsInRole(newUserId, 'admin'))
+
   });
 
   it('Should set user password', function updateUsernamePassword() {
@@ -133,4 +155,3 @@ describe('users', function testUsers() {
     chai.assert.equal(username, "baseUser")
   });
 });
-

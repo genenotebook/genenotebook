@@ -37,16 +37,28 @@ export const updateUserInfo = new ValidatedMethod({
     if (!this.userId) {
       throw new Meteor.Error('not-authorized');
     }
-    if (!Roles.userIsInRole(this.userId, 'admin') && userId !== this.userId) {
+    const isAdmin = Roles.userIsInRole(this.userId, 'admin')
+
+    if (!isAdmin && userId !== this.userId) {
       throw new Meteor.Error('not-authorized');
     }
 
-    Meteor.users.update({ _id: userId }, {
-      $set: {
-        username, profile, emails,
-      },
-    });
-    Roles.setUserRoles(userId, role);
+    try {
+      Meteor.users.update({ _id: userId }, {
+        $set: {
+          username, profile, emails,
+        },
+      });
+    } catch (err) {
+      // 11000 is duplicate error
+      if (err.code === 11000){
+        throw new Meteor.Error('Username is already in use');
+      }
+      throw new Meteor.Error(JSON.stringify(err));
+    }
+    if (isAdmin){
+      Roles.setUserRoles(userId, role);
+    }
   },
 });
 
