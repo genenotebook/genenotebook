@@ -1,11 +1,11 @@
 {
   "name": "genoboo",
-  "version": "0.4.16",
+  "version": "0.4.17",
   "repository": "https://github.com/gogepp/genoboo",
   "description": "A portable website for browsing and querying genome sequences and annotations. Forked from genenotebook",
   "license": "AGPL-3.0",
   "scripts": {
-    "preinstall": "meteor help || curl https://install.meteor.com/ | sh",
+    "preinstall": "meteor help || curl https://install.meteor.com/?release=2.16 | sh",
     "preupdate": "meteor update",
     "docs": "documentation build --shallow imports/** -f html -o api-docs",
     "postdocs": "mkdir -p docs/ && cp api-docs/index.html docs/api-docs.html && cp -r api-docs/assets docs/",

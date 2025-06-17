@@ -518,7 +518,7 @@ class AnnotationProcessor {
         ID: identifier,
         genomeId: this.genomeID,
         annotationName: this.annotationName,
-        seqid: seqidGff,
+        seqid: seqidGff.toString(),
         source: sourceGff,
         type: typeGff,
         start: Number(startGff),
